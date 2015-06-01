@@ -1,0 +1,4 @@
+SHEPPACK_OBJS = \
+blas.o lapack.o blas_shep.o linear_shepard.o \
+cshep2d.o qshep2d.o qshep3d.o qshepmdata.o \
+qshepmd.o real_precision.o sheppack.o

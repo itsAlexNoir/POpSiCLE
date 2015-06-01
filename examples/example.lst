@@ -1,0 +1,2 @@
+EXAMPLE_LIST = \
+interp1d_test interp_scattered2d_test cylindrical2spherical_ex
