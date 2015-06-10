@@ -32,13 +32,18 @@ MODULE interp
   
   INTERFACE create_interpolant
      MODULE PROCEDURE create_interpolant2D
-     !MODULE PROCEDURE create_interpolant3D
+     MODULE PROCEDURE create_interpolant3D
   END INTERFACE create_interpolant
   
   INTERFACE interpolate
      MODULE PROCEDURE interpolate2D
-     !MODULE PROCEDURE interpolate3D
+     MODULE PROCEDURE interpolate3D
   END INTERFACE interpolate
+  
+  INTERFACE destroy_interpolant
+     MODULE PROCEDURE destroy_interpolant2D
+     MODULE PROCEDURE destroy_interpolant3D
+  END INTERFACE destroy_interpolant
   
   
   ! Variables
@@ -49,21 +54,25 @@ MODULE interp
   INTEGER                      :: NQ, NR, NW
   REAL(dp)                     :: DX_RE, DY_RE, RMAX_RE
   REAL(dp)                     :: XMIN_RE, YMIN_RE
+  REAL(dp), ALLOCATABLE        :: XYZMIN_RE(:), XYZDEL_RE(:)
   INTEGER, ALLOCATABLE         :: LNEXT_RE(:)
   INTEGER, ALLOCATABLE         :: LCELL_RE(:, :)
+  INTEGER, ALLOCATABLE         :: LCELL3_RE(:, :, :)
   REAL(dp), ALLOCATABLE        :: RSQ_RE(:), RW_RE(:)
   REAL(dp), ALLOCATABLE        :: AQ_RE(:, :), AL_RE(:, :)
   
   REAL(dp)                     :: DX_IM, DY_IM, RMAX_IM
   REAL(dp)                     :: XMIN_IM, YMIN_IM
+  REAL(dp), ALLOCATABLE        :: XYZMIN_IM(:), XYZDEL_IM(:)
   INTEGER, ALLOCATABLE         :: LNEXT_IM(:)
   INTEGER, ALLOCATABLE         :: LCELL_IM(:, :)
+  INTEGER, ALLOCATABLE         :: LCELL3_IM(:, :, :)
   REAL(dp), ALLOCATABLE        :: RSQ_IM(:), RW_IM(:)
   REAL(dp), ALLOCATABLE        :: AQ_IM(:, :), AL_IM(:, :)
   
-
+  
 CONTAINS
-
+  
   !----------------------------------------------------------------------------
   !
   !  SUBROUTINE create_interpolant
@@ -153,72 +162,285 @@ CONTAINS
   
   !--------------------------------------------------------------!
   
-  
-  SUBROUTINE interpolate2D(numpts, y1, y2, x1, x2, func, interp_val, &
-       interp_val_dx, interp_val_dy, method)
+  SUBROUTINE create_interpolant3D(numpts, x1, x2, x3, func, method )
     
     IMPLICIT NONE
     
-    INTEGER, INTENT(IN)          :: numpts
-    REAL(dp), INTENT(IN)         :: y1
-    REAL(dp), INTENT(IN)         :: y2
-    REAL(dp), INTENT(IN)         :: x1(:)
-    REAL(dp), INTENT(IN)         :: x2(:)
-    COMPLEX(dp), INTENT(IN)      :: func(:)
-    CHARACTER(LEN=*), INTENT(IN) :: method
-    COMPLEX(dp), INTENT(OUT)     :: interp_val
-    COMPLEX(dp), INTENT(OUT)     :: interp_val_dx
-    COMPLEX(dp), INTENT(OUT)     :: interp_val_dy
+    INTEGER, INTENT(IN)             :: numpts
+    REAL(dp), INTENT(IN)            :: x1(:)
+    REAL(dp), INTENT(IN)            :: x2(:)
+    REAL(dp), INTENT(IN)            :: x3(:)
+    COMPLEX(dp), INTENT(IN)         :: func(:)
+    CHARACTER(LEN=*), INTENT(IN)    :: method
+    INTEGER                         :: ierror
+    
+    
+    IF(method.EQ.'quadratic') THEN
+       
+       ! Assign control parameters for interpolation
+       NR = 3
+       NQ = 17
+       NW = 32
+       
+       ! Allocate arrays for the routine
+       ! The real ones
+       ALLOCATE(LNEXT_RE(numpts))
+       ALLOCATE(LCELL3_RE(NR, NR, NR))
+       ALLOCATE(RSQ_RE(numpts))
+       ALLOCATE(RW_RE(numpts))
+       ALLOCATE(XYZMIN_RE(3))
+       ALLOCATE(XYZDEL_RE(3))
+       ALLOCATE(AQ_RE(9,numpts))
+       ALLOCATE(AL_RE(2,numpts))
+       ! The imaginary ones
+       ALLOCATE(LNEXT_IM(numpts))
+       ALLOCATE(LCELL3_IM(NR, NR, NR))
+       ALLOCATE(RSQ_IM(numpts))
+       ALLOCATE(RW_IM(numpts))
+       ALLOCATE(XYZMIN_IM(3))
+       ALLOCATE(XYZDEL_IM(3))
+       ALLOCATE(AQ_IM(9,numpts))
+       ALLOCATE(AL_IM(2,numpts))
+       
+       ALLOCATE(func_re(1:numpts))
+       ALLOCATE(func_im(1:numpts))
+       
+       func_re = REAL(func,dp)
+       func_im = AIMAG(func)
 
+       !WRITE(*,*) 'Creating the interpolant...'
+       CALL QSHEP3(numpts, x1, x2, x3, func_re, NQ, NW, NR, LCELL3_RE, &
+            LNEXT_RE, XYZMIN_RE, XYZDEL_RE, RMAX_RE, RSQ_RE, &
+            AQ_RE, ierror)
+       IF (ierror /= 0) THEN
+          WRITE(*,*) 'Error calculating the (real) interpolant at QSHEP3.'
+          STOP
+       ENDIF
+       
+       CALL QSHEP3(numpts, x1, x2, x3, func_im, NQ, NW, NR, LCELL3_IM, &
+            LNEXT_IM, XYZMIN_IM, XYZDEL_IM, RMAX_IM, RSQ_IM, &
+            AQ_IM, ierror)
+       IF (ierror /= 0) THEN
+          WRITE(*,*) 'Error calculating the (imag) interpolant at QSHEP3.'
+          STOP
+       ENDIF
+       
+       
+    ELSEIF(method.eq.'linear') THEN
+       
+    ELSE
+       
+       WRITE(*,*) 'The input method has been implemented.'
+       STOP
+       
+    END IF
+    
+  END SUBROUTINE create_interpolant3D
+  
+  !--------------------------------------------------------------!
+  
+  SUBROUTINE interpolate2D(numpts, y1, y2, x1, x2, func, method, &
+       interp_val, interp_val_dx, interp_val_dy)
+    
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)                  :: numpts
+    REAL(dp), INTENT(IN)                 :: y1
+    REAL(dp), INTENT(IN)                 :: y2
+    REAL(dp), INTENT(IN)                 :: x1(:)
+    REAL(dp), INTENT(IN)                 :: x2(:)
+    COMPLEX(dp), INTENT(IN)              :: func(:)
+    CHARACTER(LEN=*), INTENT(IN)         :: method
+    COMPLEX(dp), INTENT(OUT)             :: interp_val
+    COMPLEX(dp), INTENT(OUT), OPTIONAL   :: interp_val_dx
+    COMPLEX(dp), INTENT(OUT), OPTIONAL   :: interp_val_dy
+    
     REAL(dp)                     :: interp_val_re
     REAL(dp)                     :: interp_val_im
     REAL(dp)                     :: interp_val_dx_re
     REAL(dp)                     :: interp_val_dx_im
     REAL(dp)                     :: interp_val_dy_re
-    REAL(dp)                     :: interp_val_dy_im
+    REAL(dp)                     :: interp_val_dy_im  
     INTEGER                      :: ierror
     
     !-----------------------------------------------!
     
-
-    IF (method .EQ. 'quadratic') THEN
-       ! Interpolate the real part
-       CALL QS2GRD(y1, y2, numpts, x1, x2, func_re, NR, LCELL_RE, LNEXT_RE,&
-            XMIN_RE, YMIN_RE, DX_RE, DY_RE, RMAX_RE, RSQ_RE, AQ_RE, interp_val_re, &
-            interp_val_dx_re, interp_val_dy_re, ierror)
-       IF (ierror /= 0) THEN
-          WRITE (*, *) 'QSHEP2 - ERROR!'
-          WRITE (*, *) 'Error in QS2GRD (REAL), IER = ', ierror
-          STOP
-       END IF
+    IF (PRESENT(interp_val_dx).AND.PRESENT(interp_val_dy) ) THEN
+       IF (method .EQ. 'quadratic') THEN
+          ! Interpolate the real part
+          CALL QS2GRD(y1, y2, numpts, x1, x2, func_re, NR, LCELL_RE, LNEXT_RE,&
+               XMIN_RE, YMIN_RE, DX_RE, DY_RE, RMAX_RE, RSQ_RE, AQ_RE, interp_val_re, &
+               interp_val_dx_re, interp_val_dy_re, ierror)
+          IF (ierror /= 0) THEN
+             WRITE (*, *) 'QSHEP2 - ERROR!'
+             WRITE (*, *) 'Error in QS2GRD (REAL), IER = ', ierror
+             STOP
+          END IF
+          
+          
+          ! Interpolate the imaginary part
+          CALL QS2GRD(y1, y2, numpts, x1, x2, func_im, NR, LCELL_IM, LNEXT_IM,&
+               XMIN_IM, YMIN_IM, DX_IM, DY_IM, RMAX_IM, RSQ_IM, AQ_IM, interp_val_im, &
+               interp_val_dx_im, interp_val_dy_im, ierror)
+          IF (ierror /= 0) THEN
+             WRITE (*, *) 'QSHEP2 - ERROR!'
+             WRITE (*, *) 'Error in QS2GRD (IMAG), IER = ', ierror
+             STOP
+          END IF
+          
+          !---------------------------------!
+          
+       ENDIF
        
+       interp_val    = CMPLX(interp_val_re, interp_val_im)
+       interp_val_dx = CMPLX(interp_val_dx_re, interp_val_dx_im)
+       interp_val_dy = CMPLX(interp_val_dy_re, interp_val_dy_im)
        
-       ! Interpolate the imaginary part
-       CALL QS2GRD(y1, y2, numpts, x1, x2, func_im, NR, LCELL_IM, LNEXT_IM,&
-            XMIN_IM, YMIN_IM, DX_IM, DY_IM, RMAX_IM, RSQ_IM, AQ_IM, interp_val_im, &
-         interp_val_dx_im, interp_val_dy_im, ierror)
-       IF (ierror /= 0) THEN
-          WRITE (*, *) 'QSHEP2 - ERROR!'
-          WRITE (*, *) 'Error in QS2GRD (IMAG), IER = ', ierror
-          STOP
-       END IF
+    
+    ELSEIF (.NOT.PRESENT(interp_val_dx).AND. .NOT.PRESENT(interp_val_dy) ) THEN
        
-       !---------------------------------!
+       IF (method .EQ. 'quadratic') THEN
+          ! Interpolate the real part
+          interp_val_re = QS2VAL(y1, y2, numpts, x1, x2, func_re, NR, LCELL3_RE, LNEXT_RE, &
+               XMIN_RE, YMIN_RE, DX_RE, DY_RE, RMAX_RE, RSQ_RE, AQ_RE )
+          IF (interp_val_re .EQ. 0) THEN
+             WRITE (*, *) 'Q2VAL - ERROR!'
+             WRITE (*, *) 'Error in QS2VAL (REAL), IER = ', interp_val_re
+             STOP
+          END IF
+          
+          
+          ! Interpolate the imaginary part
+          interp_val_im = QS2VAL(y1, y2, numpts, x1, x2, func_im, NR, LCELL3_IM, LNEXT_IM, &
+               XMIN_IM, YMIN_IM, DX_IM, DY_IM, RMAX_IM, RSQ_IM, AQ_IM )
+          IF (interp_val_im .EQ. 0) THEN
+             WRITE (*, *) 'Q2VAL - ERROR!'
+             WRITE (*, *) 'Error in Q23VAL (IMAG), IER = ', interp_val_im
+             STOP
+          END IF
+          
+          !---------------------------------!
+       ENDIF
        
+    ELSE
+       WRITE(*,*) 'Missing derivatives arrays!'
+       RETURN
     ENDIF
-
-    interp_val = CMPLX(interp_val_re, interp_val_im)
-    interp_val_dx = CMPLX(interp_val_dx_re, interp_val_dx_im)
-    interp_val_dy = CMPLX(interp_val_dy_re, interp_val_dy_im)
     
     
   END SUBROUTINE interpolate2D
+
+  !-----------------------------------------------------------!
+  
+  SUBROUTINE interpolate3D(numpts, y1, y2, y3, x1, x2, x3, func, method, &
+       interp_val, interp_val_dx, interp_val_dy, interp_val_dz )
+    
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)                 :: numpts
+    REAL(dp), INTENT(IN)                :: y1
+    REAL(dp), INTENT(IN)                :: y2
+    REAL(dp), INTENT(IN)                :: y3  
+    REAL(dp), INTENT(IN)                :: x1(:)
+    REAL(dp), INTENT(IN)                :: x2(:)
+    REAL(dp), INTENT(IN)                :: x3(:)
+    COMPLEX(dp), INTENT(IN)             :: func(:)
+    CHARACTER(LEN=*), INTENT(IN)        :: method
+    COMPLEX(dp), INTENT(OUT)            :: interp_val
+    COMPLEX(dp), INTENT(OUT), OPTIONAL  :: interp_val_dx
+    COMPLEX(dp), INTENT(OUT), OPTIONAL  :: interp_val_dy
+    COMPLEX(dp), INTENT(OUT), OPTIONAL  :: interp_val_dz
+    
+    REAL(dp)                     :: interp_val_re
+    REAL(dp)                     :: interp_val_im
+    REAL(dp)                     :: interp_val_dx_re
+    REAL(dp)                     :: interp_val_dx_im
+    REAL(dp)                     :: interp_val_dy_re
+    REAL(dp)                     :: interp_val_dy_im  
+    REAL(dp)                     :: interp_val_dz_re
+    REAL(dp)                     :: interp_val_dz_im
+    INTEGER                      :: ierror
+    
+    !-----------------------------------------------!
+    
+    
+    IF (PRESENT(interp_val_dx).AND.PRESENT(interp_val_dy) &
+         .AND.PRESENT(interp_val_dz) ) THEN
+       IF (method .EQ. 'quadratic') THEN
+          ! Interpolate the real part
+          CALL QS3GRD(y1, y2, y3, numpts, x1, x2, x3, func_re, NR, LCELL3_RE, LNEXT_RE,&
+               XYZMIN_RE, XYZDEL_RE, RMAX_RE, RSQ_RE, AQ_RE, interp_val_re, &
+               interp_val_dx_re, interp_val_dy_re, interp_val_dz_re, ierror)
+          IF (ierror /= 0) THEN
+             WRITE (*, *) 'QSHEP3 - ERROR!'
+             WRITE (*, *) 'Error in QS3GRD (REAL), IER = ', ierror
+             STOP
+          END IF
+          
+          
+          ! Interpolate the imaginary part
+          CALL QS3GRD(y1, y2, y3, numpts, x1, x2, x3, func_im, NR, LCELL3_IM, LNEXT_IM,&
+               XYZMIN_IM, XYZDEL_IM, RMAX_IM, RSQ_IM, AQ_IM, interp_val_im, &
+               interp_val_dx_im, interp_val_dy_im, interp_val_dz_im, ierror)
+          IF (ierror /= 0) THEN
+             WRITE (*, *) 'QSHEP3 - ERROR!'
+             WRITE (*, *) 'Error in QS3GRD (IMAG), IER = ', ierror
+             STOP
+          END IF
+          
+       !---------------------------------!
+          
+       ENDIF
+       
+       interp_val    = CMPLX(interp_val_re, interp_val_im)
+       interp_val_dx = CMPLX(interp_val_dx_re, interp_val_dx_im)
+       interp_val_dy = CMPLX(interp_val_dy_re, interp_val_dy_im)
+       interp_val_dz = CMPLX(interp_val_dz_re, interp_val_dz_im)
+       
+    ELSEIF (.NOT.PRESENT(interp_val_dx).AND. .NOT.PRESENT(interp_val_dy) &
+         .AND. .NOT.PRESENT(interp_val_dz) ) THEN
+       
+       IF (method .EQ. 'quadratic') THEN
+          ! Interpolate the real part
+          interp_val_re = QS3VAL(y1, y2, y3, numpts, x1, x2, x3, func_re, NR, LCELL3_RE, LNEXT_RE,&
+               XYZMIN_RE, XYZDEL_RE, RMAX_RE, RSQ_RE, AQ_RE )
+          IF (interp_val_re .EQ. 0) THEN
+             WRITE (*, *) 'Q3VAL - ERROR!'
+             WRITE (*, *) 'Error in QS3VAL (REAL), IER = ', interp_val_re
+             STOP
+          END IF
+          
+          
+          ! Interpolate the imaginary part
+          interp_val_im = QS3VAL(y1, y2, y3, numpts, x1, x2, x3, func_im, NR, LCELL3_IM, LNEXT_IM,&
+               XYZMIN_IM, XYZDEL_IM, RMAX_IM, RSQ_IM, AQ_IM )
+          IF (interp_val_im .EQ. 0) THEN
+             WRITE (*, *) 'Q3VAL - ERROR!'
+             WRITE (*, *) 'Error in QS3VAL (IMAG), IER = ', interp_val_im
+             STOP
+          END IF
+          
+          !---------------------------------!
+       ENDIF
+       
+    ELSE
+       WRITE(*,*) 'Missing derivatives arrays!'
+       RETURN
+    ENDIF
+    
+  END SUBROUTINE interpolate3D
   
   !-------------------------------------!
   
-  SUBROUTINE destroy_interpolant( )
+  SUBROUTINE destroy_interpolant2D(numpts, x1, x2, func )
     
     IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)             :: numpts
+    REAL(dp), INTENT(IN)            :: x1(:)
+    REAL(dp), INTENT(IN)            :: x2(:)
+    COMPLEX(dp), INTENT(IN)         :: func(:)
+    
     
     ! Allocate arrays for the routine
     ! The real ones
@@ -236,6 +458,40 @@ CONTAINS
     DEALLOCATE(AQ_IM)
     DEALLOCATE(AL_IM)
     
-  END SUBROUTINE destroy_interpolant
+  END SUBROUTINE destroy_interpolant2D
+
+  !-------------------------------------!
+  
+  SUBROUTINE destroy_interpolant3D( numpts, x1, x2, x3, func )
+    
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)             :: numpts
+    REAL(dp), INTENT(IN)            :: x1(:)
+    REAL(dp), INTENT(IN)            :: x2(:)
+    REAL(dp), INTENT(IN)            :: x3(:)
+    COMPLEX(dp), INTENT(IN)         :: func(:)
+    
+    ! Allocate arrays for the routine
+    ! The real ones
+    DEALLOCATE(LNEXT_RE)
+    DEALLOCATE(LCELL_RE)
+    DEALLOCATE(RSQ_RE)
+    DEALLOCATE(RW_RE)
+    DEALLOCATE(XYZMIN_RE)
+    DEALLOCATE(XYZDEL_RE)
+    DEALLOCATE(AQ_RE)
+    DEALLOCATE(AL_RE)
+    ! The imaginary ones
+    DEALLOCATE(LNEXT_IM)
+    DEALLOCATE(LCELL_IM)
+    DEALLOCATE(RSQ_IM)
+    DEALLOCATE(RW_IM)
+    DEALLOCATE(XYZMIN_IM)
+    DEALLOCATE(XYZDEL_IM)
+    DEALLOCATE(AQ_IM)
+    DEALLOCATE(AL_IM)
+    
+  END SUBROUTINE destroy_interpolant3D
   
 END MODULE interp
