@@ -74,6 +74,11 @@ ifndef ${DIRECTIVES}
 DIRECTIVES=-Wp,D_COMM_MPI=0
 endif
 
+ifndef ${FFTLIB}
+	FFT_LIB = fftw
+	FFT_PATH = /users/adelacalle/my_libraries/fftw/current
+endif
+
 RES = $(addsuffix .res ,$(function))
 
 POPSICLE = ${POPSICLE_LIB}/libpopsicle.a
@@ -84,7 +89,8 @@ example: ${POPSICLE}
 ${POPSICLE}:
 	cd ${POPSICLE_SRC}; ${MAKE} $< "FC=${FC}" "F77FLAGS=${F77FLAGS}" \
 	"F90FLAGS=${F90FLAGS}" "ARFLAGS=${ARFLAGS}" \
-	"POPSICLE_ROOT=${POPSICLE_ROOT}" "MKLROOT=${MKLROOT}"
+	"POPSICLE_ROOT=${POPSICLE_ROOT}" "FFT_LIB=mkl" \
+	"FFT_PATH=${MKLROOT}" "MKLROOT=${MKLROOT}"
 
 clean: clean_src clean_examples
 
