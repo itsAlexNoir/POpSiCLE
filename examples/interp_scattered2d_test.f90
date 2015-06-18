@@ -401,6 +401,8 @@ PROGRAM interp1d_test
   !   polar coordinates
   !---------------------------------------!
   
+  WRITE(*,*) 'From cartesian to polar...'
+
   numrpts = 200
   numthetapts = 300
   

@@ -3,7 +3,7 @@ MODULE POPSICLE
   ! Here the list of modules of the library
   USE constants
   USE interp
-  USE coords_transform
+  USE coords_transformation
   USE fourier
   USE io
   

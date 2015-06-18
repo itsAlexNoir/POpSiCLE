@@ -218,20 +218,20 @@ CONTAINS
     CALL h5screate_simple_f(rank, proc_dims, memspace, error)
 
     ! Create chunked dataset.
-    CALL h5pcreate_f(H5P_DATASET_CREATE_F, plist_id, error)
-    CALL h5pset_chunk_f(plist_id, rank, proc_dims, error)
+    !CALL h5pcreate_f(H5P_DATASET_CREATE_F, plist_id, error)
+    !CALL h5pset_chunk_f(plist_id, rank, proc_dims, error)
 
     setname = '/' // TRIM(filename) // '/'// TRIM(filename)
     !write(*,*) 'setname: ',setname
     CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, filespace, &
-         dset_id, error, plist_id)
+         dset_id, error)!, plist_id)
     CALL h5sclose_f(filespace, error)
     
     ! Each process defines dataset in memory and writes it to the hyperslab
     ! in the file. 
     stride = 1
-    cont  = 1
-    blck = proc_dims
+    cont  = proc_dims
+    !blck = proc_dims(1)
     IF(rank.EQ.2) THEN
        offset(1) = ipgrid(1) * proc_dims(1)
        offset(2) = ipgrid(2) * proc_dims(2)
@@ -252,7 +252,7 @@ CONTAINS
     ! Select hyperslab in the file.
     CALL h5dget_space_f(dset_id, filespace, error)
     CALL h5sselect_hyperslab_f (filespace, H5S_SELECT_SET_F, offset,&
-         cont, error, stride, blck)
+         cont, error)!, stride, blck)
     
     ! Create property list for collective dataset write
     CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 

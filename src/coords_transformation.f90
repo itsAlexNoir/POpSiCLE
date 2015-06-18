@@ -1,4 +1,4 @@
-MODULE coords_transform
+MODULE coords_transformation
 
   USE constants
   USE interp
@@ -36,6 +36,11 @@ MODULE coords_transform
      MODULE PROCEDURE cylindrical2spherical2D
      !MODULE PROCEDURE cylindrical2spherical3D
   END INTERFACE cylindrical2spherical
+
+  
+  REAL(dp), ALLOCATABLE, PUBLIC    :: rpts(:)
+  REAL(dp), ALLOCATABLE, PUBLIC    :: theta(:)
+ 
   
   INTEGER                          :: numpts
   INTEGER                          :: numrpts, numthetapts
@@ -45,8 +50,6 @@ MODULE coords_transform
   INTEGER, ALLOCATABLE             :: index_x1(:)
   INTEGER, ALLOCATABLE             :: index_x2(:)
   INTEGER, ALLOCATABLE             :: index_x3(:)
-  REAL(dp), ALLOCATABLE            :: rpts(:)
-  REAL(dp), ALLOCATABLE            :: theta(:)
   COMPLEX(dp), ALLOCATABLE         :: psi_sph(:,:)
   COMPLEX(dp), ALLOCATABLE         :: psi_sph_dx(:,:)
   COMPLEX(dp), ALLOCATABLE         :: psi_sph_dy(:,:)
@@ -56,31 +59,37 @@ CONTAINS
   !----------------------------------------------------!
   
   SUBROUTINE initialize_cylindrical_boundary2D(rho_ax, z_ax, dims, &
-       halolims, Rs, radtol, fdpts, deltar, deltatheta)
+       Rs, radtol, fdpts, deltar, deltatheta, &
+       maxrpts, maxthetapts )
     
     IMPLICIT NONE
     
     REAL(dp), INTENT(IN)      :: rho_ax(:)
     REAL(dp), INTENT(IN)      :: z_ax(:)
     INTEGER, INTENT(IN)       :: dims(:)
-    REAL(dp), INTENT(IN)      :: halolims(:,:)
     REAL(dp), INTENT(IN)      :: Rs
     REAL(dp), INTENT(IN)      :: radtol
     INTEGER, INTENT(IN)       :: fdpts
     REAL(dp), INTENT(IN)      :: deltar
     REAL(dp), INTENT(IN)      :: deltatheta
-    
+    INTEGER, INTENT(OUT)      :: maxrpts, maxthetapts
+
     REAL(dp)                  :: minrho, maxrho
     REAL(dp)                  :: minz, maxz
     REAL(dp)                  :: minr, maxr
     REAL(dp)                  :: mintheta, maxtheta
+    INTEGER                   :: halolims(2,2)
     REAL(dp)                  :: rpt, thetapt
+    REAL(dp)                  :: Rs_start
     INTEGER                   :: irho, iz, inum
     INTEGER                   :: ir, itheta
     
     !--------------------------------------------------!
     
     numpts = 0
+    
+    halolims(1,:) = (/ lbound(rho_ax), ubound(rho_ax) /)
+    halolims(2,:) = (/ lbound(z_ax), ubound(z_ax) /)
     
     ! Assign max and min values for the axes
     minrho = rho_ax(1)
@@ -91,10 +100,7 @@ CONTAINS
     
     minr = SQRT(minrho**2 + minz**2)
     maxr = SQRT(maxrho**2 + maxz**2)
-    
-    mintheta = ATAN2(rho_ax(halolims(1,1)) , z_ax(halolims(2,1)))
-    maxtheta = ATAN2(rho_ax(halolims(1,2)) , z_ax(halolims(2,2)))
-    
+            
     IF ( (Rs.LT.minr).AND.(Rs.GT.maxr) ) THEN
        ALLOCATE(rpts_scatt(1))
        ALLOCATE(theta_scatt(1)) 
@@ -110,17 +116,26 @@ CONTAINS
        RETURN
     ENDIF
     
+    mintheta =  ATAN2( rho_ax(1), z_ax(1) )
+    
     ! Work out how many points will build the interpolant
     DO iz = halolims(2,1), halolims(2,2)
        DO irho = halolims(1,1), halolims(1,2)
           ! Calculate the point in spherical coordinates
           rpt = SQRT( rho_ax(irho)**2 + z_ax(iz)**2 )
-          !thetapt = ATAN2(rho_ax, z_ax)
+          thetapt = ATAN2( rho_ax(irho), z_ax(iz) )
+          
+          ! Check the extend of the grid
+          IF (rpt .LT. minr) minr = rpt
+          IF (rpt .GT. maxr) maxr = rpt
           
           ! See if this points lies within the radius of
           ! influence of the boundary
           IF (ABS(rpt-Rs) .LE. radtol ) &
                numpts = numpts + 1
+          IF (thetapt .LT. mintheta) mintheta = thetapt
+          IF (thetapt .GT. maxtheta) maxtheta = thetapt
+          
        ENDDO
     ENDDO
     
@@ -136,7 +151,7 @@ CONTAINS
        ALLOCATE(psi_sph(1,1))
        ALLOCATE(psi_sph_dx(1,1))
        ALLOCATE(psi_sph_dy(1,1))
-
+       
     ELSE
        ALLOCATE(rpts_scatt(1:numpts))
        ALLOCATE(theta_scatt(1:numpts))
@@ -152,7 +167,7 @@ CONTAINS
        ALLOCATE(psi_sph(1:numrpts,1:numthetapts))
        ALLOCATE(psi_sph_dx(1:numrpts,1:numthetapts))
        ALLOCATE(psi_sph_dy(1:numrpts,1:numthetapts))
-
+       
        inum = 0
        
        DO iz = halolims(2,1), halolims(2,2)
@@ -167,19 +182,24 @@ CONTAINS
                 theta_scatt(inum) = thetapt
                 index_x1(inum) = irho
                 index_x2(inum) = iz
+                
              ENDIF
           ENDDO
        ENDDO
        
+       Rs_start = (Rs - deltar * (fdpts + 1))
        DO ir = 1, numrpts
-          rpts(ir) = minr + REAL( ir * deltar, dp )
+          rpts(ir) = Rs_start + REAL( ir * deltar, dp )
        ENDDO
        
        DO itheta = 1, numthetapts
-          theta(itheta) = mintheta + REAL( itheta * deltatheta )
+          theta(itheta) = mintheta + REAL( itheta * deltatheta,dp )
        ENDDO
-
+       
     ENDIF
+    
+    maxrpts = numrpts
+    maxthetapts = numthetapts
     
   END SUBROUTINE initialize_cylindrical_boundary2D
   
@@ -198,7 +218,6 @@ CONTAINS
     
     INTEGER                           :: inum, ir, itheta
     
-    
     psi_scatt = ZERO
     psi_sph = ZERO
     psi_sph_dx = ZERO
@@ -216,12 +235,11 @@ CONTAINS
     
     DO ir = 1, numrpts
        DO itheta = 1, numthetapts
-          CALL interpolate(numpts,rpts(ir), theta(itheta), rpts_scatt, theta_scatt, &
-               psi_scatt, TRIM(method), psi_sph(ir,itheta), &
+          CALL interpolate(numpts,rpts(ir), theta(itheta), rpts_scatt, &
+               theta_scatt, psi_scatt, TRIM(method), psi_sph(ir,itheta), &
                psi_sph_dx(ir,itheta), psi_sph_dy(ir,itheta))
        ENDDO
     ENDDO
-    
     
   END SUBROUTINE get_cylindrical_boundary2D
   
@@ -448,4 +466,4 @@ CONTAINS
   
   !----------------------------------------------------------------!
 
-END MODULE coords_transform
+END MODULE coords_transformation

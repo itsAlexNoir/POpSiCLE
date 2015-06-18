@@ -272,7 +272,7 @@ CONTAINS
                XMIN_RE, YMIN_RE, DX_RE, DY_RE, RMAX_RE, RSQ_RE, AQ_RE, interp_val_re, &
                interp_val_dx_re, interp_val_dy_re, ierror)
           IF (ierror /= 0) THEN
-             WRITE (*, *) 'QSHEP2 - ERROR!'
+             WRITE (*, *) 'QS2GRD - ERROR!'
              WRITE (*, *) 'Error in QS2GRD (REAL), IER = ', ierror
              STOP
           END IF
@@ -283,7 +283,7 @@ CONTAINS
                XMIN_IM, YMIN_IM, DX_IM, DY_IM, RMAX_IM, RSQ_IM, AQ_IM, interp_val_im, &
                interp_val_dx_im, interp_val_dy_im, ierror)
           IF (ierror /= 0) THEN
-             WRITE (*, *) 'QSHEP2 - ERROR!'
+             WRITE (*, *) 'QS2GRD - ERROR!'
              WRITE (*, *) 'Error in QS2GRD (IMAG), IER = ', ierror
              STOP
           END IF
@@ -292,9 +292,9 @@ CONTAINS
           
        ENDIF
        
-       interp_val    = CMPLX(interp_val_re, interp_val_im)
-       interp_val_dx = CMPLX(interp_val_dx_re, interp_val_dx_im)
-       interp_val_dy = CMPLX(interp_val_dy_re, interp_val_dy_im)
+       interp_val    = CMPLX(interp_val_re, interp_val_im, dp)
+       interp_val_dx = CMPLX(interp_val_dx_re, interp_val_dx_im, dp)
+       interp_val_dy = CMPLX(interp_val_dy_re, interp_val_dy_im, dp)
        
     
     ELSEIF (.NOT.PRESENT(interp_val_dx).AND. .NOT.PRESENT(interp_val_dy) ) THEN
@@ -322,6 +322,8 @@ CONTAINS
           !---------------------------------!
        ENDIF
        
+       interp_val    = CMPLX(interp_val_re, interp_val_im, dp)
+
     ELSE
        WRITE(*,*) 'Missing derivatives arrays!'
        RETURN

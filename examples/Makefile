@@ -71,7 +71,7 @@ function = ${EXAMPLE_LIST}
 endif
 
 ifndef ${DIRECTIVES}
-DIRECTIVES=-Wp,D_COMM_MPI=0
+DIRECTIVES=-Wp,-D_COM_MPI=0
 endif
 
 ifndef ${FFTLIB}
@@ -81,16 +81,40 @@ endif
 
 RES = $(addsuffix .res ,$(function))
 
-POPSICLE = ${POPSICLE_LIB}/libpopsicle.a
+POPSICLE_SER = ${POPSICLE_LIB}/libpopsicle_serial.a
+POPSICLE_PAR = ${POPSICLE_LIB}/libpopsicle_parallel.a
 
-example: ${POPSICLE}
+HDF5_PATH = /users/adelacalle/my_libraries/hdf5/serial
+PHDF5_PATH = /users/adelacalle/my_libraries/hdf5/parallel
+SZIP_PATH = /users/adelacalle/my_libraries/szip
+
+
+example: ${POPSICLE_SER} ${POPSICLE_PAR}
 	${MAKE} ${RES}	
 
-${POPSICLE}:
-	cd ${POPSICLE_SRC}; ${MAKE} $< "FC=${FC}" "F77FLAGS=${F77FLAGS}" \
-	"F90FLAGS=${F90FLAGS}" "ARFLAGS=${ARFLAGS}" \
-	"POPSICLE_ROOT=${POPSICLE_ROOT}" "FFT_LIB=mkl" \
-	"FFT_PATH=${MKLROOT}" "MKLROOT=${MKLROOT}"
+${POPSICLE_SER}:
+	cd $(POPSICLE_SRC); $(MAKE) "FC=$(FC)" "F77FLAGS=$(F77FLAGS)" \
+	"F90FLAGS=$(F90FLAGS)" "ARFLAGS=$(ARFLAGS)" \
+	"POPSICLE_ROOT=$(POPSICLE_ROOT)" "FFT_LIB=mkl" \
+	"FFT_PATH=$(MKLROOT)" "MKLROOT=$(MKLROOT)" \
+	"PLIB=serial" "HDF5_PATH=$(HDF5_PATH)" \
+	"SZIP_PATH=${SZIP_PATH}" "FC=ifort" \
+	"DIRECTIVES=-Wp,-D_COM_MPI=0"
+
+$(POPSICLE_PAR):
+	cd $(POPSICLE_SRC); $(MAKE) "FC=$(FC)" "F77FLAGS=$(F77FLAGS)" \
+	"F90FLAGS=$(F90FLAGS)" "ARFLAGS=$(ARFLAGS)" \
+	"POPSICLE_ROOT=$(POPSICLE_ROOT)" "FFT_LIB=mkl" \
+	"FFT_PATH=$(MKLROOT)" "MKLROOT=$(MKLROOT)" \
+	"PLIB=parallel" \
+	"PHDF5_PATH=$(PHDF5_PATH)" "SZIP_PATH=${SZIP_PATH}" \
+	"DIRECTIVES=$(DIRECTIVES)"
+
+${RES}: %.res: %.f90
+	echo ${POPSICLE_SER}
+	mkdir -p ./${RES_DIR}
+	${FC}  $< -o ${RES_DIR}/$*.out ${FLAGS} -I${POPSICLE_LIB} ${POPSICLE_SER}
+
 
 clean: clean_src clean_examples
 
@@ -109,12 +133,6 @@ clean_examples:
 ###############################
 ## Rules for makefile
 ###############################
-
-${RES}: %.res: %.f90
-	echo ${POPSICLE}
-	mkdir -p ./${RES_DIR}
-	${FC}  $< -o ${RES_DIR}/$*.out ${FLAGS} -I${POPSICLE_LIB} ${POPSICLE}
-
 
 ## Fortran90
 %.o:%.f90
