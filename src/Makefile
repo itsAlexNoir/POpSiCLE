@@ -19,6 +19,9 @@ include interp_libs/sheppack/sheppack_routines.lst
 POPSICLE_OBJS = constants.o coords_transformation.o \
 	fourier.o interp.o popsicle.o io.o
 
+ifeq (${FFT_LIB},fftw)
+POPSICLE_OBJS += fftw.o 
+endif
 
 #################
 # Set FFT libs
@@ -43,10 +46,10 @@ ifndef FFT_PATH
 ${error You must provide a path to the FFT routines}
 endif
 FFTW_OBJS = fftw.o
-LIBS += -L${FFT_PATH}\lib
+LIBS += -L${FFT_PATH}/lib
 F90FLAGS += -lfftw3 
 ifdef DIRECTIVES
-DIRECTIVES +=,-D_USE_MKL=0,-D_USE_FFTW=1
+PREPROC = ${DIRECTIVES},-D_USE_MKL=0,-D_USE_FFTW=1
 else
 DIRECTIVES = -Wp,-D_USE_MKL=0,-D_USE_FFTW=1
 endif
@@ -84,7 +87,8 @@ LIBS    += -L${HDF5_PATH}/lib #\
 #else
 #${error You must set PLIB variable}
 endif 
-LIBS	+= -L${SZIP_PATH}/lib -lsz -lz -ldl -lm
+#LIBS	+= -L${SZIP_PATH}/lib -lsz -lz -ldl -lm
+LIBS	+= -lsz -lz -ldl -lm
 
 ##-----------------------------------------------
 ## Module dependencies
@@ -107,8 +111,8 @@ lib: ${POPSICLE_OBJS} ${INTERP_OBJS} ${SHEPPACK_OBJS}
 	ar ${ARFLAGS} libpopsicle_${PLIB}.a ${POPSICLE_OBJS} \
 	${INTERP_OBJS} ${SHEPPACK_OBJS}; \
 	ranlib libpopsicle_${PLIB}.a
-	cp libpopsicle_${PLIB}.a ${POPSICLE_ROOT}/lib
-	cp *.mod ${POPSICLE_ROOT}/lib
+	cp -rf libpopsicle_${PLIB}.a ${POPSICLE_ROOT}/lib
+	cp -rf *.mod ${POPSICLE_ROOT}/lib
 
 ${SHEPPACK_OBJS}:
 	cd ${SHEPPACK_DIR}; ${MAKE} install "FC=${FC}" \

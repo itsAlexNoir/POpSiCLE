@@ -1,3 +1,3 @@
 EXAMPLE_LIST = \
-interp1d_test interp_scattered2d_test cyl2sph_ex1 \
+interp1d_test interp_scattered2d_test \
 cyl2sph_ex2

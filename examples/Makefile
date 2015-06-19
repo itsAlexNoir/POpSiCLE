@@ -71,7 +71,7 @@ function = ${EXAMPLE_LIST}
 endif
 
 ifndef ${DIRECTIVES}
-DIRECTIVES=-Wp,-D_COM_MPI=0
+DIRECTIVES=-Wp,-D_COM_MPI=1
 endif
 
 ifndef ${FFTLIB}
@@ -85,35 +85,35 @@ POPSICLE_SER = ${POPSICLE_LIB}/libpopsicle_serial.a
 POPSICLE_PAR = ${POPSICLE_LIB}/libpopsicle_parallel.a
 
 HDF5_PATH = /users/adelacalle/my_libraries/hdf5/serial
-PHDF5_PATH = /users/adelacalle/my_libraries/hdf5/parallel
-SZIP_PATH = /users/adelacalle/my_libraries/szip
+#PHDF5_PATH = /users/adelacalle/my_libraries/hdf5/parallel
+PHDF5_PATH = /opt/cray/hdf5/1.8.13
+#SZIP_PATH = /users/adelacalle/my_libraries/szip
+MKLROOT  = /opt/cray/fftw/3.3.4.1/ivybridge
 
-
-example: ${POPSICLE_SER} ${POPSICLE_PAR}
+example: ${POPSICLE_PAR}
 	${MAKE} ${RES}	
 
 ${POPSICLE_SER}:
 	cd $(POPSICLE_SRC); $(MAKE) "FC=$(FC)" "F77FLAGS=$(F77FLAGS)" \
 	"F90FLAGS=$(F90FLAGS)" "ARFLAGS=$(ARFLAGS)" \
-	"POPSICLE_ROOT=$(POPSICLE_ROOT)" "FFT_LIB=mkl" \
+	"POPSICLE_ROOT=$(POPSICLE_ROOT)" "FFT_LIB=fftw" \
 	"FFT_PATH=$(MKLROOT)" "MKLROOT=$(MKLROOT)" \
 	"PLIB=serial" "HDF5_PATH=$(HDF5_PATH)" \
-	"SZIP_PATH=${SZIP_PATH}" "FC=ifort" \
+	"SZIP_PATH=${SZIP_PATH}" \
 	"DIRECTIVES=-Wp,-D_COM_MPI=0"
 
-$(POPSICLE_PAR):
-	cd $(POPSICLE_SRC); $(MAKE) "FC=$(FC)" "F77FLAGS=$(F77FLAGS)" \
+${POPSICLE_PAR}:
+	cd $(POPSICLE_SRC); $(MAKE) "FC=${FC}" "F77FLAGS=$(F77FLAGS)" \
 	"F90FLAGS=$(F90FLAGS)" "ARFLAGS=$(ARFLAGS)" \
-	"POPSICLE_ROOT=$(POPSICLE_ROOT)" "FFT_LIB=mkl" \
+	"POPSICLE_ROOT=$(POPSICLE_ROOT)" "FFT_LIB=fftw" \
 	"FFT_PATH=$(MKLROOT)" "MKLROOT=$(MKLROOT)" \
 	"PLIB=parallel" \
 	"PHDF5_PATH=$(PHDF5_PATH)" "SZIP_PATH=${SZIP_PATH}" \
-	"DIRECTIVES=$(DIRECTIVES)"
+	"DIRECTIVES=-Wp,-D_COM_MPI=1"
 
 ${RES}: %.res: %.f90
-	echo ${POPSICLE_SER}
 	mkdir -p ./${RES_DIR}
-	${FC}  $< -o ${RES_DIR}/$*.out ${FLAGS} -I${POPSICLE_LIB} ${POPSICLE_SER}
+	${FC}  $< -o ${RES_DIR}/$*.out ${FLAGS} -I${POPSICLE_LIB} ${POPSICLE_PAR}
 
 
 clean: clean_src clean_examples

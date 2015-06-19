@@ -397,10 +397,11 @@ CONTAINS
     INTEGER, INTENT(IN)                 :: dims(:)
     
     ! Execution status
-    type(C_PTR)                         :: plan, p
+    type(C_PTR)                         :: plan
+    type(C_PTR)                         :: p_in, p_out, p_dims
     complex(C_DOUBLE_COMPLEX), pointer  :: in4d(:, :, :, :)
     complex(C_DOUBLE_COMPLEX), pointer  :: out(:, :, :, :)
-    int(C_INT)
+    INTEGER(C_INT), pointer             :: dims_for_fftw(:)    			      
     INTEGER                             :: Nx, Ny, Nz, Nr
     
     !------------------------------------------------------------------------!
@@ -440,8 +441,8 @@ CONTAINS
     CALL c_f_pointer(p_dims,dims_for_fftw,[4])
     
     in4d  = RESHAPE(in,(/ Nx, Ny, Nz, Nr /))
-    dims_for_fftw = dims
-
+    dims_for_fftw = dims(1:4:-1)
+    
     plan = fftw_plan_dft(4,dims_for_fftw,in4d,out,FFTW_FORWARD,FFTW_ESTIMATE)
     
     ! Execute it!!
@@ -452,9 +453,9 @@ CONTAINS
     
     in  = RESHAPE(out,(/ Nx*Ny*Nz*Nr /) )
     
-    fftw_free(p_in)
-    fftw_free(p_out)
-    fftw_free(p_dims)
+    CALL fftw_free(p_in)
+    CALL fftw_free(p_out)
+    CALL fftw_free(p_dims)
     
   END SUBROUTINE FFT
   

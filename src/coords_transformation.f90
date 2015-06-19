@@ -117,6 +117,7 @@ CONTAINS
     ENDIF
     
     mintheta =  ATAN2( rho_ax(1), z_ax(1) )
+    maxtheta = 0.0_dp
     
     ! Work out how many points will build the interpolant
     DO iz = halolims(2,1), halolims(2,2)
@@ -133,9 +134,9 @@ CONTAINS
           ! influence of the boundary
           IF (ABS(rpt-Rs) .LE. radtol ) &
                numpts = numpts + 1
-          IF (thetapt .LT. mintheta) mintheta = thetapt
-          IF (thetapt .GT. maxtheta) maxtheta = thetapt
-          
+          mintheta = MIN(mintheta,thetapt)
+          maxtheta = MAX(maxtheta,thetapt)
+  
        ENDDO
     ENDDO
     

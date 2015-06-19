@@ -508,7 +508,7 @@ PROGRAM interp1d_test
   ! Save to a file
   !-------------------!
   
-  IF (trial_function .EQ. .FALSE.) THEN
+  IF (trial_function .EQV. .FALSE.) THEN
      OPEN(UNIT=101,FORM='formatted',FILE='results/y1.dat')
      OPEN(UNIT=103,FORM='formatted',FILE='results/y2.dat')
      
