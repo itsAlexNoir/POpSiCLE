@@ -65,7 +65,7 @@ PROGRAM cyl2sph_ex2
         thetapt = atan2(z_ax(iz),rho_ax(irho))
         
         Y_lm(irho,iz) = 0.25_dp * SQRT(5.0_dp / pi) * &
-             ( 3.0_dp * (COS(thetapt))**3 - 1.0_dp)
+             ( 3.0_dp * (COS(thetapt))**2 - 1.0_dp)
         
         R_nl(irho,iz) = 1.0_dp
         
