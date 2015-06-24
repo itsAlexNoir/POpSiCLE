@@ -38,8 +38,8 @@ MODULE coords_transformation
   END INTERFACE cylindrical2spherical
 
   
-  REAL(dp), ALLOCATABLE, PUBLIC    :: rpts(:)
-  REAL(dp), ALLOCATABLE, PUBLIC    :: theta(:)
+  REAL(dp), ALLOCATABLE, PUBLIC    :: rpts_boundary(:)
+  REAL(dp), ALLOCATABLE, PUBLIC    :: theta_boundary(:)
  
   
   INTEGER                          :: numpts
@@ -107,8 +107,8 @@ CONTAINS
        ALLOCATE(psi_scatt(1))
        ALLOCATE(index_x1(1))
        ALLOCATE(index_x2(1))
-       ALLOCATE(rpts(1))
-       ALLOCATE(theta(1))
+       ALLOCATE(rpts_boundary(1))
+       ALLOCATE(theta_boundary(1))
        ALLOCATE(psi_sph(1,1))
        ALLOCATE(psi_sph_dx(1,1))
        ALLOCATE(psi_sph_dy(1,1))
@@ -147,8 +147,8 @@ CONTAINS
        ALLOCATE(psi_scatt(1))
        ALLOCATE(index_x1(1))
        ALLOCATE(index_x2(1))
-       ALLOCATE(rpts(1))
-       ALLOCATE(theta(1))
+       ALLOCATE(rpts_boundary(1))
+       ALLOCATE(theta_boundary(1))
        ALLOCATE(psi_sph(1,1))
        ALLOCATE(psi_sph_dx(1,1))
        ALLOCATE(psi_sph_dy(1,1))
@@ -163,8 +163,8 @@ CONTAINS
        numrpts = 2 * fdpts + 1
        numthetapts = INT( (maxtheta - mintheta) / deltatheta )
        
-       ALLOCATE(rpts(1:numrpts))
-       ALLOCATE(theta(1:numthetapts))
+       ALLOCATE(rpts_boundary(1:numrpts))
+       ALLOCATE(theta_boundary(1:numthetapts))
        ALLOCATE(psi_sph(1:numrpts,1:numthetapts))
        ALLOCATE(psi_sph_dx(1:numrpts,1:numthetapts))
        ALLOCATE(psi_sph_dy(1:numrpts,1:numthetapts))
@@ -190,11 +190,11 @@ CONTAINS
        
        Rs_start = (Rs - deltar * (fdpts + 1))
        DO ir = 1, numrpts
-          rpts(ir) = Rs_start + REAL( ir * deltar, dp )
+          rpts_boundary(ir) = Rs_start + REAL( ir * deltar, dp )
        ENDDO
        
        DO itheta = 1, numthetapts
-          theta(itheta) = mintheta + REAL( itheta * deltatheta,dp )
+          theta_boundary(itheta) = mintheta + REAL( itheta * deltatheta,dp )
        ENDDO
        
     ENDIF
@@ -236,16 +236,15 @@ CONTAINS
     
     DO ir = 1, numrpts
        DO itheta = 1, numthetapts
-          CALL interpolate(numpts,rpts(ir), theta(itheta), rpts_scatt, &
-               theta_scatt, psi_scatt, TRIM(method), psi_sph(ir,itheta), &
-               psi_sph_dx(ir,itheta), psi_sph_dy(ir,itheta))
+          CALL interpolate(numpts,rpts_boundary(ir), theta_boundary(itheta), &
+               rpts_scatt, theta_scatt, psi_scatt, TRIM(method), &
+               psi_sph(ir,itheta), psi_sph_dx(ir,itheta), psi_sph_dy(ir,itheta))
        ENDDO
     ENDDO
     
   END SUBROUTINE get_cylindrical_boundary2D
   
   !----------------------------------------------------------------!
-  
   
 !!$  SUBROUTINE cartesian2spherical2D( psi_cart, dims, coords, rb, &
 !!$       psi_sph, d1psi_sph, d2psi_sph )

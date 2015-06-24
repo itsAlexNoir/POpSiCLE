@@ -62,7 +62,8 @@ PROGRAM cyl2sph_ex2
      DO irho = 1, numrhopts
         
         rpt = rho_ax(irho)**2 + z_ax(iz)**2
-        thetapt = atan2(z_ax(iz),rho_ax(irho))
+        thetapt = atan2(z_ax(iz),rho_ax(irho))+0.5_dp * pi
+        
         
         Y_lm(irho,iz) = 0.25_dp * SQRT(5.0_dp / pi) * &
              ( 3.0_dp * (COS(thetapt))**2 - 1.0_dp)
@@ -118,7 +119,7 @@ PROGRAM cyl2sph_ex2
   DO itheta = 1, numthetapts
      DO ir = 1, numrpts
         ref_value =  EXP(-rpts(ir) / 2.0_dp) *  0.25_dp * SQRT(5.0_dp / pi) * &
-             ( 3.0_dp * (COS(theta(itheta)))**3 - 1.0_dp)
+             ( 3.0_dp * (COS(theta(itheta)))**2 - 1.0_dp)
 !!$        WRITE(*,*) sphfunc(ir,itheta)
 !!$        WRITE(*,*) ref_value 
 !!$        WRITE(*,*) 'Diff: ', ABS(sphfunc(ir,itheta) - ref_value)

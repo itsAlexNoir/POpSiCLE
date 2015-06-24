@@ -63,12 +63,12 @@ CONTAINS
   END SUBROUTINE FourierTransform_serial
   
   !----------------------------------------------------!
-
+  
 #if _COM_MPI
-
+  
   SUBROUTINE FourierTransform_parallel(psi, psik, rank, dims_local, &
-       dims_global, mpi_rank, communicators, ipgrid )
-
+       dims_global, comm_gl, grid_rank, grid_addresses )
+    
     IMPLICIT NONE
     
     COMPLEX(dp), INTENT(IN)       :: psi(:)
@@ -76,21 +76,30 @@ CONTAINS
     INTEGER, INTENT(IN)           :: rank
     INTEGER, INTENT(IN)           :: dims_local(:)
     INTEGER, INTENT(IN)           :: dims_global(:)
-    INTEGER, INTENT(IN)           :: mpi_rank
-    INTEGER, INTENT(IN)           :: communicators(:)
-    INTEGER, INTENT(IN)           :: ipgrid(:)
-
+    INTEGER, INTENT(IN)           :: comm_gl
+    INTEGER, INTENT(IN)           :: grid_rank(:)
+    INTEGER, INTENT(IN)           :: grid_addresses(:)
+    
     COMPLEX(dp), ALLOCATABLE      :: psi_sd(:)
     COMPLEX(dp), ALLOCATABLE      :: psi_rc(:)
+    INTEGER, ALLOCATABLE          :: fftcomm(:)
+    INTEGER                       :: group_gl, group_lc
+    INTEGER                       :: group_size
+    INTEGER, ALLOCATABLE          :: members(:)
     INTEGER                       :: dims_phony(4)
-    INTEGER                       :: ierror
     INTEGER                       :: Nx, Ny, Nz, Nr
     INTEGER                       :: Nxgl, Nygl, Nzgl, Nrgl
+    INTEGER                       :: numprocx, numprocy
+    INTEGER                       :: numprocz, numprocr
     INTEGER                       :: ix, iy, iz, ir
-    INTEGER                       :: igl
+    INTEGER                       :: igl, shift
+    INTEGER                       :: iprocx, iprocy
+    INTEGER                       :: iprocz, iprocr
+    INTEGER                       :: ipro
+    INTEGER                       :: ierror
     
     !***************************************************!
-
+    
     ! Copy the original array
     psik = psi
     
@@ -140,147 +149,533 @@ CONTAINS
        STOP
     ENDIF
     
+    ! Work out the number of processors per dimension
+    numprocx = Nxgl / Nx
+    numprocy = Nygl / Ny
+    numprocz = Nzgl / Nz
+    numprocr = Nrgl / Nr
+    
+    ! Create global group (for all the processors)
+    CALL MPI_COMM_GROUP(comm_gl,group_gl,ierror)
+    
     dims_phony = 1
-
-    ALLOCATE(psi_sd(1:Nxgl))
-    ALLOCATE(psi_rc(1:Nxgl))
-
-    DO ir = 1, Nr
-       DO iz = 1, Nz
-          DO iy = 1, Ny
-             DO ix = 1, Nx
-                igl = ix + ipgrid(1) * Nx
-                psi_sd(igl) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
-             ENDDO
-             
-             ! Send all the elements to all the processors
-             CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nxgl, MPI_COMPLEX16,&
-                  MPI_SUM, communicators(1), ierror)
-             
-             dims_phony(1) = Nxgl
-             
-             CALL FFT(psi_rc, 1, dims_phony)
-             
-             DO ix = 1, Nx
-                igl = ix + ipgrid(1) * Nx
-                psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_rc(igl)
-             ENDDO
-             
-          ENDDO
-       ENDDO
-    ENDDO
     
-    DEALLOCATE(psi_sd)
-    DEALLOCATE(psi_rc)
-    
+    !********************
+    ! FFT in x direction
+    !********************
 
-    IF(rank.GE.2) THEN
-       
-       ALLOCATE(psi_sd(1:Nygl))
-       ALLOCATE(psi_rc(1:Nygl))
+    ! In case there is only one processor in this dimension
+    IF (numprocx .EQ. 1) THEN
+       ALLOCATE(psi_sd(1:Nxgl))
+       ALLOCATE(psi_rc(1:Nxgl))
+       dims_phony(1) = Nxgl
        
        DO ir = 1, Nr
           DO iz = 1, Nz
-             DO ix = 1, Nx
+             DO iy = 1, Ny
                 
-                DO iy = 1, Ny
-                   igl = iy + ipgrid(2) * Ny
-                   psi_sd(igl) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
+                ! Set arrays to zero at the begining
+                psi_sd = ZERO
+                psi_rc = ZERO
+                
+                DO ix =1, Nx
+                   psi_rc(ix) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
                 ENDDO
                 
-                ! Send all the elements to all the processors
-                CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nygl, MPI_COMPLEX16,&
-                     MPI_SUM, communicators(2), ierror)
-                
-                dims_phony(1) = Nygl
                 CALL FFT(psi_rc, 1, dims_phony)
                 
-                DO iy = 1, Ny
-                   igl = iy + ipgrid(2) * Ny
-                   psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_rc(igl)
+                ! fftshift the array
+!!$                psi_sd = ZERO
+!!$                shift = Nxgl - (Nxgl+1)/2
+!!$                DO ix = 1, shift
+!!$                   psi_sd(ix) = psi_rc(ix+shift)
+!!$                ENDDO
+!!$                
+!!$                DO ix = shift+1, Nxgl
+!!$                   psi_sd(ix) = psi_rc(ix-shift)
+!!$                ENDDO
+                
+                ! Copy the result back to the local psik
+                DO ix = 1, Nx
+                   psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_rc(ix)
                 ENDDO
                 
              ENDDO
           ENDDO
        ENDDO
        
-       DEALLOCATE(psi_sd)
-       DEALLOCATE(psi_rc)
+       DEALLOCATE(psi_sd,psi_rc) 
+       
+    ELSE
+       
+       group_size = numprocy * numprocz * numprocr
+       ALLOCATE(members(0:numprocx-1))
+       members = 0
+       ALLOCATE(fftcomm(0:group_size-1))
+       fftcomm = 0
+       
+       ipro = -1
+       DO iprocr = 0, numprocr - 1
+          DO iprocz = 0, numprocz - 1
+             DO iprocy = 0, numprocy - 1
+                
+                ipro = ipro + 1
+                DO iprocx = 0, numprocx - 1
+                   ! Look out! We add +1 in the indx routine. Subroutines do not know 
+                   ! lower and upper bounds for assumed-shape arrays 
+                   members(iprocx)  = grid_addresses(indx(iprocx+1,iprocy+1,iprocz+1, &
+                        iprocr+1,numprocx,numprocy,numprocz,numprocr))
+                ENDDO
+                
+                CALL MPI_GROUP_INCL(group_gl, numprocx, members, group_lc, ierror)
+                
+                CALL MPI_COMM_CREATE(comm_gl, group_lc, fftcomm(ipro), ierror)
+                
+             ENDDO
+          ENDDO
+       ENDDO
+       
+       ALLOCATE(psi_sd(1:Nxgl))
+       ALLOCATE(psi_rc(1:Nxgl))
+       dims_phony(1) = Nxgl
+       
+       ! Work out in which group we are
+       ipro = grid_rank(2) + numprocy * grid_rank(3) + &
+            numprocy * numprocz * grid_rank(4)
+       
+       DO ir = 1, Nr
+          DO iz = 1, Nz
+             DO iy = 1, Ny
+                
+                ! Set arrays to zero at the begining
+                psi_sd = ZERO
+                psi_rc = ZERO
+                
+                DO ix = 1, Nx
+                   igl = ix + grid_rank(1) * Nx
+                   psi_sd(igl) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
+                ENDDO
+                
+                ! Send all the elements to all the processors
+                CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nxgl, MPI_COMPLEX16,&
+                     MPI_SUM, fftcomm(ipro), ierror)
+                
+                CALL FFT(psi_rc, 1, dims_phony)
+                
+                ! fftshift the array
+                psi_sd = ZERO
+                shift = Nxgl - (Nxgl+1)/2
+                DO ix = 1, shift
+                   psi_sd(ix) = psi_rc(ix+shift)
+                ENDDO
+                
+                DO ix = shift+1, Nxgl
+                   psi_sd(ix) = psi_rc(ix-shift)
+                ENDDO
+                
+                
+                DO ix = 1, Nx
+                   igl = ix + grid_rank(1) * Nx
+                   psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_sd(igl)
+                ENDDO
+                
+             ENDDO
+          ENDDO
+       ENDDO
+       
+       DEALLOCATE(psi_sd,psi_rc)
+       DEALLOCATE(members,fftcomm)
        
     ENDIF
     
+    !********************
+    ! FFT in y direction
+    !********************    
+    
+    IF(rank.GE.2) THEN
+       
+       IF (numprocy .EQ. 1) THEN
+          ALLOCATE(psi_sd(1:Nygl))
+          ALLOCATE(psi_rc(1:Nygl))
+          dims_phony(1) = Nygl
+          
+          DO ir = 1, Nr
+             DO iz = 1, Nz
+                DO ix = 1, Nx
+                   
+                   ! Set arrays to zero at the begining
+                   psi_sd = ZERO
+                   psi_rc = ZERO
+                   
+                   DO iy =1, Ny
+                      psi_rc(iy) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
+                   ENDDO
+                   
+                   CALL FFT(psi_rc, 1, dims_phony)
+                   
+!!$                   ! fftshift the array
+!!$                   psi_sd = ZERO
+!!$                   shift = Nygl - (Nygl+1)/2
+!!$                   DO iy = 1, shift
+!!$                      psi_sd(iy) = psi_rc(iy+shift)
+!!$                   ENDDO
+!!$                   
+!!$                   DO iy = shift+1, Nygl
+!!$                      psi_sd(iy) = psi_rc(iy-shift)
+!!$                   ENDDO
+                   
+                   ! Copy the result back to the local psik
+                   DO iy = 1, Ny
+                      psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_rc(iy)
+                   ENDDO
+                   
+                ENDDO
+             ENDDO
+          ENDDO
+          
+          DEALLOCATE(psi_sd,psi_rc) 
+          
+       ELSE
+          
+          group_size = numprocx * numprocz * numprocr
+          ALLOCATE(members(0:numprocy-1))
+          members = 0
+          ALLOCATE(fftcomm(0:group_size-1))
+          fftcomm = 0
+          
+          ipro = -1
+          DO iprocr = 0, numprocr - 1
+             DO iprocz = 0, numprocz - 1
+                DO iprocx = 0, numprocx - 1
+                   
+                   ipro = ipro + 1
+                   DO iprocy = 0, numprocy - 1
+                      ! Look out! We add +1 in the indx routine. Subroutines do not know 
+                      ! lower and upper bounds for assumed-shape arrays 
+                      members(iprocy)  = grid_addresses(indx(iprocx+1,iprocy+1,iprocz+1, &
+                           iprocr+1,numprocx,numprocy,numprocz,numprocr))
+                   ENDDO
+                   
+                   CALL MPI_GROUP_INCL(group_gl, numprocy, members, group_lc, ierror)
+                   
+                   CALL MPI_COMM_CREATE(comm_gl, group_lc, fftcomm(ipro), ierror)
+                   
+                ENDDO
+             ENDDO
+          ENDDO
+          
+          ! Work out in which group we are
+          ipro = grid_rank(1) + numprocx * grid_rank(3) + &
+               numprocx * numprocz * grid_rank(4)
+          
+          ALLOCATE(psi_sd(1:Nygl))
+          ALLOCATE(psi_rc(1:Nygl))
+          
+          DO ir = 1, Nr
+             DO iz = 1, Nz
+                DO ix = 1, Nx
+                   
+                   ! Set arrays to zero at the begining
+                   psi_sd = ZERO
+                   psi_rc = ZERO
+                   
+                   DO iy = 1, Ny
+                      igl = iy + grid_rank(2) * Ny
+                      psi_sd(igl) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
+                   ENDDO
+                   
+                   ! Send all the elements to all the processors
+                   CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nygl, MPI_COMPLEX16,&
+                        MPI_SUM, fftcomm(ipro), ierror)
+                   
+                   dims_phony(1) = Nygl
+                   CALL FFT(psi_rc, 1, dims_phony)
+                   
+                   ! fftshift the array
+                   psi_sd = ZERO
+                   shift = Nygl - (Nygl+1)/2
+                   DO iy = 1, shift
+                      psi_sd(iy) = psi_rc(iy+shift)
+                   ENDDO
+                   
+                   DO iy = shift+1, Nygl
+                      psi_sd(iy) = psi_rc(iy-shift)
+                   ENDDO
+                   
+                   ! Copy the result back to the local psik
+                   DO iy = 1, Ny
+                      igl = iy + grid_rank(2) * Ny
+                      psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_sd(igl)
+                   ENDDO
+                   
+                ENDDO
+             ENDDO
+          ENDDO
+          
+          DEALLOCATE(psi_sd,psi_rc)
+          DEALLOCATE(members,fftcomm)
+          
+       ENDIF
+    ENDIF
+    
+    !********************
+    ! FFT in z direction
+    !********************    
     
     IF(rank.GE.3) THEN
        
-       ALLOCATE(psi_sd(1:Nzgl))
-       ALLOCATE(psi_rc(1:Nzgl))
-       
-       DO ir = 1, Nr
-          DO iy = 1, Ny
-             DO ix = 1, Nx
-                
-                DO iz = 1, Nz
-                   igl = iz + ipgrid(3) * Nz
-                   psi_sd(igl) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
+       IF (numprocz .EQ. 1) THEN
+          ALLOCATE(psi_sd(1:Nzgl))
+          ALLOCATE(psi_rc(1:Nzgl))
+          dims_phony(1) = Nzgl
+          
+          DO ir = 1, Nr
+             DO iy = 1, Ny
+                DO ix = 1, Nx
+                   
+                   !Set arrays to zero
+                   psi_sd = ZERO
+                   psi_rc = ZERO
+                   
+                   DO iz =1, Nz
+                      psi_rc(iz) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
+                   ENDDO
+                   
+                   CALL FFT(psi_rc, 1, dims_phony)
+
+!!$                   ! fftshift the array
+!!$                   psi_sd = ZERO
+!!$                   shift = Nzgl - (Nzgl+1)/2
+!!$                   DO iz = 1, shift
+!!$                      psi_sd(iz) = psi_rc(iz+shift+1)
+!!$                   ENDDO
+!!$                   
+!!$                   DO iz = shift+1, Nzgl
+!!$                      psi_sd(iz) = psi_rc(iz-shift)
+!!$                   ENDDO
+                   
+                   ! Copy the result back to the local psik                   
+                   DO iz = 1, Nz
+                      psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_rc(iz)
+                   ENDDO
+                   
                 ENDDO
-                
-                ! Send all the elements to all the processors
-                CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nzgl, MPI_COMPLEX16,&
-                     MPI_SUM, communicators(3), ierror)
-                
-                dims_phony(1) = Nzgl
-                CALL FFT(psi_rc, 1, dims_phony)
-                
-                DO iz = 1, Nz
-                   igl = iz + ipgrid(3) * Nz
-                   psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_rc(igl)
-                ENDDO
-                
              ENDDO
           ENDDO
-       ENDDO
-       
-       DEALLOCATE(psi_sd)
-       DEALLOCATE(psi_rc)
-       
+          
+          DEALLOCATE(psi_sd,psi_rc) 
+          
+       ELSE
+          
+          group_size = numprocx * numprocy * numprocr
+          ALLOCATE(members(0:numprocz-1))
+          members = 0
+          ALLOCATE(fftcomm(0:group_size-1))
+          fftcomm = 0
+          
+          ipro = -1
+          DO iprocr = 0, numprocr - 1
+             DO iprocy = 0, numprocy - 1
+                DO iprocx = 0, numprocx - 1
+                   
+                   ipro = ipro + 1
+                   DO iprocz = 0, numprocz - 1
+                      ! Look out! We add +1 in the indx routine. Subroutines do not know 
+                      ! lower and upper bounds for assumed-shape arrays 
+                      members(iprocz)  = grid_addresses(indx(iprocx+1,iprocy+1,iprocz+1, &
+                           iprocr+1,numprocx,numprocy,numprocz,numprocr))
+                   ENDDO
+                   
+                   CALL MPI_GROUP_INCL(group_gl, numprocz, members, group_lc, ierror)
+                   
+                   CALL MPI_COMM_CREATE(comm_gl, group_lc, fftcomm(ipro), ierror)
+                ENDDO
+             ENDDO
+          ENDDO
+          
+          ! Work out in which group we are
+          ipro = grid_rank(1) + numprocx * grid_rank(2) + &
+               numprocx * numprocy * grid_rank(4)
+          
+          ALLOCATE(psi_sd(1:Nzgl))
+          ALLOCATE(psi_rc(1:Nzgl))
+          
+          DO ir = 1, Nr
+             DO iy = 1, Ny
+                DO ix = 1, Nx
+                   
+                   ! Set arrays to zero at the begining
+                   psi_sd = ZERO
+                   psi_rc = ZERO
+                   
+                   DO iz = 1, Nz
+                      igl = iz + grid_rank(3) * Nz
+                      psi_sd(igl) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
+                   ENDDO
+                   
+                   ! Send all the elements to all the processors
+                   CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nzgl, MPI_COMPLEX16,&
+                        MPI_SUM, fftcomm(ipro), ierror)
+                   
+                   dims_phony(1) = Nzgl
+                   CALL FFT(psi_rc, 1, dims_phony)
+                   
+                   ! fftshift the array
+                   psi_sd = ZERO
+                   shift = Nzgl - (Nzgl+1)/2
+!!$                   DO iz = 1, shift
+!!$                      !if(ix.eq.1.and.iy.eq.1.and.ir.eq.1) THEN
+!!$                      !write(*,*) 'before: ',iz, iz+shift
+!!$                      !IF (iz.eq.1) &
+!!$                      !     write(*,*) 'before',  psi_sd(iz), psi_rc(iz+shift)
+!!$                      !ENDIF
+!!$                      psi_sd(iz) = psi_rc(iz+shift)
+!!$                   ENDDO
+!!$                   
+!!$                   DO iz = shift+1, Nzgl
+!!$                      !if(ix.eq.1.and.iy.eq.1.and.ir.eq.1) &
+!!$                      !     write(*,*) 'after: ',iz, iz-shift
+!!$                  
+!!$                      psi_sd(iz) = psi_rc(iz-shift)
+!!$                   ENDDO
+                   
+                   ! Copy the result back to the local psik                   
+                   DO iz = 1, Nz
+                      igl = iz + grid_rank(3) * Nz
+                      psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_rc(igl)
+                   ENDDO
+                   
+                ENDDO
+             ENDDO
+          ENDDO
+          
+          DEALLOCATE(psi_sd,psi_rc)
+          DEALLOCATE(members,fftcomm)
+          
+       ENDIF
     ENDIF
     
+    !********************
+    ! FFT in r direction
+    !********************
     
     IF(rank.GE.4) THEN
        
-       ALLOCATE(psi_sd(1:Nrgl))
-       ALLOCATE(psi_rc(1:Nrgl))
-       
-       DO iz = 1, Nz
-          DO iy = 1, Ny
-             DO ix = 1, Nx
-                
-                DO ir = 1, Nr
-                   igl = ir + ipgrid(4) * Nr
-                   psi_sd(igl) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
+       IF (numprocr .EQ. 1) THEN
+          ALLOCATE(psi_sd(1:Nrgl))
+          ALLOCATE(psi_rc(1:Nrgl))
+          dims_phony(1) = Nrgl
+          
+          DO iz = 1, Nz
+             DO iy = 1, Ny
+                DO ix = 1, Nx
+                   
+                   DO ir =1, Nr
+                      psi_rc(ir) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
+                   ENDDO
+                   
+                   CALL FFT(psi_rc, 1, dims_phony)
+                   
+                   ! fftshift the array
+                   psi_sd = ZERO
+                   shift = Nrgl - (Nrgl+1)/2
+                   DO ir = 1, shift
+                      psi_sd(ir) = psi_rc(ir+shift+1)
+                   ENDDO
+                   
+                   DO ir = shift+1, Nrgl
+                      psi_sd(ir) = psi_rc(ir-shift)
+                   ENDDO
+                   
+                   ! Copy the result back to the local psik
+                   DO ir = 1, Nr
+                      psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_sd(ir)
+                   ENDDO
+                   
                 ENDDO
-                
-                ! Send all the elements to all the processors
-                CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nrgl, MPI_COMPLEX16,&
-                     MPI_SUM, communicators(4), ierror)
-                
-                dims_phony(1) = Nrgl
-                CALL FFT(psi_rc, 1, dims_phony)
-                
-                DO ir = 1, Nr
-                   igl = ir + ipgrid(4) * Nr
-                   psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_rc(igl)
-                ENDDO
-                
              ENDDO
           ENDDO
-       ENDDO
-       
-       DEALLOCATE(psi_sd)
-       DEALLOCATE(psi_rc)
-       
+          
+          DEALLOCATE(psi_sd,psi_rc) 
+          
+       ELSE
+          
+          group_size = numprocx * numprocy * numprocz
+          ALLOCATE(members(0:numprocr-1))
+          members = 0
+          ALLOCATE(fftcomm(0:group_size-1))
+          fftcomm = 0
+          
+          ipro = -1
+          DO iprocz = 0, numprocz - 1
+             DO iprocy = 0, numprocy - 1
+                DO iprocx = 0, numprocx - 1
+                   
+                   ipro = ipro + 1
+                   DO iprocr = 0, numprocr - 1
+                      ! Look out! We add +1 in the indx routine. Subroutines do not know 
+                      ! lower and upper bounds for assumed-shape arrays 
+                      members(iprocr)  = grid_addresses(indx(iprocx+1,iprocy+1,iprocz+1, &
+                           iprocr+1,numprocx,numprocy,numprocz,numprocr))
+                   ENDDO
+                   
+                   CALL MPI_GROUP_INCL(group_gl, group_size, members, group_lc, ierror)
+                   
+                   CALL MPI_COMM_CREATE(comm_gl, group_lc, fftcomm(ipro), ierror)
+                   
+                ENDDO
+             ENDDO
+          ENDDO
+          
+          ! Work out in which group we are
+          ipro = grid_rank(1) + numprocx * grid_rank(2) + &
+               numprocx * numprocy * grid_rank(3)
+          
+          ALLOCATE(psi_sd(1:Nrgl))
+          ALLOCATE(psi_rc(1:Nrgl))
+          
+          DO iz = 1, Nz
+             DO iy = 1, Ny
+                DO ix = 1, Nx
+                   
+                   DO ir = 1, Nr
+                      igl = ir + grid_rank(4) * Nr
+                      psi_sd(igl) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
+                   ENDDO
+                   
+                   ! Send all the elements to all the processors
+                   CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nrgl, MPI_COMPLEX16,&
+                        MPI_SUM, fftcomm(ipro), ierror)
+                   
+                   dims_phony(1) = Nrgl
+                   CALL FFT(psi_rc, 1, dims_phony)
+
+                   ! fftshift the array
+                   psi_sd = ZERO
+                   shift = Nrgl - (Nrgl+1)/2
+                   DO ir = 1, shift
+                      psi_sd(ir) = psi_rc(ir+shift+1)
+                   ENDDO
+                   
+                   DO ir = shift+1, Nrgl
+                      psi_sd(ir) = psi_rc(ir-shift)
+                   ENDDO
+                   
+                   ! Copy the result back to the local psik                   
+                   DO ir = 1, Nr
+                      igl = ir + grid_rank(4) * Nr
+                      psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_sd(igl)
+                   ENDDO
+                   
+                ENDDO
+             ENDDO
+          ENDDO
+          
+          DEALLOCATE(psi_sd,psi_rc)
+          DEALLOCATE(members,fftcomm)
+          
+       ENDIF
     ENDIF
-    
     
   END SUBROUTINE FourierTransform_Parallel
   
@@ -324,7 +719,7 @@ CONTAINS
     INTEGER                          :: Nx, Ny, Nz, Nr
     
     !------------------------------------------------------------------------!
-    
+
     ! Create DFTI descriptor
     hand => null()
     
@@ -476,178 +871,7 @@ CONTAINS
   !----------------------------------------------!  
   
 #endif
-  
-  !----------------------------------------------!  
-  
-!!$#if _COMM_MPI  
-!!$  
-!!$  SUBROUTINE FourierTransform_parallel(in, rank, dims_local, dims_global)
-!!$    
-!!$    IMPLICIT NONE
-!!$    
-!!$    !--Program variables-----------------------------------------------------!
-!!$    
-!!$    COMPLEX(dp), INTENT(INOUT)          :: in(:)
-!!$    INTEGER, INTENT(IN)                 :: rank
-!!$    INTEGER, INTENT(IN)                 :: dims_local(:)
-!!$    INTEGER, INTENT(IN)                 :: dims_global(:)
-!!$    
-!!$    ! Execution status
-!!$    COMPLEX(dp), ALLOCATABLE            :: out1D(:)
-!!$    COMPLEX(dp), ALLOCATABLE            :: out2D(:, :)
-!!$    COMPLEX(dp), ALLOCATABLE            :: out3D(:, :, :) 
-!!$    COMPLEX(dp), ALLOCATABLE            :: out4D(:, :, :, :)
-!!$    COMPLEX(dp), ALLOCATABLE            :: work(:)
-!!$    integer                             :: status = 0, ignored_status
-!!$    integer                             :: size
-!!$    type(DFTI_DESCRIPTOR_DM), POINTER   :: desc
-!!$    INTEGER                             :: Nx, Ny, Nz, Nr
-!!$    INTEGER              ::  NX_OUT,START_X,START_X_OUT
-!!$    
-!!$    !------------------------------------------------------------------------!
-!!$    
-!!$    write(*,*) 'Hola!'
-!!$    write(*,*) 'rank!: ',rank
-!!$
-!!$    IF (rank .EQ. 1) THEN
-!!$       Nx = dims_local(1)
-!!$       ALLOCATE(out1D(1:Nx))
-!!$       out1D = RESHAPE(in,(/ Nx /))
-!!$    ELSEIF (rank .EQ. 2) THEN
-!!$       Nx = dims_local(1)
-!!$       Ny = dims_local(2)
-!!$       ALLOCATE(out2D(1:Nx,1:Ny))
-!!$       out2D = RESHAPE(in,(/ Nx, Ny /))
-!!$    ELSEIF (rank .EQ. 3) THEN
-!!$       write(*,*) 'dentro del if!'
-!!$       Nx = dims_local(1)
-!!$       Ny = dims_local(2)
-!!$       Nz = dims_local(3)
-!!$       ALLOCATE(out3D(1:Nx,1:Ny,1:Nz))
-!!$       out3D = RESHAPE(in,(/ Nx, Ny, Nz /))
-!!$       write(*,*) 'Despues'
-!!$   ELSEIF (rank .EQ. 4) THEN
-!!$       Nx = dims_local(1)
-!!$       Ny = dims_local(2)
-!!$       Nz = dims_local(3)
-!!$       Nr = dims_local(4)
-!!$       ALLOCATE(out4D(1:Nx,1:Ny,1:Nz,1:Nr))
-!!$       out4D = RESHAPE(in,(/ Nx, Ny, Nz, Nr /))
-!!$    ELSE
-!!$       write(*,*) 'Am I here?'
-!!$       write(*,*) 'rank',rank
-!!$       WRITE(*,*) 'No option implemented for these dimensions'
-!!$       STOP
-!!$    ENDIF
-!!$
-!!$    ! Allocate memory for the descriptor by calling DftiCreateDescriptorDM
-!!$    
-!!$    status = DftiCreateDescriptorDM(MPI_COMM_WORLD ,desc,DFTI_DOUBLE,        &
-!!$         &                                DFTI_COMPLEX,rank,dims_global) 
-!!$    IF (status .NE. DFTI_NO_ERROR) THEN
-!!$       CALL tddm_stop('Create parallel descriptor failed')
-!!$    END IF
-!!$    
-!!$    ! Obtain some values of configuration parameters by calls to
-!!$    !  DftiGetValueDM
-!!$    
-!!$    status = DftiGetValueDM(desc,CDFT_LOCAL_SIZE,size)
-!!$    IF (status .NE. DFTI_NO_ERROR) THEN
-!!$       CALL tddm_stop('Get CDFT local size failed')
-!!$    END IF
-!!$    
-!!$    status = DftiGetValueDM(desc,CDFT_LOCAL_NX,NX)
-!!$    IF (STATUS .NE. DFTI_NO_ERROR) THEN
-!!$       CALL tddm_stop('Get CDFT local maxpts failed')
-!!$    ENDIF
-!!$    
-!!$    STATUS = DftiGetValueDM(desc,CDFT_LOCAL_X_START,START_X)
-!!$    IF (STATUS .NE. DFTI_NO_ERROR) THEN
-!!$       CALL tddm_stop('Get CDFT local x start failed')      
-!!$    END IF
-!!$    
-!!$    status = DftiGetValueDM(desc,CDFT_LOCAL_OUT_NX,NX_OUT)
-!!$    IF (status .NE. DFTI_NO_ERROR) THEN
-!!$       CALL tddm_stop('Get CDFT local out failed')
-!!$    END IF
-!!$    
-!!$    status = DftiGetValueDM(desc,CDFT_LOCAL_OUT_X_START,START_X_OUT)
-!!$    IF (status .NE. DFTI_NO_ERROR) THEN
-!!$       CALL tddm_stop('Get CDFT local out x start failed')
-!!$    ENDIF
-!!$    
-!!$
-!!$    write(*,*) 'size: ',size
-!!$    write(*,*) 'Nx: ',NX
-!!$    write(*,*) 'Start_x: ',start_x
-!!$    write(*,*) 'Nx_out: ',nx_out
-!!$    write(*,*) 'start_x_out: ',start_x_out
-!!$
-!!$    ! Allocate auxiliary array
-!!$    ALLOCATE(work(size))
-!!$    
-!!$    
-!!$    ! Specify a value(s) of configuration parameters by a call(s) to
-!!$    !  DftiSetValueDM
-!!$    
-!!$    status = DftiSetValueDM(desc,CDFT_WORKSPACE,work)
-!!$    IF (status .NE. DFTI_NO_ERROR) THEN
-!!$       CALL tddm_stop('Set CDFT workspace failed')
-!!$    END IF
-!!$    
-!!$    !     Perform initialization that facilitates DFT computation by a call to
-!!$    !        DftiCommitDescriptorDM
-!!$    
-!!$    status = DftiCommitDescriptorDM(desc)
-!!$    IF (status .NE. DFTI_NO_ERROR) THEN
-!!$       CALL tddm_stop('Commit descriptor failed')
-!!$    END IF
-!!$    
-!!$    ! Create arrays for local parts of input and output data
-!!$    !  (if it is needed) and fill the local part of input data with
-!!$    !  values (for more information, see Distributing Data among Processes)
-!!$    
-!!$      ROOTRANK=0
-!!$      STATUS = MKL_CDFT_SCATTERDATA_D(COMM,ROOTRANK,ELEMENTSIZE,2,      &
-!!$     &                                LENGTHS,X_IN,NX,START_X,LOCAL)
-!!$      IF (ADVANCED_DATA_PRINT .AND. (MPI_RANK .EQ. 0)) THEN
-!!$         PRINT *, 'Scatter=',STATUS
-!!$      END IF
-!!$      IF (STATUS .NE. DFTI_NO_ERROR) THEN
-!!$         IF (MPI_RANK .EQ. 0) THEN
-!!$            CALL Dfti_Example_Status_Print(STATUS)
-!!$            PRINT *, 'TEST FAILED'
-!!$         END IF
-!!$         FAILURE = .TRUE.
-!!$         GOTO 101
-!!$      END IF
-!!$    
-!!$    
-!!$    ! Compute the transform by calling
-!!$    !  DftiComputeForwardDM or DftiComputeBackward
-!!$    !  (Compute Forward transform)
-!!$    
-!!$    STATUS = DftiComputeForwardDM(desc,in)
-!!$    IF (STATUS .NE. DFTI_NO_ERROR) THEN
-!!$       CALL tddm_stop('Compute forward cdft failed')
-!!$    END IF
-!!$    
-!!$    
-!!$    ! Release memory allocated for a descriptor by a call to
-!!$    !  DftiFreeDescriptorDM (Free DftiDM descriptor)
-!!$    
-!!$    status = DftiFreeDescriptorDM(desc)
-!!$    IF (status .NE. DFTI_NO_ERROR) THEN
-!!$       CALL tddm_stop('Free descriptor failed')
-!!$    END IF
-!!$    
-!!$    
-!!$    DEALLOCATE(work)
-!!$    
-!!$  END SUBROUTINE FourierTransform_parallel
-!!$  
-!!$#endif
-  
+    
   !----------------------------------------------!
   
   FUNCTION HankelTransform( in, Nrho, rpts, krpts, jacobian )
@@ -687,7 +911,7 @@ CONTAINS
     
     !--Program variables-----------------------------------------------------!
     
-    REAL(dp), INTENT(INOUT)             :: mask(:, :, :, :)
+    REAL(dp), INTENT(OUT)               :: mask(:, :, :, :)
     REAL(dp), INTENT(IN)                :: inner_rad
     REAL(dp), INTENT(IN)                :: outer_rad
     REAL(dp), INTENT(IN)                :: x_ax(:)
@@ -701,10 +925,11 @@ CONTAINS
     INTEGER                             :: ix, iy, iz, ir
     
     !------------------------------------------------------------------------!
-
+    
     ALLOCATE(dims(1:4))
     
     dims = SHAPE(mask)
+    
     IF (SIZE(x_ax).NE.dims(1) &
          .OR. SIZE(y_ax).NE.dims(2) &
          .OR. SIZE(z_ax).NE.dims(3) &
@@ -717,7 +942,6 @@ CONTAINS
     sigma    = (outer_rad - inner_rad) / SQRT( - LOG( 1E-8 ) )
     
     ! Create the mask
-    
     DO ir = 1, dims(4)
        DO iz = 1, dims(3)
           DO iy = 1, dims(2)
@@ -729,7 +953,7 @@ CONTAINS
                      r_ax(ir) * r_ax(ir) )
                 
                 IF (rad.LE.inner_rad) THEN 
-                   mask(ix,iy,iz,ir) = 0.0_dp
+                   mask(ix,iy,iz,ir) = 0.0E-15_dp
                 ELSEIF (rad.GE.inner_rad .AND. rad.LT.outer_rad) THEN
                    mask(ix,iy,iz,ir) = 1.0 - EXP( - ( (rad - inner_rad) / sigma )**2 )
                 ELSE
@@ -740,7 +964,7 @@ CONTAINS
           ENDDO
        ENDDO
     ENDDO
-
+    
     DEALLOCATE(dims)
     
   END SUBROUTINE create_mask4D
@@ -782,7 +1006,6 @@ CONTAINS
     sigma    = (outer_rad - inner_rad) / SQRT( - LOG( 1E-8 ) )
     
     ! Create the mask
-    
     DO iz = 1, dims(3)
        DO iy = 1, dims(2)
           DO ix = 1, dims(1)
@@ -843,7 +1066,6 @@ CONTAINS
     sigma    = (outer_rad - inner_rad) / SQRT( - LOG( 1E-8 ) )
     
     ! Create the mask
-    
     DO iy = 1, dims(2)
        DO ix = 1, dims(1)
           
