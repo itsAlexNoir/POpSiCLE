@@ -124,7 +124,7 @@ CONTAINS
        DO irho = halolims(1,1), halolims(1,2)
           ! Calculate the point in spherical coordinates
           rpt = SQRT( rho_ax(irho)**2 + z_ax(iz)**2 )
-          thetapt = ATAN2( rho_ax(irho), z_ax(iz) )
+          thetapt = ACOS(z_ax(iz) / rpt )
           
           ! Check the extend of the grid
           IF (rpt .LT. minr) minr = rpt
@@ -136,7 +136,7 @@ CONTAINS
                numpts = numpts + 1
           mintheta = MIN(mintheta,thetapt)
           maxtheta = MAX(maxtheta,thetapt)
-  
+          
        ENDDO
     ENDDO
     

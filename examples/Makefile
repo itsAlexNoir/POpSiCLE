@@ -8,9 +8,11 @@
 ##    POpSiCLE examples
 ##************************************************
 
+include Sys/aigis_mkl.make
+
 default: example
 
-.PHONY: clean clean_src clena_lib clean_examples help
+.PHONY: clean clean_src clean_lib clean_examples help
 
 help:
 	@echo "Usage: make example [function='example source name.]"
@@ -37,10 +39,6 @@ help:
 ##-------------------------------------------------------------------
 
 include example.lst
-
-ifndef ${FC}
-FC := ifort
-endif
 
 ifndef threading
 threading=parallel
@@ -70,50 +68,36 @@ ifndef function
 function = ${EXAMPLE_LIST}
 endif
 
-ifndef ${DIRECTIVES}
-DIRECTIVES=-Wp,-D_COM_MPI=1
-endif
-
-ifndef ${FFTLIB}
-	FFT_LIB = fftw
-	FFT_PATH = /users/adelacalle/my_libraries/fftw/current
-endif
 
 RES = $(addsuffix .res ,$(function))
 
 POPSICLE_SER = ${POPSICLE_LIB}/libpopsicle_serial.a
 POPSICLE_PAR = ${POPSICLE_LIB}/libpopsicle_parallel.a
 
-HDF5_PATH = /users/adelacalle/my_libraries/hdf5/serial
-#PHDF5_PATH = /users/adelacalle/my_libraries/hdf5/parallel
-PHDF5_PATH = /opt/cray/hdf5/1.8.13
-#SZIP_PATH = /users/adelacalle/my_libraries/szip
-MKLROOT  = /opt/cray/fftw/3.3.4.1/ivybridge
-
 example: ${POPSICLE_PAR}
 	${MAKE} ${RES}	
 
 ${POPSICLE_SER}:
-	cd $(POPSICLE_SRC); $(MAKE) "FC=$(FC)" "F77FLAGS=$(F77FLAGS)" \
-	"F90FLAGS=$(F90FLAGS)" "ARFLAGS=$(ARFLAGS)" \
-	"POPSICLE_ROOT=$(POPSICLE_ROOT)" "FFT_LIB=fftw" \
-	"FFT_PATH=$(MKLROOT)" "MKLROOT=$(MKLROOT)" \
-	"PLIB=serial" "HDF5_PATH=$(HDF5_PATH)" \
-	"SZIP_PATH=${SZIP_PATH}" \
+	cd ${POPSICLE_SRC}; ${MAKE} "FC=${FC}" "F77FLAGS=$[F77FLAGS}" \
+	"F90FLAGS=${F90FLAGS}" "ARFLAGS=${ARFLAGS}" \
+	"POPSICLE_ROOT=${POPSICLE_ROOT}" "FFT_LIB=${FFT_LIB}" \
+	"FFT_PATH=${FFT_PATH}" "MKLROOT=${MKLROOT}" \
+	"PLIB=serial" "HDF5_PATH=${HDF5ROOT}" \
+	"SZIP_PATH=${SZIPROOT}" \
 	"DIRECTIVES=-Wp,-D_COM_MPI=0"
 
 ${POPSICLE_PAR}:
-	cd $(POPSICLE_SRC); $(MAKE) "FC=${FC}" "F77FLAGS=$(F77FLAGS)" \
-	"F90FLAGS=$(F90FLAGS)" "ARFLAGS=$(ARFLAGS)" \
-	"POPSICLE_ROOT=$(POPSICLE_ROOT)" "FFT_LIB=fftw" \
-	"FFT_PATH=$(MKLROOT)" "MKLROOT=$(MKLROOT)" \
+	cd ${POPSICLE_SRC}; ${MAKE} "FC=${FC}" "F77FLAGS=${F77FLAGS}" \
+	"F90FLAGS=${F90FLAGS}" "ARFLAGS=$(ARFLAGS)" \
+	"POPSICLE_ROOT=${POPSICLE_ROOT}" "FFT_LIB=${FFT_LIB}" \
+	"FFT_PATH=${FFT_PATH}" "MKLROOT=${MKLROOT}" \
 	"PLIB=parallel" \
-	"PHDF5_PATH=$(PHDF5_PATH)" "SZIP_PATH=${SZIP_PATH}" \
+	"PHDF5_PATH=${PHDF5ROOT}" "SZIP_PATH=${SZIPROOT}" \
 	"DIRECTIVES=-Wp,-D_COM_MPI=1"
 
 ${RES}: %.res: %.f90
 	mkdir -p ./${RES_DIR}
-	${FC}  $< -o ${RES_DIR}/$*.out ${FLAGS} -I${POPSICLE_LIB} ${POPSICLE_PAR}
+	${FC}  $< -o ${RES_DIR}/$*.exec ${FLAGS} -I${POPSICLE_LIB} ${POPSICLE_PAR}
 
 
 clean: clean_src clean_examples
@@ -128,7 +112,7 @@ clean_lib:
 clean_examples:
 	@echo 'Deleting examples...'
 	@-rm -rf *.res 
-	@-rm -rf *.out
+	@-rm -rf *.exec
 
 ###############################
 ## Rules for makefile

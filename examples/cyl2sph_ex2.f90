@@ -57,14 +57,12 @@ PROGRAM cyl2sph_ex2
   ALLOCATE(R_nl(1:numrhopts,1:numzpts))
   ALLOCATE(cylfunc(1:numrhopts,1:numzpts))
   
-  
   DO iz = 1, numzpts
      DO irho = 1, numrhopts
         
-        rpt = rho_ax(irho)**2 + z_ax(iz)**2
-        thetapt = atan2(z_ax(iz),rho_ax(irho))+0.5_dp * pi
-        
-        
+        rpt = SQRT(rho_ax(irho)**2 + z_ax(iz)**2)
+        thetapt = ACOS(z_ax(iz) / rpt)
+
         Y_lm(irho,iz) = 0.25_dp * SQRT(5.0_dp / pi) * &
              ( 3.0_dp * (COS(thetapt))**2 - 1.0_dp)
         
@@ -75,6 +73,8 @@ PROGRAM cyl2sph_ex2
         
      ENDDO
   ENDDO
+  
+  write(*,*) 'ult theta: ',thetapt
   
   ! Initialize the boundary
   Rboundary = 1.0_dp
@@ -118,8 +118,8 @@ PROGRAM cyl2sph_ex2
   
   DO itheta = 1, numthetapts
      DO ir = 1, numrpts
-        ref_value =  EXP(-rpts(ir) / 2.0_dp) *  0.25_dp * SQRT(5.0_dp / pi) * &
-             ( 3.0_dp * (COS(theta(itheta)))**2 - 1.0_dp)
+        ref_value =  EXP(-rpts_boundary(ir) / 2.0_dp) *  0.25_dp * SQRT(5.0_dp / pi) * &
+             ( 3.0_dp * (COS(theta_boundary(itheta)))**2 - 1.0_dp)
 !!$        WRITE(*,*) sphfunc(ir,itheta)
 !!$        WRITE(*,*) ref_value 
 !!$        WRITE(*,*) 'Diff: ', ABS(sphfunc(ir,itheta) - ref_value)
@@ -132,9 +132,39 @@ PROGRAM cyl2sph_ex2
   WRITE(*,*)
   WRITE(*,*) 'Maximum difference in value: '
   WRITE(*,*) maxerror
+ 
+  ! Save axes
+  
+  ! Rho
+  OPEN(unit=33,form='formatted',file='./results/rho_ax.dat')
+  DO irho = 1, numrhopts
+     WRITE(33,*) rho_ax(irho) 
+  ENDDO
+  CLOSE(33)
+  
+  ! z
+  OPEN(unit=33,form='formatted',file='./results/z_ax.dat')
+  DO iz = 1, numzpts
+     WRITE(33,*) z_ax(iz)
+  ENDDO
+  CLOSE(33)
+  
+  ! R
+  OPEN(unit=33,form='formatted',file='./results/r_ax.dat')
+  DO ir = 1, numrpts
+     WRITE(33,*) rpts_boundary(ir)
+  ENDDO
+  CLOSE(33)
+  
+  ! Theta
+  OPEN(unit=33,form='formatted',file='./results/theta_ax.dat')
+  DO itheta = 1, numthetapts
+     WRITE(33,*) theta_boundary(itheta)
+  ENDDO
+  CLOSE(33)
   
   ! Save original wavefunction
-  OPEN(unit=33,form='formatted',file='cylfunction.dat')
+  OPEN(unit=33,form='formatted',file='./results/cylfunction.dat')
   
   DO iz = 1, numzpts
      DO irho = 1, numrhopts
@@ -145,7 +175,7 @@ PROGRAM cyl2sph_ex2
   CLOSE(33)
   
   ! Save spherical wavefunction
-  OPEN(unit=33,form='formatted',file='sphfunction.dat')
+  OPEN(unit=33,form='formatted',file='./results/sphfunction.dat')
   
   DO itheta = 1, numthetapts
      DO ir = 1, numrpts
