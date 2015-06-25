@@ -74,8 +74,6 @@ PROGRAM cyl2sph_ex2
      ENDDO
   ENDDO
   
-  write(*,*) 'ult theta: ',thetapt
-  
   ! Initialize the boundary
   Rboundary = 1.0_dp
   tolerance = 0.05_dp

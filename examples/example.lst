@@ -1,3 +1,4 @@
 EXAMPLE_LIST = \
 sheppack_usage_example \
-cyl2sph_ex2
+cyl2sph_ex2 \
+cart2sph_ex2
