@@ -185,19 +185,19 @@ CONTAINS
                 CALL FFT(psi_rc, 1, dims_phony)
                 
                 ! fftshift the array
-!!$                psi_sd = ZERO
-!!$                shift = Nxgl - (Nxgl+1)/2
-!!$                DO ix = 1, shift
-!!$                   psi_sd(ix) = psi_rc(ix+shift)
-!!$                ENDDO
-!!$                
-!!$                DO ix = shift+1, Nxgl
-!!$                   psi_sd(ix) = psi_rc(ix-shift)
-!!$                ENDDO
+                psi_sd = ZERO
+                shift = Nxgl - (Nxgl+1)/2
+                DO ix = 1, shift
+                   psi_sd(ix) = psi_rc(ix+shift)
+                ENDDO
+                
+                DO ix = shift+1, Nxgl
+                   psi_sd(ix) = psi_rc(ix-shift)
+                ENDDO
                 
                 ! Copy the result back to the local psik
                 DO ix = 1, Nx
-                   psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_rc(ix)
+                   psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_sd(ix)
                 ENDDO
                 
              ENDDO
@@ -313,20 +313,20 @@ CONTAINS
                    
                    CALL FFT(psi_rc, 1, dims_phony)
                    
-!!$                   ! fftshift the array
-!!$                   psi_sd = ZERO
-!!$                   shift = Nygl - (Nygl+1)/2
-!!$                   DO iy = 1, shift
-!!$                      psi_sd(iy) = psi_rc(iy+shift)
-!!$                   ENDDO
-!!$                   
-!!$                   DO iy = shift+1, Nygl
-!!$                      psi_sd(iy) = psi_rc(iy-shift)
-!!$                   ENDDO
+                   ! fftshift the array
+                   psi_sd = ZERO
+                   shift = Nygl - (Nygl+1)/2
+                   DO iy = 1, shift
+                      psi_sd(iy) = psi_rc(iy+shift)
+                   ENDDO
+                   
+                   DO iy = shift+1, Nygl
+                      psi_sd(iy) = psi_rc(iy-shift)
+                   ENDDO
                    
                    ! Copy the result back to the local psik
                    DO iy = 1, Ny
-                      psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_rc(iy)
+                      psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_sd(iy)
                    ENDDO
                    
                 ENDDO
@@ -442,17 +442,17 @@ CONTAINS
                    ENDDO
                    
                    CALL FFT(psi_rc, 1, dims_phony)
-
-!!$                   ! fftshift the array
-!!$                   psi_sd = ZERO
-!!$                   shift = Nzgl - (Nzgl+1)/2
-!!$                   DO iz = 1, shift
-!!$                      psi_sd(iz) = psi_rc(iz+shift+1)
-!!$                   ENDDO
-!!$                   
-!!$                   DO iz = shift+1, Nzgl
-!!$                      psi_sd(iz) = psi_rc(iz-shift)
-!!$                   ENDDO
+                   
+                   ! fftshift the array
+                   psi_sd = ZERO
+                   shift = Nzgl - (Nzgl+1)/2
+                   DO iz = 1, shift
+                      psi_sd(iz) = psi_rc(iz+shift+1)
+                   ENDDO
+                   
+                   DO iz = shift+1, Nzgl
+                      psi_sd(iz) = psi_rc(iz-shift)
+                   ENDDO
                    
                    ! Copy the result back to the local psik                   
                    DO iz = 1, Nz
@@ -523,26 +523,18 @@ CONTAINS
                    ! fftshift the array
                    psi_sd = ZERO
                    shift = Nzgl - (Nzgl+1)/2
-!!$                   DO iz = 1, shift
-!!$                      !if(ix.eq.1.and.iy.eq.1.and.ir.eq.1) THEN
-!!$                      !write(*,*) 'before: ',iz, iz+shift
-!!$                      !IF (iz.eq.1) &
-!!$                      !     write(*,*) 'before',  psi_sd(iz), psi_rc(iz+shift)
-!!$                      !ENDIF
-!!$                      psi_sd(iz) = psi_rc(iz+shift)
-!!$                   ENDDO
-!!$                   
-!!$                   DO iz = shift+1, Nzgl
-!!$                      !if(ix.eq.1.and.iy.eq.1.and.ir.eq.1) &
-!!$                      !     write(*,*) 'after: ',iz, iz-shift
-!!$                  
-!!$                      psi_sd(iz) = psi_rc(iz-shift)
-!!$                   ENDDO
+                   DO iz = 1, shift
+                      psi_sd(iz) = psi_rc(iz+shift)
+                   ENDDO
+                   
+                   DO iz = shift+1, Nzgl
+                      psi_sd(iz) = psi_rc(iz-shift)
+                   ENDDO
                    
                    ! Copy the result back to the local psik                   
                    DO iz = 1, Nz
                       igl = iz + grid_rank(3) * Nz
-                      psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_rc(igl)
+                      psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_sd(igl)
                    ENDDO
                    
                 ENDDO
@@ -576,20 +568,20 @@ CONTAINS
                    
                    CALL FFT(psi_rc, 1, dims_phony)
                    
-                   ! fftshift the array
-                   psi_sd = ZERO
-                   shift = Nrgl - (Nrgl+1)/2
-                   DO ir = 1, shift
-                      psi_sd(ir) = psi_rc(ir+shift+1)
-                   ENDDO
-                   
-                   DO ir = shift+1, Nrgl
-                      psi_sd(ir) = psi_rc(ir-shift)
-                   ENDDO
+!!$                   ! fftshift the array
+!!$                   psi_sd = ZERO
+!!$                   shift = Nrgl - (Nrgl+1)/2
+!!$                   DO ir = 1, shift
+!!$                      psi_sd(ir) = psi_rc(ir+shift+1)
+!!$                   ENDDO
+!!$                   
+!!$                   DO ir = shift+1, Nrgl
+!!$                      psi_sd(ir) = psi_rc(ir-shift)
+!!$                   ENDDO
                    
                    ! Copy the result back to the local psik
                    DO ir = 1, Nr
-                      psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_sd(ir)
+                      psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_rc(ir)
                    ENDDO
                    
                 ENDDO
@@ -650,21 +642,21 @@ CONTAINS
                    dims_phony(1) = Nrgl
                    CALL FFT(psi_rc, 1, dims_phony)
 
-                   ! fftshift the array
-                   psi_sd = ZERO
-                   shift = Nrgl - (Nrgl+1)/2
-                   DO ir = 1, shift
-                      psi_sd(ir) = psi_rc(ir+shift+1)
-                   ENDDO
-                   
-                   DO ir = shift+1, Nrgl
-                      psi_sd(ir) = psi_rc(ir-shift)
-                   ENDDO
+!!$                   ! fftshift the array
+!!$                   psi_sd = ZERO
+!!$                   shift = Nrgl - (Nrgl+1)/2
+!!$                   DO ir = 1, shift
+!!$                      psi_sd(ir) = psi_rc(ir+shift+1)
+!!$                   ENDDO
+!!$                   
+!!$                   DO ir = shift+1, Nrgl
+!!$                      psi_sd(ir) = psi_rc(ir-shift)
+!!$                   ENDDO
                    
                    ! Copy the result back to the local psik                   
                    DO ir = 1, Nr
                       igl = ir + grid_rank(4) * Nr
-                      psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_sd(igl)
+                      psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_rc(igl)
                    ENDDO
                    
                 ENDDO
