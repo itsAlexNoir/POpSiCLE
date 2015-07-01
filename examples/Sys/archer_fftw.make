@@ -23,7 +23,7 @@ F77FLAGS    =	$(OPT)
 
 
 FFT_LIB	    = fftw
-FFT_PATH    = ${FFT_DIR}
+FFT_PATH    = ${FFTW_DIR}
 #FFT_PATH    = /opt/cray/fftw/3.3.4.1/ivybridge
 
 #MKLROOT    = 
