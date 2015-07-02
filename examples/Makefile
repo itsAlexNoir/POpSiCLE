@@ -111,8 +111,8 @@ clean_lib:
 
 clean_examples:
 	@echo 'Deleting examples...'
-	@-rm -rf *.res 
-	@-rm -rf *.exec
+	@-rm -rf ./${RES_DIR}/*.dat 
+	@-rm -rf ./${RES_DIR}/*.exec
 
 ###############################
 ## Rules for makefile

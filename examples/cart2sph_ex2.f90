@@ -10,6 +10,7 @@ PROGRAM cart2sph_ex2
   INTEGER                    :: numrpts
   INTEGER                    :: numthetapts
   INTEGER                    :: numphipts
+  INTEGER                    :: numpts
   REAL(dp), ALLOCATABLE      :: x_ax(:)
   REAL(dp), ALLOCATABLE      :: y_ax(:)
   REAL(dp), ALLOCATABLE      :: z_ax(:)
@@ -30,19 +31,37 @@ PROGRAM cart2sph_ex2
   
   REAL(dp)                   :: start_time, end_time
   REAL(dp)                   :: interp_time
-  REAL(dp)                   :: maxerror
+  REAL(dp)                   :: minerror, maxerror
   INTEGER                    :: ix,iy, iz
   INTEGER                    :: ir, itheta, iphi
   
+
+  ! QSHEP2D control parameters
+  INTEGER                      :: NQ, NR, NW
+  REAL(dp)                     :: DX_RE, DY_RE, RMAX_RE
+  REAL(dp)                     :: XMIN_RE, YMIN_RE
+  REAL(dp), ALLOCATABLE        :: XYZMIN_RE(:), XYZDEL_RE(:)
+  INTEGER, ALLOCATABLE         :: LNEXT_RE(:)
+  INTEGER, ALLOCATABLE         :: LCELL_RE(:, :)
+  INTEGER, ALLOCATABLE         :: LCELL3_RE(:, :, :)
+  REAL(dp), ALLOCATABLE        :: RSQ_RE(:), RW_RE(:)
+  REAL(dp), ALLOCATABLE        :: AQ_RE(:, :), AL_RE(:, :)
+  
+  WRITE(*,*) '****************************'
+  WRITE(*,*) '     cart2sph_ex2           '
+  WRITE(*,*) '****************************'
+  WRITE(*,*)
+  WRITE(*,*)
+
   ! Set number of points
-  numxpts = 200
-  numypts = 200
-  numzpts = 200
+  numxpts = 80
+  numypts = 80
+  numzpts = 80
   
   ! Set grid spacing
-  dx   = 0.01
-  dy   = 0.01
-  dz   = 0.01
+  dx   = 0.1_dp
+  dy   = 0.1_dp
+  dz   = 0.1_dp
   
   ! Create axes
   ALLOCATE(x_ax(1:numxpts))
@@ -73,11 +92,18 @@ PROGRAM cart2sph_ex2
         DO ix = 1, numxpts
            
            rpt = SQRT( x_ax(ix)**2 + y_ax(iy)**2 + z_ax(iz)**2 )
-           thetapt = ACOS( z_ax(iz) / rpt )
-           phipt = ATAN( y_ax(iy) / x_ax(ix) )
+           
+           IF (rpt.EQ.0) THEN
+              thetapt = pi / 2.0_dp
+           ELSE
+              thetapt = ACOS( z_ax(iz) / rpt )
+           ENDIF
+           
+           phipt = ATAN2( y_ax(iy) , x_ax(ix) )
+           
            
            Y_lm(ix,iy,iz) = 0.25_dp * SQRT(5.0_dp / pi) * &
-                ( 3.0_dp * (COS(thetapt))**2 - 1.0_dp)
+                ( 3.0_dp * (COS(thetapt))**2 - 1.0_dp) !* COS(phipt) !EXP(ZIMAGONE*phipt)
            
            R_nl(ix,iy,iz) = 1.0_dp
            
@@ -88,12 +114,29 @@ PROGRAM cart2sph_ex2
      ENDDO
   ENDDO
   
+  
+  
   ! Initialize the boundary
-  Rboundary = 1.0_dp
-  tolerance = 0.05_dp
-  dr = 0.01_dp
-  dtheta = 0.05_dp
+  Rboundary = 2.0_dp
+  tolerance = 0.15_dp
+  dr = 0.1_dp
+  dtheta = 0.1_dp
+  dphi = 0.1_dp
   dims      = (/numxpts, numypts, numzpts/)
+  
+  WRITE(*,*) 'Number of points in x: ',numxpts
+  WRITE(*,*) 'Number of points in y: ',numypts
+  WRITE(*,*) 'Number of points in z: ',numzpts
+  
+  WRITE(*,*) 'Grid spacing in x: ',dx
+  WRITE(*,*) 'Grid spacing in y: ',dy
+  WRITE(*,*) 'Grid spacing in z: ',dz
+  
+  WRITE(*,*) 'Boundary at radius: ',Rboundary
+  WRITE(*,*) 'Radius tolerance: ',tolerance
+  WRITE(*,*)
+  WRITE(*,*) '--------------------------'
+  
   
   ! Build interpolant
   WRITE(*,*) 'Creating interpolant...'
@@ -101,16 +144,28 @@ PROGRAM cart2sph_ex2
   
   CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
        Rboundary, tolerance, 2, dr, dtheta, dphi, &
-       numrpts, numthetapts, numphipts )
+       numpts, numrpts, numthetapts, numphipts )
   
   CALL cpu_time(end_time)
   
   interp_time = end_time - start_time
   
   WRITE(*,*) 'Interpolant time (seconds): ', interp_time
+  WRITE(*,*) 
+  
+  WRITE(*,*) 'Total number of points to be interpolated: ',numpts
+  
   WRITE(*,*) 'Number of radial boundary points: ',numrpts
   WRITE(*,*) 'Number of polar boundary points: ',numthetapts
   WRITE(*,*) 'Number of azimuthal boundary points: ',numphipts
+  
+  WRITE(*,*) 'Grid spacing in r: ',dr
+  WRITE(*,*) 'Grid spacing in theta: ',dtheta
+  WRITE(*,*) 'Grid spacing in phi: ',dphi
+  WRITE(*,*)
+  WRITE(*,*)
+  WRITE(*,*) '--------------------------'
+  
   
   ALLOCATE(sphfunc(1:numrpts,1:numthetapts,1:numphipts))
   ALLOCATE(sphfunc_dr(1:numrpts,1:numthetapts,1:numphipts))
@@ -130,16 +185,18 @@ PROGRAM cart2sph_ex2
   
   WRITE(*,*) 'Interpolation time (seconds): ', interp_time
   
-
+  
   DO iphi = 1, numphipts
      DO itheta = 1, numthetapts
         DO ir = 1, numrpts
-           ref_value =  EXP(-rpts_boundary(ir) / 2.0_dp) *  0.25_dp * SQRT(5.0_dp / pi) * &
+           ref_value =  EXP(-rpts_boundary(ir) / 2.0_dp) *  &
+                0.25_dp * SQRT(5.0_dp / pi) * &
                 ( 3.0_dp * (COS(theta_boundary(itheta)))**2 - 1.0_dp)
-!!$        WRITE(*,*) sphfunc(ir,itheta)
-!!$        WRITE(*,*) ref_value 
-!!$        WRITE(*,*) 'Diff: ', ABS(sphfunc(ir,itheta) - ref_value)
-           maxerror = MAX(maxerror, ABS(sphfunc(ir,itheta, iphi) - ref_value))
+           
+           maxerror = MAX(maxerror, ABS(sphfunc(ir,itheta, iphi) -&
+                ref_value))
+           minerror = MIN(minerror, ABS(sphfunc(ir,itheta, iphi) -&
+                ref_value))
         ENDDO
      ENDDO
   ENDDO
@@ -147,10 +204,14 @@ PROGRAM cart2sph_ex2
   WRITE(*,*) 
   WRITE(*,*) '********RESULTS!!!******'
   WRITE(*,*)
+  WRITE(*,*) 'Minimum difference in value: '
+  WRITE(*,*) minerror
   WRITE(*,*) 'Maximum difference in value: '
   WRITE(*,*) maxerror
   
   ! Save axes
+  WRITE(*,*) 
+  WRITE(*,*) 'Write data to disk...'
   
   ! X
   OPEN(unit=33,form='formatted',file='./results/x_ax.dat')

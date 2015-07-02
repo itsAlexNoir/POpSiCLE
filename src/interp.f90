@@ -135,6 +135,7 @@ CONTAINS
             RMAX_RE, RSQ_RE, AQ_RE, ierror)
        IF (ierror /= 0) THEN
           WRITE(*,*) 'Error calculating the (real) interpolant at QSHEP2.'
+          WRITE(*,*) 'ierror: ',ierror
           STOP
        ENDIF
        
@@ -143,6 +144,7 @@ CONTAINS
             RMAX_IM, RSQ_IM, AQ_IM, ierror)
        IF (ierror /= 0) THEN
           WRITE(*,*) 'Error calculating the (imag) interpolant at QSHEP2.'
+          WRITE(*,*) 'ierror: ',ierror
           STOP
        ENDIF
        
@@ -207,13 +209,14 @@ CONTAINS
        
        func_re = REAL(func,dp)
        func_im = AIMAG(func)
-
+       
        !WRITE(*,*) 'Creating the interpolant...'
        CALL QSHEP3(numpts, x1, x2, x3, func_re, NQ, NW, NR, LCELL3_RE, &
             LNEXT_RE, XYZMIN_RE, XYZDEL_RE, RMAX_RE, RSQ_RE, &
             AQ_RE, ierror)
        IF (ierror /= 0) THEN
           WRITE(*,*) 'Error calculating the (real) interpolant at QSHEP3.'
+          WRITE(*,*) 'ierror: ',ierror
           STOP
        ENDIF
        
@@ -222,6 +225,7 @@ CONTAINS
             AQ_IM, ierror)
        IF (ierror /= 0) THEN
           WRITE(*,*) 'Error calculating the (imag) interpolant at QSHEP3.'
+          WRITE(*,*) 'ierror: ',ierror
           STOP
        ENDIF
        

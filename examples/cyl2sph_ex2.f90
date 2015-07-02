@@ -8,6 +8,7 @@ PROGRAM cyl2sph_ex2
   INTEGER                    :: numzpts
   INTEGER                    :: numrpts
   INTEGER                    :: numthetapts
+  INTEGER                    :: numpts
   REAL(dp), ALLOCATABLE      :: rho_ax(:)
   REAL(dp), ALLOCATABLE      :: z_ax(:)
   INTEGER                    :: dims(2)
@@ -81,20 +82,42 @@ PROGRAM cyl2sph_ex2
   dtheta = 0.05_dp
   dims      = (/numrhopts, numzpts/)
   
+  WRITE(*,*) 'Number of points in rho: ',numrhopts
+  WRITE(*,*) 'Number of points in z: ',numzpts
+  
+  WRITE(*,*) 'Grid spacing in rho: ',drho
+  WRITE(*,*) 'Grid spacing in z: ',dz
+  
+  WRITE(*,*) 'Boundary at radius: ',Rboundary
+  WRITE(*,*) 'Radius tolerance: ',tolerance
+  WRITE(*,*)
+  WRITE(*,*) '--------------------------'
+  
   ! Build interpolant
   WRITE(*,*) 'Creating interpolant...'
   CALL cpu_time(start_time)
   
   CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
-       Rboundary, tolerance, 2, dr, dtheta, numrpts, numthetapts )
+       Rboundary, tolerance, 2, dr, dtheta, numpts, &
+       numrpts, numthetapts )
   
   CALL cpu_time(end_time)
   
   interp_time = end_time - start_time
   
   WRITE(*,*) 'Interpolant time (seconds): ', interp_time
+  WRITE(*,*)
+  
+  
+  WRITE(*,*) 'Total number of points to be interpolated: ',numpts
+  
   WRITE(*,*) 'Number of radial boundary points: ',numrpts
-  WRITE(*,*) 'Number of azimuthal boundary points: ',numthetapts
+  WRITE(*,*) 'Number of polar boundary points: ',numthetapts
+  
+  WRITE(*,*) 'Grid spacing in r: ',dr
+  WRITE(*,*) 'Grid spacing in theta: ',dtheta
+  WRITE(*,*)
+  WRITE(*,*) '--------------------------'
   
   ALLOCATE(sphfunc(1:numrpts,1:numthetapts))
   ALLOCATE(sphfunc_dr(1:numrpts,1:numthetapts))

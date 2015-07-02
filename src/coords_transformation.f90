@@ -28,14 +28,14 @@ MODULE coords_transformation
      MODULE PROCEDURE get_cartesian_boundary2D
      MODULE PROCEDURE get_cartesian_boundary3D
   END INTERFACE get_cartesian_boundary
-
+  
   INTERFACE get_cylindrical_boundary
      MODULE PROCEDURE get_cylindrical_boundary2D
      !MODULE PROCEDURE get_cylindrical_boundary3D
   END INTERFACE get_cylindrical_boundary
-
+  
   INTERFACE cartesian2spherical
-     !MODULE PROCEDURE cartesian2spherical2D
+     MODULE PROCEDURE cartesian2spherical2D
      MODULE PROCEDURE cartesian2spherical3D
   END INTERFACE cartesian2spherical
   
@@ -75,7 +75,7 @@ CONTAINS
   
   SUBROUTINE initialize_cartesian_boundary2D(x_ax, y_ax, dims, &
        Rs, radtol, fdpts, deltar, deltatheta, &
-       maxrpts, maxthetapts )
+       maxpts, maxrpts, maxthetapts )
     
     IMPLICIT NONE
     
@@ -87,6 +87,7 @@ CONTAINS
     INTEGER, INTENT(IN)       :: fdpts
     REAL(dp), INTENT(IN)      :: deltar
     REAL(dp), INTENT(IN)      :: deltatheta
+    INTEGER, INTENT(OUT)      :: maxpts
     INTEGER, INTENT(OUT)      :: maxrpts, maxthetapts
 
     REAL(dp)                  :: minx, maxx
@@ -107,11 +108,11 @@ CONTAINS
     halolims(2,:) = (/ lbound(y_ax), ubound(y_ax) /)
     
     ! Assign max and min values for the axes
-    minx = x_ax(1)
-    maxx = x_ax(dims(1))
+    minx = MINVAL(ABS(x_ax))
+    maxx = MAXVAL(ABS(x_ax))
     
-    miny = y_ax(1)
-    maxy = y_ax(dims(2))
+    miny = MINVAL(ABS(y_ax))
+    maxy = MAXVAL(ABS(y_ax))
     
     minr = SQRT(minx**2 + miny**2)
     maxr = SQRT(maxy**2 + maxy**2)
@@ -139,11 +140,11 @@ CONTAINS
        DO ix = halolims(1,1), halolims(1,2)
           ! Calculate the point in spherical coordinates
           rpt = SQRT( x_ax(ix)**2 + y_ax(iy)**2 )
-          thetapt = ATAN(y_ax(iy) / x_ax(ix) )
+          thetapt = ATAN2(y_ax(iy) , x_ax(ix) )
           
           ! Check the extend of the grid
-          IF (rpt .LT. minr) minr = rpt
-          IF (rpt .GT. maxr) maxr = rpt
+          minr = MIN(rpt,minr)
+          maxr = MAX(rpt,maxr)
           
           ! See if this points lies within the radius of
           ! influence of the boundary
@@ -190,7 +191,7 @@ CONTAINS
           DO ix = halolims(1,1), halolims(1,2)
              
              rpt = SQRT( x_ax(ix)**2 + y_ax(iy)**2 )
-             thetapt = ATAN(y_ax(iy) / x_ax(ix))
+             thetapt = ATAN2(y_ax(iy) , x_ax(ix))
              
              IF (ABS(rpt-Rs) .LE. radtol ) THEN
                 inum = inum + 1
@@ -214,6 +215,7 @@ CONTAINS
        
     ENDIF
     
+    maxpts  = numpts
     maxrpts = numrpts
     maxthetapts = numthetapts
     
@@ -228,7 +230,7 @@ CONTAINS
   
   SUBROUTINE initialize_cartesian_boundary3D(x_ax, y_ax, z_ax, dims, &
        Rs, radtol, fdpts, deltar, deltatheta, deltaphi, &
-       maxrpts, maxthetapts, maxphipts )
+       maxpts, maxrpts, maxthetapts, maxphipts )
     
     IMPLICIT NONE
     
@@ -242,6 +244,7 @@ CONTAINS
     REAL(dp), INTENT(IN)      :: deltar
     REAL(dp), INTENT(IN)      :: deltatheta
     REAL(dp), INTENT(IN)      :: deltaphi
+    INTEGER, INTENT(OUT)      :: maxpts
     INTEGER, INTENT(OUT)      :: maxrpts, maxthetapts
     INTEGER, INTENT(OUT)      :: maxphipts
     
@@ -260,22 +263,22 @@ CONTAINS
     !--------------------------------------------------!
     
     numpts = 0
-    
+   
     halolims(1,:) = (/ lbound(x_ax), ubound(x_ax) /)
     halolims(2,:) = (/ lbound(y_ax), ubound(y_ax) /)
     halolims(3,:) = (/ lbound(z_ax), ubound(z_ax) /)
     
     ! Assign max and min values for the axes
-    minx = x_ax(1)
-    maxx = x_ax(dims(1))
+    minx = MINVAL(ABS(x_ax))
+    maxx = MAXVAL(ABS(x_ax))
 
-    miny = y_ax(1)
-    maxy = y_ax(dims(2))
+    miny = MINVAL(ABS(y_ax))
+    maxy = MAXVAL(ABS(y_ax))
     
-    minz = z_ax(1)
-    maxz = z_ax(dims(3))
+    minz = MINVAL(ABS(z_ax))
+    maxz = MAXVAL(ABS(z_ax))
     
-    minr = SQRT(maxx**2 + miny**2 + minz**2)
+    minr = SQRT(minx**2 + miny**2 + minz**2)
     maxr = SQRT(maxx**2 + maxy**2 + maxz**2)
     
     IF ( (Rs.LT.minr).AND.(Rs.GT.maxr) ) THEN
@@ -307,12 +310,16 @@ CONTAINS
           DO ix = halolims(1,1), halolims(1,2)
              ! Calculate the point in spherical coordinates
              rpt = SQRT( x_ax(ix)**2 + y_ax(iy)**2 + z_ax(iz)**2 )
-             thetapt = ACOS(z_ax(iz) / rpt )
-             phipt = ATAN(y_ax(iz) / x_ax(ix) )
+             IF(rpt.EQ.0.0_dp) THEN
+                thetapt = pi / 2.0_dp
+             ELSE
+                thetapt = ACOS(z_ax(iz) / rpt )
+             ENDIF
+             phipt = ATAN2( y_ax(iy) , x_ax(ix) )
              
              ! Check the extend of the grid
-             IF (rpt .LT. minr) minr = rpt
-             IF (rpt .GT. maxr) maxr = rpt
+             minr = MIN(minr,rpt)
+             maxr = MAX(maxr,rpt)
              
              ! See if this points lies within the radius of
              ! influence of the boundary
@@ -328,15 +335,16 @@ CONTAINS
        ENDDO
     ENDDO
     
-    
     IF(numpts .EQ. 0) THEN
        ALLOCATE(rpts_scatt(1))
-       ALLOCATE(theta_scatt(1))  
+       ALLOCATE(theta_scatt(1))
+       ALLOCATE(phi_scatt(1))
        ALLOCATE(psi_scatt(1))
        ALLOCATE(index_x1(1))
        ALLOCATE(index_x2(1))
        ALLOCATE(rpts_boundary(1))
        ALLOCATE(theta_boundary(1))
+       ALLOCATE(phi_boundary(1))
        ALLOCATE(psi3D_sph(1,1,1))
        ALLOCATE(psi3D_sph_dx(1,1,1))
        ALLOCATE(psi3D_sph_dy(1,1,1))
@@ -344,6 +352,7 @@ CONTAINS
     ELSE
        ALLOCATE(rpts_scatt(1:numpts))
        ALLOCATE(theta_scatt(1:numpts))
+       ALLOCATE(phi_scatt(1:numpts))
        ALLOCATE(psi_scatt(1:numpts))
        ALLOCATE(index_x1(1:numpts))
        ALLOCATE(index_x2(1:numpts))
@@ -368,8 +377,12 @@ CONTAINS
              DO ix = halolims(1,1), halolims(1,2)
                 
                 rpt = SQRT( x_ax(ix)**2 + y_ax(iy)**2 + z_ax(iz)**2 )
-                thetapt = ACOS( z_ax(iz) / rpt)
-                phipt = ATAN( y_ax(iy) / x_ax(ix) )
+                IF(rpt.EQ.0.0_dp) THEN
+                   thetapt = 0.0_dp
+                ELSE
+                   thetapt = ACOS( z_ax(iz) / rpt)
+                ENDIF
+                phipt = ATAN2( y_ax(iy),x_ax(ix) )
                 
                 IF (ABS(rpt-Rs) .LE. radtol ) THEN
                    inum = inum + 1
@@ -377,7 +390,7 @@ CONTAINS
                    theta_scatt(inum) = thetapt
                    phi_scatt(inum) = phipt
                    index_x1(inum) = ix
-                   index_x2(inum) = iy 
+                   index_x2(inum) = iy
                    index_x3(inum) = iz
                    
                 ENDIF
@@ -393,13 +406,14 @@ CONTAINS
        DO itheta = 1, numthetapts
           theta_boundary(itheta) = mintheta + REAL( itheta * deltatheta,dp )
        ENDDO
-
+       
        DO iphi = 1, numphipts
           phi_boundary(iphi) = minphi + REAL( iphi * deltaphi,dp )
        ENDDO
        
     ENDIF
     
+    maxpts = numpts
     maxrpts = numrpts
     maxthetapts = numthetapts
     maxphipts = numphipts
@@ -418,7 +432,7 @@ CONTAINS
   
   SUBROUTINE initialize_cylindrical_boundary2D(rho_ax, z_ax, dims, &
        Rs, radtol, fdpts, deltar, deltatheta, &
-       maxrpts, maxthetapts )
+       maxpts, maxrpts, maxthetapts )
     
     IMPLICIT NONE
     
@@ -430,6 +444,7 @@ CONTAINS
     INTEGER, INTENT(IN)       :: fdpts
     REAL(dp), INTENT(IN)      :: deltar
     REAL(dp), INTENT(IN)      :: deltatheta
+    INTEGER, INTENT(OUT)      :: maxpts
     INTEGER, INTENT(OUT)      :: maxrpts, maxthetapts
 
     REAL(dp)                  :: minrho, maxrho
@@ -450,11 +465,11 @@ CONTAINS
     halolims(2,:) = (/ lbound(z_ax), ubound(z_ax) /)
     
     ! Assign max and min values for the axes
-    minrho = rho_ax(1)
-    maxrho = rho_ax(dims(1))
+    minrho = MINVAL(ABS(rho_ax))
+    maxrho = MAXVAL(ABS(rho_ax))
     
-    minz = z_ax(1)
-    maxz = z_ax(dims(2))
+    minz = MINVAL(ABS(z_ax))
+    maxz = MAXVAL(ABS(z_ax))
     
     minr = SQRT(minrho**2 + minz**2)
     maxr = SQRT(maxrho**2 + maxz**2)
@@ -474,8 +489,7 @@ CONTAINS
        RETURN
     ENDIF
     
-    mintheta =  ACOS( z_ax(dims(2)) / SQRT(z_ax(dims(2))**2 + &
-         rho_ax(1)**2) )
+    mintheta = pi
     maxtheta = 0.0_dp
     
     ! Work out how many points will build the interpolant
@@ -483,12 +497,15 @@ CONTAINS
        DO irho = halolims(1,1), halolims(1,2)
           ! Calculate the point in spherical coordinates
           rpt = SQRT( rho_ax(irho)**2 + z_ax(iz)**2 )
-          thetapt = ACOS(z_ax(iz) / rpt )
-          
+          IF (rpt.EQ.0.0_dp) THEN
+             thetapt = pi / 2.0_dp
+          ELSE
+             thetapt = ACOS(z_ax(iz) / rpt )
+          ENDIF
           ! Check the extend of the grid
-          IF (rpt .LT. minr) minr = rpt
-          IF (rpt .GT. maxr) maxr = rpt
-          
+          minr = MIN(rpt,minr)
+          maxr = MAX(rpt,maxr)
+
           ! See if this points lies within the radius of
           ! influence of the boundary
           IF (ABS(rpt-Rs) .LE. radtol ) &
@@ -534,7 +551,11 @@ CONTAINS
           DO irho = halolims(1,1), halolims(1,2)
              
              rpt = SQRT( rho_ax(irho)**2 + z_ax(iz)**2 )
-             thetapt = ACOS( z_ax(iz) / rpt )
+             IF(rpt.EQ.0.0_dp) THEN
+                thetapt = pi / 2.0_dp
+             ELSE
+                thetapt = ACOS( z_ax(iz) / rpt )
+             ENDIF
              
              IF (ABS(rpt-Rs) .LE. radtol ) THEN
                 inum = inum + 1
@@ -557,7 +578,8 @@ CONTAINS
        ENDDO
        
     ENDIF
-    
+
+    maxpts = numpts
     maxrpts = numrpts
     maxthetapts = numthetapts
     
@@ -614,7 +636,6 @@ CONTAINS
   !  GET CARTESIAN BOUNDARY 3D
   !----------------------------------------------------!
   
-  
   SUBROUTINE get_cartesian_boundary3D(psi_cart,psi3D_sph, &
        psi3D_sph_dx, psi3D_sph_dy, psi3D_sph_dz, method)
     
@@ -628,7 +649,7 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN)      :: method
     
     INTEGER                           :: inum, ir, itheta, iphi
-    
+    INTEGER                           :: otro
     psi_scatt = ZERO
     psi3D_sph = ZERO
     psi3D_sph_dx = ZERO
@@ -700,43 +721,89 @@ CONTAINS
   
   !----------------------------------------------------------------!
   
-!!$  SUBROUTINE cartesian2spherical2D( psi_cart, dims, coords, rb, &
-!!$       psi_sph, d1psi_sph, d2psi_sph )
-!!$    
-!!$    IMPLICIT NONE
-!!$    
-!!$    COMPLEX(dp), INTENT(IN)             :: psi_cart(:)
-!!$    INTEGER, INTENT(IN)                 :: dims(:)
-!!$    REAL(dp), INTENT(IN)                :: coords(:, :, :)
-!!$    REAL(dp), INTENT(IN)                :: rb
-!!$    COMPLEX(dp), INTENT(OUT)            :: psi_sph(:)
-!!$
-!!$    INTEGER                             :: maxxpts, maxypts, maxzpts
-!!$    
-!!$
-!!$
-!!$    maxxpts = dims(1)
-!!$    maxypts = dims(2)
-!!$    maxzpts = dims(3)
-!!$    
-!!$    ! Check if the wavefunction and the boundary are in the same
-!!$    ! processor
-!!$    !IF ()
-!!$    
-!!$    
-!!$    ! Transform the wavefunction to spherical.
-!!$    
-!!$    
-!!$    
-!!$    ! Interpolate the the coordinates-transformed wavefunction onto
-!!$    ! a regular grid.
-!!$
-!!$    
-!!$    ! Project the wavefunction onto the spherical harmonics basis.
-!!$    
-!!$    
-!!$  END SUBROUTINE cartesian2spherical2D
-  
+  SUBROUTINE cartesian2spherical2D(psi_cart,psi_sph, x_ax, y_ax, &
+       r_ax, theta_ax, method, psi_sph_dr, psi_sph_dth)
+    
+    IMPLICIT NONE
+    
+    COMPLEX(dp), INTENT(IN)             :: psi_cart(:, :)
+    COMPLEX(dp), INTENT(OUT)            :: psi_sph(:, :)
+    REAL(dp), INTENT(IN)                :: x_ax(:), y_ax(:)
+    REAL(dp), INTENT(IN)                :: r_ax(:), theta_ax(:)
+    CHARACTER(LEN=*), INTENT(IN)        :: method
+    COMPLEX(dp), INTENT(OUT), OPTIONAL  :: psi_sph_dr(:, :)
+    COMPLEX(dp), INTENT(OUT), OPTIONAL  :: psi_sph_dth(:, :)
+    
+    INTEGER                             :: ix, iy, ii
+    INTEGER                             :: ir, itheta, inum
+    INTEGER, DIMENSION(2)               :: dims_in, dims_out
+    INTEGER                             :: numpts_in, numpts_out
+    REAL(dp)                            :: rpt
+    REAL(dp), ALLOCATABLE               :: r_inp(:)
+    REAL(dp), ALLOCATABLE               :: theta_inp(:)
+    COMPLEX(dp), ALLOCATABLE            :: psi_inp(:)
+    
+    
+    dims_in = SHAPE(psi_cart)
+    dims_out = SHAPE(psi_sph)
+    
+    numpts_in = dims_in(1) *  dims_in(2)
+    numpts_out = dims_out(1) *  dims_out(2)
+    
+    ALLOCATE(r_inp(1:numpts_in))
+    ALLOCATE(theta_inp(1:numpts_in))
+    ALLOCATE(psi_inp(1:numpts_in))
+    
+    psi_inp = ZERO
+    psi_sph = ZERO
+    
+    ii = 0
+    
+    DO iy = 1, dims_in(2)
+       DO ix = 1, dims_in(1)
+          ii = ii + 1
+          rpt = SQRT(x_ax(ix)**2 + y_ax(iy)**2 )
+          
+          r_inp(ii) = rpt
+          theta_inp(ii) = ATAN2( y_ax(iy) , x_ax(ix) )
+          psi_inp(ii) = psi_cart(ix, iy)
+       ENDDO
+    ENDDO
+    
+    CALL create_interpolant(numpts_in,r_inp,theta_inp,psi_inp,TRIM(method))
+    
+    IF (PRESENT(psi_sph_dr).AND.PRESENT(psi_sph_dth)) THEN
+       psi_sph_dr = ZERO
+       psi_sph_dth = ZERO
+       
+       DO itheta = 1, dims_out(2)
+          DO ir = 1, dims_out(1)
+             CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), &
+                  r_inp, theta_inp, &
+                  psi_inp, TRIM(method), psi_sph(ir,itheta), &
+                  psi_sph_dr(ir,itheta), psi_sph_dth(ir,itheta) )
+          ENDDO
+       ENDDO
+       
+       
+    ELSEIF (.NOT.PRESENT(psi_sph_dr).AND. &
+         .NOT.PRESENT(psi_sph_dth) ) THEN
+       
+       DO itheta = 1, dims_out(2)
+          DO ir = 1, dims_out(1)
+             CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), &
+                  r_inp, theta_inp, &
+                  psi_inp, TRIM(method), psi_sph(ir,itheta) )
+          ENDDO
+       ENDDO
+       
+    ELSE
+       WRITE(*,*) 'You must input and array for get the derivatives!'
+       RETURN   
+    ENDIF
+    
+    
+  END SUBROUTINE cartesian2spherical2D
   
   !----------------------------------------------------------------!
   
@@ -789,8 +856,12 @@ CONTAINS
              rpt = SQRT(x_ax(ix)**2 + y_ax(iy)**2 + z_ax(iz)**2 )
              
              r_inp(ii) = rpt
-             theta_inp(ii) = ACOS( z_ax(iz) / (rpt) )
-             phi_inp(ii) = ATAN( y_ax(iy) / x_ax(ix) )
+             IF(rpt.EQ.0.0_dp) THEN
+                theta_inp(ii) = pi / 2.0_dp
+             ELSE
+                theta_inp(ii) = ACOS( z_ax(iz) / rpt )
+             ENDIF
+             phi_inp(ii) = ATAN2( y_ax(iy) , x_ax(ix) )
              psi_inp(ii) = psi_cart(ix, iy, iz)
           ENDDO
        ENDDO
@@ -884,7 +955,11 @@ CONTAINS
           rpt = SQRT(rho_ax(irho)**2 + z_ax(iz)**2 )
           
           r_inp(ii) = rpt
-          theta_inp(ii) = ACOS( z_ax(iz) / rpt )
+          IF(rpt.EQ.0.0_dp) THEN
+             theta_inp(ii) = pi / 2.0_dp
+          ELSE
+             theta_inp(ii) = ACOS( z_ax(iz) / rpt )
+          ENDIF
           psi_inp(ii) = psi_cyl(irho, iz)
        ENDDO
     ENDDO
