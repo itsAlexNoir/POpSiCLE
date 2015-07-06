@@ -32,8 +32,8 @@ MKLLIBS	   = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -openmp
 LIBS	   = ${MKLLIBS}
 OMPLIBS	   = -openmp
 
-HDF5ROOT   = /users/adelacalle/my_libraries/hdf5/serial
-SZIPROOT   = /users/adelacalle/my_libraries/szip
+HDF5ROOT   = /users/adelacalle/my_libraries/hdf5/serial/current/
+SZIPROOT   = /users/adelacalle/my_libraries/szip/current/
 
 HDF5LIBS   = -L${HDF5ROOT}/lib/ \
                 ${HDF5ROOT}/lib/libhdf5hl_fortran.a \
@@ -44,7 +44,7 @@ HDF5LIBS	+=   -L${SZIPROOT}/lib -lsz -lz -ldl -lm
 HDF5INCLUDE	=	-I${HDF5ROOT}/include
 HDF5		= $(HDF5LIBS) $(HDF5INCLUDE)
 
-PHDF5ROOT	=	/users/adelacalle/my_libraries/hdf5/parallel
+PHDF5ROOT	=	/users/adelacalle/my_libraries/hdf5/parallel/current/
 
 PHDF5LIBS    =   -L${PHDF5ROOT}/lib/ \
                 ${PHDF5ROOT}/lib/libhdf5hl_fortran.a \
