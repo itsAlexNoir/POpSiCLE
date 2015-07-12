@@ -16,8 +16,8 @@ SHEPPACK_DIR = interp_libs/sheppack
 
 include interp_libs/slatec/interp_routines.lst
 include interp_libs/sheppack/sheppack_routines.lst
-POPSICLE_OBJS = constants.o coords_transformation.o \
-	fourier.o interp.o popsicle.o io.o
+POPSICLE_OBJS = constants.o tools.o coords_transformation.o \
+	fourier.o interp.o popsicle.o io.o patchwork.o
 
 ifeq (${FFT_LIB},fftw)
 POPSICLE_OBJS += fftw.o 
@@ -95,14 +95,15 @@ LIBS	+= -lsz -lz -ldl -lm
 
 coords_transformation.o: constants.o interp.o
 interp.o: constants.o ${SHEPPACK_OBJS}
-io.o: constants.o
+io.o: constants.o patchwork.o
 popsicle.o : constants.o fourier.o \
 	coords_transformation.o io.o
 ifeq (${FFT_LIB},mkl)
-fourier.o: ${MKL_DFTI} constants.o
+fourier.o: ${MKL_DFTI} constants.o tools.o
 else ifeq (${FFT_LIB},fftw)
-fourier.o: fftw.o
+fourier.o: constants.o tools.o fftw.o
 endif
+patchwork.o: constants.o tools.o
 
 ##-----------------------------------------------
 
@@ -113,6 +114,7 @@ lib: ${POPSICLE_OBJS} ${INTERP_OBJS} ${SHEPPACK_OBJS}
 	ranlib libpopsicle_${PLIB}.a
 	cp -rf libpopsicle_${PLIB}.a ${POPSICLE_ROOT}/lib
 	cp -rf *.mod ${POPSICLE_ROOT}/lib
+	rm -rf libpopsicle_${PLIB}.a
 
 ${SHEPPACK_OBJS}:
 	cd ${SHEPPACK_DIR}; ${MAKE} install "FC=${FC}" \

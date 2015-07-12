@@ -2,22 +2,33 @@ MODULE io
   
   USE HDF5
   USE constants
+  USE tools
+  
 #if _COM_MPI
   USE MPI
+  USE patchwork
 #endif
-
+  
   IMPLICIT NONE
   
   PRIVATE
   
   PUBLIC               :: write_wave
-  
+#if _COM_MPI
+  PUBLIC               :: write_slice_xyz
+  PUBLIC               :: write_slice_xy
+  PUBLIC               :: write_slice_xz
+  PUBLIC               :: write_slice_yz
+  PUBLIC               :: write_slice_rz
+#endif
+
   INTERFACE write_wave
      MODULE PROCEDURE write_wave_serial
 #if _COM_MPI
      MODULE PROCEDURE write_wave_parallel
 #endif
   END INTERFACE write_wave
+  
   
   
 CONTAINS
@@ -313,6 +324,422 @@ CONTAINS
     ENDIF
     
   END SUBROUTINE write_wave_parallel
-#endif  
+  
+  !------------------------------------------------------------!
+  
+  
+  SUBROUTINE write_slice_xyz(density3D, rank, dims_local, dims_global, &
+       globalcomm, grid_rank, grid_addresses, filename)
+    
+    IMPLICIT NONE
+    
+    REAL(dp), INTENT(IN)        :: density3D(:, :, :)
+    INTEGER, INTENT(IN)         :: rank
+    INTEGER, INTENT(IN)         :: dims_local(:)
+    INTEGER, INTENT(IN)         :: dims_global(:)
+    INTEGER, INTENT(IN)         :: globalcomm
+    INTEGER, INTENT(IN)         :: grid_rank(:)
+    INTEGER, INTENT(IN)         :: grid_addresses(:)
+    CHARACTER(LEN=*), INTENT(IN) :: filename 
+    
+    !--------------------------------------------------!
+    
+    REAL(dp), ALLOCATABLE        :: densitytotal3D(:, :, :)
+    INTEGER                      :: ipgrid(3)
+    INTEGER, ALLOCATABLE         :: members(:)
+    INTEGER                      :: simgroup, iogroup, iocomm
+    INTEGER                      :: iogroup_size, ipro
+    INTEGER                      :: numprocx, numprocy, numprocz, numprocr
+    INTEGER                      :: Nx, Ny, Nz, Nr
+    INTEGER                      :: Nxgl, Nygl, Nzgl, Nrgl
+    INTEGER                      :: ipx, ipy, ipz, ipr
+    INTEGER                      :: iprocx, iprocy
+    INTEGER                      :: iprocz, iprocr
+    INTEGER                      :: ierror
+    
+    !---------------------------------------------------!
+    
+    ! Create a global group, used for I/O
+    call MPI_COMM_GROUP(globalcomm, simgroup, ierror)
+    
+    ! Assign dimensions
+    CALL get_simulation_parameters( rank, &
+         dims_local, dims_global, grid_rank, &
+         Nx, Ny, Nz, Nr, Nxgl, Nygl, Nzgl, Nrgl, &
+         ipx, ipy, ipz, ipr, &
+         numprocx, numprocy, numprocz, numprocr )
+    
+    ipgrid  = (/ipx, ipy, ipz/)
+    
+    ! Allocate global array
+    ALLOCATE(densitytotal3D(1:Nx,1:Ny,1:Nz))
+    
+    ! Sum our slice across processors
+    CALL sum_grid_pieces_xyz(density3D, densitytotal3D, rank, &
+         dims_local, dims_global, &
+         globalcomm, grid_rank, grid_addresses )
+    
+    ! Get a communicator for those who contribute
+    iogroup_size = numprocx * numprocy * numprocz
+    ALLOCATE(members(1:iogroup_size))
+    members = 0
+    
+    ipro = 0
+    DO iprocz = 0, numprocz - 1
+       DO iprocy = 0, numprocy - 1
+          DO iprocx = 0, numprocx - 1
+             ipro = ipro + 1
+             members(ipro) = grid_addresses(indx(iprocx+1,iprocy+1,iprocz+1, &
+                  1,numprocx,numprocy,numprocz,numprocr))      
+          ENDDO
+       ENDDO
+    ENDDO
+    
+    CALL MPI_GROUP_INCL(simgroup, iogroup_size, members, iogroup, ierror)
+    
+    CALL MPI_COMM_CREATE(globalcomm, iogroup, iocomm, ierror)
+    
+    IF (ipr.EQ.0) THEN
+       CALL write_wave(RESHAPE(density3D,(/Nx*Ny*Nz/)), 3, &
+            (/Nx,Ny,Nz/), (/Nxgl,Nygl,Nzgl/), &
+            iocomm, ipgrid, filename )
+    ENDIF
+    
+    DEALLOCATE(densitytotal3D)
+    DEALLOCATE(members)
+    
+  END SUBROUTINE write_slice_xyz
+  
+  !--------------------------------------------------------!
+  
+  SUBROUTINE write_slice_xy(density2D, rank, dims_local, dims_global, &
+       globalcomm, grid_rank, grid_addresses, filename)
+    
+    IMPLICIT NONE
+    
+    REAL(dp), INTENT(IN)        :: density2D(:, :)
+    INTEGER, INTENT(IN)         :: rank
+    INTEGER, INTENT(IN)         :: dims_local(:)
+    INTEGER, INTENT(IN)         :: dims_global(:)
+    INTEGER, INTENT(IN)         :: globalcomm
+    INTEGER, INTENT(IN)         :: grid_rank(:)
+    INTEGER, INTENT(IN)         :: grid_addresses(:)
+    CHARACTER(LEN=*), INTENT(IN) :: filename 
+    
+    !--------------------------------------------------!
+    
+    REAL(dp), ALLOCATABLE        :: densitytotal2D(:, :)
+    INTEGER                      :: ipgrid(2)
+    INTEGER, ALLOCATABLE         :: members(:)
+    INTEGER                      :: simgroup, iogroup, iocomm
+    INTEGER                      :: iogroup_size, ipro
+    INTEGER                      :: numprocx, numprocy, numprocz, numprocr
+    INTEGER                      :: Nx, Ny, Nz, Nr
+    INTEGER                      :: Nxgl, Nygl, Nzgl, Nrgl
+    INTEGER                      :: ipx, ipy, ipz, ipr
+    INTEGER                      :: iprocx, iprocy
+    INTEGER                      :: iprocz, iprocr
+    INTEGER                      :: ierror
+    
+    !---------------------------------------------------!
+    
+    ! Create a global group, used for I/O
+    call MPI_COMM_GROUP(globalcomm, simgroup, ierror)
+    
+    ! Assign dimensions
+    CALL get_simulation_parameters( rank, &
+         dims_local, dims_global, grid_rank, &
+         Nx, Ny, Nz, Nr, Nxgl, Nygl, Nzgl, Nrgl, &
+         ipx, ipy, ipz, ipr, &
+         numprocx, numprocy, numprocz, numprocr )
+    
+    ipgrid  = (/ipx, ipy/)
+    
+    ! Allocate global array
+    ALLOCATE(densitytotal2D(1:Nx,1:Ny))
+    
+    ! Sum our slice across processors
+    CALL sum_grid_pieces_xy(density2D, densitytotal2D, rank, &
+         dims_local, dims_global, &
+         globalcomm, grid_rank, grid_addresses )
+    
+    ! Get a communicator for those who contribute
+    iogroup_size = numprocx * numprocy
+    ALLOCATE(members(1:iogroup_size))
+    members = 0
+    
+    ipro = 0
+    DO iprocy = 0, numprocy - 1
+       DO iprocx = 0, numprocx - 1
+          ipro = ipro + 1
+          members(ipro) = grid_addresses(indx(iprocx+1,iprocy+1,1, &
+               1,numprocx,numprocy,numprocz,numprocr))      
+       ENDDO
+    ENDDO
+    
+    CALL MPI_GROUP_INCL(simgroup, iogroup_size, members, iogroup, ierror)
+    
+    CALL MPI_COMM_CREATE(globalcomm, iogroup, iocomm, ierror)
+    
+    IF (ipz.EQ.0 .AND. ipr.EQ.0) THEN
+       CALL write_wave(RESHAPE(density2D,(/Nx * Ny/)), 2, &
+            (/Nx, Ny/), (/Nxgl, Nygl/), &
+            iocomm, ipgrid, filename )
+    ENDIF
+    
+    DEALLOCATE(densitytotal2D)
+    DEALLOCATE(members)
+    
+  END SUBROUTINE write_slice_xy
+  
+  !--------------------------------------------------------!
+  
+  SUBROUTINE write_slice_xz(density2D, rank, dims_local, dims_global, &
+       globalcomm, grid_rank, grid_addresses, filename)
+    
+    IMPLICIT NONE
+    
+    REAL(dp), INTENT(IN)        :: density2D(:, :)
+    INTEGER, INTENT(IN)         :: rank
+    INTEGER, INTENT(IN)         :: dims_local(:)
+    INTEGER, INTENT(IN)         :: dims_global(:)
+    INTEGER, INTENT(IN)         :: globalcomm
+    INTEGER, INTENT(IN)         :: grid_rank(:)
+    INTEGER, INTENT(IN)         :: grid_addresses(:)
+    CHARACTER(LEN=*), INTENT(IN) :: filename
+    
+    !--------------------------------------------------!
+    
+    REAL(dp), ALLOCATABLE        :: densitytotal2D(:, :)
+    INTEGER                      :: ipgrid(2)
+    INTEGER, ALLOCATABLE         :: members(:)
+    INTEGER                      :: simgroup, iogroup, iocomm
+    INTEGER                      :: iogroup_size, ipro
+    INTEGER                      :: numprocx, numprocy, numprocz, numprocr
+    INTEGER                      :: Nx, Ny, Nz, Nr
+    INTEGER                      :: Nxgl, Nygl, Nzgl, Nrgl
+    INTEGER                      :: ipx, ipy, ipz, ipr
+    INTEGER                      :: iprocx, iprocy
+    INTEGER                      :: iprocz, iprocr
+    INTEGER                      :: ierror
+    
+    !---------------------------------------------------!
+    
+    ! Create a global group, used for I/O
+    call MPI_COMM_GROUP(globalcomm, simgroup, ierror)
+    
+    ! Assign dimensions
+    CALL get_simulation_parameters( rank, &
+         dims_local, dims_global, grid_rank, &
+         Nx, Ny, Nz, Nr, Nxgl, Nygl, Nzgl, Nrgl, &
+         ipx, ipy, ipz, ipr, &
+         numprocx, numprocy, numprocz, numprocr )
+    
+    ipgrid  = (/ipx, ipz/)
+    
+    ! Allocate global array
+    ALLOCATE(densitytotal2D(1:Nx,1:Nz))
+    
+    ! Sum our slice across processors
+    CALL sum_grid_pieces_xz(density2D, densitytotal2D, rank, &
+         dims_local, dims_global, &
+         globalcomm, grid_rank, grid_addresses )
+    
+    ! Get a communicator for those who contribute
+    iogroup_size = numprocx * numprocz
+    ALLOCATE(members(1:iogroup_size))
+    members = 0
+    
+    ipro = 0
+    DO iprocz = 0, numprocz - 1
+       DO iprocx = 0, numprocx - 1
+          ipro = ipro + 1
+          members(ipro) = grid_addresses(indx(iprocx+1,1,iprocz+1, &
+               1,numprocx,numprocy,numprocz,numprocr))      
+       ENDDO
+    ENDDO
+    
+    CALL MPI_GROUP_INCL(simgroup, iogroup_size, members, iogroup, ierror)
+    
+    CALL MPI_COMM_CREATE(globalcomm, iogroup, iocomm, ierror)
+    
+    IF (ipy.EQ.0 .AND. ipr.EQ.0) THEN
+       CALL write_wave(RESHAPE(density2D,(/Nx * Nz/)), 2, &
+            (/Nx,Nz/),(/Nxgl,Nzgl/), &          
+            iocomm, ipgrid, filename )
+    ENDIF
+    
+    DEALLOCATE(densitytotal2D)
+    DEALLOCATE(members)
+    
+  END SUBROUTINE write_slice_xz
 
+  !--------------------------------------------------------!
+
+   SUBROUTINE write_slice_yz(density2D, rank, dims_local, dims_global, &
+       globalcomm, grid_rank, grid_addresses, filename)
+    
+    IMPLICIT NONE
+
+    REAL(dp), INTENT(IN)        :: density2D(:, :)
+    INTEGER, INTENT(IN)         :: rank
+    INTEGER, INTENT(IN)         :: dims_local(:)
+    INTEGER, INTENT(IN)         :: dims_global(:)
+    INTEGER, INTENT(IN)         :: globalcomm
+    INTEGER, INTENT(IN)         :: grid_rank(:)
+    INTEGER, INTENT(IN)         :: grid_addresses(:)
+    CHARACTER(LEN=*), INTENT(IN) :: filename
+    
+    !--------------------------------------------------!
+    
+    REAL(dp), ALLOCATABLE        :: densitytotal2D(:, :)
+    INTEGER                      :: ipgrid(2)
+    INTEGER, ALLOCATABLE         :: members(:)
+    INTEGER                      :: simgroup, iogroup, iocomm
+    INTEGER                      :: iogroup_size, ipro
+    INTEGER                      :: numprocx, numprocy, numprocz, numprocr
+    INTEGER                      :: Nx, Ny, Nz, Nr
+    INTEGER                      :: Nxgl, Nygl, Nzgl, Nrgl
+    INTEGER                      :: ipx, ipy, ipz, ipr
+    INTEGER                      :: iprocx, iprocy
+    INTEGER                      :: iprocz, iprocr
+    INTEGER                      :: ierror
+    
+    !---------------------------------------------------!
+    
+    ! Create a global group, used for I/O
+    call MPI_COMM_GROUP(globalcomm, simgroup, ierror)
+    
+    ! Assign dimensions
+    CALL get_simulation_parameters( rank, &
+         dims_local, dims_global, grid_rank, &
+         Nx, Ny, Nz, Nr, Nxgl, Nygl, Nzgl, Nrgl, &
+         ipx, ipy, ipz, ipr, &
+         numprocx, numprocy, numprocz, numprocr )
+    
+    ipgrid  = (/ipy, ipz/)
+    
+    ! Allocate global array
+    ALLOCATE(densitytotal2D(1:Ny,1:Nz))
+    
+    ! Sum our slice across processors
+    CALL sum_grid_pieces_yz(density2D, densitytotal2D, rank, &
+         dims_local, dims_global, &
+         globalcomm, grid_rank, grid_addresses )
+    
+    ! Get a communicator for those who contribute
+    iogroup_size = numprocy * numprocz
+    ALLOCATE(members(1:iogroup_size))
+    members = 0
+    
+    ipro = 0
+    DO iprocz = 0, numprocz - 1
+       DO iprocy = 0, numprocy - 1
+          ipro = ipro + 1
+          members(ipro) = grid_addresses(indx(1,iprocy+1,iprocz+1, &
+               1,numprocx,numprocy,numprocz,numprocr))      
+       ENDDO
+    ENDDO
+    
+    CALL MPI_GROUP_INCL(simgroup, iogroup_size, members, iogroup, ierror)
+    
+    CALL MPI_COMM_CREATE(globalcomm, iogroup, iocomm, ierror)
+    
+    IF (ipx.EQ.0 .AND. ipr.EQ.0) THEN
+       CALL write_wave(RESHAPE(density2D,(/Ny * Nz/)), 2, &
+            (/Ny, Nz/), (/Nygl, Nzgl/), &
+            iocomm, ipgrid, filename )
+    ENDIF
+    
+    DEALLOCATE(densitytotal2D)
+    DEALLOCATE(members)
+    
+  END SUBROUTINE write_slice_yz
+
+  !------------------------------------------------------------------------!
+
+   SUBROUTINE write_slice_rz( density2D, rank, dims_local, dims_global, &
+       globalcomm, grid_rank, grid_addresses, filename)
+    
+    IMPLICIT NONE
+
+    REAL(dp), INTENT(IN)        :: density2D(:, :)
+    INTEGER, INTENT(IN)         :: rank
+    INTEGER, INTENT(IN)         :: dims_local(:)
+    INTEGER, INTENT(IN)         :: dims_global(:)
+    INTEGER, INTENT(IN)         :: globalcomm
+    INTEGER, INTENT(IN)         :: grid_rank(:)
+    INTEGER, INTENT(IN)         :: grid_addresses(:)
+    CHARACTER(LEN=*), INTENT(IN) :: filename
+    
+    !--------------------------------------------------!
+    
+    REAL(dp), ALLOCATABLE        :: densitytotal2D(:, :)
+    INTEGER                      :: ipgrid(2)
+    INTEGER, ALLOCATABLE         :: members(:)
+    INTEGER                      :: simgroup, iogroup, iocomm
+    INTEGER                      :: iogroup_size, ipro
+    INTEGER                      :: numprocx, numprocy, numprocz, numprocr
+    INTEGER                      :: Nx, Ny, Nz, Nr
+    INTEGER                      :: Nxgl, Nygl, Nzgl, Nrgl
+    INTEGER                      :: ipx, ipy, ipz, ipr
+    INTEGER                      :: iprocx, iprocy
+    INTEGER                      :: iprocz, iprocr
+    INTEGER                      :: ierror
+    
+    !---------------------------------------------------!
+    
+    ! Create a global group, used for I/O
+    call MPI_COMM_GROUP(globalcomm, simgroup, ierror)
+    
+    ! Assign dimensions
+    CALL get_simulation_parameters( rank, &
+         dims_local, dims_global, grid_rank, &
+         Nx, Ny, Nz, Nr, Nxgl, Nygl, Nzgl, Nrgl, &
+         ipx, ipy, ipz, ipr, &
+         numprocx, numprocy, numprocz, numprocr )
+    
+    ipgrid  = (/ipz, ipr/)
+    
+    ! Allocate global array
+    ALLOCATE(densitytotal2D(1:Nz,1:Nr))
+    
+    ! Sum our slice across processors
+    CALL sum_grid_pieces_rz(density2D, densitytotal2D, rank, &
+         dims_local, dims_global, &
+         globalcomm, grid_rank, grid_addresses )
+    
+    ! Get a communicator for those who contribute
+    iogroup_size = numprocr * numprocz
+    ALLOCATE(members(1:iogroup_size))
+    members = 0
+    
+    ipro = 0
+    DO iprocr = 0, numprocr - 1
+       DO iprocz = 0, numprocz - 1
+          ipro = ipro + 1
+          members(ipro) = grid_addresses(indx(1,1,iprocz+1, &
+               iprocr+1,numprocx,numprocy,numprocz,numprocr))      
+       ENDDO
+    ENDDO
+    
+    CALL MPI_GROUP_INCL(simgroup, iogroup_size, members, iogroup, ierror)
+    
+    CALL MPI_COMM_CREATE(globalcomm, iogroup, iocomm, ierror)
+    
+    IF (ipx.EQ.0 .AND. ipy.EQ.0) THEN
+       CALL write_wave(RESHAPE(density2D,(/Nr * Nz/)), 2, &
+            (/ Nz, Nr/), (/Nzgl, Nrgl/), &
+            iocomm, ipgrid, filename )
+    ENDIF
+    
+    DEALLOCATE(densitytotal2D)
+    DEALLOCATE(members)
+    
+  END SUBROUTINE write_slice_rz
+  
+  !-------------------------------------------------------------------!
+
+#endif  
+  
 END MODULE io

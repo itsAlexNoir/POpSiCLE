@@ -1,13 +1,14 @@
 MODULE fourier
   
 #if _COM_MPI
-
+  
   USE MPI
   
 #endif
   
   USE omp_lib
   USE constants
+  USE tools
   
   IMPLICIT NONE
   
@@ -17,7 +18,6 @@ MODULE fourier
   PUBLIC                         :: FFT
   PUBLIC                         :: HankelTransform
   PUBLIC                         :: create_mask
-  PUBLIC                         :: indx
   
   INTERFACE create_mask
      MODULE PROCEDURE create_mask4D
@@ -80,6 +80,8 @@ CONTAINS
     INTEGER, INTENT(IN)           :: grid_rank(:)
     INTEGER, INTENT(IN)           :: grid_addresses(:)
     
+    !--------------------------------------------------!
+
     COMPLEX(dp), ALLOCATABLE      :: psi_sd(:)
     COMPLEX(dp), ALLOCATABLE      :: psi_rc(:)
     INTEGER, ALLOCATABLE          :: fftcomm(:)
@@ -89,6 +91,7 @@ CONTAINS
     INTEGER                       :: dims_phony(4)
     INTEGER                       :: Nx, Ny, Nz, Nr
     INTEGER                       :: Nxgl, Nygl, Nzgl, Nrgl
+    INTEGER                       :: ipx, ipy, ipz, ipr
     INTEGER                       :: numprocx, numprocy
     INTEGER                       :: numprocz, numprocr
     INTEGER                       :: ix, iy, iz, ir
@@ -103,58 +106,14 @@ CONTAINS
     ! Copy the original array
     psik = psi
     
+    
     ! Assign dimensions
-    IF (rank .EQ. 1) THEN
-       Nx = dims_local(1)
-       Ny = 1
-       Nz = 1
-       Nr = 1
-
-       Nxgl = dims_global(1)
-       Nygl = 1
-       Nzgl = 1
-       Nrgl = 1
-    ELSEIF (rank .EQ. 2) THEN
-       Nx = dims_local(1)
-       Ny = dims_local(2)
-       Nz = 1
-       Nr = 1
-
-       Nxgl = dims_global(1)
-       Nygl = dims_global(2)
-       Nzgl = 1
-       Nrgl = 1
-    ELSEIF (rank .EQ. 3) THEN
-       Nx = dims_local(1)
-       Ny = dims_local(2)
-       Nz = dims_local(3)
-       Nr = 1
-
-       Nxgl = dims_global(1)
-       Nygl = dims_global(2)
-       Nzgl = dims_global(3)
-       Nrgl = 1
-    ELSEIF (rank .EQ. 4) THEN
-       Nx = dims_local(1)
-       Ny = dims_local(2)
-       Nz = dims_local(3)
-       Nr = dims_local(4)
-       
-       Nxgl = dims_global(1)
-       Nygl = dims_global(2)
-       Nzgl = dims_global(3)
-       Nrgl = dims_global(4)
-    ELSE
-       WRITE(*,*) 'No option implemented for these dimensions'
-       STOP
-    ENDIF
-    
-    ! Work out the number of processors per dimension
-    numprocx = Nxgl / Nx
-    numprocy = Nygl / Ny
-    numprocz = Nzgl / Nz
-    numprocr = Nrgl / Nr
-    
+    CALL get_simulation_parameters( rank, &
+         dims_local, dims_global, grid_rank, &
+         Nx, Ny, Nz, Nr, Nxgl, Nygl, Nzgl, Nrgl, &
+         ipx, ipy, ipz, ipr, &
+         numprocx, numprocy, numprocz, numprocr )
+        
     ! Create global group (for all the processors)
     CALL MPI_COMM_GROUP(comm_gl,group_gl,ierror)
     
@@ -163,7 +122,7 @@ CONTAINS
     !********************
     ! FFT in x direction
     !********************
-
+    
     ! In case there is only one processor in this dimension
     IF (numprocx .EQ. 1) THEN
        ALLOCATE(psi_sd(1:Nxgl))
@@ -240,8 +199,8 @@ CONTAINS
        dims_phony(1) = Nxgl
        
        ! Work out in which group we are
-       ipro = grid_rank(2) + numprocy * grid_rank(3) + &
-            numprocy * numprocz * grid_rank(4)
+       ipro = ipy + numprocy * ipz + &
+            numprocy * numprocz * ipr
        
        DO ir = 1, Nr
           DO iz = 1, Nz
@@ -252,7 +211,7 @@ CONTAINS
                 psi_rc = ZERO
                 
                 DO ix = 1, Nx
-                   igl = ix + grid_rank(1) * Nx
+                   igl = ix + ipx * Nx
                    psi_sd(igl) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
                 ENDDO
                 
@@ -275,7 +234,7 @@ CONTAINS
                 
                 
                 DO ix = 1, Nx
-                   igl = ix + grid_rank(1) * Nx
+                   igl = ix + ipx * Nx
                    psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_sd(igl)
                 ENDDO
                 
@@ -365,8 +324,8 @@ CONTAINS
           ENDDO
           
           ! Work out in which group we are
-          ipro = grid_rank(1) + numprocx * grid_rank(3) + &
-               numprocx * numprocz * grid_rank(4)
+          ipro = ipx + numprocx * ipz + &
+               numprocx * numprocz * ipr
           
           ALLOCATE(psi_sd(1:Nygl))
           ALLOCATE(psi_rc(1:Nygl))
@@ -380,7 +339,7 @@ CONTAINS
                    psi_rc = ZERO
                    
                    DO iy = 1, Ny
-                      igl = iy + grid_rank(2) * Ny
+                      igl = iy + ipy * Ny
                       psi_sd(igl) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
                    ENDDO
                    
@@ -404,7 +363,7 @@ CONTAINS
                    
                    ! Copy the result back to the local psik
                    DO iy = 1, Ny
-                      igl = iy + grid_rank(2) * Ny
+                      igl = iy + ipy * Ny
                       psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_sd(igl)
                    ENDDO
                    
@@ -494,8 +453,8 @@ CONTAINS
           ENDDO
           
           ! Work out in which group we are
-          ipro = grid_rank(1) + numprocx * grid_rank(2) + &
-               numprocx * numprocy * grid_rank(4)
+          ipro = ipx + numprocx * ipy + &
+               numprocx * numprocy * ipr
           
           ALLOCATE(psi_sd(1:Nzgl))
           ALLOCATE(psi_rc(1:Nzgl))
@@ -509,7 +468,7 @@ CONTAINS
                    psi_rc = ZERO
                    
                    DO iz = 1, Nz
-                      igl = iz + grid_rank(3) * Nz
+                      igl = iz + ipz * Nz
                       psi_sd(igl) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
                    ENDDO
                    
@@ -533,7 +492,7 @@ CONTAINS
                    
                    ! Copy the result back to the local psik                   
                    DO iz = 1, Nz
-                      igl = iz + grid_rank(3) * Nz
+                      igl = iz + ipz * Nz
                       psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_sd(igl)
                    ENDDO
                    
@@ -620,8 +579,8 @@ CONTAINS
           ENDDO
           
           ! Work out in which group we are
-          ipro = grid_rank(1) + numprocx * grid_rank(2) + &
-               numprocx * numprocy * grid_rank(3)
+          ipro = ipx + numprocx * ipy + &
+               numprocx * numprocy * ipz
           
           ALLOCATE(psi_sd(1:Nrgl))
           ALLOCATE(psi_rc(1:Nrgl))
@@ -631,7 +590,7 @@ CONTAINS
                 DO ix = 1, Nx
                    
                    DO ir = 1, Nr
-                      igl = ir + grid_rank(4) * Nr
+                      igl = ir + ipr * Nr
                       psi_sd(igl) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
                    ENDDO
                    
@@ -655,7 +614,7 @@ CONTAINS
                    
                    ! Copy the result back to the local psik                   
                    DO ir = 1, Nr
-                      igl = ir + grid_rank(4) * Nr
+                      igl = ir + ipr * Nr
                       psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_rc(igl)
                    ENDDO
                    
@@ -672,21 +631,6 @@ CONTAINS
   END SUBROUTINE FourierTransform_Parallel
   
 #endif
-  
-  !----------------------------------------------------!
-  
-  FUNCTION indx(ix, iy, iz, ir, Nx, Ny, Nz, Nr)
-    
-    IMPLICIT NONE
-    
-    INTEGER, INTENT(IN)      :: ix, iy, iz, ir
-    INTEGER, INTENT(IN)      :: Nx, Ny, Nz, Nr
-    INTEGER                  :: indx
-    
-    indx = Nx*Ny*Nz*(ir-1) + Nx*Ny*(iz-1) &
-         + Nx*(iy-1) + ix
-    
-  END FUNCTION indx
   
   !----------------------------------------------------!
   

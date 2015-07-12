@@ -42,8 +42,12 @@ MODULE constants
   ! Physical and mathematical constants
   !--------------------------------------
 
-  !> \todo document this.
+  !> \todo: document this.
   REAL(dp), PARAMETER, PUBLIC :: amu_to_internal  = 103.6426867_dp
+  !> in atomic units
+  REAL(dp), PARAMETER, PUBLIC :: speed_ligth      = 137.0_dp
+  !> Fine-structure constant in atomic units
+  REAL(dp), PARAMETER, PUBLIC :: fine_structure  = 1.0_dp / 137.0_dp
   !> in eV / K units
   REAL(dp), PARAMETER, PUBLIC :: boltzmann_k      = 8.61734215E-5_dp
   !> One eV in hartree (atomic units of energy).
