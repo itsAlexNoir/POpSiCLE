@@ -400,7 +400,7 @@ CONTAINS
     CALL MPI_COMM_CREATE(globalcomm, iogroup, iocomm, ierror)
     
     IF (ipr.EQ.0) THEN
-       CALL write_wave(RESHAPE(density3D,(/Nx*Ny*Nz/)), 3, &
+       CALL write_wave(RESHAPE(densitytotal3D,(/Nx*Ny*Nz/)), 3, &
             (/Nx,Ny,Nz/), (/Nxgl,Nygl,Nzgl/), &
             iocomm, ipgrid, filename )
     ENDIF
@@ -482,7 +482,7 @@ CONTAINS
     CALL MPI_COMM_CREATE(globalcomm, iogroup, iocomm, ierror)
     
     IF (ipz.EQ.0 .AND. ipr.EQ.0) THEN
-       CALL write_wave(RESHAPE(density2D,(/Nx * Ny/)), 2, &
+       CALL write_wave(RESHAPE(densitytotal2D,(/Nx * Ny/)), 2, &
             (/Nx, Ny/), (/Nxgl, Nygl/), &
             iocomm, ipgrid, filename )
     ENDIF
@@ -564,7 +564,7 @@ CONTAINS
     CALL MPI_COMM_CREATE(globalcomm, iogroup, iocomm, ierror)
     
     IF (ipy.EQ.0 .AND. ipr.EQ.0) THEN
-       CALL write_wave(RESHAPE(density2D,(/Nx * Nz/)), 2, &
+       CALL write_wave(RESHAPE(densitytotal2D,(/Nx * Nz/)), 2, &
             (/Nx,Nz/),(/Nxgl,Nzgl/), &          
             iocomm, ipgrid, filename )
     ENDIF
@@ -646,7 +646,7 @@ CONTAINS
     CALL MPI_COMM_CREATE(globalcomm, iogroup, iocomm, ierror)
     
     IF (ipx.EQ.0 .AND. ipr.EQ.0) THEN
-       CALL write_wave(RESHAPE(density2D,(/Ny * Nz/)), 2, &
+       CALL write_wave(RESHAPE(densitytotal2D,(/Ny * Nz/)), 2, &
             (/Ny, Nz/), (/Nygl, Nzgl/), &
             iocomm, ipgrid, filename )
     ENDIF
@@ -728,7 +728,7 @@ CONTAINS
     CALL MPI_COMM_CREATE(globalcomm, iogroup, iocomm, ierror)
     
     IF (ipx.EQ.0 .AND. ipy.EQ.0) THEN
-       CALL write_wave(RESHAPE(density2D,(/Nr * Nz/)), 2, &
+       CALL write_wave(RESHAPE(densitytotal2D,(/Nr * Nz/)), 2, &
             (/ Nz, Nr/), (/Nzgl, Nrgl/), &
             iocomm, ipgrid, filename )
     ENDIF
