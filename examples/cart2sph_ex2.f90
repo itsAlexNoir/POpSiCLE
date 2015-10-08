@@ -26,9 +26,9 @@ PROGRAM cart2sph_ex2
   COMPLEX(dp), ALLOCATABLE   :: sphfunc_dphi(:, :, :)
   COMPLEX(dp)                :: ref_value
   REAL(dp)                   :: dr, dtheta, dphi
+  INTEGER                    :: lmax
   REAL(dp)                   :: Rboundary, tolerance
   REAL(dp)                   :: rpt, thetapt, phipt
-  
   REAL(dp)                   :: start_time, end_time
   REAL(dp)                   :: interp_time
   REAL(dp)                   :: minerror, maxerror
@@ -120,6 +120,7 @@ PROGRAM cart2sph_ex2
   Rboundary = 2.0_dp
   tolerance = 0.15_dp
   dr = 0.1_dp
+  lmax = 10
   dtheta = 0.1_dp
   dphi = 0.1_dp
   dims      = (/numxpts, numypts, numzpts/)
@@ -143,7 +144,7 @@ PROGRAM cart2sph_ex2
   CALL cpu_time(start_time)
   
   CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
-       Rboundary, tolerance, 2, dr, dtheta, dphi, &
+       Rboundary, tolerance, 2, dr, lmax, &
        numpts, numrpts, numthetapts, numphipts )
   
   CALL cpu_time(end_time)
@@ -160,8 +161,9 @@ PROGRAM cart2sph_ex2
   WRITE(*,*) 'Number of azimuthal boundary points: ',numphipts
   
   WRITE(*,*) 'Grid spacing in r: ',dr
-  WRITE(*,*) 'Grid spacing in theta: ',dtheta
-  WRITE(*,*) 'Grid spacing in phi: ',dphi
+  WRITE(*,*) 'Maximum angular momenta: ',lmax
+  !WRITE(*,*) 'Grid spacing in theta: ',dtheta
+  !WRITE(*,*) 'Grid spacing in phi: ',dphi
   WRITE(*,*)
   WRITE(*,*)
   WRITE(*,*) '--------------------------'

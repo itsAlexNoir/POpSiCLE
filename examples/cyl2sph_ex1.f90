@@ -19,6 +19,7 @@ PROGRAM cy2sph_ex
   REAL(dp)                   :: deltarho, deltaz
   REAL(dp)                   :: rboundary
   REAL(dp)                   :: deltar, deltatheta
+  INTEGER                    :: lmax
   
   INTEGER                    :: irho, iz
   INTEGER                    :: irg, irhog, izg
@@ -52,7 +53,7 @@ PROGRAM cy2sph_ex
 
   deltarho         = 0.1_dp
   deltaz           = 0.2_dp
-
+  
   numproc1drho     = 4
   numproc1dz       = 10
   
@@ -67,7 +68,8 @@ PROGRAM cy2sph_ex
   
   deltar = 0.1_dp
   deltatheta = 0.1_dp
-
+  lmax             = 10
+  
   data_directory = './data/h2p/cylindrical/'
   
   ! Allocate arrays
@@ -93,12 +95,12 @@ PROGRAM cy2sph_ex
   halopts(2,1) = -1
   halopts(1,2) = numrhopts
   halopts(2,2) = numzpts
-
+  
   !----------------------------------------!
   ! Initialize cylindrical grid for interp
   !----------------------------------------!
   CALL initializate_cylindrical_grid(rho_ax,z_ax,(/numrhopts, numzpts/),halopts,&
-       Rboundary, 1.0_dp, 2, deltar, deltatheta)
+       Rboundary, 1.0_dp, 2, deltar, lmax)
   
   WRITE(*,*) 'Read data...'
   

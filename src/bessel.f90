@@ -11,9 +11,36 @@ MODULE bessel
   PUBLIC       :: bessjy
   PUBLIC       :: sphbessjy
   
+  ! Interfaces
+  
+  INTERFACE  bessj0
+     MODULE PROCEDURE bessj0_s
+     MODULE PROCEDURE bessj0_v
+  END INTERFACE bessj0
+  
+  INTERFACE  bessj1
+     MODULE PROCEDURE bessj1_s
+     MODULE PROCEDURE bessj1_v
+  END INTERFACE bessj1
+  
+  INTERFACE  sphbessjy
+     MODULE PROCEDURE sphbessjy_s
+     MODULE PROCEDURE sphbessjy_v
+  END INTERFACE sphbessjy
+  
+  INTERFACE beschb
+     MODULE PROCEDURE beschb_s
+     MODULE PROCEDURE beschb_v
+  END INTERFACE beschb
+  
+  INTERFACE  chebev
+     MODULE PROCEDURE chebev_s
+     MODULE PROCEDURE chebev_v
+  END INTERFACE chebev
+  
   INTERFACE poly
-     MODULE PROCEDURE poly_rrv,poly_dd,poly_ddv,poly_rc
-     MODULE PROCEDURE poly_cc,poly_msk_rrv,poly_msk_ddv
+     MODULE PROCEDURE poly_dd,poly_ddv,poly_rc
+     MODULE PROCEDURE poly_cc,poly_msk_ddv
   END INTERFACE poly
   
   INTEGER, PARAMETER      ::  NPAR_POLY=8
@@ -21,8 +48,44 @@ MODULE bessel
   !-------------------------------------------------------------------------!
   
 CONTAINS
+
+  ! Returns the Bessel function J0(x) for any real x.
   
-  FUNCTION bessj0(x)
+  FUNCTION bessj0_s(x)
+    
+    IMPLICIT NONE
+    
+    REAL(dp), INTENT(IN) :: x
+    REAL(dp) :: bessj0_s
+    REAL(dp) :: ax,xx,z
+    REAL(dp) :: y
+    REAL(dp), DIMENSION(5) :: p = (/1.0_dp,-0.1098628627e-2_dp,&
+         0.2734510407e-4_dp,-0.2073370639e-5_dp,0.2093887211e-6_dp/)
+    REAL(dp), DIMENSION(5) :: q = (/-0.1562499995e-1_dp,&
+         0.1430488765e-3_dp,-0.6911147651e-5_dp,0.7621095161e-6_dp,&
+         -0.934945152e-7_dp/)
+    REAL(dp), DIMENSION(6) :: r = (/57568490574.0_dp,-13362590354.0_dp,&
+         651619640.7_dp,-11214424.18_dp,77392.33017_dp,&
+         -184.9052456_dp/)
+    REAL(dp), DIMENSION(6) :: s = (/57568490411.0_dp,1029532985.0_dp,&
+         9494680.718_dp,59272.64853_dp,267.8532712_dp,1.0_dp/)
+    
+    IF (ABS(x) < 8.0) THEN
+       y=x**2
+       bessj0_s=poly(y,r)/poly(y,s)
+    ELSE
+       ax=ABS(x)
+       z=8.0_dp/ax
+       y=z**2
+       xx=ax-0.785398164_dp
+       bessj0_s=SQRT(0.636619772_dp/ax)*(COS(xx) * &
+            poly(y,p)-z*SIN(xx)*poly(y,q))
+    ENDIF
+  END FUNCTION bessj0_s
+  
+  !----------------------------------------------------!
+  
+  FUNCTION bessj0_v(x)
     
     IMPLICIT NONE
     
@@ -56,11 +119,48 @@ CONTAINS
             poly(y,p,.NOT. mask)-z*SIN(xx)*poly(y,q,.NOT.mask))
     END WHERE
     
-  END FUNCTION bessj0
+  END FUNCTION bessj0_v
   
   !-----------------------------------------------------------------------!
   
-  FUNCTION bessj1(x)
+  ! Returns the Bessel function J1(x) for any real x.
+  
+  FUNCTION bessj1_s(x)
+    
+    IMPLICIT NONE
+    
+    REAL(dp), INTENT(IN)   :: x
+    REAL(dp)               :: bessj1_s
+    REAL(dp)               :: ax,xx,z
+    REAL(dp)               :: y
+    REAL(dp), DIMENSION(6) :: r = (/72362614232.0_dp,&
+         -7895059235.0_dp,242396853.1_dp,-2972611.439_dp,&
+         15704.48260_dp,-30.16036606_dp/)
+    REAL(dp), DIMENSION(6) :: s = (/144725228442.0_dp,2300535178.0_dp,&
+         18583304.74_dp,99447.43394_dp,376.9991397_dp,1.0_dp/)
+    REAL(dp), DIMENSION(5) :: p = (/1.0_dp,0.183105e-2_dp,&
+         -0.3516396496e-4_dp,0.2457520174e-5_dp,-0.240337019e-6_dp/)
+    REAL(dp), DIMENSION(5) :: q = (/0.04687499995_dp,&
+         -0.2002690873e-3_dp,0.8449199096e-5_dp,-0.88228987e-6_dp,&
+         0.105787412e-6_dp/)
+    
+    IF (ABS(x) < 8.0_dp) THEN
+       y=x**2
+       bessj1_s=x*(poly(y,r)/poly(y,s))
+    else
+       ax=ABS(x)
+       z=8.0_dp/ax
+       y=z**2
+       xx=ax-2.356194491_dp
+       bessj1_s=SQRT(0.636619772_dp/ax)*(COS(xx) * &
+            poly(y,p)-z*SIN(xx)*poly(y,q))*SIGN(1.0_dp,x)
+    ENDIF
+    
+  END FUNCTION bessj1_s
+  
+!----------------------------------------!
+  
+  FUNCTION bessj1_v(x)
     
     IMPLICIT NONE
     
@@ -69,7 +169,7 @@ CONTAINS
     
     REAL(dp), DIMENSION(SIZE(x))       :: ax,xx,z
     REAL(dp), DIMENSION(SIZE(x))       :: y
-    LOGICAL(LGT), DIMENSION(SIZE(x))   :: mask
+    LOGICAL, DIMENSION(SIZE(x))        :: mask
     REAL(dp), DIMENSION(6)             :: r = (/72362614232.0_dp,&
          -7895059235.0_dp,242396853.1_dp,-2972611.439_dp,&
          15704.48260_dp,-30.16036606_dp/)
@@ -84,25 +184,25 @@ CONTAINS
     mask = (ABS(x) < 8.0)
     WHERE (mask)
        y=x**2
-       bessj1_v=x*(poly(y,r,mask)/poly(y,s,mask))
+       bessj1_v = x*(poly(y,r,mask)/poly(y,s,mask))
     ELSEWHERE
        ax=ABS(x)
-       z=8.0_sp/ax
+       z=8.0_dp/ax
        y=z**2
-       xx=ax-2.356194491_sp
+       xx=ax-2.356194491_dp
        bessj1_v = SQRT(0.636619772_dp/ax)*(COS(xx) * &
             poly(y,p,.NOT. mask)-z*SIN(xx)*poly(y,q,.NOT. mask)) * &
             SIGN(1.0_sp,x)
     END WHERE
     
-  END FUNCTION bessj1
+  END FUNCTION bessj1_v
   
   !-----------------------------------------------------------------------!
   
   !Returns the Bessel functions rj = Jν , ry = Yν and their derivatives rjp = Jν′ ,
   !ryp = Yν′, for positive x and for xnu = ν ≥ 0
   
-  SUBROUTINE bessjy()
+  SUBROUTINE bessjy(x,xnu,rj,ry,rjp,ryp)
     
     IMPLICIT NONE
     
@@ -110,15 +210,15 @@ CONTAINS
     REAL(dp), INTENT(OUT)      :: rj,ry,rjp,ryp
 
     INTEGER, PARAMETER         :: MAXIT=10000
-    REAL(dp), PARAMETER        :: XMIN=2.0_dp,
+    REAL(dp), PARAMETER        :: XMIN=2.0_dp
     REAL(dp), PARAMETER        :: EPS=1.0e-16_dp
     REAL(dp), PARAMETER        :: FPMIN=1.0e-30_dp
     INTEGER                    :: i, isign, l, nl
-    REAL(dp)                   :: a,b,c,d,del,del1,e,f,
+    REAL(dp)                   :: a,b,c,d,del,del1,e,f
     REAL(dp)                   :: fact,fact2,fact3,ff,gam,gam1,gam2
-    REAL(dp)                   :: gammi,gampl,h,p,pimu,pimu2,
+    REAL(dp)                   :: gammi,gampl,h,p,pimu,pimu2
     REAL(dp)                   :: q,r,rjl,rjl1,rjmu,rjp1,rjpl,rjtemp
-    REAL(dp)                   :: ry1,rymu,rymup,rytemp,sum,sum1,
+    REAL(dp)                   :: ry1,rymu,rymup,rytemp,sum,sum1
     REAL(dp)                   :: w,x2,xi,xi2,xmu,xmu2
     COMPLEX(dp)                :: aa,bb,cc,dd,dl,pq
     
@@ -235,7 +335,7 @@ CONTAINS
     ELSE
        a=0.25_dp-xmu2
        pq=CMPLX(-0.5_dp*xi,1.0_dp,kind=dp)
-       aa=CMPLX(0.0_dp,xi*a,kind=dpc)
+       aa=CMPLX(0.0_dp,xi*a,kind=dp)
        bb=CMPLX(2.0_dp*x,2.0_dp,kind=dp)
        cc=bb+aa/pq
        dd=1.0_dp/bb
@@ -283,8 +383,42 @@ CONTAINS
   END SUBROUTINE bessjy
   
   !-------------------------------------------------------!
+
+  !Returns spherical Bessel functions jn(x), yn(x),
+  ! and their derivatives jn′ (x), yn′ (x)
+  ! for integer n ≥ 0 and x > 0.
   
-  SUBROUTINE sphbessjy(n,x,sj,sy,sjp,syp)
+  SUBROUTINE sphbessjy_s(n,x,sj,sy,sjp,syp)
+    
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)   :: n
+    REAL(dp), INTENT(IN)  :: x
+    REAL(dp), INTENT(OUT) :: sj,sy,sjp,syp
+    REAL(dp)              :: rootpio2
+    REAL(dp)              :: factor,order,rj,rjp,ry,ryp
+    
+    IF(n.LT.0 .AND. x .LT.0.0_dp) THEN
+       WRITE(*, *) 'Argument and order must be greater than zero.'
+       STOP
+    ENDIF
+    
+    rootpio2 = SQRT( pi / 2.0_dp )
+    order=n+0.5_dp
+    call bessjy(x,order,rj,ry,rjp,ryp)
+    factor=rootpio2/sqrt(x)
+    sj=factor*rj
+    sy=factor*ry
+    sjp=factor*rjp-sj/(2.0_dp*x)
+    syp=factor*ryp-sy/(2.0_dp*x)
+    
+  END SUBROUTINE sphbessjy_s
+  
+  !----------------------------------------!
+
+  ! The parallel version of the above routine
+  
+  SUBROUTINE sphbessjy_v(n,x,sj,sy,sjp,syp)
     
     IMPLICIT NONE
     
@@ -294,13 +428,14 @@ CONTAINS
     REAL(dp)              :: rootpio2
     REAL(dp)              :: order
     REAL(dp), DIMENSION(size(x)) :: factor,rj,rjp,ry,ryp
+    INTEGER               :: i
     
     IF(SIZE(x).EQ.SIZE(sj).EQ.SIZE(sy) &
          .EQ.SIZE(sjp).EQ.SIZE(syp)) THEN
        WRITE(*, *) 'Input arrays have not the same length.'
        STOP
     ENDIF
-    IF(n.LT.0 .AND. ALL(x).LT.0.0_dp) THEN
+    IF(n.LT.0 .AND. ALL(x < 0.0_dp)) THEN
        WRITE(*, *) 'Argument and order must be greater than zero.'
        STOP
     ENDIF
@@ -308,21 +443,51 @@ CONTAINS
     rootpio2 = SQRT(pi / 2.0_dp )
     
     order=n+0.5_dp
-    call bessjy(x,order,rj,ry,rjp,ryp)
-    factor=rootpio2/sqrt(x)
+    
+    DO i = 1, SIZE(x)
+       CALL bessjy(x(i),order,rj(i),ry(i),rjp(i),ryp(i))
+    ENDDO
+    
+    factor=rootpio2/SQRT(x)
     sj=factor*rj
     sy=factor*ry
     sjp=factor*rjp-sj/(2.0_dp*x)
     syp=factor*ryp-sy/(2.0_dp*x)
     
-  END SUBROUTINE sphbessjy
+  END SUBROUTINE sphbessjy_v
   
   !---------------------------------------------------------!
   
   ! Evaluates Γ1 and Γ2 by Chebyshev expansion for |x| ≤ 1/2.
   ! Also returns 1/Γ(1 + x) and 1 /Γ(1 − x).
+
+  SUBROUTINE beschb_s(x,gam1,gam2,gampl,gammi)
+    
+    IMPLICIT NONE
+    
+    REAL(dp), INTENT(IN)   :: x
+    REAL(dp), INTENT(OUT)  :: gam1,gam2,gampl,gammi
+    INTEGER, PARAMETER     :: NUSE1=7,NUSE2=8
+    REAL(dp)               :: xx
+    REAL(dp), DIMENSION(7) :: c1=(/-1.142022680371168_dp,&
+         6.5165112670737e-3_dp,3.087090173086e-4_dp,-3.4706269649e-6_dp,&
+         6.9437664e-9_dp,3.67795e-11_dp,-1.356e-13_dp/)
+    REAL(dp), DIMENSION(8) :: c2=(/1.843740587300905_dp,&
+         -7.68528408447867e-2_dp,1.2719271366546e-3_dp,&
+         -4.9717367042e-6_dp, -3.31261198e-8_dp,2.423096e-10_dp,&
+         -1.702e-13_dp,-1.49e-15_dp/)
+    
+    xx=8.0_dp*x*x-1.0_dp
+    gam1=chebev(-1.0_dp,1.0_dp,c1(1:NUSE1),xx)
+    gam2=chebev(-1.0_dp,1.0_dp,c2(1:NUSE2),xx)
+    gampl=gam2-x*gam1
+    gammi=gam2+x*gam1
+    
+  END SUBROUTINE beschb_s
+
+!--------------------------------------------------!
   
-  SUBROUTINE beschb(x,gam1,gam2,gampl,gammi)
+  SUBROUTINE beschb_v(x,gam1,gam2,gampl,gammi)
     
     IMPLICIT NONE
     
@@ -331,13 +496,13 @@ CONTAINS
     
     INTEGER, PARAMETER            :: NUSE1=7,NUSE2=8
     REAL(dp), DIMENSION(size(x))  :: xx
-    REAL(dp), DIMENSION(7)        :: c1=(/-1.142022680371168_sp,&
+    REAL(dp), DIMENSION(7)        :: c1=(/-1.142022680371168_dp,&
          6.5165112670737e-3_dp,3.087090173086e-4_dp,-3.4706269649e-6_dp,&
-         6.9437664e-9_dp,3.67795e-11_sp,-1.356e-13_dp/)
+         6.9437664e-9_dp,3.67795e-11_dp,-1.356e-13_dp/)
     REAL(dp), DIMENSION(8)        :: c2=(/1.843740587300905_dp,&
          -7.68528408447867e-2_dp,1.2719271366546e-3_dp,&
-         -4.9717367042e-6_dp, -3.31261198e-8_sp,2.423096e-10_dp,&
-         -1.702e-13_sp,-1.49e-15_dp/)
+         -4.9717367042e-6_dp, -3.31261198e-8_dp,2.423096e-10_dp,&
+         -1.702e-13_dp,-1.49e-15_dp/)
     
     xx=8.0_dp*x*x-1.0_dp
     gam1=chebev(-1.0_dp,1.0_dp,c1(1:NUSE1),xx)
@@ -345,23 +510,59 @@ CONTAINS
     gampl=gam2-x*gam1
     gammi=gam2+x*gam1
     
-  END SUBROUTINE beschb
+  END SUBROUTINE beschb_v
 
   !---------------------------------------------------------!
+
+  ! Chebyshev evaluation.
+  ! x Chebyshev coefficients
   
-  FUNCTION chebev(a,b,c,x)
+  FUNCTION chebev_s(a,b,c,x)
+
+    IMPLICIT NONE
+    
+    REAL(dp), INTENT(IN) :: a,b,x
+    REAL(dp), INTENT(IN) :: c(:)
+    REAL(dp)              :: chebev_s
+    
+    INTEGER :: j,m
+    REAL(dp) :: d,dd,sv,y,y2
+
+    IF ((x-a)*(x-b) > 0.0_dp) THEN
+       WRITE(*,*) 'x not in range in chebev_s'
+       STOP
+    ENDIF
+    
+    m=size(c)
+    d=0.0_dp
+    dd=0.0_dp
+    y=(2.0_dp*x-a-b)/(b-a)
+    y2=2.0_dp*y
+    
+    do j=m,2,-1
+       sv=d
+       d=y2*d-dd+c(j)
+       dd=sv
+    end do
+    chebev_s=y*d-dd+0.5_dp*c(1)
+
+  END FUNCTION chebev_s
+
+  !---------------------------------------!
+  
+  FUNCTION chebev_v(a,b,c,x)
     
     IMPLICIT NONE
     
     REAL(dp), INTENT(IN)         :: a,b
     REAL(dp), INTENT(IN)         :: c(:), x(:)
-    REAL(dp), DIMENSION(size(x)) :: chebev
+    REAL(dp), DIMENSION(size(x)) :: chebev_v
     
     INTEGER                      :: j,m
     REAL(dp), DIMENSION(size(x)) :: d,dd,sv,y,y2
     
     IF (ANY((x-a)*(x-b) > 0.0)) THEN
-       WRITE(*,*) 'x not in range in chebev'
+       WRITE(*,*) 'x not in range in chebev_v'
        STOP
     ENDIF
     
@@ -375,9 +576,9 @@ CONTAINS
        d=y2*d-dd+c(j)
        dd=sv
     ENDDO
-    chebev = y*d-dd+0.5_dp*c(1)
+    chebev_v = y*d-dd+0.5_dp*c(1)
     
-  END FUNCTION chebev
+  END FUNCTION chebev_v
   
   !-------------------------------------------------------!
   
@@ -407,7 +608,7 @@ CONTAINS
     REAL(dp), INTENT(IN) :: coeffs(:)
     REAL(dp)             :: poly_dd
     
-    REAL(dp)             :: pow
+    REAL(dp)              :: pow
     REAL(dp), ALLOCATABLE :: vec(:)
     INTEGER               :: i,n,nn
     
@@ -518,35 +719,7 @@ CONTAINS
   END FUNCTION poly_cc
   
   !----------------------------!
-  
-  FUNCTION poly_rrv(x,coeffs)
-
-    IMPLICIT NONE
-
-    REAL(dp), INTENT(IN) :: coeffs(:),x(:)
-    REAL(dp), DIMENSION(size(x)) :: poly_rrv
-
-    INTEGER :: i,n,m
-    
-    m=SIZE(coeffs)
-    n=SIZE(x)
-    IF (m <= 0) THEN
-       poly_rrv=0.0_dp
-    ELSE IF (m < n .OR. m < NPAR_POLY) THEN
-       poly_rrv=coeffs(m)
-       DO i=m-1,1,-1
-          poly_rrv=x*poly_rrv+coeffs(i)
-       ENDDO
-    ELSE
-       DO i=1,n
-          poly_rrv(i)=poly_rr(x(i),coeffs)
-       ENDIF
-    ENDIF
-    
-  END FUNCTION poly_rrv
-  
-  !----------------------------!
-  
+   
   FUNCTION poly_ddv(x,coeffs)
 
     IMPLICIT NONE
@@ -575,21 +748,7 @@ CONTAINS
   END FUNCTION poly_ddv
   
   !----------------------------!
-  
-  FUNCTION poly_msk_rrv(x,coeffs,mask)
-
-    IMPLICIT NONE
     
-    REAL(dp), INTENT(IN)          :: coeffs(:), x(:)
-    LOGICAL, INTENT(IN)           :: mask(:)
-    REAL(dp), DIMENSION(SIZE(x))  :: poly_msk_rrv
-
-    poly_msk_rrv=UNPACK(poly_rrv(PACK(x,mask),coeffs),mask,0.0_dp)
-    
-  END FUNCTION poly_msk_rrv
-  
-  !----------------------------!
-  
   FUNCTION poly_msk_ddv(x,coeffs,mask)
     
     IMPLICIT NONE

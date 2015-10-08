@@ -20,8 +20,10 @@ PROGRAM cyl2sph_ex2
   COMPLEX(dp), ALLOCATABLE   :: sphfunc(:, :)
   COMPLEX(dp), ALLOCATABLE   :: sphfunc_dr(:, :)
   COMPLEX(dp), ALLOCATABLE   :: sphfunc_dth(:, :)
+  COMPLEX(dp), ALLOCATABLE   :: rad_func(:, :)
   COMPLEX(dp)                :: ref_value
   REAL(dp)                   :: dr, dtheta
+  INTEGER                    :: lmax, il
   REAL(dp)                   :: Rboundary, tolerance
   REAL(dp)                   :: thetapt, rpt
   
@@ -63,7 +65,7 @@ PROGRAM cyl2sph_ex2
         
         rpt = SQRT(rho_ax(irho)**2 + z_ax(iz)**2)
         thetapt = ACOS(z_ax(iz) / rpt)
-
+        
         Y_lm(irho,iz) = 0.25_dp * SQRT(5.0_dp / pi) * &
              ( 3.0_dp * (COS(thetapt))**2 - 1.0_dp)
         
@@ -80,6 +82,7 @@ PROGRAM cyl2sph_ex2
   tolerance = 0.05_dp
   dr = 0.01_dp
   dtheta = 0.05_dp
+  lmax      = 10
   dims      = (/numrhopts, numzpts/)
   
   WRITE(*,*) 'Number of points in rho: ',numrhopts
@@ -98,7 +101,7 @@ PROGRAM cyl2sph_ex2
   CALL cpu_time(start_time)
   
   CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
-       Rboundary, tolerance, 2, dr, dtheta, numpts, &
+       Rboundary, tolerance, 2, dr, lmax, numpts, &
        numrpts, numthetapts )
   
   CALL cpu_time(end_time)
@@ -115,6 +118,7 @@ PROGRAM cyl2sph_ex2
   WRITE(*,*) 'Number of polar boundary points: ',numthetapts
   
   WRITE(*,*) 'Grid spacing in r: ',dr
+  WRITE(*,*) 'Maximum angular momenta: ',lmax
   WRITE(*,*) 'Grid spacing in theta: ',dtheta
   WRITE(*,*)
   WRITE(*,*) '--------------------------'
@@ -153,8 +157,27 @@ PROGRAM cyl2sph_ex2
   WRITE(*,*)
   WRITE(*,*) 'Maximum difference in value: '
   WRITE(*,*) maxerror
- 
-  ! Save axes
+
+
+  WRITE(*,*)
+  WRITE(*,*)
+  WRITE(*,*) '############################################'
+  WRITE(*,*) 'Now the Spherical Harmmonic transform! (SHT)'
+  WRITE(*,*) '############################################'
+  WRITE(*,*)
+  WRITE(*,*)
+  
+  ALLOCATE(rad_func(1:numrpts,0:lmax))
+  
+  ! Initialize Spherical Harmonics
+  CALL initialize_spherical_harmonics(lmax, theta_boundary)
+  
+  ! Make SHT
+  CALL make_sht(sphfunc, theta_boundary, theta_weights, lmax, rad_func)
+  
+!!!!!!!!!!!!!!!!!!!
+!!!! Save axes !!!!
+!!!!!!!!!!!!!!!!!!!
   
   ! Rho
   OPEN(unit=33,form='formatted',file='./results/rho_ax.dat')
@@ -206,7 +229,17 @@ PROGRAM cyl2sph_ex2
   
   CLOSE(33)
 
-
+!!$  ! Save Legendre polynomials
+!!$  OPEN(unit=33,form='formatted',file='./results/legendrepoly.dat')
+!!$  
+!!$  DO il = 0, lmax
+!!$     DO itheta = 0, numthetapts-1
+!!$        WRITE(33,*) il, legenpl(itheta, 0, il)
+!!$     ENDDO
+!!$  ENDDO
+!!$
+!!$  CLOSE(33)
+  
   ! Free memory
   DEALLOCATE(rho_ax,z_ax)
   DEALLOCATE(Y_lm, R_nl)
