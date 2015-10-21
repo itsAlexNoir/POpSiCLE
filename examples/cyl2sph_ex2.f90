@@ -151,10 +151,9 @@ PROGRAM cyl2sph_ex2
   
   DO itheta = 1, numthetapts
      DO ir = 1, numrpts
-!!$        ref_value =  EXP(-rpts_boundary(ir) / 2.0_dp) *  0.25_dp * SQRT(5.0_dp / pi) * &
-!!$             ( 3.0_dp * (costheta_boundary(itheta))**2 - 1.0_dp)
+        ref_value =  EXP(-rpts_boundary(ir) / 2.0_dp) *  SQRT(5.0_dp / 4.0_dp / pi) * &
+             ( 3.0_dp * (costheta_boundary(itheta))**2 - 1.0_dp)
 !!$        ref_value =  EXP(-rpts_boundary(ir) / 2.0_dp) * 0.5_dp * SQRT(1.0_dp / pi)	
-        ref_value = SQRT(1.0_dp / 4.0_dp / pi)	
         
 !!$        WRITE(*,*) sphfunc(ir,itheta)
 !!$        WRITE(*,*) ref_value 
@@ -169,20 +168,29 @@ PROGRAM cyl2sph_ex2
   WRITE(*,'(A40,E15.8)') 'Maximum difference in value: ',maxerror
   WRITE(*,*)
   WRITE(*,*)          '----------------------------------------'
-  WRITE(*,*)
   WRITE(*,*) 'Now the Spherical Harmonic transform! (SHT)...'
   WRITE(*,*)
-  WRITE(*,*)
-
+  
 
   ALLOCATE(radfunc(1:numrpts,0:lmax))
   
   ! Initialize Spherical Harmonics
   CALL initialize_spherical_harmonics(lmax, costheta_boundary)
-  
+
+  CALL cpu_time(start_time)
   ! Make SHT
   CALL make_sht(sphfunc, costheta_boundary, theta_weights, lmax, radfunc)
+  CALL cpu_time(end_time)
   
+  interp_time = end_time - start_time
+  
+  WRITE(*,'(A40,I4)') 'Again, maximum angular momenta: ',lmax
+  WRITE(*,'(A40,E15.8)') 'Spherical harmonics transform time:',interp_time
+  WRITE(*,*)
+  WRITE(*,*)          '----------------------------------------'
+  WRITE(*,*)          '-----------      FIN      --------------'
+  WRITE(*,*)          '----------------------------------------'
+  WRITE(*,*)
   
 !!!!!!!!!!!!!!!!!!!
 !!!! Save axes !!!!
