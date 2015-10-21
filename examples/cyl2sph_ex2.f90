@@ -20,9 +20,9 @@ PROGRAM cyl2sph_ex2
   COMPLEX(dp), ALLOCATABLE   :: sphfunc(:, :)
   COMPLEX(dp), ALLOCATABLE   :: sphfunc_dr(:, :)
   COMPLEX(dp), ALLOCATABLE   :: sphfunc_dth(:, :)
-  COMPLEX(dp), ALLOCATABLE   :: rad_func(:, :)
+  COMPLEX(dp), ALLOCATABLE   :: radfunc(:, :)
   COMPLEX(dp)                :: ref_value
-  REAL(dp)                   :: dr, dtheta
+  REAL(dp)                   :: dr
   INTEGER                    :: lmax, il
   REAL(dp)                   :: Rboundary, tolerance
   REAL(dp)                   :: thetapt, rpt
@@ -32,6 +32,15 @@ PROGRAM cyl2sph_ex2
   REAL(dp)                   :: maxerror
   INTEGER                    :: irho,iz
   INTEGER                    :: ir, itheta
+
+  !-------------------------------------------------!
+  WRITE(*,*)
+  WRITE(*,*)
+  WRITE(*,*)
+  WRITE(*,*) '*******************************'
+  WRITE(*,*) '*     cyl2sph_ex2 example     *'
+  WRITE(*,*) '*******************************'
+  WRITE(*,*)
   
   ! Set number of points
   numrhopts = 200
@@ -65,9 +74,13 @@ PROGRAM cyl2sph_ex2
         
         rpt = SQRT(rho_ax(irho)**2 + z_ax(iz)**2)
         thetapt = ACOS(z_ax(iz) / rpt)
-        
-        Y_lm(irho,iz) = 0.25_dp * SQRT(5.0_dp / pi) * &
+
+        ! Spherical harmonic l=2, m=0
+        Y_lm(irho,iz) = SQRT(5.0_dp / 4.0_dp / pi) * &
              ( 3.0_dp * (COS(thetapt))**2 - 1.0_dp)
+        
+        ! Spherical harmonic l=0, m=0
+!!$        Y_lm(irho,iz) = SQRT(1.0_dp / 4.0_dp / pi)
         
         R_nl(irho,iz) = 1.0_dp
         
@@ -81,20 +94,20 @@ PROGRAM cyl2sph_ex2
   Rboundary = 1.0_dp
   tolerance = 0.05_dp
   dr = 0.01_dp
-  dtheta = 0.05_dp
-  lmax      = 10
+  lmax      = 5
   dims      = (/numrhopts, numzpts/)
   
-  WRITE(*,*) 'Number of points in rho: ',numrhopts
-  WRITE(*,*) 'Number of points in z: ',numzpts
-  
-  WRITE(*,*) 'Grid spacing in rho: ',drho
-  WRITE(*,*) 'Grid spacing in z: ',dz
-  
-  WRITE(*,*) 'Boundary at radius: ',Rboundary
-  WRITE(*,*) 'Radius tolerance: ',tolerance
   WRITE(*,*)
-  WRITE(*,*) '--------------------------'
+  WRITE(*,*)            '------------------------------------'
+  WRITE(*,'(A30,I4)') 'Number of points in rho: ',numrhopts
+  WRITE(*,'(A30,I4)') 'Number of points in z: ',numzpts
+  
+  WRITE(*,'(A30,F9.4)') 'Grid spacing in rho: ',drho
+  WRITE(*,'(A30,F9.4)') 'Grid spacing in z: ',dz
+  
+  WRITE(*,'(A30,F9.4)') 'Radius boundary: ',Rboundary
+  WRITE(*,'(A30,F9.4)') 'Radius tolerance: ',tolerance
+  WRITE(*,*)            '------------------------------------'
   
   ! Build interpolant
   WRITE(*,*) 'Creating interpolant...'
@@ -107,21 +120,16 @@ PROGRAM cyl2sph_ex2
   CALL cpu_time(end_time)
   
   interp_time = end_time - start_time
+
+  WRITE(*,'(A40,F9.4)') 'Interpolant time (seconds): ', interp_time
+  WRITE(*,*)            '------------------------------------'
   
-  WRITE(*,*) 'Interpolant time (seconds): ', interp_time
-  WRITE(*,*)
-  
-  
-  WRITE(*,*) 'Total number of points to be interpolated: ',numpts
-  
-  WRITE(*,*) 'Number of radial boundary points: ',numrpts
-  WRITE(*,*) 'Number of polar boundary points: ',numthetapts
-  
-  WRITE(*,*) 'Grid spacing in r: ',dr
-  WRITE(*,*) 'Maximum angular momenta: ',lmax
-  WRITE(*,*) 'Grid spacing in theta: ',dtheta
-  WRITE(*,*)
-  WRITE(*,*) '--------------------------'
+  WRITE(*,'(A40,I4)') 'Number of interpolation points: ',numpts  
+  WRITE(*,'(A40,I4)') 'Number of radial boundary points: ',numrpts
+  WRITE(*,'(A40,I4)') 'Number of polar boundary points: ',numthetapts
+  WRITE(*,'(A40,F9.4)') 'Grid spacing in r: ',dr
+  WRITE(*,'(A40,I4)') 'Maximum angular momenta: ',lmax
+  WRITE(*,*)            '------------------------------------'
   
   ALLOCATE(sphfunc(1:numrpts,1:numthetapts))
   ALLOCATE(sphfunc_dr(1:numrpts,1:numthetapts))
@@ -138,13 +146,16 @@ PROGRAM cyl2sph_ex2
   
   interp_time = end_time - start_time
   
-  WRITE(*,*) 'Interpolation time (seconds): ', interp_time
+  WRITE(*,'(A40,F9.4)') 'Interpolation time (seconds): ', interp_time
   
   
   DO itheta = 1, numthetapts
      DO ir = 1, numrpts
-        ref_value =  EXP(-rpts_boundary(ir) / 2.0_dp) *  0.25_dp * SQRT(5.0_dp / pi) * &
-             ( 3.0_dp * (COS(theta_boundary(itheta)))**2 - 1.0_dp)
+!!$        ref_value =  EXP(-rpts_boundary(ir) / 2.0_dp) *  0.25_dp * SQRT(5.0_dp / pi) * &
+!!$             ( 3.0_dp * (costheta_boundary(itheta))**2 - 1.0_dp)
+!!$        ref_value =  EXP(-rpts_boundary(ir) / 2.0_dp) * 0.5_dp * SQRT(1.0_dp / pi)	
+        ref_value = SQRT(1.0_dp / 4.0_dp / pi)	
+        
 !!$        WRITE(*,*) sphfunc(ir,itheta)
 !!$        WRITE(*,*) ref_value 
 !!$        WRITE(*,*) 'Diff: ', ABS(sphfunc(ir,itheta) - ref_value)
@@ -153,27 +164,25 @@ PROGRAM cyl2sph_ex2
   ENDDO
   
   WRITE(*,*) 
-  WRITE(*,*) '********RESULTS!!!******'
+  WRITE(*,*) '------------RESULTS--------------'
   WRITE(*,*)
-  WRITE(*,*) 'Maximum difference in value: '
-  WRITE(*,*) maxerror
+  WRITE(*,'(A40,E15.8)') 'Maximum difference in value: ',maxerror
+  WRITE(*,*)
+  WRITE(*,*)          '----------------------------------------'
+  WRITE(*,*)
+  WRITE(*,*) 'Now the Spherical Harmonic transform! (SHT)...'
+  WRITE(*,*)
+  WRITE(*,*)
 
 
-  WRITE(*,*)
-  WRITE(*,*)
-  WRITE(*,*) '############################################'
-  WRITE(*,*) 'Now the Spherical Harmmonic transform! (SHT)'
-  WRITE(*,*) '############################################'
-  WRITE(*,*)
-  WRITE(*,*)
-  
-  ALLOCATE(rad_func(1:numrpts,0:lmax))
+  ALLOCATE(radfunc(1:numrpts,0:lmax))
   
   ! Initialize Spherical Harmonics
-  CALL initialize_spherical_harmonics(lmax, theta_boundary)
+  CALL initialize_spherical_harmonics(lmax, costheta_boundary)
   
   ! Make SHT
-  CALL make_sht(sphfunc, theta_boundary, theta_weights, lmax, rad_func)
+  CALL make_sht(sphfunc, costheta_boundary, theta_weights, lmax, radfunc)
+  
   
 !!!!!!!!!!!!!!!!!!!
 !!!! Save axes !!!!
@@ -203,7 +212,7 @@ PROGRAM cyl2sph_ex2
   ! Theta
   OPEN(unit=33,form='formatted',file='./results/theta_ax.dat')
   DO itheta = 1, numthetapts
-     WRITE(33,*) theta_boundary(itheta)
+     WRITE(33,*) theta_boundary(itheta), costheta_boundary(itheta)
   ENDDO
   CLOSE(33)
   
@@ -229,16 +238,27 @@ PROGRAM cyl2sph_ex2
   
   CLOSE(33)
 
-!!$  ! Save Legendre polynomials
-!!$  OPEN(unit=33,form='formatted',file='./results/legendrepoly.dat')
-!!$  
-!!$  DO il = 0, lmax
-!!$     DO itheta = 0, numthetapts-1
-!!$        WRITE(33,*) il, legenpl(itheta, 0, il)
-!!$     ENDDO
-!!$  ENDDO
-!!$
-!!$  CLOSE(33)
+  ! Save Legendre polynomials
+  OPEN(unit=33,form='formatted',file='./results/legendrepoly.dat')
+  
+  DO il = 0, lmax
+     DO itheta = 0, numthetapts-1
+        WRITE(33,*) il, legenpl(itheta, 0, il)
+     ENDDO
+  ENDDO
+
+  CLOSE(33)
+
+  ! Save spherical wavefunction in sph harmonics basis
+  OPEN(unit=33,form='formatted',file='./results/radfunc.dat')
+  
+  DO il = 0, lmax
+     DO ir = 1, numrpts
+        WRITE(33,*) REAL(radfunc(ir,il),dp),AIMAG(radfunc(ir,il)) 
+     ENDDO
+  ENDDO
+  
+  CLOSE(33)
   
   ! Free memory
   DEALLOCATE(rho_ax,z_ax)

@@ -256,7 +256,7 @@ CONTAINS
     !Three nested do-loops. For each point the value of P(l, m) is    
     !calculated.                                                      
     DO itheta = 0, MAXTHETAPTS
-
+     
        DO imagqn = 0, MAXL
           
           !The value of P(im, im) is calculated first.                      

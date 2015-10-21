@@ -6,7 +6,7 @@ MODULE POPSICLE
   USE bessel
   USE gaussleg
   USE interp
-  USE coords_transformation
+  USE coords
   USE fourier
   USE sht
   USE patchwork

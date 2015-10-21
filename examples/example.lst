@@ -1,4 +1,5 @@
 EXAMPLE_LIST = \
 sheppack_usage_example \
+legendre_test \
 cyl2sph_ex2 \
 cart2sph_ex2

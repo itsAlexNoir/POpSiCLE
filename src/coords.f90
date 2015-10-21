@@ -1,4 +1,4 @@
-MODULE coords_transformation
+MODULE coords
 
   USE constants
   USE gaussleg
@@ -48,6 +48,7 @@ MODULE coords_transformation
   
   REAL(dp), ALLOCATABLE, PUBLIC    :: rpts_boundary(:)
   REAL(dp), ALLOCATABLE, PUBLIC    :: theta_boundary(:)
+  REAL(dp), ALLOCATABLE, PUBLIC    :: costheta_boundary(:)
   REAL(dp), ALLOCATABLE, PUBLIC    :: phi_boundary(:)
   REAL(dp), ALLOCATABLE, PUBLIC    :: theta_weights(:)
   
@@ -126,6 +127,7 @@ CONTAINS
        ALLOCATE(index_x2(1))
        ALLOCATE(rpts_boundary(1))
        ALLOCATE(theta_boundary(1))
+       ALLOCATE(costheta_boundary(1)) 
        ALLOCATE(theta_weights(1))
        ALLOCATE(psi2D_sph(1,1))
        ALLOCATE(psi2D_sph_dx(1,1))
@@ -167,6 +169,7 @@ CONTAINS
        ALLOCATE(index_x2(1))
        ALLOCATE(rpts_boundary(1))
        ALLOCATE(theta_boundary(1))
+       ALLOCATE(costheta_boundary(1))
        ALLOCATE(theta_weights(1))
        ALLOCATE(psi2D_sph(1,1))
        ALLOCATE(psi2D_sph_dx(1,1))
@@ -185,6 +188,7 @@ CONTAINS
        
        ALLOCATE(rpts_boundary(1:numrpts))
        ALLOCATE(theta_boundary(1:numthetapts))
+       ALLOCATE(costheta_boundary(1:numthetapts))
        ALLOCATE(theta_weights(1:numthetapts))
        ALLOCATE(psi2D_sph(1:numrpts,1:numthetapts))
        ALLOCATE(psi2D_sph_dx(1:numrpts,1:numthetapts))
@@ -214,8 +218,10 @@ CONTAINS
           rpts_boundary(ir) = Rs_start + REAL( ir * deltar, dp )
        ENDDO
        
-       CALL get_gauss_stuff(mintheta, maxtheta, &
-            theta_boundary, theta_weights)
+       CALL get_gauss_stuff(-1.0_dp, 1.0_dp, &
+            costheta_boundary, theta_weights)
+
+       theta_boundary = ACOS(costheta_boundary)
        
        !DO itheta = 1, numthetapts
        !   theta_boundary(itheta) = mintheta + &
@@ -300,6 +306,7 @@ CONTAINS
        ALLOCATE(index_x3(1))
        ALLOCATE(rpts_boundary(1))
        ALLOCATE(theta_boundary(1))
+       ALLOCATE(costheta_boundary(1))
        ALLOCATE(theta_weights(1))
        ALLOCATE(phi_boundary(1))
        ALLOCATE(psi3D_sph(1,1,1))
@@ -354,6 +361,7 @@ CONTAINS
        ALLOCATE(index_x2(1))
        ALLOCATE(rpts_boundary(1))
        ALLOCATE(theta_boundary(1))
+       ALLOCATE(costheta_boundary(1))
        ALLOCATE(theta_weights(1))
        ALLOCATE(phi_boundary(1))
        ALLOCATE(psi3D_sph(1,1,1))
@@ -378,6 +386,7 @@ CONTAINS
        
        ALLOCATE(rpts_boundary(1:numrpts))
        ALLOCATE(theta_boundary(1:numthetapts))
+       ALLOCATE(costheta_boundary(1:numthetapts))
        ALLOCATE(phi_boundary(1:numphipts))
        ALLOCATE(theta_weights(1:numthetapts))
        ALLOCATE(psi3D_sph(1:numrpts,1:numthetapts,1:numphipts))
@@ -418,9 +427,11 @@ CONTAINS
           rpts_boundary(ir) = Rs_start + REAL( ir * deltar, dp )
        ENDDO
        
-       CALL get_gauss_stuff(mintheta, maxtheta, theta_boundary, &
+       CALL get_gauss_stuff(-1.0_dp, 1.0_dp, costheta_boundary, &
             theta_weights)
 
+       theta_boundary = ACOS(costheta_boundary)
+       
        !DO itheta = 1, numthetapts
        !   theta_boundary(itheta) = mintheta + &
        !REAL( itheta * deltatheta,dp )
@@ -465,7 +476,7 @@ CONTAINS
     INTEGER, INTENT(IN)       :: lmax
     INTEGER, INTENT(OUT)      :: maxpts
     INTEGER, INTENT(OUT)      :: maxrpts, maxthetapts
-
+    
     REAL(dp)                  :: minrho, maxrho
     REAL(dp)                  :: minz, maxz
     REAL(dp)                  :: minr, maxr
@@ -501,6 +512,7 @@ CONTAINS
        ALLOCATE(index_x2(1))
        ALLOCATE(rpts_boundary(1))
        ALLOCATE(theta_boundary(1))
+       ALLOCATE(costheta_boundary(1))
        ALLOCATE(theta_weights(1))
        ALLOCATE(psi2D_sph(1,1))
        ALLOCATE(psi2D_sph_dx(1,1))
@@ -535,7 +547,7 @@ CONTAINS
           
        ENDDO
     ENDDO
-    
+
     
     IF(numpts .EQ. 0) THEN
        ALLOCATE(rpts_scatt(1))
@@ -545,6 +557,7 @@ CONTAINS
        ALLOCATE(index_x2(1))
        ALLOCATE(rpts_boundary(1))
        ALLOCATE(theta_boundary(1))
+       ALLOCATE(costheta_boundary(1))
        ALLOCATE(theta_boundary(1))
        ALLOCATE(psi2D_sph(1,1))
        ALLOCATE(psi2D_sph_dx(1,1))
@@ -563,6 +576,7 @@ CONTAINS
        
        ALLOCATE(rpts_boundary(1:numrpts))
        ALLOCATE(theta_boundary(1:numthetapts))
+       ALLOCATE(costheta_boundary(1:numthetapts))
        ALLOCATE(theta_weights(1:numthetapts))
        ALLOCATE(psi2D_sph(1:numrpts,1:numthetapts))
        ALLOCATE(psi2D_sph_dx(1:numrpts,1:numthetapts))
@@ -596,17 +610,18 @@ CONTAINS
           rpts_boundary(ir) = Rs_start + REAL( ir * deltar, dp )
        ENDDO
        
-       CALL get_gauss_stuff(mintheta, maxtheta, &
-            theta_boundary, theta_weights)
+       CALL get_gauss_stuff(-1.0_dp, 1.0_dp, &
+            costheta_boundary, theta_weights)
+       
+       theta_boundary = ACOS(costheta_boundary)
        
        !DO itheta = 1, numthetapts
-          !   theta_boundary(itheta) = mintheta + &
-          !REAL( itheta * deltatheta,dp )
-         ! write(*,*) itheta, theta_boundary(itheta)
+       !   theta_boundary(itheta) = mintheta + &
+       !REAL( itheta * deltatheta,dp )
        !ENDDO
        
     ENDIF
-
+    
     maxpts = numpts
     maxrpts = numrpts
     maxthetapts = numthetapts
@@ -1022,4 +1037,4 @@ CONTAINS
   
   !----------------------------------------------------------------!
 
-END MODULE coords_transformation
+END MODULE coords

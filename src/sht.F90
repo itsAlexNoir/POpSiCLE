@@ -57,6 +57,7 @@ CONTAINS
   !======================SUBROUTINE ARGUMENTS=============================
   !
   !> \param[in] lmax Maximum angular momenta
+  !> \param[in] axis The abscissa (cos theta) for Legendre polynomials
   !> \param[out] legenpl The array containing all the polynomials needed
   !> \param[out] normfact The array containing all the normalization factors
   !
@@ -78,7 +79,7 @@ CONTAINS
     ! Number of points in (theta) axis
     ! The -1 is becasue it assumes that
     ! the array start at 0, not 1.
-    maxthetapts = SIZE(axis) -1
+    maxthetapts = SIZE(axis) - 1
     ! Maximum factorial needed, 3*lmax + 1
     maxfactlog = 3 * lmax + 1
     
@@ -88,10 +89,7 @@ CONTAINS
     ALLOCATE(normfact(0:lmax, 0:lmax))
     
     ! Calculate the Legendre polynomial
-    CALL make_legendre(legenpl, COS(axis), lmax, maxthetapts)
-    !DO il = 0, lmax
-    !   legenpl(:,0,il) = plgndr(il,0,COS(axis))     
-    !ENDDO
+    CALL make_legendre(legenpl, axis, lmax, maxthetapts)
     
     ! Calculate the factorials needed for the normalization
     ! factors.
@@ -134,26 +132,30 @@ CONTAINS
     REAL(dp), INTENT(IN)       :: axis(:)
     REAL(dp), INTENT(IN)       :: weights(:)
     INTEGER, INTENT(IN)        :: lmax
-    COMPLEX(dp), INTENT(OUT)   :: rad_coeffl0(:, :)
-
+    COMPLEX(dp), INTENT(OUT)   :: rad_coeffl0(1:5, 0:lmax)
+    
     INTEGER                    :: numrpts, numthetapts
+    REAL(dp)                   :: sum
     INTEGER                    :: il, ir, itheta
-
+    
     ! What is the maximum number of points in r and theta?
     numrpts = SIZE(func,1)
     numthetapts = SIZE(axis)
+    
     ! Initialize array to zero
     rad_coeffl0 = ZERO
     
     DO ir = 1, numrpts
        DO il = 0, lmax
+          sum = 0.0_dp
           DO itheta = 1, numthetapts
-             rad_coeffl0(ir,il) = rad_coeffl0(ir,il) + func(ir,itheta) * &
+             sum = sum + func(ir,itheta) * &
                   normfact(0,il) * legenpl(itheta-1,0,il) * weights(itheta)
           ENDDO
+          rad_coeffl0(ir,il) = sum
        ENDDO
     ENDDO
-    
+           
   END SUBROUTINE make_sht_2D
   
   !=======================================================================
@@ -188,6 +190,23 @@ CONTAINS
     INTEGER, INTENT(IN)         :: lmax
     COMPLEX(dp), INTENT(OUT)    :: rad_coefflm(: ,:, :)
     
+    INTEGER                    :: numrpts, numthetapts
+    INTEGER                    :: il, ir, itheta
+    
+    ! What is the maximum number of points in r and theta?
+    numrpts = SIZE(func,1)
+    numthetapts = SIZE(th_axis)
+    ! Initialize array to zero
+    rad_coefflm = ZERO
+!!$    
+!!$    DO ir = 1, numrpts
+!!$       DO il = 0, lmax
+!!$          DO itheta = 1, numthetapts
+!!$             rad_coefflm(ir,il) = rad_coeffl0(ir,il) + func(ir,itheta) * &
+!!$                  normfact(0,il) * legenpl(itheta-1,0,il) * weights(itheta)
+!!$          ENDDO
+!!$       ENDDO
+!!$    ENDDO
     
   END SUBROUTINE make_sht_3D
   

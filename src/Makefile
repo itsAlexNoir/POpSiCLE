@@ -17,7 +17,7 @@ SHEPPACK_DIR = interp_libs/sheppack
 include interp_libs/slatec/interp_routines.lst
 include interp_libs/sheppack/sheppack_routines.lst
 POPSICLE_OBJS = constants.o tools.o bessel.o gaussleg.o \
-	coords_transformation.o fourier.o sht.o \
+	coords.o fourier.o sht.o \
 	interp.o io.o patchwork.o popsicle.o
 
 ifeq (${FFT_LIB},fftw)
@@ -94,13 +94,14 @@ LIBS	+= -lsz -lz -ldl -lm
 ##-----------------------------------------------
 ## Module dependencies
 
-coords_transformation.o: constants.o interp.o
+coords.o: constants.o interp.o
 interp.o: constants.o ${SHEPPACK_OBJS}
 bessel.o: constants.o
 gaussleg.o: constants.o
 io.o: constants.o patchwork.o
 popsicle.o : constants.o fourier.o \
-	coords_transformation.o io.o
+	coords.o io.o sht.o patchwork.o \
+	bessel.o gaussleg.o
 ifeq (${FFT_LIB},mkl)
 fourier.o: ${MKL_DFTI} constants.o tools.o
 sht.o: ${MKL_DFTI} constants.o gaussleg.o
