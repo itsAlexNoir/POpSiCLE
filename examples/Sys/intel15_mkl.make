@@ -3,7 +3,8 @@
 # -----------------------------------------------------------------------------#
 
 
-FC  = mpif90
+FC  = ifort
+MPIF90 = mpifort
 
 # Debugging flags
 #OPT         = -check all

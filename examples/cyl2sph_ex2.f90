@@ -112,7 +112,7 @@ PROGRAM cyl2sph_ex2
   ! Build interpolant
   WRITE(*,*) 'Creating interpolant...'
   CALL cpu_time(start_time)
-  
+
   CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
        Rboundary, tolerance, 2, dr, lmax, numpts, &
        numrpts, numthetapts )
@@ -120,7 +120,7 @@ PROGRAM cyl2sph_ex2
   CALL cpu_time(end_time)
   
   interp_time = end_time - start_time
-
+  
   WRITE(*,'(A40,F9.4)') 'Interpolant time (seconds): ', interp_time
   WRITE(*,*)            '------------------------------------'
   
@@ -138,7 +138,7 @@ PROGRAM cyl2sph_ex2
   ! Interpolate!!
   WRITE(*,*) 'Interpolating boundary...'
   CALL cpu_time(start_time)
-  
+
   CALL get_cylindrical_boundary(cylfunc, sphfunc, sphfunc_dr, &
        sphfunc_dth, 'quadratic')
   
@@ -147,7 +147,6 @@ PROGRAM cyl2sph_ex2
   interp_time = end_time - start_time
   
   WRITE(*,'(A40,F9.4)') 'Interpolation time (seconds): ', interp_time
-  
   
   DO itheta = 1, numthetapts
      DO ir = 1, numrpts
@@ -171,12 +170,12 @@ PROGRAM cyl2sph_ex2
   WRITE(*,*) 'Now the Spherical Harmonic transform! (SHT)...'
   WRITE(*,*)
   
-
+  
   ALLOCATE(radfunc(1:numrpts,0:lmax))
   
   ! Initialize Spherical Harmonics
   CALL initialize_spherical_harmonics(lmax, costheta_boundary)
-
+  
   CALL cpu_time(start_time)
   ! Make SHT
   CALL make_sht(sphfunc, costheta_boundary, theta_weights, lmax, radfunc)

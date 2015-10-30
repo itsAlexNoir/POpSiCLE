@@ -10,7 +10,7 @@
 
 include Sys/aigis_mkl.make
 
-default: example
+default: example_serial
 
 .PHONY: clean clean_src clean_lib clean_examples help
 
@@ -38,7 +38,8 @@ help:
 ##
 ##-------------------------------------------------------------------
 
-include example.lst
+include example_serial.lst
+include example_parallel.lst
 
 ifndef threading
 threading=parallel
@@ -64,21 +65,30 @@ ifndef ${RES_DIR}
 RES_DIR = results
 endif
 
-ifndef function
-function = ${EXAMPLE_LIST}
+ifndef function_serial
+function_serial = ${EXAMPLE_SER_LIST}
 endif
 
+ifndef function_parallel
+function_parallel = ${EXAMPLE_PAR_LIST}
+endif
 
-RES = $(addsuffix .res ,$(function))
+FLAGS = -O3
+
+RES_SER = $(addsuffix .res ,$(function_serial))
+RES_PAR = $(addsuffix .res ,$(function_parallel))
 
 POPSICLE_SER = ${POPSICLE_LIB}/libpopsicle_serial.a
 POPSICLE_PAR = ${POPSICLE_LIB}/libpopsicle_parallel.a
 
-example: ${POPSICLE_PAR}
-	${MAKE} ${RES}	
+example_serial: ${POPSICLE_SER}
+	${MAKE} ${RES_SER}	
+
+example_parallel: ${POPSICLE_PAR}
+	${MAKE} ${RES_PAR}	
 
 ${POPSICLE_SER}:
-	cd ${POPSICLE_SRC}; ${MAKE} "FC=${FC}" "F77FLAGS=$[F77FLAGS}" \
+	cd ${POPSICLE_SRC}; ${MAKE} "FC=${FC}" "F77FLAGS=${F77FLAGS}" \
 	"F90FLAGS=${F90FLAGS}" "ARFLAGS=${ARFLAGS}" \
 	"POPSICLE_ROOT=${POPSICLE_ROOT}" "FFT_LIB=${FFT_LIB}" \
 	"FFT_PATH=${FFT_PATH}" "MKLROOT=${MKLROOT}" \
@@ -95,9 +105,13 @@ ${POPSICLE_PAR}:
 	"PHDF5_PATH=${PHDF5ROOT}" "SZIP_PATH=${SZIPROOT}" \
 	"DIRECTIVES=-Wp,-D_COM_MPI=1"
 
-${RES}: %.res: %.f90
+${RES_SER}: %.res: %.f90
 	mkdir -p ./${RES_DIR}
-	${FC}  $< -o ${RES_DIR}/$*.exec ${FLAGS} -I${POPSICLE_LIB} ${POPSICLE_PAR}
+	${FC}  $< -o ${RES_DIR}/$*.exec ${FLAGS} -I${POPSICLE_LIB} ${POPSICLE_SER} ${HDF5}
+
+${RES_PAR}: %.res: %.f90
+	mkdir -p ./${RES_DIR}
+	${MPIFC}  $< -o ${RES_DIR}/$*.exec ${FLAGS} -I${POPSICLE_LIB} ${POPSICLE_PAR} ${PHDF5}
 
 
 clean: clean_src clean_examples
@@ -113,6 +127,7 @@ clean_examples:
 	@echo 'Deleting examples...'
 	@-rm -rf ./${RES_DIR}/*.dat 
 	@-rm -rf ./${RES_DIR}/*.exec
+	@-rm -rf ./${RES_DIR}/*.h5
 
 ###############################
 ## Rules for makefile

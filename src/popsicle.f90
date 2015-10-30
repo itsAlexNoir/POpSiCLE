@@ -11,6 +11,7 @@ MODULE POPSICLE
   USE sht
   USE patchwork
   USE io
+  USE surface
   
   IMPLICIT NONE
   
