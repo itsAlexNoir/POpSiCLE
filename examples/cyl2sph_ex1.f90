@@ -218,8 +218,8 @@ PROGRAM cy2sph_ex1
   !------------------------------!
   ! Now, load it again from file
   !------------------------------!
-  WRITE(*,*) 'Closing surface...'
-  CALL close_surface_file( .FALSE. )
+  WRITE(*,*) 'Deleting surface...'
+  CALL delete_surface2D( )
   
   ! Free arrays!
   WRITE(*,*) 'Free arrays!'

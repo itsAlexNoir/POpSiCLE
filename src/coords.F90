@@ -59,6 +59,7 @@ MODULE coords
   REAL(dp), ALLOCATABLE, PUBLIC    :: theta_weights(:)
   REAL(dp), ALLOCATABLE, PUBLIC    :: pivots(:)
   INTEGER, ALLOCATABLE, PUBLIC     :: pivot_number(:)
+  INTEGER, ALLOCATABLE, PUBLIC     :: i_am_surface(:)
   INTEGER, ALLOCATABLE, PUBLIC     :: surface_members(:)
   
   INTEGER                          :: numpts, numrpts
@@ -553,14 +554,13 @@ CONTAINS
 
           ! See if this points lies within the radius of
           ! influence of the boundary
-          IF (ABS(rpt-Rs) .LE. radtol ) &
-               numpts = numpts + 1
-          mintheta = MIN(mintheta,thetapt)
-          maxtheta = MAX(maxtheta,thetapt)
-          
+          IF (ABS(rpt-Rs) .LE. radtol ) THEN
+             numpts = numpts + 1
+             mintheta = MIN(mintheta,thetapt)
+             maxtheta = MAX(maxtheta,thetapt)
+          ENDIF
        ENDDO
     ENDDO
-    
     
     IF(numpts .EQ. 0) THEN
        ALLOCATE(rpts_scatt(1))
@@ -682,7 +682,7 @@ CONTAINS
     INTEGER, INTENT(OUT)      :: maxsurfaceprocs
     INTEGER, INTENT(OUT)      :: newcomm
     
-    INTEGER, ALLOCATABLE      :: i_am_surface(:)
+    INTEGER, ALLOCATABLE      :: i_am_surface_local(:)
     INTEGER                   :: simgroup, surfacegroup
     INTEGER                   :: ierror
     REAL(dp)                  :: minrho, maxrho
@@ -696,7 +696,7 @@ CONTAINS
     INTEGER                   :: ir, itheta, ii
     
     !--------------------------------------------------!
-    
+
     numpts = 0
     
     halolims(1,:) = (/ lbound(rho_ax), ubound(rho_ax) /)
@@ -727,7 +727,7 @@ CONTAINS
        ALLOCATE(psi2D_sph(1,1))
        ALLOCATE(psi2D_sph_dx(1,1))
        ALLOCATE(psi2D_sph_dy(1,1))
-       
+      
        RETURN
     ENDIF
     
@@ -747,21 +747,31 @@ CONTAINS
           ! Check the extend of the grid
           minr = MIN(rpt,minr)
           maxr = MAX(rpt,maxr)
-
+          
           ! See if this points lies within the radius of
           ! influence of the boundary
-          IF (ABS(rpt-Rs) .LE. radtol ) &
-               numpts = numpts + 1
-          mintheta = MIN(mintheta,thetapt)
-          maxtheta = MAX(maxtheta,thetapt)
+          IF (ABS(rpt-Rs) .LE. radtol ) THEN
+             numpts = numpts + 1
+             mintheta = MIN(mintheta,thetapt)
+             maxtheta = MAX(maxtheta,thetapt)
+          ENDIF
        ENDDO
     ENDDO
-
+    
     ! Create communicator and surface members
     !-----------------------------------------!
+    ALLOCATE(i_am_surface_local(0:size-1))
     ALLOCATE(i_am_surface(0:size-1))
+    i_am_surface_local = 0
+    i_am_surface = 0
+    
     IF(numpts.NE.0) &
-         i_am_surface(rank) = 1
+         i_am_surface_local(rank) = 1
+    
+    ! Communicate to all processors if they are
+    ! at the surface
+    CALL MPI_ALLREDUCE(i_am_surface_local, i_am_surface, size, &
+         MPI_INTEGER, MPI_SUM, comm, ierror )
     
     DO inum = 0, size - 1
        IF(i_am_surface(inum).EQ.1) &
@@ -769,21 +779,22 @@ CONTAINS
     ENDDO
     
     ALLOCATE(surface_members(0:numsurfaceprocs-1))
+    ii = -1
     DO inum = 0, size-1
        IF(i_am_surface(inum).EQ.1) THEN
           ii = ii + 1
-          surface_members(ii) = rank
+          surface_members(ii) = inum
        ENDIF
     ENDDO
-
+    
     ! Create a global group
-    call MPI_COMM_GROUP(comm, simgroup, ierror)
+    CALL MPI_COMM_GROUP(comm, simgroup, ierror)
     
     CALL MPI_GROUP_INCL(simgroup, numsurfaceprocs, surface_members, &
          surfacegroup, ierror)
     ! Actually, this line creates the communicator
     CALL MPI_COMM_CREATE(comm, surfacegroup, newcomm, ierror)
-
+    
     ! Create grids for interpolation
     IF(numpts .EQ. 0) THEN
        ALLOCATE(rpts_scatt(1))
@@ -812,7 +823,6 @@ CONTAINS
        !numthetapts = INT( (maxtheta - mintheta) / deltatheta )
        
        ALLOCATE(pivots(1:numpivots))
-       ALLOCATE(pivot_number(1:numpivots))
        ALLOCATE(rpts_boundary(1:numrpts))
        ALLOCATE(theta_weights(1:numpivots))
        ALLOCATE(psi2D_sph(1:numrpts,1:numthetapts))
@@ -833,8 +843,8 @@ CONTAINS
        ! Find out how many pivot points lie in our processor 
        numthetapts = 0
        DO itheta = 1, numpivots
-          IF(pivots(itheta).GE.mintheta .AND. &
-               pivots(itheta).LE. maxtheta) THEN
+          IF(ACOS(pivots(itheta)).GE. mintheta .AND. &
+               ACOS(pivots(itheta)).LE. maxtheta) THEN
              numthetapts = numthetapts + 1
           ENDIF
        ENDDO
@@ -842,15 +852,16 @@ CONTAINS
        ! Allocate arrays once we know the length
        ALLOCATE(theta_boundary(1:numthetapts))
        ALLOCATE(costheta_boundary(1:numthetapts))
+       ALLOCATE(pivot_number(1:numthetapts))
        
        ! Now, assignate those points
        inum = 0
        DO itheta = 1, numpivots
-          IF(pivots(itheta).GE.mintheta .AND. &
-               pivots(itheta).LE. maxtheta) THEN
+          IF(ACOS(pivots(itheta)).GE.mintheta .AND. &
+               ACOS(pivots(itheta)).LE. maxtheta) THEN
              inum = inum + 1
-             costheta_boundary(ii) = pivots(itheta)
-             pivot_number(ii) = itheta
+             costheta_boundary(inum) = pivots(itheta)
+             pivot_number(inum) = itheta             
           ENDIF
        ENDDO
        
@@ -929,7 +940,6 @@ CONTAINS
     psi2D_sph = ZERO
     psi2D_sph_dx = ZERO
     psi2D_sph_dy = ZERO
-    
     
     DO inum = 1, numpts
        psi_scatt(inum) = psi_cart(index_x1(inum),index_x2(inum))       

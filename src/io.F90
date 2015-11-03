@@ -48,6 +48,13 @@ MODULE io
 #endif
   END INTERFACE write_surface_file
   
+  INTERFACE close_surface_file
+     MODULE PROCEDURE close_surface_file_serial
+#if _COM_MPI
+     MODULE PROCEDURE close_surface_file_parallel
+#endif
+  END INTERFACE close_surface_file
+  
   !--------------------!
   ! Private variables  !
   !--------------------!
@@ -88,7 +95,7 @@ CONTAINS
     ! Create group in the root group.     
     name = '/wave'     
     CALL h5gcreate_f(file_id, name, wave_group, error)
-    name = '/wave_deriv'     
+    name = '/wavederiv'     
     CALL h5gcreate_f(file_id, name, wavederiv_group, error)
     name = '/field'     
     CALL h5gcreate_f(file_id, name, field_group, error)
@@ -128,7 +135,7 @@ CONTAINS
     ! Create group in the root group.     
     name = '/wave'     
     CALL h5gcreate_f(file_id, name, wave_group, error)
-    name = '/wave_deriv'     
+    name = '/wavederiv'     
     CALL h5gcreate_f(file_id, name, wavederiv_group, error)
     name = '/field'     
     CALL h5gcreate_f(file_id, name, field_group, error)
@@ -207,7 +214,7 @@ CONTAINS
     CALL h5dwrite_f(wave_dset_id, H5T_NATIVE_DOUBLE, complex_wave, &
          wave_dims, error)
     
-    setname = '/wave_deriv/'// cstep
+    setname = '/wavederiv/'// cstep
     ! Create the dataset.
     CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
          wavederiv_dspace_id, wavederiv_dset_id, error)
@@ -257,13 +264,15 @@ CONTAINS
     ! Dataspace identifier in file 
     INTEGER(HID_T)                 :: wave_filespace
     INTEGER(HID_T)                 :: wavederiv_filespace
+    INTEGER(HID_T)                 :: field_filespace
     ! Dataspace identifier in memory
     INTEGER(HID_T)                 :: wave_memspace
     INTEGER(HID_T)                 :: wavederiv_memspace
+    INTEGER(HID_T)                 :: field_memspace
     ! Dataspace identifier
     !INTEGER(HID_T)                 :: wave_dspace_id
     !INTEGER(HID_T)                 :: wavederiv_dspace_id
-    INTEGER(HID_T)                 :: field_dspace_id  
+    !INTEGER(HID_T)                 :: field_dspace_id  
     ! Dataset identifier  
     INTEGER(HID_T)                 :: wave_dset_id
     INTEGER(HID_T)                 :: wavederiv_dset_id
@@ -274,7 +283,9 @@ CONTAINS
     INTEGER(HSIZE_T)               :: field_dim(1)
     ! Memory variables, per proc
     INTEGER(HSIZE_T)               :: cont(2)  
-    INTEGER(HSSIZE_T)              :: offset(2) 
+    INTEGER(HSSIZE_T)              :: offset(2)
+    INTEGER(HSIZE_T)               :: cont_field(1) 
+    INTEGER(HSSIZE_T)              :: offset_field(1)  
     ! Error flag
     INTEGER                        :: error
     
@@ -321,11 +332,14 @@ CONTAINS
     CALL h5sclose_f(wavederiv_filespace, error)
     
     cont = wave_dims
-    offset = (/ pivot_number(1), 0 /)
+    offset = (/ pivot_number(1)-1, 0 /)
     
     ! Select hyperslab in the file.
     CALL h5dget_space_f(wave_dset_id, wave_filespace, error)
     CALL h5sselect_hyperslab_f (wave_filespace, H5S_SELECT_SET_F, offset,&
+         cont, error)!, stride, blck)
+    CALL h5dget_space_f(wavederiv_dset_id, wavederiv_filespace, error)
+    CALL h5sselect_hyperslab_f (wavederiv_filespace, H5S_SELECT_SET_F, offset,&
          cont, error)!, stride, blck)
     
     ! Create property list for collective dataset write
@@ -347,43 +361,76 @@ CONTAINS
     
     ! Close the dataset.
     CALL h5dclose_f(wave_dset_id, error)
+    CALL h5dclose_f(wavederiv_dset_id, error)
     
     ! For the field, only the first processor in the group
     ! write the field data.
-    IF (pivot_number(1) .EQ. 1) THEN
-       CALL h5screate_simple_f(field_rank, field_dim, field_dspace_id, error)
-       setname = '/field/'// cstep
-       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
-            field_dspace_id, field_dset_id, error)
-       CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, &
-            field_dim, error)
-       ! End access to the dataset and release 
-       ! resources used by it.
-       CALL h5dclose_f(field_dset_id, error)
-       
-       ! Terminate access to the data space.
-       CALL h5sclose_f(field_dspace_id, error)
-    ENDIF
+
+    ! Create the data space for the dataset.
+    CALL h5screate_simple_f(field_rank, field_dim, field_filespace, error)
+    CALL h5screate_simple_f(field_rank, field_dim, field_memspace, error)
+    IF(pivot_number(1).NE.1) &
+         CALL h5sselect_none_f(field_memspace,error)
     
+    ! Create dataset
+    setname = '/field/'// cstep
+    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, field_filespace, &
+         field_dset_id, error)!, plist_id)
+    CALL h5sclose_f(field_filespace, error)
+
+    cont_field = field_dim
+    offset_field = 0
+    ! Select hyperslab in the file.
+    CALL h5dget_space_f(field_dset_id, field_filespace, error)
+    CALL h5sselect_hyperslab_f (field_filespace, H5S_SELECT_SET_F, offset_field,&
+         cont_field, error)!, stride, blck)
+    IF(pivot_number(1).NE.1) &
+         CALL h5sselect_none_f(field_filespace,error)
+       
+    ! Create property list for collective dataset write
+    CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
+    CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
+    
+    !IF (pivot_number(1) .EQ. 1) &
+         CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, field_dim, &
+         error, file_space_id = field_filespace, mem_space_id = field_memspace, &
+         xfer_prp = plist_id)
+    
+    ! Close dataspace and dataset
+    CALL h5sclose_f(field_filespace, error)
+    CALL h5sclose_f(field_memspace, error)
+    CALL h5dclose_f(field_dset_id, error)
+    
+    
+!!$    IF (pivot_number(1) .EQ. 1) THEN
+!!$       CALL h5screate_simple_f(field_rank, field_dim, field_dspace_id, error)
+!!$       setname = '/field/'// cstep
+!!$       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
+!!$            field_dspace_id, field_dset_id, error)
+!!$       CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, &
+!!$            field_dim, error)
+!!$       ! End access to the dataset and release 
+!!$       ! resources used by it.
+!!$       CALL h5dclose_f(field_dset_id, error)
+!!$       
+!!$       ! Terminate access to the data space.
+!!$       CALL h5sclose_f(field_dspace_id, error)
+!!$    ENDIF
+
     ! Deallocate aux arrays for data
     DEALLOCATE(complex_wave,complex_wavederiv)
     
   END SUBROUTINE write_surface_file2D_parallel
 #endif
+  
   !***************************************************!
   
-  SUBROUTINE close_surface_file( parallel )
+  SUBROUTINE close_surface_file_serial( )
     IMPLICIT NONE
-
-    LOGICAL, INTENT(IN)            :: parallel
+    
     ! Error flag
     INTEGER                        :: error, info
     !--------------------------------------------!
-    
-    IF (parallel) THEN
-       ! Close the property list.
-       CALL h5pclose_f(plist_id, error)
-    ENDIF
     
     ! Close the group.
     CALL h5gclose_f(wave_group, error)
@@ -396,8 +443,36 @@ CONTAINS
     ! Close FORTRAN interfaces and HDF5 library.
     CALL h5close_f(error)
     
-  END SUBROUTINE close_surface_file
+  END SUBROUTINE close_surface_file_serial
   
+  !***************************************************!
+#if _COM_MPI
+  SUBROUTINE close_surface_file_parallel( rank )
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)            :: rank
+    ! Error flag
+    INTEGER                        :: error, info
+    !--------------------------------------------!
+    
+    IF(i_am_surface(rank).EQ.1) THEN
+       ! Close the property list.
+       CALL h5pclose_f(plist_id, error)
+       
+       ! Close the group.
+       CALL h5gclose_f(wave_group, error)
+       CALL h5gclose_f(wavederiv_group, error)
+       CALL h5gclose_f(field_group, error)
+       
+       ! Close the file.
+       CALL h5fclose_f(file_id, error)
+       
+       ! Close FORTRAN interfaces and HDF5 library.
+       CALL h5close_f(error)
+    ENDIF
+    
+  END SUBROUTINE close_surface_file_parallel
+#endif
   !***************************************************!
   !***************************************************!
   !***************************************************!

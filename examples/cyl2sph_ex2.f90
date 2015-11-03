@@ -1,276 +1,223 @@
-PROGRAM cyl2sph_ex2
-
+PROGRAM cy2sph_ex2
+  
   USE popsicle
   
   IMPLICIT NONE
 
-  INTEGER                    :: numrhopts
-  INTEGER                    :: numzpts
-  INTEGER                    :: numrpts
-  INTEGER                    :: numthetapts
-  INTEGER                    :: numpts
+  !--Program variables-----------------------------------------------------!
+  
+  INTEGER                    :: maxrhopts, maxzpts
+  INTEGER                    :: numrhopts, numzpts
+  INTEGER                    :: dims(2)
+ 
+  INTEGER                    :: numproc1drho       
+  INTEGER                    :: numproc1dz                  
+  INTEGER                    :: maxproc1drho       
+  INTEGER                    :: maxproc1dz         
+  
+  REAL(dp)                   :: deltarho, deltaz
+  REAL(dp)                   :: Rboundary
+  REAL(dp)                   :: deltar
+  INTEGER                    :: lmax
+  REAL(dp)                   :: tolerance
+  INTEGER                    :: fdrule
+  
+  INTEGER                    :: irho, iz
+  INTEGER                    :: irg, irhog, izg
+  INTEGER                    :: iprocrho, iprocz
+  INTEGER                    :: ipro
+  
+  COMPLEX(dp), ALLOCATABLE   :: psipro(:, :)
+  COMPLEX(dp), ALLOCATABLE   :: psi(:, :)
+  
   REAL(dp), ALLOCATABLE      :: rho_ax(:)
   REAL(dp), ALLOCATABLE      :: z_ax(:)
-  INTEGER                    :: dims(2)
-  
-  COMPLEX(dp), ALLOCATABLE   :: Y_lm(:, :)
-  COMPLEX(dp), ALLOCATABLE   :: R_nl(:, :)
-  COMPLEX(dp), ALLOCATABLE   :: cylfunc(:, :)
-  REAL(dp)                   :: drho, dz
-  COMPLEX(dp), ALLOCATABLE   :: sphfunc(:, :)
-  COMPLEX(dp), ALLOCATABLE   :: sphfunc_dr(:, :)
-  COMPLEX(dp), ALLOCATABLE   :: sphfunc_dth(:, :)
-  COMPLEX(dp), ALLOCATABLE   :: radfunc(:, :)
-  COMPLEX(dp)                :: ref_value
-  REAL(dp)                   :: dr
-  INTEGER                    :: lmax, il
-  REAL(dp)                   :: Rboundary, tolerance
-  REAL(dp)                   :: thetapt, rpt
+  REAL(dp), ALLOCATABLE      :: gpts(:), gp(:)
+  REAL(dp), ALLOCATABLE      :: hpts(:), hp(:)
+  REAL(dp)                   :: rhoalpha, rhobeta
+  REAL(dp)                   :: sqrtrho, sqrt1rho
+  REAL(dp)                   :: rhopt, zpt
   
   REAL(dp)                   :: start_time, end_time
-  REAL(dp)                   :: interp_time
-  REAL(dp)                   :: maxerror
-  INTEGER                    :: irho,iz
-  INTEGER                    :: ir, itheta
+  REAL(dp)                   :: comp_time
+  
+  CHARACTER(LEN = 150)       :: filename
+  CHARACTER(LEN = 6)         :: ctime, rbstr
+  CHARACTER(LEN = 4)         :: cprocessor, lmaxstr
+  CHARACTER(LEN=100)         :: data_directory
 
-  !-------------------------------------------------!
-  WRITE(*,*)
-  WRITE(*,*)
-  WRITE(*,*)
-  WRITE(*,*) '*******************************'
-  WRITE(*,*) '*     cyl2sph_ex2 example     *'
-  WRITE(*,*) '*******************************'
-  WRITE(*,*)
+  !-----------------------------------------------!
   
-  ! Set number of points
-  numrhopts = 200
-  numzpts   = 500
+  WRITE(*,*)
+  WRITE(*,*) '*******************'
+  WRITE(*,*) '  Cy2sph example.'
+  WRITE(*,*) '*******************'
+  WRITE(*,*) 
   
-  ! Set grid spacing
-  drho = 0.01
-  dz   = 0.02
+  WRITE(*,*) 'Opening...'
   
-  ! Create axes
+  ! Set the parameters of the grid
+  maxrhopts        = 90
+  maxzpts	   = 201
+
+  deltarho         = 0.1_dp
+  deltaz           = 0.2_dp
+  
+  numproc1drho     = 4
+  numproc1dz       = 10
+  
+  maxproc1drho = numproc1drho - 1
+  maxproc1dz   = numproc1dz - 1 
+  
+  numrhopts        = numproc1drho * maxrhopts
+  numzpts	   = numproc1dz   * maxzpts
+  dims = (/ numrhopts, numzpts /)
+  
+  ! The radius of the boundary
+  Rboundary    = 50.0_dp
+  tolerance = 1.0_dp !0.75_dp
+  deltar = 0.1_dp
+  fdrule = 2
+  lmax = 10
+  
+  data_directory = './data/h2p/cylindrical/'
+  WRITE(rbstr,'(F6.3)') Rboundary
+  WRITE(lmaxstr,'(I3.3)') lmax
+
+  !--------------!
+  ! Create grids
+  !--------------!
+  WRITE(*,*) 'Building meshes ...'
+
   ALLOCATE(rho_ax(1:numrhopts))
   ALLOCATE(z_ax(1:numzpts))
+  ALLOCATE(gpts(1:numrhopts))
+  ALLOCATE(gp(1:numrhopts))
+  ALLOCATE(hpts(1:numzpts))
+  ALLOCATE(hp(1:numzpts))
   
-  DO irho =1, numrhopts
-     rho_ax(irho) = REAL(irho,dp) * drho
-  ENDDO
+  rhoalpha = 1.0_dp
+  rhobeta = 0.0_dp
   
-  DO iz = 1, numzpts
-     z_ax(iz) = REAL(-numzpts / 2 + iz,dp) * dz  
-  ENDDO
-  
-  
-  ! We are going to set the 3d hydrogen function
-  ! n=3, l=2, m=0
-  ALLOCATE(Y_lm(1:numrhopts,1:numzpts))
-  ALLOCATE(R_nl(1:numrhopts,1:numzpts))
-  ALLOCATE(cylfunc(1:numrhopts,1:numzpts))
-  
-  DO iz = 1, numzpts
-     DO irho = 1, numrhopts
-        
-        rpt = SQRT(rho_ax(irho)**2 + z_ax(iz)**2)
-        thetapt = ACOS(z_ax(iz) / rpt)
-
-        ! Spherical harmonic l=2, m=0
-        Y_lm(irho,iz) = SQRT(5.0_dp / 4.0_dp / pi) * &
-             ( 3.0_dp * (COS(thetapt))**2 - 1.0_dp)
-        
-        ! Spherical harmonic l=0, m=0
-!!$        Y_lm(irho,iz) = SQRT(1.0_dp / 4.0_dp / pi)
-        
-        R_nl(irho,iz) = 1.0_dp
-        
-        cylfunc(irho,iz) = EXP(-rpt / 2.0_dp) * R_nl(irho,iz) * &
-             Y_lm(irho,iz)
-        
-     ENDDO
-  ENDDO
-  
-  ! Initialize the boundary
-  Rboundary = 1.0_dp
-  tolerance = 0.05_dp
-  dr = 0.01_dp
-  lmax      = 5
-  dims      = (/numrhopts, numzpts/)
-  
-  WRITE(*,*)
-  WRITE(*,*)            '------------------------------------'
-  WRITE(*,'(A30,I4)') 'Number of points in rho: ',numrhopts
-  WRITE(*,'(A30,I4)') 'Number of points in z: ',numzpts
-  
-  WRITE(*,'(A30,F9.4)') 'Grid spacing in rho: ',drho
-  WRITE(*,'(A30,F9.4)') 'Grid spacing in z: ',dz
-  
-  WRITE(*,'(A30,F9.4)') 'Radius boundary: ',Rboundary
-  WRITE(*,'(A30,F9.4)') 'Radius tolerance: ',tolerance
-  WRITE(*,*)            '------------------------------------'
-  
-  ! Build interpolant
-  WRITE(*,*) 'Creating interpolant...'
-  CALL cpu_time(start_time)
-
-  CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
-       Rboundary, tolerance, 2, dr, lmax, numpts, &
-       numrpts, numthetapts )
-  
-  CALL cpu_time(end_time)
-  
-  interp_time = end_time - start_time
-  
-  WRITE(*,'(A40,F9.4)') 'Interpolant time (seconds): ', interp_time
-  WRITE(*,*)            '------------------------------------'
-  
-  WRITE(*,'(A40,I4)') 'Number of interpolation points: ',numpts  
-  WRITE(*,'(A40,I4)') 'Number of radial boundary points: ',numrpts
-  WRITE(*,'(A40,I4)') 'Number of polar boundary points: ',numthetapts
-  WRITE(*,'(A40,F9.4)') 'Grid spacing in r: ',dr
-  WRITE(*,'(A40,I4)') 'Maximum angular momenta: ',lmax
-  WRITE(*,*)            '------------------------------------'
-  
-  ALLOCATE(sphfunc(1:numrpts,1:numthetapts))
-  ALLOCATE(sphfunc_dr(1:numrpts,1:numthetapts))
-  ALLOCATE(sphfunc_dth(1:numrpts,1:numthetapts))
-  
-  ! Interpolate!!
-  WRITE(*,*) 'Interpolating boundary...'
-  CALL cpu_time(start_time)
-
-  CALL get_cylindrical_boundary(cylfunc, sphfunc, sphfunc_dr, &
-       sphfunc_dth, 'quadratic')
-  
-  CALL cpu_time(end_time)
-  
-  interp_time = end_time - start_time
-  
-  WRITE(*,'(A40,F9.4)') 'Interpolation time (seconds): ', interp_time
-  
-  DO itheta = 1, numthetapts
-     DO ir = 1, numrpts
-        ref_value =  EXP(-rpts_boundary(ir) / 2.0_dp) *  SQRT(5.0_dp / 4.0_dp / pi) * &
-             ( 3.0_dp * (costheta_boundary(itheta))**2 - 1.0_dp)
-!!$        ref_value =  EXP(-rpts_boundary(ir) / 2.0_dp) * 0.5_dp * SQRT(1.0_dp / pi)	
-        
-!!$        WRITE(*,*) sphfunc(ir,itheta)
-!!$        WRITE(*,*) ref_value 
-!!$        WRITE(*,*) 'Diff: ', ABS(sphfunc(ir,itheta) - ref_value)
-        maxerror = MAX(maxerror, ABS(sphfunc(ir,itheta) - ref_value))
-     ENDDO
-  ENDDO
-  
-  WRITE(*,*) 
-  WRITE(*,*) '------------RESULTS--------------'
-  WRITE(*,*)
-  WRITE(*,'(A40,E15.8)') 'Maximum difference in value: ',maxerror
-  WRITE(*,*)
-  WRITE(*,*)          '----------------------------------------'
-  WRITE(*,*) 'Now the Spherical Harmonic transform! (SHT)...'
-  WRITE(*,*)
-  
-  
-  ALLOCATE(radfunc(1:numrpts,0:lmax))
-  
-  ! Initialize Spherical Harmonics
-  CALL initialize_spherical_harmonics(lmax, costheta_boundary)
-  
-  CALL cpu_time(start_time)
-  ! Make SHT
-  CALL make_sht(sphfunc, costheta_boundary, theta_weights, lmax, radfunc)
-  CALL cpu_time(end_time)
-  
-  interp_time = end_time - start_time
-  
-  WRITE(*,'(A40,I4)') 'Again, maximum angular momenta: ',lmax
-  WRITE(*,'(A40,E15.8)') 'Spherical harmonics transform time:',interp_time
-  WRITE(*,*)
-  WRITE(*,*)          '----------------------------------------'
-  WRITE(*,*)          '-----------      FIN      --------------'
-  WRITE(*,*)          '----------------------------------------'
-  WRITE(*,*)
-  
-!!!!!!!!!!!!!!!!!!!
-!!!! Save axes !!!!
-!!!!!!!!!!!!!!!!!!!
-  
-  ! Rho
-  OPEN(unit=33,form='formatted',file='./results/rho_ax.dat')
   DO irho = 1, numrhopts
-     WRITE(33,*) rho_ax(irho) 
+     rhopt = REAL(irho,dp) * deltarho
+     rho_ax(irho) = rhopt
+     sqrtrho	    = SQRT(rhopt)
+     sqrt1rho	    = SQRT(rhoalpha + rhobeta * rhopt)
+     
+     gpts(irho)	    = rhopt * sqrtrho / sqrt1rho
+     
+     gp(irho)	    = 0.5_dp * sqrtrho *			       &
+          (2.0_dp * rhobeta * rhopt +                 &
+          3.0_dp * rhoalpha)
+     gp(irho)	    = gp(irho) / (sqrt1rho ** 3)
   ENDDO
-  CLOSE(33)
-  
-  ! z
-  OPEN(unit=33,form='formatted',file='./results/z_ax.dat')
-  DO iz = 1, numzpts
-     WRITE(33,*) z_ax(iz)
-  ENDDO
-  CLOSE(33)
-  
-  ! R
-  OPEN(unit=33,form='formatted',file='./results/r_ax.dat')
-  DO ir = 1, numrpts
-     WRITE(33,*) rpts_boundary(ir)
-  ENDDO
-  CLOSE(33)
-  
-  ! Theta
-  OPEN(unit=33,form='formatted',file='./results/theta_ax.dat')
-  DO itheta = 1, numthetapts
-     WRITE(33,*) theta_boundary(itheta), costheta_boundary(itheta)
-  ENDDO
-  CLOSE(33)
-  
-  ! Save original wavefunction
-  OPEN(unit=33,form='formatted',file='./results/cylfunction.dat')
   
   DO iz = 1, numzpts
-     DO irho = 1, numrhopts
-        WRITE(33,*) ABS(cylfunc(irho,iz))**2 
+     zpt = (-0.5_dp * REAL(numzpts-1,dp) + REAL(iz-1,dp)) * deltaz
+     z_ax(iz) = zpt
+     hpts(iz) = zpt
+     hp(iz) = 1.0_dp
+  ENDDO
+    
+  !----------------------------------------!
+  ! Initialize cylindrical surface stuff
+  !----------------------------------------!
+    
+  filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
+  CALL cpu_time(start_time)
+  CALL initialize_cylindrical_surface(gpts, hpts, dims, &
+       Rboundary, tolerance, fdrule, deltar, lmax, .TRUE., filename)
+  CALL cpu_time(end_time)
+  
+  comp_time = end_time - start_time
+  
+  WRITE(*,'(A43,F9.6)') 'Time spent on initializing the surface(s): ',comp_time
+  
+  !-----------------------------!
+  ! Read wavefunction from disk
+  !-----------------------------!
+  
+  WRITE(*,*) 'Allocating wavefunctions...'
+  ALLOCATE(psipro(1:maxrhopts, 1:maxzpts))
+  ALLOCATE(psi(1:numrhopts, 1:numzpts))
+
+  WRITE(*,*) 'Read data...'
+  
+  ipro = -1
+  
+  DO iprocz = 0, maxproc1dz     
+     DO iprocrho = 0, maxproc1drho    
+        
+        ipro = ipro + 1
+        
+        WRITE(cprocessor, '(I4.4)') ipro
+        
+        filename = TRIM(data_directory) // 'psi/' // cprocessor //    &
+             '/psi.' // cprocessor // '.dat'
+        
+        OPEN(UNIT = 10, FORM = 'unformatted', FILE = filename)
+        
+        READ(10) psipro
+        
+        CLOSE(UNIT = 10)
+        
+        DO iz = 1, maxzpts
+           DO irho = 1, maxrhopts
+              
+              irhog = iprocrho * maxrhopts + irho
+              izg = iprocz * maxzpts + iz
+              
+              psi(irhog, izg) = psi(irhog, izg) + psipro(irho, iz)
+              
+           ENDDO
+        ENDDO
+        
      ENDDO
   ENDDO
-  
-  CLOSE(33)
-  
-  ! Save spherical wavefunction
-  OPEN(unit=33,form='formatted',file='./results/sphfunction.dat')
-  
-  DO itheta = 1, numthetapts
-     DO ir = 1, numrpts
-        WRITE(33,*) ABS(sphfunc(ir,itheta))**2 
-     ENDDO
-  ENDDO
-  
-  CLOSE(33)
 
-  ! Save Legendre polynomials
-  OPEN(unit=33,form='formatted',file='./results/legendrepoly.dat')
+  !----------------------------------------------!
+  ! Unscale the original wavefunction
+  ! (This has to do with how the original TDSE
+  ! where this wavefunction came from works)
+  !----------------------------------------------!
   
-  DO il = 0, lmax
-     DO itheta = 0, numthetapts-1
-        WRITE(33,*) il, legenpl(itheta, 0, il)
-     ENDDO
-  ENDDO
+!!$  DO iz = 1, numzpts
+!!$     DO irho = 1, numrhopts
+!!$        psi(irho,iz) = psi(irho,iz) &
+!!$             / SQRT(gpts(irho) * gp(irho) * hp(iz) )
+!!$     ENDDO
+!!$  ENDDO
+  
+  !-------------------------------------------------!
+  ! Get cylindrical surface, and write it to a file
+  !-------------------------------------------------!
+  WRITE(*,*) 'Get the surface. Write it to a file...'
 
-  CLOSE(33)
+  CALL cpu_time(start_time)
+  
+  CALL get_cylindrical_surface(psi, fdrule, 0.0_dp , &
+       0.0_dp, 0.0_dp, lmax, .TRUE. )
 
-  ! Save spherical wavefunction in sph harmonics basis
-  OPEN(unit=33,form='formatted',file='./results/radfunc.dat')
-  
-  DO il = 0, lmax
-     DO ir = 1, numrpts
-        WRITE(33,*) REAL(radfunc(ir,il),dp),AIMAG(radfunc(ir,il)) 
-     ENDDO
-  ENDDO
-  
-  CLOSE(33)
-  
-  ! Free memory
-  DEALLOCATE(rho_ax,z_ax)
-  DEALLOCATE(Y_lm, R_nl)
-  DEALLOCATE(cylfunc)
-  DEALLOCATE(sphfunc, sphfunc_dr, sphfunc_dth)
+  CALL cpu_time(end_time)
 
-END PROGRAM
+  comp_time = end_time - start_time
+
+  WRITE(*,'(A38,F8.5)') 'Time spent on getting the surface (s): ',comp_time
+  
+  !------------------------------!
+  ! Now, load it again from file
+  !------------------------------!
+  WRITE(*,*) 'Deleting surface...'
+  CALL delete_surface2D( )
+  
+  ! Free arrays!
+  WRITE(*,*) 'Free arrays!'
+  DEALLOCATE(psi,psipro)
+  DEALLOCATE(rho_ax,z_ax,gpts,hpts,gp,hp)
+  
+  WRITE(*,*) '¡Se acabó!'
+  WRITE(*,*)
+  WRITE(*,*)
+  
+END PROGRAM cy2sph_ex2

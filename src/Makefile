@@ -14,7 +14,8 @@ default: lib
 VPATH = interp interp_libs/slatec interp_libs/sheppack
 SHEPPACK_DIR = interp_libs/sheppack
 
-include interp_libs/slatec/interp_routines.lst
+# Uncomment the list to slatec routines if needed.
+#include interp_libs/slatec/interp_routines.lst
 include interp_libs/sheppack/sheppack_routines.lst
 POPSICLE_OBJS = constants.o tools.o bessel.o gaussleg.o \
 	coords.o fourier.o sht.o \

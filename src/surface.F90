@@ -50,16 +50,30 @@ MODULE surface
   
   INTERFACE get_cylindrical_surface
      MODULE PROCEDURE get_cylindrical_surface_serial
-     !#if _COM_MPI
-     !     MODULE PROCEDURE get_cylindrical_surface_parallel
-     !#endif
+#if _COM_MPI
+     MODULE PROCEDURE get_cylindrical_surface_parallel
+#endif
   END INTERFACE get_cylindrical_surface
   
 !!$  INTERFACE get_cartesian_flux
 !!$     MODULE PROCEDURE get_cartesian2D_flux
 !!$     MODULE PROCEDURE get_cartesian3D_flux
 !!$  END INTERFACE get_cartesian_flux
+  
+  INTERFACE delete_surface2D
+     MODULE PROCEDURE delete_surface2D_serial
+#if _COM_MPI
+     MODULE PROCEDURE delete_surface2D_parallel
+#endif
+  END INTERFACE delete_surface2D
 
+  INTERFACE delete_surface3D
+     MODULE PROCEDURE delete_surface3D_serial
+#if _COM_MPI
+     MODULE PROCEDURE delete_surface3D_parallel
+#endif
+  END INTERFACE delete_surface3D
+  
   !-------------------------------------------!
 
   COMPLEX(dp), ALLOCATABLE  :: spherical_wave2D(:, :)
@@ -83,7 +97,8 @@ MODULE surface
   INTEGER                   :: numsurfaceprocs
   
 CONTAINS
-  
+  !********************************************************************!
+  !********************************************************************!
   SUBROUTINE initialize_cylindrical_surface_serial(rho_ax, z_ax, dims, &
        Rboundary, radius_tolerance, fd_rule, dr, lmax, &
        write_to_file, filename)
@@ -152,19 +167,27 @@ CONTAINS
          radius_tolerance, fd_rule, dr, lmax, rank, size, comm, &
          numpts, numrpts, numthetapts, numsurfaceprocs, surfacecomm )
     
-    ALLOCATE(spherical_wave2D(1:numrpts,1:numthetapts))
-    ALLOCATE(spherical_wave2D_dr(1:numrpts,1:numthetapts))
-    ALLOCATE(spherical_wave2D_dtheta(1:numrpts,1:numthetapts))
-    ALLOCATE(spherical_wave2D_deriv(1:numthetapts))
-   
-    rb = Rboundary
+!!$    write(*,*) rank, numrpts, numthetapts
+!!$    if(rank.EQ.1) THEN
+!!$       write(*,*) 'theta',theta_boundary
+!!$       write(*,*) 'pivots',pivots
+!!$       WRITE(*,*) 'number',pivot_number
+!!$    ENDIF
     
-    IF(write_to_file) &
-         CALL open_surface_file(filename, surfacecomm)
+    IF(i_am_surface(rank) .EQ. 1) THEN
+       ALLOCATE(spherical_wave2D(1:numrpts,1:numthetapts))
+       ALLOCATE(spherical_wave2D_dr(1:numrpts,1:numthetapts))
+       ALLOCATE(spherical_wave2D_dtheta(1:numrpts,1:numthetapts))
+       ALLOCATE(spherical_wave2D_deriv(1:numthetapts))
+       
+       rb = Rboundary
+       
+       IF(write_to_file) &
+            CALL open_surface_file(filename, surfacecomm)
+    ENDIF
     
   END SUBROUTINE initialize_cylindrical_surface_parallel
-#endif
-  
+#endif  
   !****************************************************************!
   
   SUBROUTINE get_cylindrical_surface_serial(wavefunc, fd_rule, time, &
@@ -190,17 +213,120 @@ CONTAINS
          spherical_wave2D_deriv,fd_rule,numrpts,numthetapts)
     
     ! Write boundary points to a HDF5 file
-    IF (write_to_file) THEN
-       CALL write_surface_file(spherical_wave2D(middle_pt,:), spherical_wave2D_deriv, &
-            time, efield, afield, lmax)
-    ENDIF
+    IF (write_to_file) &
+         CALL write_surface_file(spherical_wave2D(middle_pt,:), &
+         spherical_wave2D_deriv, time, efield, afield, lmax)
     
     ! Deallocate fd coeffs
     CALL delete_fd_coeffs()
     
   END SUBROUTINE get_cylindrical_surface_serial
 
+  !**********************************************************************!
+#if _COM_MPI
+  SUBROUTINE get_cylindrical_surface_parallel(wavefunc, fd_rule, time, &
+       efield, afield, lmax, rank, write_to_file)
+    
+    IMPLICIT NONE
+    
+    COMPLEX(dp), INTENT(IN)   :: wavefunc(:, :)
+    INTEGER, INTENT(IN)       :: fd_rule
+    REAL(dp), INTENT(IN)      :: time, efield, afield
+    INTEGER, INTENT(IN)       :: lmax, rank
+    LOGICAL, INTENT(IN)       :: write_to_file
+    
+    INTEGER                   :: middle_pt
+    !----------------------------------------------------------!
+    
+    IF(i_am_surface(rank) .EQ. 1) THEN
+       CALL get_cylindrical_boundary( wavefunc, spherical_wave2D, &
+            spherical_wave2D_dr, spherical_wave2D_dtheta, &
+            'quadratic')
+       
+       middle_pt = fd_rule + 1
+       CALL make_wave_boundary_derivative(spherical_wave2D,&
+            spherical_wave2D_deriv,fd_rule,numrpts,numthetapts)
+       
+       ! Write boundary points to a HDF5 file
+       IF (write_to_file) &
+            CALL write_surface_file(spherical_wave2D(middle_pt,:), &
+            spherical_wave2D_deriv, time, efield, afield, lmax, numthetapts)
+    ENDIF
+    
+    ! Deallocate fd coeffs
+    CALL delete_fd_coeffs()
+    
+  END SUBROUTINE get_cylindrical_surface_parallel
+#endif
   !*****************************************************************!
+
+  SUBROUTINE delete_surface2D_serial()
+    
+    IMPLICIT NONE
+    
+    ! Close HDF5 file
+    CALL close_surface_file()
+    
+    DEALLOCATE(spherical_wave2D,spherical_wave2D_deriv)
+    DEALLOCATE(spherical_wave2D_dr,spherical_wave2D_dtheta)
+    
+  END SUBROUTINE delete_surface2D_serial
+  
+  !---------------------------------------------------------------!
+#if _COM_MPI
+  SUBROUTINE delete_surface2D_parallel(rank)
+    
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)        :: rank
+    
+    ! Close HDF5 parallel file
+    CALL close_surface_file(rank)
+    
+    IF(i_am_surface(rank) .EQ. 1) THEN
+       DEALLOCATE(spherical_wave2D,spherical_wave2D_deriv)
+       DEALLOCATE(spherical_wave2D_dr,spherical_wave2D_dtheta)
+    ENDIF
+    
+  END SUBROUTINE delete_surface2D_parallel
+#endif
+  !----------------------------------------------------------!
+  
+  SUBROUTINE delete_surface3D_serial()
+    
+    IMPLICIT NONE
+    
+    ! Close HDF5 file
+    CALL close_surface_file()
+    
+    DEALLOCATE(spherical_wave3D,spherical_wave3D_deriv)
+    DEALLOCATE(spherical_wave3D_dr)
+    DEALLOCATE(spherical_wave3D_dtheta)
+    DEALLOCATE(spherical_wave3D_dphi)
+    
+  END SUBROUTINE delete_surface3D_serial
+  
+  !-----------------------------------------------------------!
+#if _COM_MPI
+  SUBROUTINE delete_surface3D_parallel(rank)
+    
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)         :: rank
+    
+    ! Close HDF5 parallel file
+    CALL close_surface_file(rank)
+
+    IF(i_am_surface(rank) .EQ. 1) THEN
+       DEALLOCATE(spherical_wave3D,spherical_wave3D_deriv)
+       DEALLOCATE(spherical_wave3D_dr)
+       DEALLOCATE(spherical_wave3D_dtheta)
+       DEALLOCATE(spherical_wave3D_dphi)
+    ENDIF
+    
+  END SUBROUTINE delete_surface3D_parallel
+#endif
+  !***********************************************************!
   
 !!$  SUBROUTINE get_cylindrical_flux( wavefunc )
 !!$    
@@ -224,27 +350,6 @@ CONTAINS
   
   !---------------------------------------------------------------!
   
-  SUBROUTINE delete_surface2D()
-    
-    IMPLICIT NONE
-    
-    DEALLOCATE(spherical_wave2D)
-    DEALLOCATE(spherical_wave2D_dr,spherical_wave2D_dtheta)
-    
-  END SUBROUTINE delete_surface2D
-  
-  !---------------------------------------------------------------!
-  
-  SUBROUTINE delete_surface3D()
-    
-    IMPLICIT NONE
-    
-    DEALLOCATE(spherical_wave3D)
-    DEALLOCATE(spherical_wave3D_dr)
-    DEALLOCATE(spherical_wave3D_dtheta)
-    DEALLOCATE(spherical_wave3D_dphi)
-    
-  END SUBROUTINE delete_surface3D
   
   !---------------------------------------------------------------!
   
