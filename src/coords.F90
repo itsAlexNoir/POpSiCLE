@@ -955,6 +955,8 @@ CONTAINS
        ENDDO
     ENDDO
     
+    CALL destroy_interpolant(numpts, rpts_scatt, theta_scatt, psi_scatt)
+    
   END SUBROUTINE get_cartesian_boundary2D
   
   !----------------------------------------------------!
@@ -1001,7 +1003,10 @@ CONTAINS
           ENDDO
        ENDDO
     ENDDO
-    
+
+    CALL destroy_interpolant(numpts, rpts_scatt, theta_scatt, phi_scatt, &
+         psi_scatt)
+
   END SUBROUTINE get_cartesian_boundary3D
   
   !----------------------------------------------------!
@@ -1043,6 +1048,8 @@ CONTAINS
                psi2D_sph(ir,itheta), psi2D_sph_dx(ir,itheta), psi2D_sph_dy(ir,itheta))
        ENDDO
     ENDDO
+    
+    CALL destroy_interpolant(numpts, rpts_scatt, theta_scatt, psi_scatt)
     
   END SUBROUTINE get_cylindrical_boundary2D
   

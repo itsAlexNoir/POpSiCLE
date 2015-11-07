@@ -167,13 +167,6 @@ CONTAINS
          radius_tolerance, fd_rule, dr, lmax, rank, size, comm, &
          numpts, numrpts, numthetapts, numsurfaceprocs, surfacecomm )
     
-!!$    write(*,*) rank, numrpts, numthetapts
-!!$    if(rank.EQ.1) THEN
-!!$       write(*,*) 'theta',theta_boundary
-!!$       write(*,*) 'pivots',pivots
-!!$       WRITE(*,*) 'number',pivot_number
-!!$    ENDIF
-    
     IF(i_am_surface(rank) .EQ. 1) THEN
        ALLOCATE(spherical_wave2D(1:numrpts,1:numthetapts))
        ALLOCATE(spherical_wave2D_dr(1:numrpts,1:numthetapts))
@@ -216,10 +209,7 @@ CONTAINS
     IF (write_to_file) &
          CALL write_surface_file(spherical_wave2D(middle_pt,:), &
          spherical_wave2D_deriv, time, efield, afield, lmax)
-    
-    ! Deallocate fd coeffs
-    CALL delete_fd_coeffs()
-    
+        
   END SUBROUTINE get_cylindrical_surface_serial
 
   !**********************************************************************!
@@ -252,10 +242,7 @@ CONTAINS
             CALL write_surface_file(spherical_wave2D(middle_pt,:), &
             spherical_wave2D_deriv, time, efield, afield, lmax, numthetapts)
     ENDIF
-    
-    ! Deallocate fd coeffs
-    CALL delete_fd_coeffs()
-    
+        
   END SUBROUTINE get_cylindrical_surface_parallel
 #endif
   !*****************************************************************!
@@ -266,6 +253,9 @@ CONTAINS
     
     ! Close HDF5 file
     CALL close_surface_file()
+    
+    ! Deallocate fd coeffs
+    CALL delete_fd_coeffs()
     
     DEALLOCATE(spherical_wave2D,spherical_wave2D_deriv)
     DEALLOCATE(spherical_wave2D_dr,spherical_wave2D_dtheta)
@@ -282,8 +272,11 @@ CONTAINS
     
     ! Close HDF5 parallel file
     CALL close_surface_file(rank)
+
+    ! Deallocate fd coeffs
+    CALL delete_fd_coeffs()
     
-    IF(i_am_surface(rank) .EQ. 1) THEN
+    IF(i_am_surface(rank) .EQ. 1) THEN  
        DEALLOCATE(spherical_wave2D,spherical_wave2D_deriv)
        DEALLOCATE(spherical_wave2D_dr,spherical_wave2D_dtheta)
     ENDIF

@@ -463,6 +463,8 @@ CONTAINS
     DEALLOCATE(RW_IM)
     DEALLOCATE(AQ_IM)
     DEALLOCATE(AL_IM)
+
+    DEALLOCATE(func_re,func_im)
     
   END SUBROUTINE destroy_interpolant2D
 
@@ -497,6 +499,8 @@ CONTAINS
     DEALLOCATE(XYZDEL_IM)
     DEALLOCATE(AQ_IM)
     DEALLOCATE(AL_IM)
+    
+    DEALLOCATE(func_re,func_im)
     
   END SUBROUTINE destroy_interpolant3D
   
