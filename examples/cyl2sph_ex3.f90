@@ -1,4 +1,4 @@
-PROGRAM cy2sph_ex3
+PROGRAM cyl2sph_ex3
   
   USE MPI
   USE popsicle
@@ -70,7 +70,7 @@ PROGRAM cy2sph_ex3
   IF(rank.EQ.0) THEN
      WRITE(*,*)
      WRITE(*,*) '****************************'
-     WRITE(*,*) '       Cy2sph3 example.'
+     WRITE(*,*) '       Cyl2sph3 example.'
      WRITE(*,*) ' We go parallel in this one!'
      WRITE(*,*) '****************************'
      WRITE(*,*) 
@@ -228,12 +228,12 @@ PROGRAM cy2sph_ex3
   ! where this wavefunction came from works)
   !----------------------------------------------!
   
-!!$  DO iz = 1, newmaxzpts
-!!$     DO irho = 1, newmaxrhopts
-!!$        psi(irho,iz) = psi(irho,iz) &
-!!$             / SQRT(gpts(irho) * gp(irho) * hp(iz) )
-!!$     ENDDO
-!!$  ENDDO
+  DO iz = 1, newmaxzpts
+     DO irho = 1, newmaxrhopts
+        psi(irho,iz) = psi(irho,iz) &
+             / SQRT(gpts(irho) * gp(irho) * hp(iz) )
+     ENDDO
+  ENDDO
   
   !-------------------------------------------------!
   ! Get cylindrical surface, and write it to a file
@@ -274,4 +274,4 @@ PROGRAM cy2sph_ex3
      WRITE(*,*)
   ENDIF
   
-END PROGRAM cy2sph_ex3
+END PROGRAM cyl2sph_ex3

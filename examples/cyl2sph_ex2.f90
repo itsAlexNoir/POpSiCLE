@@ -1,4 +1,4 @@
-PROGRAM cy2sph_ex2
+PROGRAM cyl2sph_ex2
   
   USE popsicle
   
@@ -50,7 +50,7 @@ PROGRAM cy2sph_ex2
   
   WRITE(*,*)
   WRITE(*,*) '*******************'
-  WRITE(*,*) '  Cy2sph example.'
+  WRITE(*,*) '  Cyl2sph example.'
   WRITE(*,*) '*******************'
   WRITE(*,*) 
   
@@ -182,12 +182,12 @@ PROGRAM cy2sph_ex2
   ! where this wavefunction came from works)
   !----------------------------------------------!
   
-!!$  DO iz = 1, numzpts
-!!$     DO irho = 1, numrhopts
-!!$        psi(irho,iz) = psi(irho,iz) &
-!!$             / SQRT(gpts(irho) * gp(irho) * hp(iz) )
-!!$     ENDDO
-!!$  ENDDO
+  DO iz = 1, numzpts
+     DO irho = 1, numrhopts
+        psi(irho,iz) = psi(irho,iz) &
+             / SQRT(gpts(irho) * gp(irho) * hp(iz) )
+     ENDDO
+  ENDDO
   
   !-------------------------------------------------!
   ! Get cylindrical surface, and write it to a file
@@ -220,4 +220,4 @@ PROGRAM cy2sph_ex2
   WRITE(*,*)
   WRITE(*,*)
   
-END PROGRAM cy2sph_ex2
+END PROGRAM cyl2sph_ex2
