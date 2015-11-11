@@ -20,15 +20,17 @@ MODULE coords
   
   INTERFACE initialize_cartesian_boundary
      MODULE PROCEDURE initialize_cartesian_boundary2D
-     MODULE PROCEDURE initialize_cartesian_boundary3D
+     MODULE PROCEDURE initialize_cartesian_boundary3D_serial
+#if _COM_MPI
+     MODULE PROCEDURE initialize_cartesian_boundary3D_parallel
+#endif
   END INTERFACE initialize_cartesian_boundary
   
   INTERFACE initialize_cylindrical_boundary
      MODULE PROCEDURE initialize_cylindrical_boundary2D_serial
 #if _COM_MPI
-     MODULE PROCEDURE initialize_cylindrical_boundary2D_parallel
+     MODULE PROCEDURE initialize_cylindrical_boundary3D_parallel
 #endif
-     !MODULE PROCEDURE initialize_cylindrical_boundary3D
   END INTERFACE initialize_cylindrical_boundary
   
   INTERFACE get_cartesian_boundary
@@ -38,7 +40,6 @@ MODULE coords
   
   INTERFACE get_cylindrical_boundary
      MODULE PROCEDURE get_cylindrical_boundary2D
-     !MODULE PROCEDURE get_cylindrical_boundary3D
   END INTERFACE get_cylindrical_boundary
   
   INTERFACE cartesian2spherical
@@ -48,7 +49,6 @@ MODULE coords
   
   INTERFACE cylindrical2spherical
      MODULE PROCEDURE cylindrical2spherical2D
-     !MODULE PROCEDURE cylindrical2spherical3D
   END INTERFACE cylindrical2spherical
   
   
@@ -58,13 +58,16 @@ MODULE coords
   REAL(dp), ALLOCATABLE, PUBLIC    :: phi_boundary(:)
   REAL(dp), ALLOCATABLE, PUBLIC    :: theta_weights(:)
   REAL(dp), ALLOCATABLE, PUBLIC    :: pivots(:)
+  REAL(dp), ALLOCATABLE, PUBLIC    :: phinodes(:)
   INTEGER, ALLOCATABLE, PUBLIC     :: pivot_number(:)
+  INTEGER, ALLOCATABLE, PUBLIC     :: phinode_number(:)
   INTEGER, ALLOCATABLE, PUBLIC     :: i_am_surface(:)
   INTEGER, ALLOCATABLE, PUBLIC     :: surface_members(:)
   
   INTEGER                          :: numpts, numrpts
   INTEGER                          :: numthetapts, numphipts
   INTEGER                          :: numpivots
+  INTEGER                          :: numphinodes
   INTEGER                          :: numsurfaceprocs
   REAL(dp), ALLOCATABLE            :: rpts_scatt(:)
   REAL(dp), ALLOCATABLE            :: theta_scatt(:)
@@ -141,6 +144,8 @@ CONTAINS
        ALLOCATE(theta_boundary(1))
        ALLOCATE(costheta_boundary(1)) 
        ALLOCATE(theta_weights(1))
+       ALLOCATE(pivots(1))
+       ALLOCATE(pivot_number(1))
        ALLOCATE(psi2D_sph(1,1))
        ALLOCATE(psi2D_sph_dx(1,1))
        ALLOCATE(psi2D_sph_dy(1,1))
@@ -164,11 +169,11 @@ CONTAINS
           
           ! See if this points lies within the radius of
           ! influence of the boundary
-          IF (ABS(rpt-Rs) .LE. radtol ) &
-               numpts = numpts + 1
-          mintheta = MIN(mintheta,thetapt)
-          maxtheta = MAX(maxtheta,thetapt)
-          
+          IF (ABS(rpt-Rs) .LE. radtol ) THEN
+             numpts = numpts + 1
+             mintheta = MIN(mintheta,thetapt)
+             maxtheta = MAX(maxtheta,thetapt)
+          ENDIF
        ENDDO
     ENDDO
     
@@ -183,6 +188,8 @@ CONTAINS
        ALLOCATE(theta_boundary(1))
        ALLOCATE(costheta_boundary(1))
        ALLOCATE(theta_weights(1))
+       ALLOCATE(pivots(1))
+       ALLOCATE(pivot_number(1))
        ALLOCATE(psi2D_sph(1,1))
        ALLOCATE(psi2D_sph_dx(1,1))
        ALLOCATE(psi2D_sph_dy(1,1))
@@ -195,9 +202,12 @@ CONTAINS
        ALLOCATE(index_x2(1:numpts))
        
        numrpts = 2 * fdpts + 1
-       numthetapts = 2 * lmax + 1
+       numpivots = 2 * lmax + 1
+       numthetapts = numpivots
        !numthetapts = INT( (maxtheta - mintheta) / deltatheta )
        
+       ALLOCATE(pivots(1:numpivots))
+       ALLOCATE(pivot_number(1:numthetapts))
        ALLOCATE(rpts_boundary(1:numrpts))
        ALLOCATE(theta_boundary(1:numthetapts))
        ALLOCATE(costheta_boundary(1:numthetapts))
@@ -206,8 +216,35 @@ CONTAINS
        ALLOCATE(psi2D_sph_dx(1:numrpts,1:numthetapts))
        ALLOCATE(psi2D_sph_dy(1:numrpts,1:numthetapts))
        
-       inum = 0
+       Rs_start = (Rs - deltar * (fdpts + 1))
+       DO ir = 1, numrpts
+          rpts_boundary(ir) = Rs_start + REAL( ir * deltar, dp )
+       ENDDO
        
+       CALL get_gauss_stuff(-1.0_dp, 1.0_dp, &
+            pivots, theta_weights)
+       
+       costheta_boundary = pivots
+       theta_boundary = ACOS(costheta_boundary)
+       
+       !DO itheta = 1, numthetapts
+       !   theta_boundary(itheta) = mintheta + &
+       !REAL( itheta * deltatheta,dp )
+       !ENDDO
+       
+       ! Check limits on theta
+       IF (mintheta .GT. MINVAL(ACOS(pivots)) .AND. &
+            maxtheta .LT. MAXVAL(ACOS(pivots))) THEN
+          WRITE(*,*) 'Pivots extent is bigger than &
+               & theta coordinate limits.'
+          STOP
+       ENDIF
+       
+       DO itheta = 1, numpivots
+          pivot_number(itheta) = itheta
+       ENDDO
+       
+       inum = 0       
        DO iy = halolims(2,1), halolims(2,2)
           DO ix = halolims(1,1), halolims(1,2)
              
@@ -219,26 +256,10 @@ CONTAINS
                 rpts_scatt(inum)  = rpt
                 theta_scatt(inum) = thetapt
                 index_x1(inum) = ix
-                index_x2(inum) = iy
-                
+                index_x2(inum) = iy         
              ENDIF
           ENDDO
        ENDDO
-       
-       Rs_start = (Rs - deltar * (fdpts + 1))
-       DO ir = 1, numrpts
-          rpts_boundary(ir) = Rs_start + REAL( ir * deltar, dp )
-       ENDDO
-       
-       CALL get_gauss_stuff(-1.0_dp, 1.0_dp, &
-            costheta_boundary, theta_weights)
-
-       theta_boundary = ACOS(costheta_boundary)
-       
-       !DO itheta = 1, numthetapts
-       !   theta_boundary(itheta) = mintheta + &
-       !REAL( itheta * deltatheta,dp )
-       !ENDDO
        
     ENDIF
     
@@ -255,7 +276,7 @@ CONTAINS
   !----------------------------------------------------!
 
   
-  SUBROUTINE initialize_cartesian_boundary3D(x_ax, y_ax, z_ax, dims, &
+  SUBROUTINE initialize_cartesian_boundary3D_serial(x_ax, y_ax, z_ax, dims, &
        Rs, radtol, fdpts, deltar, lmax, &
        maxpts, maxrpts, maxthetapts, maxphipts )
     
@@ -317,6 +338,10 @@ CONTAINS
        ALLOCATE(index_x2(1))
        ALLOCATE(index_x3(1))
        ALLOCATE(rpts_boundary(1))
+       ALLOCATE(phinodes(1))       
+       ALLOCATE(pivots(1))
+       ALLOCATE(pivot_number(1))
+       ALLOCATE(phinode_number(1))
        ALLOCATE(theta_boundary(1))
        ALLOCATE(costheta_boundary(1))
        ALLOCATE(theta_weights(1))
@@ -330,8 +355,8 @@ CONTAINS
     
     mintheta = pi
     maxtheta = 0.0_dp
-    minphi   = pi / 2.0_dp
-    maxphi   = - pi / 2.0_dp
+    minphi   = pi
+    maxphi   = - pi
     
     ! Work out how many points will build the interpolant
     DO iz = halolims(3,1), halolims(3,2)
@@ -352,14 +377,13 @@ CONTAINS
              
              ! See if this points lies within the radius of
              ! influence of the boundary
-             IF (ABS(rpt-Rs) .LE. radtol ) &
-                  numpts = numpts + 1
-
-             mintheta = MIN(mintheta,thetapt)
-             maxtheta = MAX(maxtheta,thetapt)
-             minphi = MIN(minphi,phipt)
-             maxphi = MAX(maxphi,phipt)
-             
+             IF (ABS(rpt-Rs) .LE. radtol ) THEN
+                numpts = numpts + 1
+                mintheta = MIN(mintheta,thetapt)
+                maxtheta = MAX(maxtheta,thetapt)
+                minphi = MIN(minphi,phipt)
+                maxphi = MAX(maxphi,phipt)
+             ENDIF
           ENDDO
        ENDDO
     ENDDO
@@ -371,6 +395,301 @@ CONTAINS
        ALLOCATE(psi_scatt(1))
        ALLOCATE(index_x1(1))
        ALLOCATE(index_x2(1))
+       ALLOCATE(rpts_boundary(1))
+       ALLOCATE(theta_boundary(1))
+       ALLOCATE(costheta_boundary(1))
+       ALLOCATE(phinodes(1))       
+       ALLOCATE(pivots(1))
+       ALLOCATE(pivot_number(1))
+       ALLOCATE(phinode_number(1))
+       ALLOCATE(theta_weights(1))
+       ALLOCATE(phi_boundary(1))
+       ALLOCATE(psi3D_sph(1,1,1))
+       ALLOCATE(psi3D_sph_dx(1,1,1))
+       ALLOCATE(psi3D_sph_dy(1,1,1))
+       
+    ELSE
+       ALLOCATE(rpts_scatt(1:numpts))
+       ALLOCATE(theta_scatt(1:numpts))
+       ALLOCATE(phi_scatt(1:numpts))
+       ALLOCATE(psi_scatt(1:numpts))
+       ALLOCATE(index_x1(1:numpts))
+       ALLOCATE(index_x2(1:numpts))
+       ALLOCATE(index_x3(1:numpts))
+       
+       numrpts = 2 * fdpts + 1
+       numpivots = 2 * lmax + 1
+       numphinodes = 2 * lmax + 1
+       numthetapts = numpivots
+       numphipts = numphinodes
+       deltaphi = twopi / REAL(numphinodes, dp)
+       !numthetapts = INT( (maxtheta - mintheta) / deltatheta )
+       !numphipts = INT( (maxphi - minphi) / deltaphi )
+       
+       ALLOCATE(pivots(1:numpivots))
+       ALLOCATE(phinodes(1:numphinodes))
+       ALLOCATE(pivot_number(1:numthetapts))
+       ALLOCATE(phinode_number(1:numphipts))
+       ALLOCATE(rpts_boundary(1:numrpts))
+       ALLOCATE(theta_boundary(1:numthetapts))
+       ALLOCATE(costheta_boundary(1:numthetapts))
+       ALLOCATE(phi_boundary(1:numphipts))
+       ALLOCATE(theta_weights(1:numthetapts))
+       ALLOCATE(psi3D_sph(1:numrpts,1:numthetapts,1:numphipts))
+       ALLOCATE(psi3D_sph_dx(1:numrpts,1:numthetapts,1:numphipts))
+       ALLOCATE(psi3D_sph_dy(1:numrpts,1:numthetapts,1:numphipts))
+       ALLOCATE(psi3D_sph_dz(1:numrpts,1:numthetapts,1:numphipts))
+       
+       Rs_start = (Rs - deltar * (fdpts + 1))
+       DO ir = 1, numrpts
+          rpts_boundary(ir) = Rs_start + REAL( ir * deltar, dp )
+       ENDDO
+       
+       CALL get_gauss_stuff(-1.0_dp, 1.0_dp, pivots, &
+            theta_weights)
+
+       costheta_boundary = pivots
+       theta_boundary = ACOS(costheta_boundary)
+       
+       !DO itheta = 1, numthetapts
+       !   theta_boundary(itheta) = mintheta + &
+       !REAL( itheta * deltatheta,dp )
+       !ENDDO
+       
+       ! Check limits on theta
+       IF (mintheta .GT. MINVAL(ACOS(pivots)) .AND. &
+            maxtheta .LT. MAXVAL(ACOS(pivots))) THEN
+          WRITE(*,*) 'Pivots extent is bigger than &
+               & theta coordinate limits.'
+          STOP
+       ENDIF
+       
+       DO iphi = 1, numphinodes
+          phinodes(iphi) = -pi + REAL( iphi * deltaphi,dp )
+       ENDDO
+       
+       phi_boundary = phinodes
+       
+       ! Check limits on phi
+       IF (minphi .GT. MINVAL(phinodes) .AND. &
+            maxphi .LT. MAXVAL(phinodes)) THEN
+          WRITE(*,*) 'Phi nodes extent is bigger than &
+               & phi coordinate limits.'
+          STOP
+       ENDIF
+       
+       DO itheta = 1, numpivots
+          pivot_number(itheta) = itheta
+       ENDDO
+       
+       DO iphi = 1, numphinodes
+          phinode_number(iphi) = iphi
+       ENDDO
+       
+       inum = 0
+       DO iz = halolims(3,1), halolims(3,2)
+          DO iy = halolims(2,1), halolims(2,2)
+             DO ix = halolims(1,1), halolims(1,2)
+                
+                rpt = SQRT( x_ax(ix)**2 + y_ax(iy)**2 + z_ax(iz)**2 )
+                IF(rpt.EQ.0.0_dp) THEN
+                   thetapt = 0.0_dp
+                ELSE
+                   thetapt = ACOS( z_ax(iz) / rpt)
+                ENDIF
+                phipt = ATAN2( y_ax(iy),x_ax(ix) )
+                
+                IF (ABS(rpt-Rs) .LE. radtol ) THEN
+                   inum = inum + 1
+                   rpts_scatt(inum)  = rpt
+                   theta_scatt(inum) = thetapt
+                   phi_scatt(inum) = phipt
+                   index_x1(inum) = ix
+                   index_x2(inum) = iy
+                   index_x3(inum) = iz
+                ENDIF
+             ENDDO
+          ENDDO
+       ENDDO
+       
+    ENDIF
+    
+    maxpts = numpts
+    maxrpts = numrpts
+    maxthetapts = numthetapts
+    maxphipts = numphipts
+    
+  END SUBROUTINE initialize_cartesian_boundary3D_serial
+  
+  !-----------------------------------------------------------------!
+#if _COM_MPI
+  SUBROUTINE initialize_cartesian_boundary3D_parallel(x_ax, y_ax, z_ax, dims, &
+       Rs, radtol, fdpts, deltar, lmax, rank, size, comm, &
+       maxpts, maxrpts, maxthetapts, maxphipts, maxsurfaceprocs, newcomm )
+    
+    IMPLICIT NONE
+    
+    REAL(dp), INTENT(IN)      :: x_ax(:)
+    REAL(dp), INTENT(IN)      :: y_ax(:)
+    REAL(dp), INTENT(IN)      :: z_ax(:)
+    INTEGER, INTENT(IN)       :: dims(:)
+    REAL(dp), INTENT(IN)      :: Rs
+    REAL(dp), INTENT(IN)      :: radtol
+    INTEGER, INTENT(IN)       :: fdpts
+    REAL(dp), INTENT(IN)      :: deltar
+    INTEGER, INTENT(IN)       :: lmax
+    INTEGER, INTENT(IN)       :: rank, size
+    INTEGER, INTENT(IN)       :: comm
+    INTEGER, INTENT(OUT)      :: maxpts
+    INTEGER, INTENT(OUT)      :: maxrpts, maxthetapts
+    INTEGER, INTENT(OUT)      :: maxphipts
+    INTEGER, INTENT(OUT)      :: maxsurfaceprocs
+    INTEGER, INTENT(OUT)      :: newcomm
+
+    INTEGER, ALLOCATABLE      :: i_am_surface_local(:)
+    INTEGER                   :: simgroup, surfacegroup
+    INTEGER                   :: ierror
+    REAL(dp)                  :: minx, maxx
+    REAL(dp)                  :: miny, maxy
+    REAL(dp)                  :: minz, maxz
+    REAL(dp)                  :: minr, maxr
+    REAL(dp)                  :: mintheta, maxtheta
+    REAL(dp)                  :: minphi, maxphi    
+    REAL(dp)                  :: deltaphi
+    INTEGER                   :: halolims(3,2)
+    REAL(dp)                  :: rpt, thetapt, phipt
+    REAL(dp)                  :: Rs_start
+    INTEGER                   :: ix, iy, iz, inum
+    INTEGER                   :: ir, itheta, iphi
+    
+    !--------------------------------------------------!
+    
+    numpts = 0
+   
+    halolims(1,:) = (/ lbound(x_ax), ubound(x_ax) /)
+    halolims(2,:) = (/ lbound(y_ax), ubound(y_ax) /)
+    halolims(3,:) = (/ lbound(z_ax), ubound(z_ax) /)
+    
+    ! Assign max and min values for the axes
+    minx = MINVAL(ABS(x_ax))
+    maxx = MAXVAL(ABS(x_ax))
+
+    miny = MINVAL(ABS(y_ax))
+    maxy = MAXVAL(ABS(y_ax))
+    
+    minz = MINVAL(ABS(z_ax))
+    maxz = MAXVAL(ABS(z_ax))
+    
+    minr = SQRT(minx**2 + miny**2 + minz**2)
+    maxr = SQRT(maxx**2 + maxy**2 + maxz**2)
+    
+    IF ( (Rs.LT.minr).AND.(Rs.GT.maxr) ) THEN
+       ALLOCATE(rpts_scatt(1))
+       ALLOCATE(theta_scatt(1)) 
+       ALLOCATE(phi_scatt(1)) 
+       ALLOCATE(psi_scatt(1))
+       ALLOCATE(index_x1(1))
+       ALLOCATE(index_x2(1))
+       ALLOCATE(index_x3(1))
+       ALLOCATE(pivots(1))
+       ALLOCATE(phinodes(1))
+       ALLOCATE(pivot_number(1))
+       ALLOCATE(phinode_number(1))
+       ALLOCATE(rpts_boundary(1))
+       ALLOCATE(theta_boundary(1))
+       ALLOCATE(costheta_boundary(1))
+       ALLOCATE(theta_weights(1))
+       ALLOCATE(phi_boundary(1))
+       ALLOCATE(psi3D_sph(1,1,1))
+       ALLOCATE(psi3D_sph_dx(1,1,1))
+       ALLOCATE(psi3D_sph_dy(1,1,1))
+       
+       RETURN
+    ENDIF
+    
+    mintheta = pi
+    maxtheta = 0.0_dp
+    minphi   = pi
+    maxphi   = - pi
+    
+    ! Work out how many points will build the interpolant
+    DO iz = halolims(3,1), halolims(3,2)
+       DO iy = halolims(2,1), halolims(2,2)
+          DO ix = halolims(1,1), halolims(1,2)
+             ! Calculate the point in spherical coordinates
+             rpt = SQRT( x_ax(ix)**2 + y_ax(iy)**2 + z_ax(iz)**2 )
+             IF(rpt.EQ.0.0_dp) THEN
+                thetapt = pi / 2.0_dp
+             ELSE
+                thetapt = ACOS(z_ax(iz) / rpt )
+             ENDIF
+             phipt = ATAN2( y_ax(iy) , x_ax(ix) )
+             
+             ! Check the extend of the grid
+             minr = MIN(minr,rpt)
+             maxr = MAX(maxr,rpt)
+             
+             ! See if this points lies within the radius of
+             ! influence of the boundary
+             IF (ABS(rpt-Rs) .LE. radtol ) THEN
+                numpts = numpts + 1
+                mintheta = MIN(mintheta,thetapt)
+                maxtheta = MAX(maxtheta,thetapt)
+                minphi = MIN(minphi,phipt)
+                maxphi = MAX(maxphi,phipt)
+             ENDIF
+          ENDDO
+       ENDDO
+    ENDDO
+    
+    ! Create communicator and surface members
+    !-----------------------------------------!
+    ALLOCATE(i_am_surface_local(0:size-1))
+    ALLOCATE(i_am_surface(0:size-1))
+    i_am_surface_local = 0
+    i_am_surface = 0
+    
+    IF(numpts.NE.0) &
+         i_am_surface_local(rank) = 1
+    
+    ! Communicate to all processors if they are
+    ! at the surface
+    CALL MPI_ALLREDUCE(i_am_surface_local, i_am_surface, size, &
+         MPI_INTEGER, MPI_SUM, comm, ierror )
+    
+    DO inum = 0, size - 1
+       IF(i_am_surface(inum).EQ.1) &
+            numsurfaceprocs = numsurfaceprocs + 1
+    ENDDO
+    
+    ALLOCATE(surface_members(0:numsurfaceprocs-1))
+    ii = -1
+    DO inum = 0, size-1
+       IF(i_am_surface(inum).EQ.1) THEN
+          ii = ii + 1
+          surface_members(ii) = inum
+       ENDIF
+    ENDDO
+    
+    ! Create a global group
+    CALL MPI_COMM_GROUP(comm, simgroup, ierror)
+    
+    CALL MPI_GROUP_INCL(simgroup, numsurfaceprocs, surface_members, &
+         surfacegroup, ierror)
+    ! Actually, this line creates the communicator
+    CALL MPI_COMM_CREATE(comm, surfacegroup, newcomm, ierror)
+    
+    IF(numpts .EQ. 0) THEN
+       ALLOCATE(rpts_scatt(1))
+       ALLOCATE(theta_scatt(1))
+       ALLOCATE(phi_scatt(1))
+       ALLOCATE(psi_scatt(1))
+       ALLOCATE(index_x1(1))
+       ALLOCATE(index_x2(1))
+       ALLOCATE(pivots(1))
+       ALLOCATE(phinodes(1))
+       ALLOCATE(pivot_number(1))
+       ALLOCATE(phinode_number(1))
        ALLOCATE(rpts_boundary(1))
        ALLOCATE(theta_boundary(1))
        ALLOCATE(costheta_boundary(1))
@@ -390,12 +709,14 @@ CONTAINS
        ALLOCATE(index_x3(1:numpts))
        
        numrpts = 2 * fdpts + 1
-       numthetapts = 2 * lmax + 1
-       numphipts = 2 * lmax + 1
-       deltaphi = REAL( (maxphi - minphi) / numphipts, dp)
+       numpivots = 2 * lmax + 1
+       numphinodes = 2 * lmax + 1
+       deltaphi = twopi / REAL(numphinodes, dp)
        !numthetapts = INT( (maxtheta - mintheta) / deltatheta )
        !numphipts = INT( (maxphi - minphi) / deltaphi )
        
+       ALLOCATE(pivots(1:numpivots))
+       ALLOCATE(phinodes(1:numphinodes))
        ALLOCATE(rpts_boundary(1:numrpts))
        ALLOCATE(theta_boundary(1:numthetapts))
        ALLOCATE(costheta_boundary(1:numthetapts))
@@ -406,8 +727,73 @@ CONTAINS
        ALLOCATE(psi3D_sph_dy(1:numrpts,1:numthetapts,1:numphipts))
        ALLOCATE(psi3D_sph_dz(1:numrpts,1:numthetapts,1:numphipts))
        
-       inum = 0
+       Rs_start = (Rs - deltar * (fdpts + 1))
+       DO ir = 1, numrpts
+          rpts_boundary(ir) = Rs_start + REAL( ir * deltar, dp )
+       ENDDO
        
+       CALL get_gauss_stuff(-1.0_dp, 1.0_dp, pivots, &
+            theta_weights)
+       
+       ! Find out how many pivots lie in our processor 
+       numthetapts = 0
+       DO itheta = 1, numpivots
+          IF(ACOS(pivots(itheta)).GE. mintheta .AND. &
+               ACOS(pivots(itheta)).LE. maxtheta) THEN
+             numthetapts = numthetapts + 1
+          ENDIF
+       ENDDO
+       
+       DO iphi = 1, numphinodes
+          phinodes(iphi) = -pi + REAL( iphi * deltaphi,dp )
+       ENDDO
+       
+       ! Find out how many phi nodes lie in our processor 
+       numphipts = 0
+       DO iphi = 1, numphinodes
+          IF( phinodes(iphi).GE.minphi .AND. &
+               phinodes(iphi).LE.maxphi) THEN
+             numphipts = numphipts + 1
+          ENDIF
+       ENDDO
+       
+       ! Allocate arrays once we know the length
+       ALLOCATE(theta_boundary(1:numthetapts))
+       ALLOCATE(costheta_boundary(1:numthetapts))
+       ALLOCATE(pivot_number(1:numthetapts))
+       ALLOCATE(phinode_number(1:numphipts))
+       
+       ! Now, assignate those theta points
+       inum = 0
+       DO itheta = 1, numpivots
+          IF(ACOS(pivots(itheta)).GE.mintheta .AND. &
+               ACOS(pivots(itheta)).LE. maxtheta) THEN
+             inum = inum + 1
+             costheta_boundary(inum) = pivots(itheta)
+             pivot_number(inum) = itheta             
+          ENDIF
+       ENDDO
+       
+       theta_boundary = ACOS(costheta_boundary)
+       
+       !DO itheta = 1, numthetapts
+       !   theta_boundary(itheta) = mintheta + &
+       !REAL( itheta * deltatheta,dp )
+       !ENDDO
+       
+       ! Don't forget to assignate phi points
+       inum = 0
+       DO iphi = 1, numphinodes
+          IF(phinodes(iphi).GE.minphi .AND. &
+               phinodes(iphi).LE. maxphi) THEN
+             inum = inum + 1
+             phi_boundary(inum) = phinodes(iphi)
+             phinodes_number(inum) = iphi      
+          ENDIF
+       ENDDO
+       
+       ! Get points to participate in the interpolant
+       inum = 0   
        DO iz = halolims(3,1), halolims(3,2)
           DO iy = halolims(2,1), halolims(2,2)
              DO ix = halolims(1,1), halolims(1,2)
@@ -434,37 +820,16 @@ CONTAINS
           ENDDO
        ENDDO
        
-       Rs_start = (Rs - deltar * (fdpts + 1))
-       DO ir = 1, numrpts
-          rpts_boundary(ir) = Rs_start + REAL( ir * deltar, dp )
-       ENDDO
-       
-       CALL get_gauss_stuff(-1.0_dp, 1.0_dp, costheta_boundary, &
-            theta_weights)
-
-       theta_boundary = ACOS(costheta_boundary)
-       
-       !DO itheta = 1, numthetapts
-       !   theta_boundary(itheta) = mintheta + &
-       !REAL( itheta * deltatheta,dp )
-       !ENDDO
-       
-       DO iphi = 1, numphipts
-          phi_boundary(iphi) = minphi + REAL( iphi * deltaphi,dp )
-       ENDDO
-       
     ENDIF
     
     maxpts = numpts
     maxrpts = numrpts
     maxthetapts = numthetapts
     maxphipts = numphipts
-    
-  END SUBROUTINE initialize_cartesian_boundary3D
-  
-  !-----------------------------------------------------------------!
+    maxsurfaceprocs = numsurfaceprocs
 
-  
+  END SUBROUTINE initialize_cartesian_boundary3D_parallel
+#endif  
   !----------------------------------------------------!
 
   !----------------------------------------------------!
@@ -572,6 +937,7 @@ CONTAINS
        ALLOCATE(theta_boundary(1))
        ALLOCATE(costheta_boundary(1))
        ALLOCATE(pivots(1))
+       ALLOCATE(theta_weights(1))
        ALLOCATE(pivot_number(1))
        ALLOCATE(psi2D_sph(1,1))
        ALLOCATE(psi2D_sph_dx(1,1))

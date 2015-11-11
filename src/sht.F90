@@ -179,35 +179,68 @@ CONTAINS
   !=======================================================================
   !=======================================================================
   
-  SUBROUTINE make_sht_3D(func, th_axis, weights, phi_axis, lmax, rad_coefflm)
-    
-    IMPLICIT NONE
-    
-    COMPLEX(dp), INTENT(IN)     :: func(:, :, :)
-    REAL(dp), INTENT(IN)        :: th_axis(:)
-    REAL(dp), INTENT(IN)        :: weights(:)
-    REAL(dp), INTENT(IN)        :: phi_axis(:)
-    INTEGER, INTENT(IN)         :: lmax
-    COMPLEX(dp), INTENT(OUT)    :: rad_coefflm(: ,:, :)
-    
-    INTEGER                    :: numrpts, numthetapts
-    INTEGER                    :: il, ir, itheta
-    
-    ! What is the maximum number of points in r and theta?
-    numrpts = SIZE(func,1)
-    numthetapts = SIZE(th_axis)
-    ! Initialize array to zero
-    rad_coefflm = ZERO
+!!$  SUBROUTINE make_sht_3D(func, th_axis, weights, phi_axis, lmax, rad_coefflm)
+!!$    
+!!$    IMPLICIT NONE
+!!$    
+!!$    COMPLEX(dp), INTENT(IN)     :: func(:, :, :)
+!!$    REAL(dp), INTENT(IN)        :: th_axis(:)
+!!$    REAL(dp), INTENT(IN)        :: weights(:)
+!!$    REAL(dp), INTENT(IN)        :: phi_axis(:)
+!!$    INTEGER, INTENT(IN)         :: lmax
+!!$    COMPLEX(dp), INTENT(OUT)    :: rad_coefflm(: ,:, :)
+!!$    
+!!$    COMPLEX(dp), ALLOCATABLE   :: coeffm(:)
+!!$    COMPLEX(dp), ALLOCATABLE   :: coeffmtheta(:, :)
+!!$    INTEGER                    :: numrpts, numthetapts
+!!$    INTEGER                    :: numphipts
+!!$    INTEGER                    :: il, ir, itheta, iphi
+!!$    
+!!$    ! What is the maximum number of points in r and theta?
+!!$    numrpts = SIZE(func,1)
+!!$    numthetapts = SIZE(th_axis)
+!!$    numphipts = SIZE(phi_axis)
+!!$    ! Initialize array to zero
+!!$    rad_coefflm = ZERO
+!!$    
+!!$    ALLOCATE(coeffm(1:numphipts))
+!!$    ALLOCATE(coeffmtheta(1:numthetapts,1:numphipts))
 !!$    
 !!$    DO ir = 1, numrpts
+!!$       
+!!$       ! FFT to calculate m number
+!!$       DO itheta = 1, numthetapts
+!!$          coeffm = ZERO
+!!$          CALL FourierTransform(func(ir,itheta,:),coeffm,1,(/numphipts/))
+!!$          ! Reorder coeffm array after fourier transform
+!!$          shift = numphipts - (numphipts+1)/2
+!!$          DO im = 1, shift
+!!$             coeffmtheta(itheta,im) = coeffm(im+shift)
+!!$          ENDDO
+!!$          
+!!$          DO im = shift+1, numphipts
+!!$             coeffmtheta(itheta,im) = coeffm(im-shift)
+!!$          ENDDO
+!!$          
+!!$       ENDDO
+!!$       
+!!$       ! Now it is the turn of l
 !!$       DO il = 0, lmax
-!!$          DO itheta = 1, numthetapts
-!!$             rad_coefflm(ir,il) = rad_coeffl0(ir,il) + func(ir,itheta) * &
-!!$                  normfact(0,il) * legenpl(itheta-1,0,il) * weights(itheta)
+!!$          DO im = 
+!!$             sum = 0.0_dp
+!!$             DO itheta = 1, numthetapts
+!!$                sum = sum + coeffmtheta(itheta,im) * &
+!!$                     normfact(im,il) * legenpl(itheta-1,im,il) * weights(itheta)
+!!$             ENDDO
+!!$             rad_coefflm(ir,il,im) = sum
 !!$          ENDDO
 !!$       ENDDO
-!!$    ENDDO
-    
-  END SUBROUTINE make_sht_3D
+!!$       
+!!$    ENDDO ! End of r loop
+!!$    
+!!$    ! Deallocate auxiliary arrays
+!!$    DEALLOCATE(coeffm,coeffmtheta)
+!!$ 
+!!$  END SUBROUTINE make_sht_3D
   
 END MODULE sht
