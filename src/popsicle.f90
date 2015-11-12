@@ -10,7 +10,7 @@ MODULE POPSICLE
   USE fourier
   USE sht
   USE patchwork
-  USE io
+  USE io_pop
   USE surface
   
   IMPLICIT NONE

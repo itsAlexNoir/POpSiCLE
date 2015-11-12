@@ -29,7 +29,7 @@ MODULE coords
   INTERFACE initialize_cylindrical_boundary
      MODULE PROCEDURE initialize_cylindrical_boundary2D_serial
 #if _COM_MPI
-     MODULE PROCEDURE initialize_cylindrical_boundary3D_parallel
+     MODULE PROCEDURE initialize_cylindrical_boundary2D_parallel
 #endif
   END INTERFACE initialize_cylindrical_boundary
   
@@ -560,7 +560,7 @@ CONTAINS
     REAL(dp)                  :: rpt, thetapt, phipt
     REAL(dp)                  :: Rs_start
     INTEGER                   :: ix, iy, iz, inum
-    INTEGER                   :: ir, itheta, iphi
+    INTEGER                   :: ir, itheta, iphi, ii
     
     !--------------------------------------------------!
     
@@ -788,7 +788,7 @@ CONTAINS
                phinodes(iphi).LE. maxphi) THEN
              inum = inum + 1
              phi_boundary(inum) = phinodes(iphi)
-             phinodes_number(inum) = iphi      
+             phinode_number(inum) = iphi      
           ENDIF
        ENDDO
        

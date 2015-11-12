@@ -32,7 +32,7 @@ MODULE sht
   
   INTERFACE make_sht
      MODULE PROCEDURE make_sht_2D
-     MODULE PROCEDURE make_sht_3D
+     !MODULE PROCEDURE make_sht_3D
   END INTERFACE make_sht
   
   ! Public variables

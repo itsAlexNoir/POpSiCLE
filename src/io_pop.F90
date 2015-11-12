@@ -1,4 +1,4 @@
-MODULE io
+MODULE io_pop
   
   USE HDF5
   USE constants
@@ -1193,4 +1193,4 @@ CONTAINS
 
 #endif  
   
-END MODULE io
+END MODULE io_pop

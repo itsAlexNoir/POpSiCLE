@@ -3,5 +3,5 @@ sheppack_usage_example \
 legendre_test \
 cyl2sph_ex1 \
 cyl2sph_ex2 \
-cart2sph_ex1 \ 
-cart2sph_ex2
+cart2sph_ex1 \
+cart2sph_ex2 

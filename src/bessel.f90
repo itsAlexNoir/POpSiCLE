@@ -430,8 +430,9 @@ CONTAINS
     REAL(dp), DIMENSION(size(x)) :: factor,rj,rjp,ry,ryp
     INTEGER               :: i
     
-    IF(SIZE(x).EQ.SIZE(sj).EQ.SIZE(sy) &
-         .EQ.SIZE(sjp).EQ.SIZE(syp)) THEN
+    IF((SIZE(x).EQ.SIZE(sj)) .AND. (SIZE(x).EQ.SIZE(sy)) &
+         .AND. (SIZE(x).EQ.SIZE(sjp)) &
+         .AND. (SIZE(x).EQ.SIZE(syp))) THEN
        WRITE(*, *) 'Input arrays have not the same length.'
        STOP
     ENDIF
