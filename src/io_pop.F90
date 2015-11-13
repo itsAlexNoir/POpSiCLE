@@ -17,6 +17,7 @@ MODULE io_pop
   PUBLIC               :: open_surface_file
   PUBLIC               :: write_surface_file
   PUBLIC               :: close_surface_file
+  PUBLIC               :: read_subset
 #if _COM_MPI
   PUBLIC               :: write_slice_xyz
   PUBLIC               :: write_slice_xy
@@ -24,7 +25,7 @@ MODULE io_pop
   PUBLIC               :: write_slice_yz
   PUBLIC               :: write_slice_rz
 #endif
-
+  
   INTERFACE write_wave
      MODULE PROCEDURE write_wave_serial
 #if _COM_MPI
@@ -54,6 +55,13 @@ MODULE io_pop
      MODULE PROCEDURE close_surface_file_parallel
 #endif
   END INTERFACE close_surface_file
+  
+  INTERFACE read_subset
+     MODULE PROCEDURE read_subset_3Dserial
+#if _COM_MPI
+     MODULE PROCEDURE read_subset_parallel
+#endif
+  END INTERFACE read_subset
   
   !--------------------!
   ! Private variables  !
@@ -1192,5 +1200,65 @@ CONTAINS
   !-------------------------------------------------------------------!
 
 #endif  
+
+  !-------------------------------------------------------------------!
+
+  SUBROUTINE read_subset_3Dserial(filename_in, psi_in, rank, dims, offset)
+    
+    IMPLICIT NONE
+    
+    CHARACTER(LEN=*), INTENT(IN)      :: filename_in
+    REAL(dp), INTENT(IN)              :: psi_in(:, :, :)
+    INTEGER, INTENT(IN)               :: rank
+    INTEGER, INTENT(IN)               :: dims(:)
+    INTEGER, INTENT(IN)               :: offset
+    
+    ! Dataset identifier
+    INTEGER(HID_T)                    :: dset_id 
+    ! Dataspace identifier
+    INTEGER(HID_T)                    :: dataspace 
+    ! Dset size
+    INTEGER(HSIZE_T)                  :: subset_size(3)
+    ! Hyperslab offset
+    INTEGER(HSIZE_T)                  :: subset_offset(3)
+    ! Error flag
+    INTEGER                           :: error
+    CHARACTER(LEN=100)                :: filename, dsetname
+    
+    !----------------------------------------------!
+    
+    ! Initialize FORTRAN interface. 
+    CALL h5open_f(error) 
+    
+    ! Open the file.
+    filename = TRIM(filename_in) // '.h5'
+    CALL h5fopen_f(filename, H5F_ACC_RDWR_F, file_id, error)
+    
+    ! Open the  dataset.
+    dsetname = '/' // TRIM(filename_in) // '/' // TRIM(filename_in)
+    CALL h5dopen_f(file_id, dsetname, dset_id, error)
+    
+    ! Get dataset's dataspace identifier and select subset.
+    subset_ofset = offset
+    subset_size = dims
+    CALL h5dget_space_f(dset_id, dataspace, error)
+    CALL h5sselect_hyperslab_f(dataspace, H5S_SELECT_SET_F, &
+         subset_offset, subset_size, error) 
+    
+    ! Read the dataset
+    CALL h5dread_f(dset_id, H5T_NATIVE_DOUBLE, psi_in, subset_dims, error)
+    
+    ! Close everything opened.
+    CALL h5sclose_f(dataspace, error)
+    CALL h5dclose_f(dset_id, error)
+    CALL h5fclose_f(file_id, error)
+    
+    
+    ! Close FORTRAN interface.
+    CALL h5close_f(error)
+    
+  END SUBROUTINE read_subset_serial
+  
+  !-------------------------------------------------------------------!
   
 END MODULE io_pop
