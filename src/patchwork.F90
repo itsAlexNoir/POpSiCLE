@@ -41,22 +41,21 @@ CONTAINS
     REAL(dp), INTENT(IN)        :: ypts(:)
     REAL(dp), INTENT(IN)        :: zpts(:)
     REAL(dp), INTENT(IN)        :: domain(:, :)
-    REAL(dp), INTENT(OUT)       :: offset(:)
-    REAL(dp), INTENT(OUT)       :: dims(:)
-
-
+    INTEGER, INTENT(OUT)        :: offset(:)
+    INTEGER, INTENT(OUT)        :: dims(:)
+    
     ! First, find out the offset of the subset
-    offset(1) = MINLOC(xpts,xpts.GE.domain(1,1)) - 1
-    offset(2) = MINLOC(ypts,ypts.GE.domain(1,2)) - 1
-    offset(3) = MINLOC(zpts,zpts.GE.domain(1,3)) - 1
+    offset(1) = MAXLOC(xpts,1,xpts.LE.domain(1,1))
+    offset(2) = MAXLOC(ypts,1,ypts.LE.domain(1,2))
+    offset(3) = MAXLOC(zpts,1,zpts.LE.domain(1,3))
     
     ! Now, the dimensions of the domain required
-    dims(1) = MAXLOC(xpts,xpts.LE.domain(2,1)) &
-         - MINLOC(xpts,xpts.GE.domain(1,1))
-    dims(2) = MAXLOC(ypts,ypts.LE.domain(2,2)) &
-         - MINLOC(ypts,ypts.GE.domain(1,2))
-    dims(3) = MAXLOC(zpts,zpts.LE.domain(2,3)) &
-         - MINLOC(zpts,zpts.GE.domain(1,3))
+    dims(1) = MINLOC(xpts,1,xpts.GE.domain(2,1)) &
+         - MAXLOC(xpts,1,xpts.LE.domain(1,1)) - 1
+    dims(2) = MINLOC(ypts,1,ypts.GE.domain(2,2)) &
+         - MAXLOC(ypts,1,ypts.LE.domain(1,2)) - 1
+    dims(3) = MINLOC(zpts,1,zpts.GE.domain(2,3)) &
+         - MAXLOC(zpts,1,zpts.LE.domain(1,3)) - 1
     
   END SUBROUTINE get_subset_coordinates_3Dserial
   
@@ -70,19 +69,18 @@ CONTAINS
     REAL(dp), INTENT(IN)        :: xpts(:)
     REAL(dp), INTENT(IN)        :: ypts(:)
     REAL(dp), INTENT(IN)        :: domain(:, :)
-    REAL(dp), INTENT(OUT)       :: offset(:)
-    REAL(dp), INTENT(OUT)       :: dims(:)
-    
+    INTEGER, INTENT(OUT)        :: offset(:)
+    INTEGER, INTENT(OUT)        :: dims(:)
     
     ! First, find out the offset of the subset
-    offset(1) = MINLOC(xpts,xpts.GE.domain(1,1)) - 1
-    offset(2) = MINLOC(ypts,ypts.GE.domain(1,2)) - 1
+    offset(1) = MAXLOC(xpts,1,xpts.LE.domain(1,1))
+    offset(2) = MAXLOC(ypts,1,ypts.LE.domain(1,2))
     
     ! Now, the dimensions of the domain required
-    dims(1) = MAXLOC(xpts,xpts.LE.domain(2,1)) &
-         - MINLOC(xpts,xpts.GE.domain(1,1))
-    dims(2) = MAXLOC(ypts,ypts.LE.domain(2,2)) &
-         - MINLOC(ypts,ypts.GE.domain(1,2))
+    dims(1) = MINLOC(xpts,1,xpts.GE.domain(2,1)) &
+         - MAXLOC(xpts,1,xpts.LE.domain(1,1)) - 1
+    dims(2) = MINLOC(ypts,1,ypts.GE.domain(2,2)) &
+         - MAXLOC(ypts,1,ypts.LE.domain(1,2)) - 1
     
   END SUBROUTINE get_subset_coordinates_2Dserial
   

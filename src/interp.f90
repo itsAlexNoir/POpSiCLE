@@ -32,17 +32,20 @@ MODULE interp
   
   INTERFACE create_interpolant
      MODULE PROCEDURE create_interpolant2D
-     MODULE PROCEDURE create_interpolant3D
+     MODULE PROCEDURE dcreate_interpolant3D
+     MODULE PROCEDURE zcreate_interpolant3D
   END INTERFACE create_interpolant
   
   INTERFACE interpolate
      MODULE PROCEDURE interpolate2D
-     MODULE PROCEDURE interpolate3D
+     MODULE PROCEDURE dinterpolate3D
+     MODULE PROCEDURE zinterpolate3D
   END INTERFACE interpolate
   
   INTERFACE destroy_interpolant
      MODULE PROCEDURE destroy_interpolant2D
-     MODULE PROCEDURE destroy_interpolant3D
+     MODULE PROCEDURE ddestroy_interpolant3D
+     MODULE PROCEDURE zdestroy_interpolant3D
   END INTERFACE destroy_interpolant
   
   
@@ -164,7 +167,61 @@ CONTAINS
   
   !--------------------------------------------------------------!
   
-  SUBROUTINE create_interpolant3D(numpts, x1, x2, x3, func, method )
+  SUBROUTINE dcreate_interpolant3D(numpts, x1, x2, x3, func, method )
+    
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)             :: numpts
+    REAL(dp), INTENT(IN)            :: x1(:)
+    REAL(dp), INTENT(IN)            :: x2(:)
+    REAL(dp), INTENT(IN)            :: x3(:)
+    REAL(dp), INTENT(IN)            :: func(:)
+    CHARACTER(LEN=*), INTENT(IN)    :: method
+    INTEGER                         :: ierror
+    
+    
+    IF(method.EQ.'quadratic') THEN
+       
+       ! Assign control parameters for interpolation
+       NR = 3
+       NQ = 17
+       NW = 32
+       
+       ! Allocate arrays for the routine
+       ! The real ones
+       ALLOCATE(LNEXT_RE(numpts))
+       ALLOCATE(LCELL3_RE(NR, NR, NR))
+       ALLOCATE(RSQ_RE(numpts))
+       ALLOCATE(RW_RE(numpts))
+       ALLOCATE(XYZMIN_RE(3))
+       ALLOCATE(XYZDEL_RE(3))
+       ALLOCATE(AQ_RE(9,numpts))
+       ALLOCATE(AL_RE(2,numpts))
+       
+       !WRITE(*,*) 'Creating the interpolant...'
+       CALL QSHEP3(numpts, x1, x2, x3, func, NQ, NW, NR, LCELL3_RE, &
+            LNEXT_RE, XYZMIN_RE, XYZDEL_RE, RMAX_RE, RSQ_RE, &
+            AQ_RE, ierror)
+       IF (ierror /= 0) THEN
+          WRITE(*,*) 'Error calculating the (real) interpolant at QSHEP3.'
+          WRITE(*,*) 'ierror: ',ierror
+          STOP
+       ENDIF
+       
+    ELSEIF(method.eq.'linear') THEN
+       
+    ELSE
+       
+       WRITE(*,*) 'The input method has been implemented.'
+       STOP
+       
+    END IF
+    
+  END SUBROUTINE dcreate_interpolant3D
+  
+  !-------------------------------------------------!
+  
+  SUBROUTINE zcreate_interpolant3D(numpts, x1, x2, x3, func, method )
     
     IMPLICIT NONE
     
@@ -239,7 +296,7 @@ CONTAINS
        
     END IF
     
-  END SUBROUTINE create_interpolant3D
+  END SUBROUTINE zcreate_interpolant3D
   
   !--------------------------------------------------------------!
   
@@ -337,8 +394,75 @@ CONTAINS
   END SUBROUTINE interpolate2D
 
   !-----------------------------------------------------------!
+
+    
+  SUBROUTINE dinterpolate3D(numpts, y1, y2, y3, x1, x2, x3, func, method, &
+       interp_val, interp_val_dx, interp_val_dy, interp_val_dz )
+    
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)                 :: numpts
+    REAL(dp), INTENT(IN)                :: y1
+    REAL(dp), INTENT(IN)                :: y2
+    REAL(dp), INTENT(IN)                :: y3  
+    REAL(dp), INTENT(IN)                :: x1(:)
+    REAL(dp), INTENT(IN)                :: x2(:)
+    REAL(dp), INTENT(IN)                :: x3(:)
+    REAL(dp), INTENT(IN)                :: func(:)
+    CHARACTER(LEN=*), INTENT(IN)        :: method
+    REAL(dp), INTENT(OUT)               :: interp_val
+    REAL(dp), INTENT(OUT), OPTIONAL     :: interp_val_dx
+    REAL(dp), INTENT(OUT), OPTIONAL     :: interp_val_dy
+    REAL(dp), INTENT(OUT), OPTIONAL     :: interp_val_dz
+    
+    INTEGER                             :: ierror
+    
+    !-----------------------------------------------!
+    
+    
+    IF (PRESENT(interp_val_dx).AND.PRESENT(interp_val_dy) &
+         .AND.PRESENT(interp_val_dz) ) THEN
+       IF (method .EQ. 'quadratic') THEN
+          ! Interpolate the real part
+          CALL QS3GRD(y1, y2, y3, numpts, x1, x2, x3, func, NR, LCELL3_RE, LNEXT_RE,&
+               XYZMIN_RE, XYZDEL_RE, RMAX_RE, RSQ_RE, AQ_RE, interp_val, &
+               interp_val_dx, interp_val_dy, interp_val_dz, ierror)
+          IF (ierror /= 0) THEN
+             WRITE (*, *) 'QSHEP3 - ERROR!'
+             WRITE (*, *) 'Error in QS3GRD (REAL), IER = ', ierror
+             STOP
+          END IF
+          
+          !---------------------------------!
+          
+       ENDIF
+           
+    ELSEIF (.NOT.PRESENT(interp_val_dx).AND. .NOT.PRESENT(interp_val_dy) &
+         .AND. .NOT.PRESENT(interp_val_dz) ) THEN
+       
+       IF (method .EQ. 'quadratic') THEN
+          ! Interpolate the real part
+          interp_val = QS3VAL(y1, y2, y3, numpts, x1, x2, x3, func, NR, LCELL3_RE, LNEXT_RE,&
+               XYZMIN_RE, XYZDEL_RE, RMAX_RE, RSQ_RE, AQ_RE )
+          IF (interp_val .EQ. 0) THEN
+             WRITE (*, *) 'Q3VAL - ERROR!'
+             WRITE (*, *) 'Error in QS3VAL (REAL), IER = ', interp_val
+             STOP
+          END IF
+          
+          !---------------------------------!
+       ENDIF
+       
+    ELSE
+       WRITE(*,*) 'Missing derivatives arrays!'
+       RETURN
+    ENDIF
+    
+  END SUBROUTINE dinterpolate3D
+
+  !---------------------------------------------------------------------------!
   
-  SUBROUTINE interpolate3D(numpts, y1, y2, y3, x1, x2, x3, func, method, &
+  SUBROUTINE zinterpolate3D(numpts, y1, y2, y3, x1, x2, x3, func, method, &
        interp_val, interp_val_dx, interp_val_dy, interp_val_dz )
     
     IMPLICIT NONE
@@ -434,7 +558,7 @@ CONTAINS
        RETURN
     ENDIF
     
-  END SUBROUTINE interpolate3D
+  END SUBROUTINE zinterpolate3D
   
   !-------------------------------------!
   
@@ -470,7 +594,31 @@ CONTAINS
 
   !-------------------------------------!
   
-  SUBROUTINE destroy_interpolant3D( numpts, x1, x2, x3, func )
+  SUBROUTINE ddestroy_interpolant3D( numpts, x1, x2, x3, func )
+    
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)             :: numpts
+    REAL(dp), INTENT(IN)            :: x1(:)
+    REAL(dp), INTENT(IN)            :: x2(:)
+    REAL(dp), INTENT(IN)            :: x3(:)
+    REAL(dp), INTENT(IN)            :: func(:)
+    
+    ! Allocate arrays for the routine
+    ! The real ones
+    DEALLOCATE(LNEXT_RE)
+    DEALLOCATE(LCELL_RE)
+    DEALLOCATE(RSQ_RE)
+    DEALLOCATE(RW_RE)
+    DEALLOCATE(XYZMIN_RE)
+    DEALLOCATE(XYZDEL_RE)
+    DEALLOCATE(AQ_RE)
+    DEALLOCATE(AL_RE)
+    
+  END SUBROUTINE ddestroy_interpolant3D
+  
+  !--------------------------------------!
+  SUBROUTINE zdestroy_interpolant3D( numpts, x1, x2, x3, func )
     
     IMPLICIT NONE
     
@@ -502,6 +650,9 @@ CONTAINS
     
     DEALLOCATE(func_re,func_im)
     
-  END SUBROUTINE destroy_interpolant3D
+  END SUBROUTINE zdestroy_interpolant3D
+  
+  !------------------------------------------!
+  !------------------------------------------!
   
 END MODULE interp

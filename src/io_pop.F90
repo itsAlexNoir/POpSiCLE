@@ -58,9 +58,9 @@ MODULE io_pop
   
   INTERFACE read_subset
      MODULE PROCEDURE read_subset_3Dserial
-#if _COM_MPI
-     MODULE PROCEDURE read_subset_parallel
-#endif
+!#if _COM_MPI
+     !MODULE PROCEDURE read_subset_parallel
+!#endif
   END INTERFACE read_subset
   
   !--------------------!
@@ -1208,22 +1208,27 @@ CONTAINS
     IMPLICIT NONE
     
     CHARACTER(LEN=*), INTENT(IN)      :: filename_in
-    REAL(dp), INTENT(IN)              :: psi_in(:, :, :)
+    REAL(dp), INTENT(OUT)             :: psi_in(:, :, :)
     INTEGER, INTENT(IN)               :: rank
     INTEGER, INTENT(IN)               :: dims(:)
-    INTEGER, INTENT(IN)               :: offset
-    
+    INTEGER, INTENT(IN)               :: offset(:)
+
+    ! Group identifier
+    INTEGER(HID_T)                    :: grp_id
     ! Dataset identifier
     INTEGER(HID_T)                    :: dset_id 
     ! Dataspace identifier
     INTEGER(HID_T)                    :: dataspace 
-    ! Dset size
+    ! dset size
     INTEGER(HSIZE_T)                  :: subset_size(3)
+    ! Memspace identifier
+    INTEGER(HID_T)                    :: memspace
     ! Hyperslab offset
     INTEGER(HSIZE_T)                  :: subset_offset(3)
     ! Error flag
     INTEGER                           :: error
-    CHARACTER(LEN=100)                :: filename, dsetname
+    CHARACTER(LEN=100)                :: filename
+    CHARACTER(LEN=100)                :: dsetname, groupname
     
     !----------------------------------------------!
     
@@ -1233,23 +1238,32 @@ CONTAINS
     ! Open the file.
     filename = TRIM(filename_in) // '.h5'
     CALL h5fopen_f(filename, H5F_ACC_RDWR_F, file_id, error)
+
+    ! Open the group.
+    groupname = '/' // TRIM(filename_in)
+    CALL h5gopen_f(file_id, groupname, grp_id, error)
     
-    ! Open the  dataset.
+    ! Open the dataset.
     dsetname = '/' // TRIM(filename_in) // '/' // TRIM(filename_in)
     CALL h5dopen_f(file_id, dsetname, dset_id, error)
     
     ! Get dataset's dataspace identifier and select subset.
-    subset_ofset = offset
+    subset_offset = offset
     subset_size = dims
     CALL h5dget_space_f(dset_id, dataspace, error)
     CALL h5sselect_hyperslab_f(dataspace, H5S_SELECT_SET_F, &
          subset_offset, subset_size, error) 
     
+    ! Create memspace
+    CALL h5screate_simple_f(3,subset_size,memspace,error)
+    
     ! Read the dataset
-    CALL h5dread_f(dset_id, H5T_NATIVE_DOUBLE, psi_in, subset_dims, error)
+    CALL h5dread_f(dset_id, H5T_NATIVE_DOUBLE, psi_in, subset_size, error, &
+         memspace, dataspace)
     
     ! Close everything opened.
     CALL h5sclose_f(dataspace, error)
+    CALL h5sclose_f(memspace, error)
     CALL h5dclose_f(dset_id, error)
     CALL h5fclose_f(file_id, error)
     
@@ -1257,7 +1271,7 @@ CONTAINS
     ! Close FORTRAN interface.
     CALL h5close_f(error)
     
-  END SUBROUTINE read_subset_serial
+  END SUBROUTINE read_subset_3Dserial
   
   !-------------------------------------------------------------------!
   
