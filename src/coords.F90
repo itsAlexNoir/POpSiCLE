@@ -1623,7 +1623,7 @@ CONTAINS
                    IF(i_am_in(ir,itheta,iphi).EQ.1) THEN
                       CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
                            r_inp, theta_inp, phi_inp, &
-                           psi_inp, rank,TRIM(method), psi_sph(ir,itheta, iphi), &
+                           psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
                            psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
                            psi_sph_dphi(ir, itheta, iphi) )
                    ENDIF
@@ -1641,7 +1641,7 @@ CONTAINS
                    IF(i_am_in(ir,itheta,iphi).EQ.1) THEN
                       CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
                            r_inp, theta_inp, phi_inp, &
-                           psi_inp, rank,TRIM(method), psi_sph(ir,itheta,iphi) )
+                           psi_inp, TRIM(method), psi_sph(ir,itheta,iphi) )
                    ENDIF
                 ENDDO
              ENDDO
@@ -1663,7 +1663,7 @@ CONTAINS
                 DO ir = 1, dims_out(1)
                    CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
                         r_inp, theta_inp, phi_inp, &
-                        psi_inp, rank,TRIM(method), psi_sph(ir,itheta, iphi), &
+                        psi_inp,TRIM(method), psi_sph(ir,itheta, iphi), &
                         psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
                         psi_sph_dphi(ir, itheta, iphi) )
                 ENDDO
@@ -1679,7 +1679,7 @@ CONTAINS
                 DO ir = 1, dims_out(1)
                    CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
                         r_inp, theta_inp, phi_inp, &
-                        psi_inp, rank,TRIM(method), psi_sph(ir,itheta,iphi) )
+                        psi_inp,TRIM(method), psi_sph(ir,itheta,iphi) )
                 ENDDO
              ENDDO
           ENDDO
