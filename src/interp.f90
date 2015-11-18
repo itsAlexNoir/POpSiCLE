@@ -216,7 +216,6 @@ CONTAINS
        STOP
        
     END IF
-    
   END SUBROUTINE dcreate_interpolant3D
   
   !-------------------------------------------------!
@@ -396,7 +395,7 @@ CONTAINS
   !-----------------------------------------------------------!
 
     
-  SUBROUTINE dinterpolate3D(numpts, y1, y2, y3, x1, x2, x3, func, method, &
+  SUBROUTINE dinterpolate3D(numpts, y1, y2, y3, x1, x2, x3, func, method,&
        interp_val, interp_val_dx, interp_val_dy, interp_val_dz )
     
     IMPLICIT NONE
@@ -414,7 +413,6 @@ CONTAINS
     REAL(dp), INTENT(OUT), OPTIONAL     :: interp_val_dx
     REAL(dp), INTENT(OUT), OPTIONAL     :: interp_val_dy
     REAL(dp), INTENT(OUT), OPTIONAL     :: interp_val_dz
-    
     INTEGER                             :: ierror
     
     !-----------------------------------------------!
@@ -428,7 +426,7 @@ CONTAINS
                XYZMIN_RE, XYZDEL_RE, RMAX_RE, RSQ_RE, AQ_RE, interp_val, &
                interp_val_dx, interp_val_dy, interp_val_dz, ierror)
           IF (ierror /= 0) THEN
-             WRITE (*, *) 'QSHEP3 - ERROR!'
+             WRITE (*, *) 'Q3GRD - ERROR!'
              WRITE (*, *) 'Error in QS3GRD (REAL), IER = ', ierror
              STOP
           END IF
@@ -436,7 +434,7 @@ CONTAINS
           !---------------------------------!
           
        ENDIF
-           
+       
     ELSEIF (.NOT.PRESENT(interp_val_dx).AND. .NOT.PRESENT(interp_val_dy) &
          .AND. .NOT.PRESENT(interp_val_dz) ) THEN
        
@@ -459,7 +457,7 @@ CONTAINS
     ENDIF
     
   END SUBROUTINE dinterpolate3D
-
+  
   !---------------------------------------------------------------------------!
   
   SUBROUTINE zinterpolate3D(numpts, y1, y2, y3, x1, x2, x3, func, method, &

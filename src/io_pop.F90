@@ -58,9 +58,9 @@ MODULE io_pop
   
   INTERFACE read_subset
      MODULE PROCEDURE read_subset_3Dserial
-!#if _COM_MPI
-     !MODULE PROCEDURE read_subset_parallel
-!#endif
+#if _COM_MPI
+     MODULE PROCEDURE read_subset_3Dparallel
+#endif
   END INTERFACE read_subset
   
   !--------------------!
@@ -1265,6 +1265,8 @@ CONTAINS
     CALL h5sclose_f(dataspace, error)
     CALL h5sclose_f(memspace, error)
     CALL h5dclose_f(dset_id, error)
+    CALL h5gclose_f(grp_id, error)
+    CALL h5fclose_f(file_id, error)
     CALL h5fclose_f(file_id, error)
     
     
@@ -1274,5 +1276,107 @@ CONTAINS
   END SUBROUTINE read_subset_3Dserial
   
   !-------------------------------------------------------------------!
+  
+  !-------------------------------------------------------------------!
+#if _COM_MPI
+  SUBROUTINE read_subset_3Dparallel(filename_in, psi_in, rank, dims, &
+       dims_proc, offset, comm)
+    
+    IMPLICIT NONE
+    
+    CHARACTER(LEN=*), INTENT(IN)      :: filename_in
+    REAL(dp), INTENT(OUT)             :: psi_in(:, :, :)
+    INTEGER, INTENT(IN)               :: rank
+    INTEGER, INTENT(IN)               :: dims(:)
+    INTEGER, INTENT(IN)               :: dims_proc(:)
+    INTEGER, INTENT(IN)               :: offset(:)
+    INTEGER, INTENT(IN)               :: comm
+    
+    ! Property list identifier 
+    INTEGER(HID_T)                    :: plist_id
+    ! Group identifier
+    INTEGER(HID_T)                    :: grp_id
+    ! Dataset identifier
+    INTEGER(HID_T)                    :: dset_id 
+    ! Dataspace identifier
+    INTEGER(HID_T)                    :: dataspace 
+    ! dset size
+    INTEGER(HSIZE_T)                  :: subset_size(3)
+    INTEGER(HSIZE_T)                  :: subset_size_proc(3)
+    ! Dataspace identifier in file 
+    INTEGER(HID_T)                    :: filespace
+    ! Memspace identifier
+    INTEGER(HID_T)                    :: memspace
+    ! Hyperslab offset
+    INTEGER(HSIZE_T)                  :: subset_offset(3)
+    ! Error flag
+    INTEGER                           :: error
+    CHARACTER(LEN=100)                :: filename
+    CHARACTER(LEN=100)                :: dsetname, groupname
+    
+    !----------------------------------------------!
+    
+    ! Initialize FORTRAN interface. 
+    CALL h5open_f(error) 
+    
+    ! Setup file access property list with 
+    ! parallel I/O access.
+    CALL h5pcreate_f(H5P_FILE_ACCESS_F, plist_id, error)
+    CALL h5pset_fapl_mpio_f(plist_id, comm, MPI_INFO_NULL, error) 
+    
+    ! Open the file.
+    filename = TRIM(filename_in) // '.h5'
+    CALL h5fopen_f(filename, H5F_ACC_RDWR_F, file_id, &
+         error, access_prp = plist_id)
+    CALL h5pclose_f(plist_id, error)
+    
+    ! Open the group.
+    groupname = '/' // TRIM(filename_in)
+    CALL h5gopen_f(file_id, groupname, grp_id, error)
+    
+    ! Set dims
+    subset_offset = offset
+    subset_size_proc = dims_proc
+    subset_size = dims
+    
+    ! Create filespace and memspace
+    CALL h5screate_simple_f(3,subset_size,filespace, error)
+    CALL h5screate_simple_f(3,subset_size_proc,memspace,error)
+    
+    ! Open the dataset.
+    dsetname = '/' // TRIM(filename_in) // '/' // TRIM(filename_in)
+    CALL h5dopen_f(file_id, dsetname, dset_id, error)
+    
+    ! Get dataset's dataspace identifier and select subset.
+    CALL h5dget_space_f(dset_id, filespace, error)
+    CALL h5sselect_hyperslab_f(filespace, H5S_SELECT_SET_F, &
+         subset_offset, subset_size_proc, error) 
+    
+    ! Create property list for collective dataset write
+    CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error)
+    CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
+    
+    ! Read the dataset
+    CALL h5dread_f(dset_id, H5T_NATIVE_DOUBLE, psi_in, subset_size, &
+         error, file_space_id = filespace, mem_space_id = memspace, &
+         xfer_prp = plist_id)
+    
+    ! Close everything opened.
+    CALL h5sclose_f(filespace, error)
+    CALL h5sclose_f(memspace, error)
+    CALL h5dclose_f(dset_id, error)
+    CALL h5pclose_f(plist_id, error)
+    CALL h5gclose_f(grp_id, error)
+    CALL h5fclose_f(file_id, error)
+    
+    
+    ! Close FORTRAN interface.
+    CALL h5close_f(error)
+    
+  END SUBROUTINE read_subset_3Dparallel
+  
+#endif
+  !-------------------------------------------------------------------!
+  
   
 END MODULE io_pop

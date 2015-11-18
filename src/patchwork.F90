@@ -23,9 +23,9 @@ MODULE patchwork
   INTERFACE get_subset_coordinates
      MODULE PROCEDURE get_subset_coordinates_3Dserial
      MODULE PROCEDURE get_subset_coordinates_2Dserial
-#if _COM_MPI
-     MODULE PROCEDURE get_subset_coordinates_3Dparallel
-#endif
+!#if _COM_MPI
+!     MODULE PROCEDURE get_subset_coordinates_3Dparallel
+!#endif
   END INTERFACE get_subset_coordinates
 
 CONTAINS

@@ -828,15 +828,15 @@ CONTAINS
     maxthetapts = numthetapts
     maxphipts = numphipts
     maxsurfaceprocs = numsurfaceprocs
-
+    
   END SUBROUTINE initialize_cartesian_boundary3D_parallel
 #endif  
   !----------------------------------------------------!
-
+  
   !----------------------------------------------------!
   !  INITIALIZE CYLINDRICAL BOUNDARY 2D
   !----------------------------------------------------!
-
+  
   
   SUBROUTINE initialize_cylindrical_boundary2D_serial(rho_ax, z_ax, dims, &
        Rs, radtol, fdpts, deltar, lmax, &
@@ -1507,12 +1507,12 @@ CONTAINS
   END SUBROUTINE cartesian2spherical2D
   
   !----------------------------------------------------------------!
-
+  
   !----------------------------------------------------------------!
   !----------------------------------------------------------------!
   
   SUBROUTINE dcartesian2spherical3D(psi_cart,psi_sph, x_ax, y_ax, z_ax, &
-       r_ax, theta_ax, phi_ax, method, psi_sph_dr, psi_sph_dth, &
+       r_ax, theta_ax, phi_ax, method, i_am_in, psi_sph_dr, psi_sph_dth, &
        psi_sph_dphi)
     
     IMPLICIT NONE
@@ -1522,6 +1522,7 @@ CONTAINS
     REAL(dp), INTENT(IN)                :: x_ax(:), y_ax(:), z_ax(:)
     REAL(dp), INTENT(IN)                :: r_ax(:), theta_ax(:), phi_ax(:)
     CHARACTER(LEN=*), INTENT(IN)        :: method
+    INTEGER, INTENT(OUT),OPTIONAL       :: i_am_in(:, :, :)
     REAL(dp), INTENT(OUT), OPTIONAL     :: psi_sph_dr(:, :, :)
     REAL(dp), INTENT(OUT), OPTIONAL     :: psi_sph_dth(:, :, :)
     REAL(dp), INTENT(OUT), OPTIONAL     :: psi_sph_dphi(:, :, :)
@@ -1531,11 +1532,15 @@ CONTAINS
     INTEGER, DIMENSION(3)               :: dims_in, dims_out
     INTEGER                             :: numpts_in, numpts_out
     REAL(dp)                            :: rpt
+    REAL(dp)                            :: xpt, ypt, zpt
+    REAL(dp)                            :: minr, maxr
+    REAL(dp)                            :: mintheta, maxtheta
+    REAL(dp)                            :: minphi, maxphi 
     REAL(dp), ALLOCATABLE               :: r_inp(:)
     REAL(dp), ALLOCATABLE               :: theta_inp(:)
     REAL(dp), ALLOCATABLE               :: phi_inp(:)
     REAL(dp), ALLOCATABLE               :: psi_inp(:)
- 
+    
     
     dims_in = SHAPE(psi_cart)
     dims_out = SHAPE(psi_sph)
@@ -1550,9 +1555,17 @@ CONTAINS
     
     psi_inp = ZERO
     psi_sph = ZERO
-  
-    ii = 0
     
+    minr = 1E15_dp
+    maxr = 0.0_dp
+    
+    mintheta = pi
+    maxtheta = 0.0_dp
+    
+    minphi = pi
+    maxphi = -pi
+    
+    ii = 0
     DO iz = 1, dims_in(3)
        DO iy = 1, dims_in(2)
           DO ix = 1, dims_in(1)
@@ -1567,6 +1580,14 @@ CONTAINS
              ENDIF
              phi_inp(ii) = ATAN2( y_ax(iy) , x_ax(ix) )
              psi_inp(ii) = psi_cart(ix, iy, iz)
+
+             minr = MIN(minr,r_inp(ii))
+             mintheta = MIN(mintheta,theta_inp(ii))
+             minphi = MIN(minphi,phi_inp(ii))
+             
+             maxr = MAX(maxr,r_inp(ii))
+             maxtheta = MAX(maxtheta,theta_inp(ii))
+             maxphi = MAX(maxphi,phi_inp(ii))
           ENDDO
        ENDDO
     ENDDO
@@ -1574,42 +1595,101 @@ CONTAINS
     CALL create_interpolant(numpts_in,r_inp,theta_inp, phi_inp, &
          psi_inp,TRIM(method))
     
-    IF (PRESENT(psi_sph_dr).AND.PRESENT(psi_sph_dth).AND.PRESENT(psi_sph_dphi) ) THEN
-       psi_sph_dr = ZERO
-       psi_sph_dth = ZERO
-       psi_sph_dphi = ZERO
-       
-       DO iphi = 1, dims_out(3)
-          DO itheta = 1, dims_out(2)
-             DO ir = 1, dims_out(1)
-                CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                     r_inp, theta_inp, phi_inp, &
-                     psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
-                     psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
-                     psi_sph_dphi(ir, itheta, iphi) )
-             ENDDO
+    ! Check if the new axis are within the cartesian domain.
+    DO iphi = 1, dims_out(3)
+       DO itheta = 1, dims_out(2)
+          DO ir = 1, dims_out(1)
+             xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+             ypt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+             zpt = r_ax(ir) * COS(theta_ax(itheta))
+             IF ((xpt.GE.MINVAL(x_ax)) .AND. (xpt.LE.MAXVAL(x_ax)) .AND. &
+                  (ypt.GE.MINVAL(y_ax)) .AND. (ypt.LE.MAXVAL(y_ax)) .AND. &
+                  (zpt.GE.MINVAL(z_ax)) .AND. (zpt.LE.MAXVAL(z_ax))) THEN
+                i_am_in(ir,itheta,iphi) = 1
+             ENDIF
           ENDDO
        ENDDO
-       
-    ELSEIF (.NOT.PRESENT(psi_sph_dr).AND. &
-         .NOT.PRESENT(psi_sph_dth).AND. &
-         .NOT. PRESENT(psi_sph_dphi) ) THEN
-       
-       DO iphi = 1, dims_out(3)
-          DO itheta = 1, dims_out(2)
-             DO ir = 1, dims_out(1)                 
-                CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                     r_inp, theta_inp, phi_inp, &
-                     psi_inp, TRIM(method), psi_sph(ir,itheta,iphi) )
+    ENDDO
+    
+    IF(PRESENT(i_am_in)) THEN
+       IF (PRESENT(psi_sph_dr).AND.PRESENT(psi_sph_dth).AND.PRESENT(psi_sph_dphi) ) THEN
+          psi_sph_dr = ZERO
+          psi_sph_dth = ZERO
+          psi_sph_dphi = ZERO
+          
+          DO iphi = 1, dims_out(3)
+             DO itheta = 1, dims_out(2)
+                DO ir = 1, dims_out(1)
+                   IF(i_am_in(ir,itheta,iphi).EQ.1) THEN
+                      CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
+                           r_inp, theta_inp, phi_inp, &
+                           psi_inp, rank,TRIM(method), psi_sph(ir,itheta, iphi), &
+                           psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
+                           psi_sph_dphi(ir, itheta, iphi) )
+                   ENDIF
+                ENDDO
              ENDDO
           ENDDO
-       ENDDO
+          
+       ELSEIF (.NOT.PRESENT(psi_sph_dr).AND. &
+            .NOT.PRESENT(psi_sph_dth).AND. &
+            .NOT. PRESENT(psi_sph_dphi) ) THEN
+          
+          DO iphi = 1, dims_out(3)
+             DO itheta = 1, dims_out(2)
+                DO ir = 1, dims_out(1)
+                   IF(i_am_in(ir,itheta,iphi).EQ.1) THEN
+                      CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
+                           r_inp, theta_inp, phi_inp, &
+                           psi_inp, rank,TRIM(method), psi_sph(ir,itheta,iphi) )
+                   ENDIF
+                ENDDO
+             ENDDO
+          ENDDO
+          
+       ELSE
+          WRITE(*,*) 'You must input an array for getting the derivatives!'
+          RETURN   
+       ENDIF
        
     ELSE
-       WRITE(*,*) 'You must input and array for get the derivatives!'
-       RETURN   
+       IF (PRESENT(psi_sph_dr).AND.PRESENT(psi_sph_dth).AND.PRESENT(psi_sph_dphi) ) THEN
+          psi_sph_dr = ZERO
+          psi_sph_dth = ZERO
+          psi_sph_dphi = ZERO
+          
+          DO iphi = 1, dims_out(3)
+             DO itheta = 1, dims_out(2)
+                DO ir = 1, dims_out(1)
+                   CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
+                        r_inp, theta_inp, phi_inp, &
+                        psi_inp, rank,TRIM(method), psi_sph(ir,itheta, iphi), &
+                        psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
+                        psi_sph_dphi(ir, itheta, iphi) )
+                ENDDO
+             ENDDO
+          ENDDO
+          
+       ELSEIF (.NOT.PRESENT(psi_sph_dr).AND. &
+            .NOT.PRESENT(psi_sph_dth).AND. &
+            .NOT. PRESENT(psi_sph_dphi) ) THEN
+          
+          DO iphi = 1, dims_out(3)
+             DO itheta = 1, dims_out(2)
+                DO ir = 1, dims_out(1)
+                   CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
+                        r_inp, theta_inp, phi_inp, &
+                        psi_inp, rank,TRIM(method), psi_sph(ir,itheta,iphi) )
+                ENDDO
+             ENDDO
+          ENDDO
+          
+       ELSE
+          WRITE(*,*) 'You must input an array for getting the derivatives!'
+          RETURN   
+       ENDIF
+   
     ENDIF
-    
     
   END SUBROUTINE dcartesian2spherical3D
 
@@ -1639,7 +1719,7 @@ CONTAINS
     REAL(dp), ALLOCATABLE               :: theta_inp(:)
     REAL(dp), ALLOCATABLE               :: phi_inp(:)
     COMPLEX(dp), ALLOCATABLE            :: psi_inp(:)
- 
+    
     
     dims_in = SHAPE(psi_cart)
     dims_out = SHAPE(psi_sph)
@@ -1711,7 +1791,7 @@ CONTAINS
        ENDDO
        
     ELSE
-       WRITE(*,*) 'You must input and array for get the derivatives!'
+       WRITE(*,*) 'You must input an array for getting the derivatives!'
        RETURN   
     ENDIF
     
