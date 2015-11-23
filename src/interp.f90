@@ -179,7 +179,6 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN)    :: method
     INTEGER                         :: ierror
     
-    
     IF(method.EQ.'quadratic') THEN
        
        ! Assign control parameters for interpolation
@@ -425,9 +424,9 @@ CONTAINS
           CALL QS3GRD(y1, y2, y3, numpts, x1, x2, x3, func, NR, LCELL3_RE, LNEXT_RE,&
                XYZMIN_RE, XYZDEL_RE, RMAX_RE, RSQ_RE, AQ_RE, interp_val, &
                interp_val_dx, interp_val_dy, interp_val_dz, ierror)
-          IF (ierror /= 0) THEN
+          IF ((ierror /= 0) .AND. (ierror /=2)) THEN
              WRITE (*, *) 'Q3GRD - ERROR!'
-             WRITE (*, *) 'Error in QS3GRD (REAL), IER = ', ierror
+             WRITE (*, *) 'Error in QS3GRD, IER = ', ierror
              STOP
           END IF
           
@@ -442,11 +441,11 @@ CONTAINS
           ! Interpolate the real part
           interp_val = QS3VAL(y1, y2, y3, numpts, x1, x2, x3, func, NR, LCELL3_RE, LNEXT_RE,&
                XYZMIN_RE, XYZDEL_RE, RMAX_RE, RSQ_RE, AQ_RE )
-          IF (interp_val .EQ. 0) THEN
-             WRITE (*, *) 'Q3VAL - ERROR!'
-             WRITE (*, *) 'Error in QS3VAL (REAL), IER = ', interp_val
-             STOP
-          END IF
+!!$          IF (interp_val .EQ. 0) THEN
+!!$             WRITE (*, *) 'Q3VAL - ERROR!'
+!!$             WRITE (*, *) 'Error in QS3VAL (REAL), IER = ', interp_val
+!!$             STOP
+!!$          END IF
           
           !---------------------------------!
        ENDIF
