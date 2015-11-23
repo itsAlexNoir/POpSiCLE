@@ -1556,7 +1556,7 @@ CONTAINS
     psi_inp = ZERO
     psi_sph = ZERO
     
-    minr = 1E15_dp
+    minr = HUGE(minr) !1.0E9_dp
     maxr = 0.0_dp
     
     mintheta = pi
@@ -1580,7 +1580,7 @@ CONTAINS
              ENDIF
              phi_inp(ii) = ATAN2( y_ax(iy) , x_ax(ix) )
              psi_inp(ii) = psi_cart(ix, iy, iz)
-
+             
              minr = MIN(minr,r_inp(ii))
              mintheta = MIN(mintheta,theta_inp(ii))
              minphi = MIN(minphi,phi_inp(ii))
@@ -1600,9 +1600,13 @@ CONTAINS
        DO itheta = 1, dims_out(2)
           DO ir = 1, dims_out(1)
              xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
-             ypt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+             ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
              zpt = r_ax(ir) * COS(theta_ax(itheta))
-             IF ((xpt.GE.MINVAL(x_ax)) .AND. (xpt.LE.MAXVAL(x_ax)) .AND. &
+             IF ((r_ax(ir).GE.minr) .AND. (r_ax(ir).LE.maxr) .AND. &
+                  (theta_ax(itheta).GE.mintheta) .AND. &
+                  (theta_ax(itheta).LE.maxtheta) .AND. &
+                  (phi_ax(iphi).GE.minphi) .AND. (phi_ax(iphi).LE.maxphi) .AND. &
+                  (xpt.GE.MINVAL(x_ax)) .AND. (xpt.LE.MAXVAL(x_ax)) .AND. &
                   (ypt.GE.MINVAL(y_ax)) .AND. (ypt.LE.MAXVAL(y_ax)) .AND. &
                   (zpt.GE.MINVAL(z_ax)) .AND. (zpt.LE.MAXVAL(z_ax))) THEN
                 i_am_in(ir,itheta,iphi) = 1
@@ -1688,7 +1692,7 @@ CONTAINS
           WRITE(*,*) 'You must input an array for getting the derivatives!'
           RETURN   
        ENDIF
-   
+       
     ENDIF
     
   END SUBROUTINE dcartesian2spherical3D
