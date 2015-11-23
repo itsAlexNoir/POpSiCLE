@@ -21,6 +21,7 @@ MODULE patchwork
 #endif
 
   INTERFACE get_subset_coordinates
+     MODULE PROCEDURE get_subset_coordinates_4Dserial  
      MODULE PROCEDURE get_subset_coordinates_3Dserial
      MODULE PROCEDURE get_subset_coordinates_2Dserial
 !#if _COM_MPI
@@ -31,6 +32,40 @@ MODULE patchwork
 CONTAINS
 
   !----------------------------------------------------!
+  
+  
+  SUBROUTINE get_subset_coordinates_4Dserial(xpts,ypts,zpts,rpts,&
+       domain,offset,dims)
+    
+    IMPLICIT NONE
+    
+    REAL(dp), INTENT(IN)        :: xpts(:)
+    REAL(dp), INTENT(IN)        :: ypts(:)
+    REAL(dp), INTENT(IN)        :: zpts(:)
+    REAL(dp), INTENT(IN)        :: rpts(:)
+    REAL(dp), INTENT(IN)        :: domain(:, :)
+    INTEGER, INTENT(OUT)        :: offset(:)
+    INTEGER, INTENT(OUT)        :: dims(:)
+    
+    ! First, find out the offset of the subset
+    offset(1) = MAXLOC(xpts,1,xpts.LE.domain(1,1))
+    offset(2) = MAXLOC(ypts,1,ypts.LE.domain(1,2))
+    offset(3) = MAXLOC(zpts,1,zpts.LE.domain(1,3))
+    offset(4) = MAXLOC(rpts,1,rpts.LE.domain(1,4))
+    
+    ! Now, the dimensions of the domain required
+    dims(1) = MINLOC(xpts,1,xpts.GE.domain(2,1)) &
+         - MAXLOC(xpts,1,xpts.LE.domain(1,1)) - 1
+    dims(2) = MINLOC(ypts,1,ypts.GE.domain(2,2)) &
+         - MAXLOC(ypts,1,ypts.LE.domain(1,2)) - 1
+    dims(3) = MINLOC(zpts,1,zpts.GE.domain(2,3)) &
+         - MAXLOC(zpts,1,zpts.LE.domain(1,3)) - 1
+    dims(4) = MINLOC(rpts,1,rpts.GE.domain(2,4)) &
+         - MAXLOC(rpts,1,rpts.LE.domain(1,4)) - 1
+    
+  END SUBROUTINE get_subset_coordinates_4Dserial
+  
+  !------------------------------------------!
   
   SUBROUTINE get_subset_coordinates_3Dserial(xpts,ypts,zpts,domain,&
        offset,dims)
