@@ -1,5 +1,5 @@
  MODULE io_pop
-  
+   
   USE HDF5
   USE constants
   USE tools
@@ -1211,9 +1211,9 @@ CONTAINS
   !-------------------------------------------------------------------!
 #if _COM_MPI
   
-  SUBROUTINE write_subset_parallel(density, domain, &
+  SUBROUTINE write_subset_parallel(wave, domain, &
        rank, dims_local, dims_global, &
-       globalcomm, grid_rank,grid_address, filename, &
+       globalcomm, grid_rank,grid_addresses, filename, &
        xpts, ypts, zpts, rpts)
     
     IMPLICIT NONE
@@ -1229,17 +1229,23 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN) :: filename 
     REAL(dp), INTENT(IN), OPTIONAL :: xpts(:), ypts(:)
     REAL(dp), INTENT(IN), OPTIONAL :: zpts(:), rpts(:)
-   
+    
     
     !! Shaped arrrays
     REAL(dp), ALLOCATABLE        :: wave2D(:, :)
     REAL(dp), ALLOCATABLE        :: wave3D(:, :, :)
     REAL(dp), ALLOCATABLE        :: wave4D(:, :, :, :)  
+    REAL(dp), ALLOCATABLE        :: wave2D_redux(:, :)
+    REAL(dp), ALLOCATABLE        :: wave3D_redux(:, :, :)
+    REAL(dp), ALLOCATABLE        :: wave4D_redux(:, :, :, :)  
     INTEGER, ALLOCATABLE         :: i_am_subset_local(:, :, :, :)
     INTEGER, ALLOCATABLE         :: i_am_subset(:, :, :, :)
+    INTEGER, ALLOCATABLE         :: my_subset_dims(:, :, :, :, :)
+    INTEGER, ALLOCATABLE         :: subset_dims_global(:, :, :, :, :)
     INTEGER, ALLOCATABLE         :: local_offset(:)
     INTEGER, ALLOCATABLE         :: subset_dims(:)
-    INTEGER                      :: ipgrid(3)
+    INTEGER, ALLOCATABLE         :: total_dims(:)
+    INTEGER                      :: numtotalprocs
     INTEGER, ALLOCATABLE         :: members(:)
     INTEGER                      :: simgroup, iogroup, iocomm
     INTEGER                      :: iogroup_size, ipro
@@ -1297,6 +1303,7 @@ CONTAINS
     
     ALLOCATE(local_offset(1:rank))
     ALLOCATE(subset_dims(1:rank))
+    ALLOCATE(total_dims(1:rank)) 
     ALLOCATE(file_dims(1:rank))
     ALLOCATE(proc_dims(1:rank))
     ALLOCATE(offset(1:rank))
@@ -1311,33 +1318,31 @@ CONTAINS
     
     numtotalprocs = numprocx * numprocy * numprocz * numprocr
     
-!!$    IF(rank.EQ.3) THEN
-!!$       ALLOCATE(i_am_subset3D_local(0:numprocx-1,0:numprocy-1,0:numprocz-1))
-!!$       ALLOCATE(i_am_subset3D(0:numprocx-1,0:numprocy-1,0:numprocz-1))
-!!$       
-!!$       ! Check if the processor are within the doamin
-!!$       CALL get_subset_coordinates(xpts,ypts,zpts,domain,local_offset,subset_dims)
-!!$       
-!!$       IF(ALL(offset.EQ.0)) THEN
-!!$          i_am_subset3D_local(ipx,ipy,ipz) = 0
-!!$       ELSE
-!!$          i_am_subset3D_local(ipx,ipy,ipz) = 1
-!!$       ENDIF
-!!$    ELSEIF(rank.EQ.4) THEN
     ALLOCATE(i_am_subset_local(0:numprocx-1,0:numprocy-1,0:numprocz-1,0:numprocr-1))
     ALLOCATE(i_am_subset(0:numprocx-1,0:numprocy-1,0:numprocz-1,0:numprocr-1))
-    
-    IF(rank.EQ.3) THEN
-       ! Check if the processor are within the doamin
-       CALL get_subset_coordinates(xpts,ypts,zpts,domain,local_offset,subset_dims)       
+    i_am_subset_local = 0
+    i_am_subset = 0
+    ALLOCATE(my_subset_dims(0:numprocx-1,0:numprocy-1,0:numprocz-1,0:numprocr-1,1:rank))
+    ALLOCATE(subset_dims_global(0:numprocx-1,0:numprocy-1,0:numprocz-1,0:numprocr-1,1:rank))
+    my_subset_dims = 0
+    subset_dims_global = 0
+
+    ! Check if the processor are within the doamin
+    IF(rank.EQ.2) THEN
+       CALL get_subset_coordinates(xpts(1:dims_local(1)),ypts(1:dims_local(2)), &
+            domain,local_offset,subset_dims)
+    ELSEIF(rank.EQ.3) THEN
+       CALL get_subset_coordinates(xpts(1:dims_local(1)),ypts(1:dims_local(2)), &
+            zpts(1:dims_local(3)),domain,local_offset,subset_dims)
     ELSEIF(rank.EQ.4) THEN
-       CALL get_subset_coordinates(xpts,ypts,zpts,rpts,domain,local_offset,subset_dims)
+       CALL get_subset_coordinates(xpts(1:dims_local(1)),ypts(1:dims_local(2)), &
+            zpts(1:dims_local(3)),rpts(1:dims_local(4)),domain,local_offset,subset_dims)
     ELSE
        WRITE(*,*) 'Number of dimensions not implemented!'
        STOP
     ENDIF
     
-    IF(ALL(local_offset.EQ.0)) THEN
+    IF(ANY(subset_dims.EQ.0)) THEN
        i_am_subset_local(ipx,ipy,ipz,ipr) = 0
     ELSE
        i_am_subset_local(ipx,ipy,ipz,ipr) = 1
@@ -1345,19 +1350,26 @@ CONTAINS
     
     CALL MPI_ALLREDUCE(i_am_subset_local,i_am_subset,numtotalprocs, &
          MPI_INTEGER,MPI_SUM,globalcomm,ierror)
+
+    my_subset_dims(ipx,ipy,ipz,ipr,:) = subset_dims(:)
+    
+    CALL MPI_ALLREDUCE(my_subset_dims,subset_dims_global,numtotalprocs*rank, &
+         MPI_INTEGER,MPI_SUM,globalcomm,ierror)
     
     iogroup_size = SUM(i_am_subset)
     ALLOCATE(members(1:iogroup_size))
     
     ipro = 0
-    DO iprocz = 0, numprocz - 1
-       DO iprocy = 0, numprocy - 1
-          DO iprocx = 0, numprocx - 1
-             IF(i_am_subset(iprox,iprocy,iprocz).EQ.1) THEN
-                ipro = ipro + 1
-                members(ipro) = grid_addresses(indx(iprocx+1,iprocy+1,iprocz+1, &
-                     1,numprocx,numprocy,numprocz,numprocr))
-             ENDIF
+    DO iprocr = 0, numprocr - 1
+       DO iprocz = 0, numprocz - 1
+          DO iprocy = 0, numprocy - 1
+             DO iprocx = 0, numprocx - 1
+                IF(i_am_subset(iprocx,iprocy,iprocz,iprocr).EQ.1) THEN
+                   ipro = ipro + 1
+                   members(ipro) = grid_addresses(indx(iprocx+1,iprocy+1,iprocz+1, &
+                        1,numprocx,numprocy,numprocz,numprocr))
+                ENDIF
+             ENDDO
           ENDDO
        ENDDO
     ENDDO
@@ -1369,15 +1381,36 @@ CONTAINS
     
     CALL MPI_COMM_CREATE(globalcomm, iogroup, iocomm, ierror)
     
+    ! Open and write to the file only the procs that contribute
     IF(i_am_subset(ipx,ipy,ipz,ipr).EQ.1) THEN
        
+       ! Obtain the piece of the data needed
+       IF(rank.EQ.2) THEN
+          ALLOCATE(wave2D_redux(1:subset_dims(1),1:subset_dims(2)))
+          wave2D_redux = wave2D(local_offset(1)+1:local_offset(1)+1+subset_dims(1), &
+               local_offset(2)+1:local_offset(2)+1+subset_dims(2))
+          
+       ELSEIF(rank.EQ.3) THEN
+          ALLOCATE(wave3D_redux(1:subset_dims(1),1:subset_dims(2),1:subset_dims(3)))
+          wave3D_redux = wave3D(local_offset(1)+1:local_offset(1)+1+subset_dims(1), &
+               local_offset(2)+1:local_offset(2)+1+subset_dims(2), &
+               local_offset(3)+1:local_offset(3)+1+subset_dims(3))
+       ELSEIF(rank.EQ.4) THEN
+          ALLOCATE(wave4D_redux(1:subset_dims(1),1:subset_dims(2),1:subset_dims(3),&
+               1:subset_dims(4)))
+          wave4D_redux = wave4D(local_offset(1)+1:local_offset(1)+1+subset_dims(1), &
+               local_offset(2)+1:local_offset(2)+1+subset_dims(2), &
+               local_offset(3)+1:local_offset(3)+1+subset_dims(3), &
+               local_offset(4)+1:local_offset(4)+1+subset_dims(4))
+       ENDIF
+
        ! Initialize fortran interface
        CALL h5open_f(error)
        
        ! Setup file access property list with 
        ! parallel I/O access.
        CALL h5pcreate_f(H5P_FILE_ACCESS_F, plist_id, error)
-       CALL h5pset_fapl_mpio_f(plist_id, comm, MPI_INFO_NULL, error)
+       CALL h5pset_fapl_mpio_f(plist_id, iocomm, MPI_INFO_NULL, error)
        
        
        ! Create the file collectively.
@@ -1389,16 +1422,34 @@ CONTAINS
        name = '/' // TRIM(filename)
        !write(*,*) 'name: ',name
        CALL h5gcreate_f(file_id, filename, group_id, error)
-
+       
        ! Assignate dims to the file
        file_dims = 0
        proc_dims = 0
-       !file_dims = dims_global
-       CALL MPI_ALLREDUCE(subset_dims,file_dims,rank, &
-            MPI_INTEGER,MPI_SUM,iocomm,ierror)
+       total_dims = 0
        
+       IF(rank.GE.2) THEN
+          DO iprocx = 0, numprocx - 1
+             total_dims(1) = total_dims(1) + subset_dims_global(iprocx,ipy,ipz,ipr,1)
+          ENDDO
+          DO iprocy = 0, numprocy - 1
+             total_dims(2) = total_dims(2) + subset_dims_global(ipx,iprocy,ipz,ipr,2)
+          ENDDO
+       ENDIF
+       IF(rank.GE.3) THEN
+          DO iprocz = 0, numprocz - 1
+             total_dims(3) = total_dims(3) + subset_dims_global(ipx,ipy,iprocz,ipr,3)
+          ENDDO
+       ENDIF
+       IF(rank.GE.4) THEN
+          DO iprocr = 0, numprocr - 1
+             total_dims(4) = total_dims(4) + subset_dims_global(ipx,ipy,ipz,iprocr,4)
+          ENDDO
+       ENDIF
+
        proc_dims = subset_dims
-         
+       file_dims = total_dims
+       
        ! Create the data space for the  dataset.
        CALL h5screate_simple_f(rank, file_dims, filespace, error)
        CALL h5screate_simple_f(rank, proc_dims, memspace, error)
@@ -1413,22 +1464,28 @@ CONTAINS
        ! Each process defines dataset in memory and writes it to the hyperslab
        ! in the file. 
        cont  = proc_dims
+       offset = 0
        
-       IF(rank.EQ.2) THEN
-          offset(1) = local_offset(1) + ipx * dims_local(1)
-          offset(2) = local_offset(2) + ipy * dims_local(2)
-       ELSEIF (rank.EQ.3) THEN
-          offset(1) = local_offset(1) + ipx * dims_local(1)
-          offset(2) = local_offset(2) + ipy * dims_local(2)
-          offset(3) = local_offset(3) + ipz * dims_local(3)
-       ELSEIF (rank.EQ.4) THEN
-          offset(1) = local_offset(1) + ipx * dims_local(1)
-          offset(2) = local_offset(2) + ipy * dims_local(2)
-          offset(3) = local_offset(3) + ipz * dims_local(3)
-          offset(4) = local_offset(4) + ipr * dims_local(4)
-       ELSE 
-          WRITE(*,*) 'Number of dimensions not implemented!'
-          STOP
+       IF(rank.GE.2) THEN
+          DO iprocx = 0, ipx - 1
+             offset(1) = offset(1) + subset_dims_global(iprocx,ipy,ipz,ipr,1)
+          ENDDO
+          
+          DO iprocy = 0, ipy - 1
+             offset(2) = offset(2) + subset_dims_global(ipx,iprocy,ipz,ipr,2)
+          ENDDO
+       ENDIF
+       
+       IF(rank.GE.3) THEN
+          DO iprocz = 0, ipz - 1
+             offset(3) = offset(3) + subset_dims_global(ipx,ipy,iprocz,ipr,3)
+          ENDDO
+       ENDIF
+       
+       IF(rank.GE.4) THEN
+          DO iprocr = 0, ipr - 1
+             offset(4) = offset(4) + subset_dims_global(ipx,ipy,ipz,iprocr,4)
+          ENDDO
        ENDIF
        
        ! Select hyperslab in the file.
@@ -1442,15 +1499,15 @@ CONTAINS
        
        ! Write the dataset collectively.
        IF (rank.EQ.2) THEN
-          CALL h5dwrite_f(dset_id, H5T_NATIVE_DOUBLE, wave2D, file_dims, &
+          CALL h5dwrite_f(dset_id, H5T_NATIVE_DOUBLE, wave2D_redux, file_dims, &
                error, file_space_id = filespace, mem_space_id = memspace, &
                xfer_prp = plist_id)
        ELSEIF(rank.EQ.3) THEN
-          CALL h5dwrite_f(dset_id, H5T_NATIVE_DOUBLE, wave3D, file_dims, &
+          CALL h5dwrite_f(dset_id, H5T_NATIVE_DOUBLE, wave3D_redux, file_dims, &
                error, file_space_id = filespace, mem_space_id = memspace, &
                xfer_prp = plist_id)
        ELSEIF(rank.EQ.4) THEN
-          CALL h5dwrite_f(dset_id, H5T_NATIVE_DOUBLE, wave4D, file_dims, &
+          CALL h5dwrite_f(dset_id, H5T_NATIVE_DOUBLE, wave4D_redux, file_dims, &
                error, file_space_id = filespace, mem_space_id = memspace, &
                xfer_prp = plist_id)
        ELSE
@@ -1480,13 +1537,23 @@ CONTAINS
        
        ! Close FORTRAN interfaces and HDF5 library.
        CALL h5close_f(error)
+
+       IF(rank.EQ.2) THEN
+          DEALLOCATE(wave2D_redux)
+       ELSEIF(rank.EQ.3) THEN
+          DEALLOCATE(wave3D_redux)
+       ELSEIF(rank.EQ.4) THEN
+          DEALLOCATE(wave4D_redux)
+       ENDIF
+
     ENDIF
     
     ! Deallocate stuff
     DEALLOCATE(i_am_subset_local,i_am_subset)
+    DEALLOCATE(my_subset_dims,subset_dims_global)
     DEALLOCATE(members)
     DEALLOCATE(local_offset, offset)
-    DEALLOCATE(subset_dims, cont)
+    DEALLOCATE(subset_dims, total_dims, cont)
     DEALLOCATE(file_dims, proc_dims)
     IF(rank.EQ.2) THEN
        DEALLOCATE(wave2D)

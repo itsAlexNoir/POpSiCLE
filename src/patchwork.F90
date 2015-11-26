@@ -46,22 +46,60 @@ CONTAINS
     REAL(dp), INTENT(IN)        :: domain(:, :)
     INTEGER, INTENT(OUT)        :: offset(:)
     INTEGER, INTENT(OUT)        :: dims(:)
-    
+
     ! First, find out the offset of the subset
-    offset(1) = MAXLOC(xpts,1,xpts.LE.domain(1,1))
-    offset(2) = MAXLOC(ypts,1,ypts.LE.domain(1,2))
-    offset(3) = MAXLOC(zpts,1,zpts.LE.domain(1,3))
-    offset(4) = MAXLOC(rpts,1,rpts.LE.domain(1,4))
+    IF(ALL(xpts.GT.domain(1,1))) THEN
+       offset(1) = 0
+       IF(ALL(xpts.GT.domain(2,1))) THEN
+          dims = 0
+       ELSE
+          dims(1) = MAXLOC(xpts,1,xpts.LT.domain(2,1))
+       ENDIF
+    ELSE
+       offset(1) = MAXLOC(xpts,1,xpts.LT.domain(1,1))
+       dims(1) = MAXLOC(xpts,1,xpts.LT.domain(2,1)) &
+            - MAXLOC(xpts,1,xpts.LT.domain(1,1))
+    ENDIF
     
-    ! Now, the dimensions of the domain required
-    dims(1) = MINLOC(xpts,1,xpts.GE.domain(2,1)) &
-         - MAXLOC(xpts,1,xpts.LE.domain(1,1)) - 1
-    dims(2) = MINLOC(ypts,1,ypts.GE.domain(2,2)) &
-         - MAXLOC(ypts,1,ypts.LE.domain(1,2)) - 1
-    dims(3) = MINLOC(zpts,1,zpts.GE.domain(2,3)) &
-         - MAXLOC(zpts,1,zpts.LE.domain(1,3)) - 1
-    dims(4) = MINLOC(rpts,1,rpts.GE.domain(2,4)) &
-         - MAXLOC(rpts,1,rpts.LE.domain(1,4)) - 1
+    IF(ALL(ypts.GT.domain(1,2))) THEN
+       offset(2) = 0
+       IF(ALL(ypts.GT.domain(2,2))) THEN
+          dims(2) = 0
+       ELSE
+          dims(2) = MAXLOC(ypts,1,ypts.LT.domain(2,2))
+       ENDIF
+    ELSE
+       offset(2) = MAXLOC(ypts,1,ypts.LT.domain(1,2))
+       dims(2) = MAXLOC(ypts,1,ypts.LT.domain(2,2)) &
+            - MAXLOC(ypts,1,ypts.LT.domain(1,2))
+    ENDIF
+    
+    IF(ALL(zpts.GT.domain(1,3))) THEN
+       offset(3) = 0
+       IF(ALL(zpts.GT.domain(2,3))) THEN
+          dims(3) = 0
+       ELSE
+          dims(3) = MAXLOC(zpts,1,zpts.LT.domain(2,3))
+       ENDIF
+    ELSE
+       offset(3) = MAXLOC(zpts,1,zpts.LT.domain(1,3))
+       dims(3) = MAXLOC(zpts,1,zpts.LT.domain(2,3)) &
+            - MAXLOC(zpts,1,zpts.LT.domain(1,3))
+    ENDIF
+    
+    IF(ALL(rpts.GT.domain(1,4))) THEN
+       offset(4) = 0
+       IF(ALL(rpts.GT.domain(2,3))) THEN
+          dims(4) = 0
+       ELSE
+          dims(4) = MAXLOC(rpts,1,rpts.LT.domain(2,4))
+       ENDIF
+    ELSE
+       offset(4) = MAXLOC(rpts,1,rpts.LT.domain(1,4))
+       dims(4) = MAXLOC(rpts,1,rpts.LT.domain(2,4)) &
+            - MAXLOC(rpts,1,rpts.LT.domain(1,4))
+    ENDIF
+    
     
   END SUBROUTINE get_subset_coordinates_4Dserial
   
@@ -80,22 +118,49 @@ CONTAINS
     INTEGER, INTENT(OUT)        :: dims(:)
     
     ! First, find out the offset of the subset
-    offset(1) = MAXLOC(xpts,1,xpts.LE.domain(1,1))
-    offset(2) = MAXLOC(ypts,1,ypts.LE.domain(1,2))
-    offset(3) = MAXLOC(zpts,1,zpts.LE.domain(1,3))
+    IF(ALL(xpts.GT.domain(1,1))) THEN
+       offset(1) = 0
+       IF(ALL(xpts.GT.domain(2,1))) THEN
+          dims(1) = 0
+       ELSE
+          dims(1) = MAXLOC(xpts,1,xpts.LT.domain(2,1))
+       ENDIF
+    ELSE
+       offset(1) = MAXLOC(xpts,1,xpts.LT.domain(1,1))
+       dims(1) = MAXLOC(xpts,1,xpts.LT.domain(2,1)) &
+            - MAXLOC(xpts,1,xpts.LT.domain(1,1))
+    ENDIF
     
-    ! Now, the dimensions of the domain required
-    dims(1) = MINLOC(xpts,1,xpts.GE.domain(2,1)) &
-         - MAXLOC(xpts,1,xpts.LE.domain(1,1)) - 1
-    dims(2) = MINLOC(ypts,1,ypts.GE.domain(2,2)) &
-         - MAXLOC(ypts,1,ypts.LE.domain(1,2)) - 1
-    dims(3) = MINLOC(zpts,1,zpts.GE.domain(2,3)) &
-         - MAXLOC(zpts,1,zpts.LE.domain(1,3)) - 1
+    IF(ALL(ypts.GT.domain(1,2))) THEN
+       offset(2) = 0
+       IF(ALL(ypts.GT.domain(2,2))) THEN
+          dims(2) = 0
+       ELSE
+          dims(2) = MAXLOC(ypts,1,ypts.LT.domain(2,2))
+       ENDIF
+    ELSE
+       offset(2) = MAXLOC(ypts,1,ypts.LT.domain(1,2))
+       dims(2) = MAXLOC(ypts,1,ypts.LT.domain(2,2)) &
+            - MAXLOC(ypts,1,ypts.LT.domain(1,2))
+    ENDIF
+    
+    IF(ALL(zpts.GT.domain(1,3))) THEN
+       offset(3) = 0
+       IF(ALL(zpts.GT.domain(2,3))) THEN
+          dims(3) = 0
+       ELSE
+          dims(3) = MAXLOC(zpts,1,zpts.LT.domain(2,3))
+       ENDIF
+    ELSE
+       offset(3) = MAXLOC(zpts,1,zpts.LT.domain(1,3))
+       dims(3) = MAXLOC(zpts,1,zpts.LT.domain(2,3)) &
+            - MAXLOC(zpts,1,zpts.LT.domain(1,3))
+    ENDIF
     
   END SUBROUTINE get_subset_coordinates_3Dserial
   
   !------------------------------------------!
-
+  
   SUBROUTINE get_subset_coordinates_2Dserial(xpts,ypts,domain,&
        offset,dims)
     
@@ -108,14 +173,31 @@ CONTAINS
     INTEGER, INTENT(OUT)        :: dims(:)
     
     ! First, find out the offset of the subset
-    offset(1) = MAXLOC(xpts,1,xpts.LE.domain(1,1))
-    offset(2) = MAXLOC(ypts,1,ypts.LE.domain(1,2))
+    IF(ALL(xpts.GT.domain(1,1))) THEN
+       offset(1) = 0
+       IF(ALL(xpts.GT.domain(2,1))) THEN
+          dims(1) = 0
+       ELSE
+          dims(1) = MAXLOC(xpts,1,xpts.LE.domain(2,1))
+       ENDIF
+    ELSE
+       offset(1) = MAXLOC(xpts,1,xpts.LT.domain(1,1))
+       dims(1) = MAXLOC(xpts,1,xpts.LE.domain(2,1)) &
+            - MAXLOC(xpts,1,xpts.LE.domain(1,1))
+    ENDIF
     
-    ! Now, the dimensions of the domain required
-    dims(1) = MINLOC(xpts,1,xpts.GE.domain(2,1)) &
-         - MAXLOC(xpts,1,xpts.LE.domain(1,1)) - 1
-    dims(2) = MINLOC(ypts,1,ypts.GE.domain(2,2)) &
-         - MAXLOC(ypts,1,ypts.LE.domain(1,2)) - 1
+    IF(ALL(ypts.GT.domain(1,2))) THEN
+       offset(2) = 0
+       IF(ALL(ypts.GT.domain(2,2))) THEN
+          dims(2) = 0
+       ELSE
+          dims(2) = MAXLOC(ypts,1,ypts.LE.domain(2,2))
+       ENDIF
+    ELSE
+       offset(2) = MAXLOC(ypts,1,ypts.LT.domain(1,2))
+       dims(2) = MAXLOC(ypts,1,ypts.LE.domain(2,2)) &
+            - MAXLOC(ypts,1,ypts.LE.domain(1,2))
+    ENDIF
     
   END SUBROUTINE get_subset_coordinates_2Dserial
   
