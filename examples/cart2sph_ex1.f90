@@ -101,10 +101,10 @@ PROGRAM cart2sph_ex1
            
            phipt = ATAN2( y_ax(iy) , x_ax(ix) )
            
+!!$           Y_lm(ix,iy,iz) = 0.25_dp * SQRT(5.0_dp / pi) * &
+!!$                ( 3.0_dp * COS(thetapt)**2 - 1.0_dp) !* COS(phipt) !EXP(ZIMAGONE*phipt)
            
-           Y_lm(ix,iy,iz) = 0.25_dp * SQRT(5.0_dp / pi) * &
-                ( 3.0_dp * (COS(thetapt))**2 - 1.0_dp) !* COS(phipt) !EXP(ZIMAGONE*phipt)
-           
+           Y_lm(ix,iy,iz) = 0.5_dp * SQRT(3.0_dp / pi ) * COS(thetapt)
            R_nl(ix,iy,iz) = 1.0_dp
            
            cartfunc(ix,iy,iz) = EXP(-rpt / 2.0_dp) * R_nl(ix,iy,iz) * &
@@ -113,7 +113,6 @@ PROGRAM cart2sph_ex1
         ENDDO
      ENDDO
   ENDDO
-  
   
   
   ! Initialize the boundary
@@ -187,14 +186,14 @@ PROGRAM cart2sph_ex1
   
   WRITE(*,*) 'Interpolation time (seconds): ', interp_time
   
-  
   DO iphi = 1, numphipts
      DO itheta = 1, numthetapts
         DO ir = 1, numrpts
            ref_value =  EXP(-rpts_boundary(ir) / 2.0_dp) *  &
-                0.25_dp * SQRT(5.0_dp / pi) * &
-                ( 3.0_dp * (COS(theta_boundary(itheta)))**2 - 1.0_dp)
-           
+                !0.25_dp * SQRT(5.0_dp / pi) * &
+                !( 3.0_dp * COS(theta_boundary(itheta))**2 - 1.0_dp)
+                0.5_dp * SQRT(3.0_dp / pi) * COS(theta_boundary(itheta))
+
            maxerror = MAX(maxerror, ABS(sphfunc(ir,itheta, iphi) -&
                 ref_value))
            minerror = MIN(minerror, ABS(sphfunc(ir,itheta, iphi) -&

@@ -6,7 +6,7 @@ PROGRAM cart2sph_ex2
 
   !--Program variables-----------------------------------------------------!
   
-  INTEGER                    :: maxxxpts, maxypts, maxzpts
+  INTEGER                    :: maxxpts, maxypts, maxzpts
   INTEGER                    :: numxpts, numypts, numzpts
   INTEGER                    :: dims(3)
  
@@ -44,8 +44,9 @@ PROGRAM cart2sph_ex2
   REAL(dp)                   :: comp_time
   
   CHARACTER(LEN = 150)       :: filename
-  CHARACTER(LEN = 6)         :: ctime, rbstr
-  CHARACTER(LEN = 4)         :: cprocessor, lmaxstr
+  CHARACTER(LEN = 6)         :: ctime
+  CHARACTER(LEN = 7)         :: rbstr
+  CHARACTER(LEN = 5)         :: cprocessor, lmaxstr
   CHARACTER(LEN=100)         :: data_directory
 
   !-----------------------------------------------!
@@ -83,13 +84,14 @@ PROGRAM cart2sph_ex2
   
   ! The radius of the boundary
   Rboundary    = 5.0_dp
-  tolerance = 0.5_dp
+  tolerance = 0.23_dp
   deltar = 0.1_dp
   fdrule = 2
   lmax = 10
   
   data_directory = './data/h2p/cartesian/'
-  WRITE(rbstr,'(F6.3)') Rboundary
+  !WRITE(rbstr,'(F0.3)') Rboundary
+  write(rbstr,'(I3.3,F0.3)') INT(Rboundary),Rboundary-INT(Rboundary)
   WRITE(lmaxstr,'(I3.3)') lmax
 
   !--------------!
@@ -124,17 +126,17 @@ PROGRAM cart2sph_ex2
   DO iz = 1, numzpts
      zpt = (-0.5_dp * REAL(numzpts-1,dp) + REAL(iz-1,dp)) * deltaz
      z_ax(iz) = zpt
-     hpts(iz) = zpt
-     hp(iz) = 1.0_dp
+     zpts(iz) = zpt
+     zp(iz) = 1.0_dp
   ENDDO
   
   !----------------------------------------!
   ! Initialize cylindrical surface stuff
   !----------------------------------------!
-    
+  
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL cpu_time(start_time)
-  CALL initialize_cylindrical_surface(xpts, ypts, zpts, dims, &
+  CALL initialize_cartesian_surface(xpts, ypts, zpts, dims, &
        Rboundary, tolerance, fdrule, deltar, lmax, .TRUE., filename)
   CALL cpu_time(end_time)
   
@@ -160,7 +162,7 @@ PROGRAM cart2sph_ex2
            
            ipro = ipro + 1
            
-           WRITE(cprocessor, '(I4.4)') ipro
+           WRITE(cprocessor, '(I5.5)') ipro
            
            filename = TRIM(data_directory) // 'psi/' // cprocessor //    &
                 '/psi.' // cprocessor // '.dat'
@@ -188,22 +190,22 @@ PROGRAM cart2sph_ex2
         ENDDO
      ENDDO
   ENDDO
-  
+
   !----------------------------------------------!
   ! Unscale the original wavefunction
   ! (This has to do with how the original TDSE
   ! where this wavefunction came from works)
   !----------------------------------------------!
   
-!!$  DO iz = 1, numzpts
-!!$     DO iy = 1, numypts
-!!$        DO ix = 1, numxpts 
-!!$           psi(ix, iy, iz) = psi(ix, iy, iz) &
-!!$                / SQRT(xp(ix) * yp(iy) * zp(iz) )
-!!$        ENDDO
-!!$     ENDDO
-!!$  ENDDO
-  
+  DO iz = 1, numzpts
+     DO iy = 1, numypts
+        DO ix = 1, numxpts 
+           psi(ix, iy, iz) = psi(ix, iy, iz) &
+                / SQRT(xp(ix) * yp(iy) * zp(iz) )
+        ENDDO
+     ENDDO
+  ENDDO
+
   !-------------------------------------------------!
   ! Get cylindrical surface, and write it to a file
   !-------------------------------------------------!
@@ -211,14 +213,14 @@ PROGRAM cart2sph_ex2
   
   CALL cpu_time(start_time)
   
-  CALL get_cylindrical_surface(psi, fdrule, 0.0_dp , &
+  CALL get_cartesian_surface(psi, fdrule, 0.0_dp , &
        0.0_dp, 0.0_dp, lmax, .TRUE. )
   
   CALL cpu_time(end_time)
   
   comp_time = end_time - start_time
   
-  WRITE(*,'(A38,F8.5)') 'Time spent on getting the surface (s): ',comp_time
+  WRITE(*,'(A38,F9.5)') 'Time spent on getting the surface (s): ',comp_time
   
   !------------------------------!
   ! Now, load it again from file

@@ -154,15 +154,15 @@ CONTAINS
        RETURN
     ENDIF
     
-    mintheta =  pi / 2.0_dp
-    maxtheta = - pi / 2.0_dp
+    mintheta =  twopi
+    maxtheta = 0.0_dp
     
     ! Work out how many points will build the interpolant
     DO iy = halolims(2,1), halolims(2,2)
        DO ix = halolims(1,1), halolims(1,2)
           ! Calculate the point in spherical coordinates
           rpt = SQRT( x_ax(ix)**2 + y_ax(iy)**2 )
-          thetapt = ATAN2(y_ax(iy) , x_ax(ix) )
+          thetapt = pi - ATAN2(y_ax(iy) , -x_ax(ix) )
           
           ! Check the extend of the grid
           minr = MIN(rpt,minr)
@@ -177,7 +177,6 @@ CONTAINS
           ENDIF
        ENDDO
     ENDDO
-    
     
     IF(numpts .EQ. 0) THEN
        ALLOCATE(rpts_scatt(1))
@@ -206,6 +205,7 @@ CONTAINS
        numpivots = 2 * lmax + 1
        numthetapts = numpivots
        !numthetapts = INT( (maxtheta - mintheta) / deltatheta )
+       !numpivots = numthetapts
        
        ALLOCATE(pivots(1:numpivots))
        ALLOCATE(pivot_number(1:numthetapts))
@@ -222,11 +222,15 @@ CONTAINS
           rpts_boundary(ir) = Rs_start + REAL( ir * deltar, dp )
        ENDDO
        
-       CALL get_gauss_stuff(-1.0_dp, 1.0_dp, &
-            pivots, theta_weights)
-       
-       costheta_boundary = pivots
-       theta_boundary = ACOS(costheta_boundary)
+!!$       CALL get_gauss_stuff(-1.0_dp, 1.0_dp, &
+!!$            pivots, theta_weights)
+!!$       
+!!$       costheta_boundary = pivots
+!!$       theta_boundary = ACOS(costheta_boundary)
+
+       DO itheta = 1, numthetapts 
+          theta_boundary(itheta) = REAL(itheta,dp) * twopi / REAL(numthetapts,dp)
+       ENDDO
        
        !DO itheta = 1, numthetapts
        !   theta_boundary(itheta) = mintheta + &
@@ -234,8 +238,8 @@ CONTAINS
        !ENDDO
        
        ! Check limits on theta
-       IF (mintheta .GT. MINVAL(ACOS(pivots)) .AND. &
-            maxtheta .LT. MAXVAL(ACOS(pivots))) THEN
+       IF (mintheta .GT. MINVAL(pivots) .AND. &
+            maxtheta .LT. MAXVAL(pivots)) THEN
           WRITE(*,*) 'Pivots extent is bigger than &
                & theta coordinate limits.'
           STOP
@@ -250,7 +254,7 @@ CONTAINS
           DO ix = halolims(1,1), halolims(1,2)
              
              rpt = SQRT( x_ax(ix)**2 + y_ax(iy)**2 )
-             thetapt = ATAN2(y_ax(iy) , x_ax(ix))
+             thetapt = pi - ATAN2(y_ax(iy) , -x_ax(ix))
              
              IF (ABS(rpt-Rs) .LE. radtol ) THEN
                 inum = inum + 1
@@ -356,8 +360,8 @@ CONTAINS
     
     mintheta = pi
     maxtheta = 0.0_dp
-    minphi   = pi
-    maxphi   = - pi
+    minphi   = twopi
+    maxphi   = 0.0_dp
     
     ! Work out how many points will build the interpolant
     DO iz = halolims(3,1), halolims(3,2)
@@ -370,7 +374,7 @@ CONTAINS
              ELSE
                 thetapt = ACOS(z_ax(iz) / rpt )
              ENDIF
-             phipt = ATAN2( y_ax(iy) , x_ax(ix) )
+             phipt = pi - ATAN2( y_ax(iy) , - x_ax(ix) )
              
              ! Check the extend of the grid
              minr = MIN(minr,rpt)
@@ -466,7 +470,7 @@ CONTAINS
        ENDIF
        
        DO iphi = 1, numphinodes
-          phinodes(iphi) = -pi + REAL( iphi * deltaphi,dp )
+          phinodes(iphi) = REAL( iphi,dp ) * deltaphi
        ENDDO
        
        phi_boundary = phinodes
@@ -498,7 +502,7 @@ CONTAINS
                 ELSE
                    thetapt = ACOS( z_ax(iz) / rpt)
                 ENDIF
-                phipt = ATAN2( y_ax(iy),x_ax(ix) )
+                phipt = pi - ATAN2( y_ax(iy),-x_ax(ix) )
                 
                 IF (ABS(rpt-Rs) .LE. radtol ) THEN
                    inum = inum + 1
@@ -562,7 +566,7 @@ CONTAINS
     REAL(dp)                  :: Rs_start
     INTEGER                   :: ix, iy, iz, inum
     INTEGER                   :: ir, itheta, iphi, ii
-    
+    REAL(dp)                  :: minrr, maxrr
     !--------------------------------------------------!
     
     numpts = 0
@@ -610,9 +614,12 @@ CONTAINS
     
     mintheta = pi
     maxtheta = 0.0_dp
-    minphi   = pi
-    maxphi   = - pi
-    
+    minphi   = twopi
+    maxphi   = 0.0_dp
+
+    maxrr = 0.0_dp
+    minrr = Huge(minrr)
+
     ! Work out how many points will build the interpolant
     DO iz = halolims(3,1), halolims(3,2)
        DO iy = halolims(2,1), halolims(2,2)
@@ -624,7 +631,7 @@ CONTAINS
              ELSE
                 thetapt = ACOS(z_ax(iz) / rpt )
              ENDIF
-             phipt = ATAN2( y_ax(iy) , x_ax(ix) )
+             phipt = pi - ATAN2( y_ax(iy) , -x_ax(ix) )
              
              ! Check the extend of the grid
              minr = MIN(minr,rpt)
@@ -636,12 +643,23 @@ CONTAINS
                 numpts = numpts + 1
                 mintheta = MIN(mintheta,thetapt)
                 maxtheta = MAX(maxtheta,thetapt)
+
                 minphi = MIN(minphi,phipt)
                 maxphi = MAX(maxphi,phipt)
+
+                minrr = MIN(minrr,rpt)
+                maxrr = MAX(maxrr,rpt)
+                 
              ENDIF
           ENDDO
        ENDDO
     ENDDO
+    
+    IF((ANY(y_ax.GT.0.0_dp)).AND.(ANY(y_ax.LT.0.0_dp)) &
+         .AND. (ALL(x_ax.GT.0))) THEN
+       minphi = pi - ATAN2(MINVAL(y_ax),-MINVAL(x_ax))
+       maxphi = pi - ATAN2(MAXVAL(y_ax),-MINVAL(x_ax))
+    ENDIF
     
     ! Create communicator and surface members
     !-----------------------------------------!
@@ -717,12 +735,9 @@ CONTAINS
        !numphipts = INT( (maxphi - minphi) / deltaphi )
        
        ALLOCATE(pivots(1:numpivots))
+       ALLOCATE(theta_weights(1:numpivots))
        ALLOCATE(phinodes(1:numphinodes))
        ALLOCATE(rpts_boundary(1:numrpts))
-       ALLOCATE(theta_boundary(1:numthetapts))
-       ALLOCATE(costheta_boundary(1:numthetapts))
-       ALLOCATE(phi_boundary(1:numphipts))
-       ALLOCATE(theta_weights(1:numthetapts))
        ALLOCATE(psi3D_sph(1:numrpts,1:numthetapts,1:numphipts))
        ALLOCATE(psi3D_sph_dx(1:numrpts,1:numthetapts,1:numphipts))
        ALLOCATE(psi3D_sph_dy(1:numrpts,1:numthetapts,1:numphipts))
@@ -746,21 +761,31 @@ CONTAINS
        ENDDO
        
        DO iphi = 1, numphinodes
-          phinodes(iphi) = -pi + REAL( iphi * deltaphi,dp )
+          phinodes(iphi) = REAL( iphi,dp ) * deltaphi
        ENDDO
        
        ! Find out how many phi nodes lie in our processor 
+       ! Remenber, if we are in the 4th quadrant of the imagninary
+       ! plane, minphi and max phi are reversed.
        numphipts = 0
        DO iphi = 1, numphinodes
-          IF( phinodes(iphi).GE.minphi .AND. &
-               phinodes(iphi).LE.maxphi) THEN
-             numphipts = numphipts + 1
+          IF(minphi.LT.maxphi) THEN
+             IF( phinodes(iphi).GE.minphi .AND. &
+                  phinodes(iphi).LE.maxphi) THEN
+                numphipts = numphipts + 1
+             ENDIF
+          ELSE
+             IF( phinodes(iphi).GE.minphi .OR. &
+                  phinodes(iphi).LE.maxphi) THEN
+                numphipts = numphipts + 1
+             ENDIF
           ENDIF
        ENDDO
        
        ! Allocate arrays once we know the length
        ALLOCATE(theta_boundary(1:numthetapts))
        ALLOCATE(costheta_boundary(1:numthetapts))
+       ALLOCATE(phi_boundary(1:numphipts))
        ALLOCATE(pivot_number(1:numthetapts))
        ALLOCATE(phinode_number(1:numphipts))
        
@@ -785,14 +810,41 @@ CONTAINS
        ! Don't forget to assignate phi points
        inum = 0
        DO iphi = 1, numphinodes
-          IF(phinodes(iphi).GE.minphi .AND. &
-               phinodes(iphi).LE. maxphi) THEN
-             inum = inum + 1
-             phi_boundary(inum) = phinodes(iphi)
-             phinode_number(inum) = iphi      
+          IF(minphi.LT.maxphi) THEN
+             IF(phinodes(iphi).GE.minphi .AND. &
+                  phinodes(iphi).LE. maxphi) THEN
+                inum = inum + 1
+                phi_boundary(inum) = phinodes(iphi)
+                phinode_number(inum) = iphi
+             ENDIF
+          ELSE
+             IF(phinodes(iphi).GE.minphi .OR. &
+                  phinodes(iphi).LE.maxphi) THEN
+                inum = inum + 1
+                phi_boundary(inum) = phinodes(iphi)
+                phinode_number(inum) = iphi
+             ENDIF
           ENDIF
        ENDDO
        
+!!$       write(*,*) 'x',rank,MINVAL(x_ax),MAXVAL(x_ax)
+!!$       !write(*,*) 'y',rank,MINVAL(y_ax),MAXVAL(y_ax)
+!!$
+!!$       write(*,*) rank,'min/max phi',minphi,maxphi
+!!$       write(*,*) rank,'num',numphipts
+!!$       
+!!$       write(*,*) rank,'min/max theta',mintheta,maxtheta
+!!$       write(*,*) rank,'num',numthetapts
+!!$       
+!!$       write(*,*) rank,'min/max r',minrr,maxrr
+!!$       write(*,*) rank,'num',numrpts
+!!$       
+!!$       
+!!$       if(rank.eq.2) then
+!!$          write(*,*) 'theta', pivot_number
+!!$          write(*,*) 'phi node', phi_boundary
+!!$       endif
+!!$       
        ! Get points to participate in the interpolant
        inum = 0   
        DO iz = halolims(3,1), halolims(3,2)
@@ -805,7 +857,7 @@ CONTAINS
                 ELSE
                    thetapt = ACOS( z_ax(iz) / rpt)
                 ENDIF
-                phipt = ATAN2( y_ax(iy),x_ax(ix) )
+                phipt = pi - ATAN2( y_ax(iy),-x_ax(ix) )
                 
                 IF (ABS(rpt-Rs) .LE. radtol ) THEN
                    inum = inum + 1
@@ -1345,7 +1397,7 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN)      :: method
     
     INTEGER                           :: inum, ir, itheta, iphi
-    INTEGER                           :: otro
+    
     psi_scatt = ZERO
     psi3D_sph = ZERO
     psi3D_sph_dx = ZERO
@@ -1355,10 +1407,10 @@ CONTAINS
     DO inum = 1, numpts
        psi_scatt(inum) = psi_cart(index_x1(inum),index_x2(inum),index_x3(inum))       
     ENDDO
-    
+
     CALL create_interpolant(numpts,rpts_scatt,theta_scatt,phi_scatt, &
          psi_scatt,TRIM(method))
-    
+ 
     DO iphi = 1, numphipts
        DO itheta = 1, numthetapts
           DO ir = 1, numrpts
@@ -1370,10 +1422,10 @@ CONTAINS
           ENDDO
        ENDDO
     ENDDO
-
+    
     CALL destroy_interpolant(numpts, rpts_scatt, theta_scatt, phi_scatt, &
          psi_scatt)
-
+ 
   END SUBROUTINE get_cartesian_boundary3D
   
   !----------------------------------------------------!
@@ -1466,7 +1518,7 @@ CONTAINS
           rpt = SQRT(x_ax(ix)**2 + y_ax(iy)**2 )
           
           r_inp(ii) = rpt
-          theta_inp(ii) = ATAN2( y_ax(iy) , x_ax(ix) )
+          theta_inp(ii) = pi - ATAN2( y_ax(iy) , -x_ax(ix) )
           psi_inp(ii) = psi_cart(ix, iy)
        ENDDO
     ENDDO
@@ -1578,7 +1630,7 @@ CONTAINS
              ELSE
                 theta_inp(ii) = ACOS( z_ax(iz) / rpt )
              ENDIF
-             phi_inp(ii) = ATAN2( y_ax(iy) , x_ax(ix) )
+             phi_inp(ii) = pi - ATAN2( y_ax(iy) , -x_ax(ix) )
              psi_inp(ii) = psi_cart(ix, iy, iz)
              
              minr = MIN(minr,r_inp(ii))
@@ -1700,7 +1752,7 @@ CONTAINS
   !-------------------------------------------------------------------------!
   
   SUBROUTINE zcartesian2spherical3D(psi_cart,psi_sph, x_ax, y_ax, z_ax, &
-       r_ax, theta_ax, phi_ax, method, psi_sph_dr, psi_sph_dth, &
+       r_ax, theta_ax, phi_ax, method, i_am_in, psi_sph_dr, psi_sph_dth, &
        psi_sph_dphi)
     
     IMPLICIT NONE
@@ -1710,6 +1762,7 @@ CONTAINS
     REAL(dp), INTENT(IN)                :: x_ax(:), y_ax(:), z_ax(:)
     REAL(dp), INTENT(IN)                :: r_ax(:), theta_ax(:), phi_ax(:)
     CHARACTER(LEN=*), INTENT(IN)        :: method
+    INTEGER, INTENT(OUT),OPTIONAL       :: i_am_in(:, :, :)
     COMPLEX(dp), INTENT(OUT), OPTIONAL  :: psi_sph_dr(:, :, :)
     COMPLEX(dp), INTENT(OUT), OPTIONAL  :: psi_sph_dth(:, :, :)
     COMPLEX(dp), INTENT(OUT), OPTIONAL  :: psi_sph_dphi(:, :, :)
@@ -1719,6 +1772,10 @@ CONTAINS
     INTEGER, DIMENSION(3)               :: dims_in, dims_out
     INTEGER                             :: numpts_in, numpts_out
     REAL(dp)                            :: rpt
+    REAL(dp)                            :: xpt, ypt, zpt
+    REAL(dp)                            :: minr, maxr
+    REAL(dp)                            :: mintheta, maxtheta
+    REAL(dp)                            :: minphi, maxphi 
     REAL(dp), ALLOCATABLE               :: r_inp(:)
     REAL(dp), ALLOCATABLE               :: theta_inp(:)
     REAL(dp), ALLOCATABLE               :: phi_inp(:)
@@ -1740,7 +1797,6 @@ CONTAINS
     psi_sph = ZERO
     
     ii = 0
-    
     DO iz = 1, dims_in(3)
        DO iy = 1, dims_in(2)
           DO ix = 1, dims_in(1)
@@ -1753,7 +1809,7 @@ CONTAINS
              ELSE
                 theta_inp(ii) = ACOS( z_ax(iz) / rpt )
              ENDIF
-             phi_inp(ii) = ATAN2( y_ax(iy) , x_ax(ix) )
+             phi_inp(ii) = pi - ATAN2( y_ax(iy) , -x_ax(ix) )
              psi_inp(ii) = psi_cart(ix, iy, iz)
           ENDDO
        ENDDO
@@ -1762,43 +1818,104 @@ CONTAINS
     CALL create_interpolant(numpts_in,r_inp,theta_inp, phi_inp, &
          psi_inp,TRIM(method))
     
+    ! Check if the new axis are within the cartesian domain.
+    DO iphi = 1, dims_out(3)
+       DO itheta = 1, dims_out(2)
+          DO ir = 1, dims_out(1)
+             xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+             ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+             zpt = r_ax(ir) * COS(theta_ax(itheta))
+             IF ((r_ax(ir).GE.minr) .AND. (r_ax(ir).LE.maxr) .AND. &
+                  (theta_ax(itheta).GE.mintheta) .AND. &
+                  (theta_ax(itheta).LE.maxtheta) .AND. &
+                  (phi_ax(iphi).GE.minphi) .AND. (phi_ax(iphi).LE.maxphi) .AND. &
+                  (xpt.GE.MINVAL(x_ax)) .AND. (xpt.LE.MAXVAL(x_ax)) .AND. &
+                  (ypt.GE.MINVAL(y_ax)) .AND. (ypt.LE.MAXVAL(y_ax)) .AND. &
+                  (zpt.GE.MINVAL(z_ax)) .AND. (zpt.LE.MAXVAL(z_ax))) THEN
+                i_am_in(ir,itheta,iphi) = 1
+             ENDIF
+          ENDDO
+       ENDDO
+    ENDDO
     
-    IF (PRESENT(psi_sph_dr).AND.PRESENT(psi_sph_dth).AND.PRESENT(psi_sph_dphi) ) THEN
-       psi_sph_dr = ZERO
-       psi_sph_dth = ZERO
-       psi_sph_dphi = ZERO
-       
-       DO iphi = 1, dims_out(3)
-          DO itheta = 1, dims_out(2)
-             DO ir = 1, dims_out(1)
-                CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                     r_inp, theta_inp, phi_inp, &
-                     psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
-                     psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
-                     psi_sph_dphi(ir, itheta, iphi) )
+    IF(PRESENT(i_am_in)) THEN    
+       IF (PRESENT(psi_sph_dr).AND.PRESENT(psi_sph_dth).AND.PRESENT(psi_sph_dphi) ) THEN
+          psi_sph_dr = ZERO
+          psi_sph_dth = ZERO
+          psi_sph_dphi = ZERO
+          
+          DO iphi = 1, dims_out(3)
+             DO itheta = 1, dims_out(2)
+                DO ir = 1, dims_out(1)
+                   IF(i_am_in(ir,itheta,iphi).EQ.1) THEN
+                      CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
+                           r_inp, theta_inp, phi_inp, &
+                           psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
+                           psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
+                           psi_sph_dphi(ir, itheta, iphi) )
+                   ENDIF
+                ENDDO
              ENDDO
           ENDDO
-       ENDDO
-       
-    ELSEIF (.NOT.PRESENT(psi_sph_dr).AND. &
-         .NOT.PRESENT(psi_sph_dth).AND. &
-         .NOT. PRESENT(psi_sph_dphi) ) THEN
-       
-       DO iphi = 1, dims_out(3)
-          DO itheta = 1, dims_out(2)
-             DO ir = 1, dims_out(1)
-                CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                     r_inp, theta_inp, phi_inp, &
-                     psi_inp, TRIM(method), psi_sph(ir,itheta,iphi) )
+          
+       ELSEIF (.NOT.PRESENT(psi_sph_dr).AND. &
+            .NOT.PRESENT(psi_sph_dth).AND. &
+            .NOT. PRESENT(psi_sph_dphi) ) THEN
+          
+          DO iphi = 1, dims_out(3)
+             DO itheta = 1, dims_out(2)
+                DO ir = 1, dims_out(1)
+                   IF(i_am_in(ir,itheta,iphi).EQ.1) THEN
+                      CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
+                           r_inp, theta_inp, phi_inp, &
+                           psi_inp, TRIM(method), psi_sph(ir,itheta,iphi) )
+                   ENDIF
+                ENDDO
              ENDDO
           ENDDO
-       ENDDO
+          
+       ELSE
+          WRITE(*,*) 'You must input an array for getting the derivatives!'
+          RETURN   
+       ENDIF
        
     ELSE
-       WRITE(*,*) 'You must input an array for getting the derivatives!'
-       RETURN   
+       IF (PRESENT(psi_sph_dr).AND.PRESENT(psi_sph_dth).AND.PRESENT(psi_sph_dphi) ) THEN
+          psi_sph_dr = ZERO
+          psi_sph_dth = ZERO
+          psi_sph_dphi = ZERO
+          
+          DO iphi = 1, dims_out(3)
+             DO itheta = 1, dims_out(2)
+                DO ir = 1, dims_out(1)
+                   CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
+                        r_inp, theta_inp, phi_inp, &
+                        psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
+                        psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
+                        psi_sph_dphi(ir, itheta, iphi) )
+                ENDDO
+             ENDDO
+          ENDDO
+          
+       ELSEIF (.NOT.PRESENT(psi_sph_dr).AND. &
+            .NOT.PRESENT(psi_sph_dth).AND. &
+            .NOT. PRESENT(psi_sph_dphi) ) THEN
+          
+          DO iphi = 1, dims_out(3)
+             DO itheta = 1, dims_out(2)
+                DO ir = 1, dims_out(1)
+                   CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
+                        r_inp, theta_inp, phi_inp, &
+                        psi_inp, TRIM(method), psi_sph(ir,itheta,iphi) )
+                ENDDO
+             ENDDO
+          ENDDO
+          
+       ELSE
+          WRITE(*,*) 'You must input an array for getting the derivatives!'
+          RETURN   
+       ENDIF
     ENDIF
-    
     
   END SUBROUTINE zcartesian2spherical3D
   

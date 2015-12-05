@@ -43,10 +43,10 @@
   
   INTERFACE write_surface_file
      MODULE PROCEDURE write_surface_file2D_serial
-     !MODULE PROCEDURE write_surface_file3D_serial
+     MODULE PROCEDURE write_surface_file3D_serial
 #if _COM_MPI
      MODULE PROCEDURE write_surface_file2D_parallel
-     !MODULE PROCEDURE write_surface_file3D_parallel
+     MODULE PROCEDURE write_surface_file3D_parallel
 #endif
   END INTERFACE write_surface_file
   
@@ -438,6 +438,373 @@ CONTAINS
   END SUBROUTINE write_surface_file2D_parallel
 #endif
   
+  !***************************************************!
+  
+  !***************************************************!
+  
+  SUBROUTINE write_surface_file3D_serial(wave, wavederiv, time, &
+       efield, afield, lmax )
+    IMPLICIT NONE
+    
+    COMPLEX(dp), INTENT(IN)        :: wave(:, :)
+    COMPLEX(dp), INTENT(IN)        :: wavederiv(:, :)
+    REAL(dp), INTENT(IN)           :: time, efield, afield
+    INTEGER, INTENT(IN)            :: lmax
+    
+    INTEGER                        :: wave_rank, field_rank
+    REAL(dp), ALLOCATABLE          :: complex_wave(:, :, :)
+    REAL(dp), ALLOCATABLE          :: complex_wavederiv(:, :, :)
+    REAL(dp)                       :: field(3)
+    INTEGER                        :: numthetapts, numphipts
+    ! Dataspace identifier
+    INTEGER(HID_T)                 :: wave_dspace_id
+    INTEGER(HID_T)                 :: wavederiv_dspace_id
+    INTEGER(HID_T)                 :: field_dspace_id  
+    ! Dataset identifier  
+    INTEGER(HID_T)                 :: wave_dset_id
+    INTEGER(HID_T)                 :: wavederiv_dset_id
+    INTEGER(HID_T)                 :: field_dset_id
+    ! Dataset dimensions 
+    INTEGER(HSIZE_T)               :: wave_dims(3)
+    INTEGER(HSIZE_T)               :: field_dim(1)
+    ! Error flag
+    INTEGER                        :: error
+    CHARACTER(LEN=6)               :: cstep
+    CHARACTER(LEN = 100)           :: setname
+    
+    !------------------------------------------------------!
+    
+    ! Increase in 1 the count
+    dataset_count = dataset_count + 1
+    WRITE(cstep,'(I6.6)') dataset_count
+
+    ! Number of theta points in a serial run, its
+    numthetapts = 2 * lmax + 1
+    numphipts = 2 * lmax + 1
+    !Define rank, in this case 2.
+    wave_rank = 3
+    field_rank = 1
+    wave_dims = (/numthetapts, numphipts, 2/)
+    field_dim = 3
+    
+    ! Write field array
+    ALLOCATE(complex_wave(numthetapts,numphipts,2))
+    ALLOCATE(complex_wavederiv(numthetapts,numphipts,2))
+    complex_wave(:,:,1) = REAL(wave,dp)
+    complex_wave(:,:,2) = AIMAG(wave)
+    complex_wavederiv(:,:,1) = REAL(wavederiv,dp)
+    complex_wavederiv(:,:,2) = AIMAG(wavederiv)
+    field = (/ time, efield, afield /)
+    
+    ! Create the data spaces for the  datasets. 
+    CALL h5screate_simple_f(wave_rank, wave_dims, wave_dspace_id, error)
+    CALL h5screate_simple_f(wave_rank, wave_dims, wavederiv_dspace_id, error)
+    CALL h5screate_simple_f(field_rank, field_dim, field_dspace_id, error)
+    
+    setname = '/wave/'// cstep
+    ! Create the dataset.
+    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
+         wave_dspace_id, wave_dset_id, error)
+    CALL h5dwrite_f(wave_dset_id, H5T_NATIVE_DOUBLE, complex_wave, &
+         wave_dims, error)
+    
+    setname = '/wavederiv/'// cstep
+    ! Create the dataset.
+    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
+         wavederiv_dspace_id, wavederiv_dset_id, error)
+    CALL h5dwrite_f(wavederiv_dset_id, H5T_NATIVE_DOUBLE, complex_wavederiv, &
+         wave_dims, error)
+    
+    setname = '/field/'// cstep
+    ! Create the dataset.
+    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
+         field_dspace_id, field_dset_id, error)
+    CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, &
+         field_dim, error)
+    
+    ! End access to the dataset and release 
+    ! resources used by it.
+    CALL h5dclose_f(wave_dset_id, error)
+    CALL h5dclose_f(wavederiv_dset_id, error)
+    CALL h5dclose_f(field_dset_id, error)
+    
+    ! Terminate access to the data space.
+    CALL h5sclose_f(wave_dspace_id, error)
+    CALL h5sclose_f(wavederiv_dspace_id, error)
+    CALL h5sclose_f(field_dspace_id, error)
+    
+    ! Deallocate aux arrays for data
+    DEALLOCATE(complex_wave,complex_wavederiv)
+    
+  END SUBROUTINE write_surface_file3D_serial
+  
+  !******************************************************!
+#if _COM_MPI
+  SUBROUTINE write_surface_file3D_parallel(wave, wavederiv, time, &
+       efield, afield, lmax, numthetapts, numphipts )
+    IMPLICIT NONE
+    
+    COMPLEX(dp), INTENT(IN)        :: wave(:, :)
+    COMPLEX(dp), INTENT(IN)        :: wavederiv(:, :)
+    REAL(dp), INTENT(IN)           :: time, efield, afield
+    INTEGER, INTENT(IN)            :: lmax
+    INTEGER, INTENT(IN)            :: numthetapts, numphipts
+    
+    INTEGER                        :: wave_rank, field_rank
+    REAL(dp), ALLOCATABLE          :: complex_wave(:, :, :)
+    REAL(dp), ALLOCATABLE          :: complex_wavederiv(:, :, :)
+    REAL(dp)                       :: field(3)
+    INTEGER                        :: numpivots, numphinodes
+    INTEGER                        :: iphi, phi_split
+    ! Dataspace identifier in file 
+    INTEGER(HID_T)                 :: wave_filespace
+    INTEGER(HID_T)                 :: wavederiv_filespace
+    INTEGER(HID_T)                 :: field_filespace
+    ! Dataspace identifier in memory
+    INTEGER(HID_T)                 :: wave_memspace
+    INTEGER(HID_T)                 :: wavederiv_memspace
+    INTEGER(HID_T)                 :: field_memspace
+    ! Dataspace identifier
+    !INTEGER(HID_T)                 :: wave_dspace_id
+    !INTEGER(HID_T)                 :: wavederiv_dspace_id
+    !INTEGER(HID_T)                 :: field_dspace_id  
+    ! Dataset identifier  
+    INTEGER(HID_T)                 :: wave_dset_id
+    INTEGER(HID_T)                 :: wavederiv_dset_id
+    INTEGER(HID_T)                 :: field_dset_id
+    ! Dataset dimensions 
+    INTEGER(HSIZE_T)               :: wave_global_dims(3)
+    INTEGER(HSIZE_T)               :: wave_dims(3)
+    INTEGER(HSIZE_T)               :: field_dim(1)
+    ! Memory variables, per proc
+    INTEGER(HSIZE_T)               :: cont(3)  
+    INTEGER(HSSIZE_T)              :: offset(3)
+    INTEGER(HSIZE_T)               :: cont_field(1) 
+    INTEGER(HSSIZE_T)              :: offset_field(1)  
+    ! Error flag
+    INTEGER                        :: error
+    
+    CHARACTER(LEN=6)               :: cstep
+    CHARACTER(LEN = 100)           :: setname
+    !------------------------------------------------------!
+    
+    ! Increase in 1 the count
+    dataset_count = dataset_count + 1
+    WRITE(cstep,'(I6.6)') dataset_count
+
+
+    numpivots = 2 * lmax + 1
+    numphinodes = 2 * lmax + 1
+    wave_rank = 3
+    field_rank = 1
+    field_dim = 3
+    wave_global_dims = (/numpivots, numphinodes, 2/)
+    
+    ! Check if this processor includes 2pi, 0, ie,
+    ! phinodes are not consecutive.
+    phi_split = 0
+    DO iphi = 1, numphipts -1
+       IF(phinode_number(iphi+1)-phinode_number(iphi).NE.1) THEN
+          phi_split = 1
+          EXIT
+       ENDIF
+    ENDDO
+    
+    IF(phi_split.EQ.1) THEN
+       wave_dims = (/numthetapts, iphi, 2/)
+       ALLOCATE(complex_wave(numthetapts,iphi,2))
+       ALLOCATE(complex_wavederiv(numthetapts,iphi,2))
+       complex_wave(:,:,1) = REAL(wave(:,1:iphi),dp)
+       complex_wave(:,:,2) = AIMAG(wave(:,1:iphi))
+       complex_wavederiv(:,:,1) = REAL(wavederiv(:,1:iphi),dp)
+       complex_wavederiv(:,:,2) = AIMAG(wavederiv(:,1:iphi))   
+    ELSE
+       wave_dims = (/numthetapts, numphipts, 2/)
+       ALLOCATE(complex_wave(numthetapts,numphipts,2))
+       ALLOCATE(complex_wavederiv(numthetapts,numphipts,2))
+       complex_wave(:,:,1) = REAL(wave,dp)
+       complex_wave(:,:,2) = AIMAG(wave)
+       complex_wavederiv(:,:,1) = REAL(wavederiv,dp)
+       complex_wavederiv(:,:,2) = AIMAG(wavederiv)
+    ENDIF
+    
+    ! Write field array   
+    field = (/ time, efield, afield /)
+ 
+    ! Create the data space for the dataset.
+    CALL h5screate_simple_f(wave_rank, wave_global_dims, wave_filespace, error)
+    CALL h5screate_simple_f(wave_rank, wave_dims, wave_memspace, error)
+    CALL h5screate_simple_f(wave_rank, wave_global_dims, wavederiv_filespace, error)
+    CALL h5screate_simple_f(wave_rank, wave_dims, wavederiv_memspace, error)
+    
+    ! Create dataset.
+    setname = '/wave/'// cstep
+    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, wave_filespace, &
+         wave_dset_id, error)!, plist_id)
+    CALL h5sclose_f(wave_filespace, error)
+    setname = '/wavederiv/'// cstep
+    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, wavederiv_filespace, &
+         wavederiv_dset_id, error)!, plist_id)
+    CALL h5sclose_f(wavederiv_filespace, error)
+    
+    cont = wave_dims
+    offset = (/ pivot_number(1)-1, phinode_number(1)-1, 0 /)
+  
+    ! Select hyperslab in the file.
+    CALL h5dget_space_f(wave_dset_id, wave_filespace, error)
+    CALL h5sselect_hyperslab_f (wave_filespace, H5S_SELECT_SET_F, offset,&
+         cont, error)!, stride, blck)
+    CALL h5dget_space_f(wavederiv_dset_id, wavederiv_filespace, error)
+    CALL h5sselect_hyperslab_f (wavederiv_filespace, H5S_SELECT_SET_F, offset,&
+         cont, error)!, stride, blck)
+    
+    ! Create property list for collective dataset write
+    CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
+    CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
+    ! Write the dataset collectively.
+    CALL h5dwrite_f(wave_dset_id, H5T_NATIVE_DOUBLE, complex_wave, wave_global_dims, &
+         error, file_space_id = wave_filespace, mem_space_id = wave_memspace, &
+         xfer_prp = plist_id)
+    CALL h5dwrite_f(wavederiv_dset_id, H5T_NATIVE_DOUBLE, complex_wavederiv, wave_global_dims, &
+         error, file_space_id = wavederiv_filespace, mem_space_id = wavederiv_memspace, &
+         xfer_prp = plist_id)
+    
+    ! Close dataspaces.
+    CALL h5sclose_f(wave_filespace, error)
+    CALL h5sclose_f(wave_memspace, error)
+    CALL h5sclose_f(wavederiv_filespace, error)
+    CALL h5sclose_f(wavederiv_memspace, error)
+    
+    ! Close the dataset.
+    CALL h5dclose_f(wave_dset_id, error)
+    CALL h5dclose_f(wavederiv_dset_id, error)
+
+     
+    !************!
+    ! Write the rest of the phi domain if it is the case
+    IF(phi_split .EQ. 1) THEN
+       offset = (/ pivot_number(1)-1, phinode_number(iphi+1)-1, 0 /)
+       wave_dims = (/numthetapts, numphipts-iphi , 2/)
+       
+       ! Deallocate aux arrays for data
+       DEALLOCATE(complex_wave,complex_wavederiv)
+       ALLOCATE(complex_wave(numthetapts,numphipts-iphi,2))
+       ALLOCATE(complex_wavederiv(numthetapts,numphipts-iphi,2))
+       complex_wave(:,:,1) = REAL(wave(:,numphipts-iphi:),dp)
+       complex_wave(:,:,2) = AIMAG(wave(:,numphipts-iphi:))
+       complex_wavederiv(:,:,1) = REAL(wavederiv(:,numphipts-iphi:),dp)
+       complex_wavederiv(:,:,2) = AIMAG(wavederiv(:,numphipts-iphi:))
+       cont = wave_dims
+    ENDIF
+    
+    setname = '/wave/'// cstep
+    CALL h5dopen_f(file_id, setname, wave_dset_id, error)
+    setname = '/wavederiv/'// cstep
+    CALL h5dopen_f(file_id, setname, wavederiv_dset_id, error)
+    
+    CALL h5dget_space_f(wave_dset_id, wave_filespace, error)
+    CALL h5sselect_hyperslab_f(wave_filespace, H5S_SELECT_SET_F, &
+         offset, cont, error) 
+    
+    CALL h5dget_space_f(wavederiv_dset_id, wavederiv_filespace, error)
+    CALL h5sselect_hyperslab_f(wavederiv_filespace, H5S_SELECT_SET_F, &
+         offset, cont, error) 
+    
+    CALL h5screate_simple_f(wave_rank, wave_dims, wave_memspace, error)
+    CALL h5screate_simple_f(wave_rank, wave_dims, wavederiv_memspace, error)
+    
+    IF (phi_split.EQ.0) THEN
+       CALL h5sselect_none_f(wave_filespace,error)
+       CALL h5sselect_none_f(wavederiv_filespace,error)
+       CALL h5sselect_none_f(wave_memspace,error)
+       CALL h5sselect_none_f(wavederiv_memspace,error)
+    ENDIF
+    
+    ! Create property list for collective dataset write
+    CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
+    CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
+    ! Write the dataset collectively.
+    CALL h5dwrite_f(wave_dset_id, H5T_NATIVE_DOUBLE, complex_wave, wave_global_dims, &
+         error, file_space_id = wave_filespace, mem_space_id = wave_memspace, &
+         xfer_prp = plist_id)
+    CALL h5dwrite_f(wavederiv_dset_id, H5T_NATIVE_DOUBLE, complex_wavederiv, wave_global_dims, &
+         error, file_space_id = wavederiv_filespace, mem_space_id = wavederiv_memspace, &
+         xfer_prp = plist_id)
+    
+    ! Close dataspaces.
+    CALL h5sclose_f(wave_filespace, error)
+    CALL h5sclose_f(wave_memspace, error)
+    CALL h5sclose_f(wavederiv_filespace, error)
+    CALL h5sclose_f(wavederiv_memspace, error)
+    
+    ! Close the dataset.
+    CALL h5dclose_f(wave_dset_id, error)
+    CALL h5dclose_f(wavederiv_dset_id, error)
+    
+    ! Deallocate aux arrays for data
+    DEALLOCATE(complex_wave,complex_wavederiv)
+    
+    !************!
+    
+    ! For the field, only the first processor in the group
+    ! write the field data.
+    
+    ! Create the data space for the dataset.
+    CALL h5screate_simple_f(field_rank, field_dim, field_filespace, error)
+    CALL h5screate_simple_f(field_rank, field_dim, field_memspace, error)
+    IF((pivot_number(1).NE.1).AND. (phinodes(1).NE.1)) &
+         CALL h5sselect_none_f(field_memspace,error)
+    
+    ! Create dataset
+    setname = '/field/'// cstep
+    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, field_filespace, &
+         field_dset_id, error)!, plist_id)
+    CALL h5sclose_f(field_filespace, error)
+    
+    cont_field = field_dim
+    offset_field = 0
+    ! Select hyperslab in the file.
+    CALL h5dget_space_f(field_dset_id, field_filespace, error)
+    CALL h5sselect_hyperslab_f (field_filespace, H5S_SELECT_SET_F, offset_field,&
+         cont_field, error)!, stride, blck)
+    
+    IF((pivot_number(1).NE.1).AND. (phinodes(1).NE.1)) &
+         CALL h5sselect_none_f(field_filespace,error)
+    
+    ! Create property list for collective dataset write
+    CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
+    CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
+    
+    !IF (pivot_number(1) .EQ. 1) &
+    CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, field_dim, &
+         error, file_space_id = field_filespace, mem_space_id = field_memspace, &
+         xfer_prp = plist_id)
+    
+    ! Close dataspace and dataset
+    CALL h5sclose_f(field_filespace, error)
+    CALL h5sclose_f(field_memspace, error)
+    CALL h5dclose_f(field_dset_id, error)
+    
+    
+!!$    IF (pivot_number(1) .EQ. 1) THEN
+!!$       CALL h5screate_simple_f(field_rank, field_dim, field_dspace_id, error)
+!!$       setname = '/field/'// cstep
+!!$       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
+!!$            field_dspace_id, field_dset_id, error)
+!!$       CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, &
+!!$            field_dim, error)
+!!$       ! End access to the dataset and release 
+!!$       ! resources used by it.
+!!$       CALL h5dclose_f(field_dset_id, error)
+!!$       
+!!$       ! Terminate access to the data space.
+!!$       CALL h5sclose_f(field_dspace_id, error)
+!!$    ENDIF
+    
+    
+  END SUBROUTINE write_surface_file3D_parallel
+#endif
+
   !***************************************************!
   
   SUBROUTINE close_surface_file_serial( )

@@ -50,8 +50,10 @@ PROGRAM cart2sph_ex3
   INTEGER                    :: maxprocessor, ierror
   
   CHARACTER(LEN = 150)       :: filename
-  CHARACTER(LEN = 6)         :: ctime, rbstr
-  CHARACTER(LEN = 4)         :: cprocessor, lmaxstr
+  CHARACTER(LEN = 6)         :: ctime
+  CHARACTER(LEN = 7)         :: rbstr
+  CHARACTER(LEN = 5)         :: cprocessor
+  CHARACTER(LEN = 4)         :: lmaxstr
   CHARACTER(LEN=100)         :: data_directory
 
   !-----------------------------------------------!
@@ -111,7 +113,7 @@ PROGRAM cart2sph_ex3
   ratioprocz = oldnumproc1dz / newnumproc1dz
   
   offsetprocx = rank * ratioprocx
-  offsetprocx = 0 * ratioprocy  
+  offsetprocy = 0 * ratioprocy  
   offsetprocz = 0 * ratioprocz
   
   newmaxxpts = oldmaxxpts * ratioprocx
@@ -127,13 +129,13 @@ PROGRAM cart2sph_ex3
   
   ! The radius of the boundary
   Rboundary    = 5.0_dp
-  tolerance = 0.5_dp
+  tolerance = 0.23_dp
   deltar = 0.1_dp
   fdrule = 2
   lmax = 10
   
   data_directory = './data/h2p/cartesian/'
-  WRITE(rbstr,'(F6.3)') Rboundary
+  WRITE(rbstr,'(I3.3,F0.3)') INT(Rboundary),Rboundary-INT(Rboundary)
   WRITE(lmaxstr,'(I3.3)') lmax
   
   !--------------!
@@ -172,8 +174,8 @@ PROGRAM cart2sph_ex3
      zpt = (-0.5_dp * REAL(newnumzpts-1,dp) + &
           REAL(iz-1,dp)) * deltaz
      z_ax(iz) = zpt
-     hpts(iz) = zpt
-     hp(iz) = 1.0_dp
+     zpts(iz) = zpt
+     zp(iz) = 1.0_dp
   ENDDO
   
   !----------------------------------------!
@@ -182,9 +184,9 @@ PROGRAM cart2sph_ex3
   
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL cpu_time(start_time)
-  CALL initialize_cylindrical_surface(xpts, ypts, zpts, dims_local, &
+  CALL initialize_cartesian_surface(xpts, ypts, zpts, dims_local, &
        Rboundary, tolerance, fdrule, deltar, lmax, &
-       rank,size,MPI_COMM_WORLD, .TRUE., filename)
+       rank, size,MPI_COMM_WORLD, .TRUE., filename)
   CALL cpu_time(end_time)
   
   comp_time = end_time - start_time
@@ -210,10 +212,10 @@ PROGRAM cart2sph_ex3
         DO iprocx = 0, ratioprocx-1    
            
            ipro = ((offsetprocz + iprocz) * oldnumproc1dx * oldnumproc1dy ) + &
-                ((offsetprocz + iprocz) * oldnumproc1dx) + &
+                ((offsetprocy + iprocy) * oldnumproc1dx) + &
                 offsetprocx + iprocx
            
-           WRITE(cprocessor, '(I4.4)') ipro
+           WRITE(cprocessor, '(I5.5)') ipro
            
            filename = TRIM(data_directory) // 'psi/' // cprocessor //    &
                 '/psi.' // cprocessor // '.dat'
@@ -223,9 +225,9 @@ PROGRAM cart2sph_ex3
            READ(10) psipro
            
            CLOSE(UNIT = 10)
-        
+           
            DO iz = 1, oldmaxzpts
-              DO irho = 1, oldmaxypts
+              DO iy = 1, oldmaxypts
                  DO ix = 1, oldmaxxpts
                     
                     ixg = iprocx * oldmaxxpts + ix
@@ -233,7 +235,7 @@ PROGRAM cart2sph_ex3
                     izg = iprocz * oldmaxzpts + iz
                     
                     psi(ixg, iyg, izg) = psi(ixg, iyg, izg) + psipro(ix, iy, iz)
-
+                    
                  ENDDO
               ENDDO
            ENDDO
@@ -266,7 +268,7 @@ PROGRAM cart2sph_ex3
   
   CALL cpu_time(start_time)
   
-  CALL get_cylindrical_surface(psi, fdrule, 0.0_dp , &
+  CALL get_cartesian_surface(psi, fdrule, 0.0_dp , &
        0.0_dp, 0.0_dp, lmax, rank, .TRUE. )
   
   CALL cpu_time(end_time)
@@ -287,7 +289,7 @@ PROGRAM cart2sph_ex3
   IF(rank.EQ.0) &
        WRITE(*,*) 'Free arrays!'
   DEALLOCATE(psi,psipro)
-  DEALLOCATE(xho_ax,y_ax,z_ax)
+  DEALLOCATE(x_ax,y_ax,z_ax)
   DEALLOCATE(xpts,ypts,zpts,xp,yp,zp)
   
   CALL MPI_finalize( ierror )

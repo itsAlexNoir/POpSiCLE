@@ -498,10 +498,10 @@ CONTAINS
           CALL QS3GRD(y1, y2, y3, numpts, x1, x2, x3, func_re, NR, LCELL3_RE, LNEXT_RE,&
                XYZMIN_RE, XYZDEL_RE, RMAX_RE, RSQ_RE, AQ_RE, interp_val_re, &
                interp_val_dx_re, interp_val_dy_re, interp_val_dz_re, ierror)
-          IF (ierror /= 0) THEN
+          IF ((ierror /= 0).AND.(ierror /=2)) THEN
              WRITE (*, *) 'QSHEP3 - ERROR!'
              WRITE (*, *) 'Error in QS3GRD (REAL), IER = ', ierror
-             STOP
+             !STOP
           END IF
           
           
@@ -509,10 +509,10 @@ CONTAINS
           CALL QS3GRD(y1, y2, y3, numpts, x1, x2, x3, func_im, NR, LCELL3_IM, LNEXT_IM,&
                XYZMIN_IM, XYZDEL_IM, RMAX_IM, RSQ_IM, AQ_IM, interp_val_im, &
                interp_val_dx_im, interp_val_dy_im, interp_val_dz_im, ierror)
-          IF (ierror /= 0) THEN
+          IF ((ierror /= 0).AND. (ierror /=2)) THEN
              WRITE (*, *) 'QSHEP3 - ERROR!'
              WRITE (*, *) 'Error in QS3GRD (IMAG), IER = ', ierror
-             STOP
+             !STOP
           END IF
           
        !---------------------------------!
@@ -531,21 +531,21 @@ CONTAINS
           ! Interpolate the real part
           interp_val_re = QS3VAL(y1, y2, y3, numpts, x1, x2, x3, func_re, NR, LCELL3_RE, LNEXT_RE,&
                XYZMIN_RE, XYZDEL_RE, RMAX_RE, RSQ_RE, AQ_RE )
-          IF (interp_val_re .EQ. 0) THEN
-             WRITE (*, *) 'Q3VAL - ERROR!'
-             WRITE (*, *) 'Error in QS3VAL (REAL), IER = ', interp_val_re
-             STOP
-          END IF
+!!$          IF (interp_val_re .EQ. 0) THEN
+!!$             WRITE (*, *) 'Q3VAL - ERROR!'
+!!$             WRITE (*, *) 'Error in QS3VAL (REAL), IER = ', interp_val_re
+!!$             STOP
+!!$          END IF
           
           
           ! Interpolate the imaginary part
           interp_val_im = QS3VAL(y1, y2, y3, numpts, x1, x2, x3, func_im, NR, LCELL3_IM, LNEXT_IM,&
                XYZMIN_IM, XYZDEL_IM, RMAX_IM, RSQ_IM, AQ_IM )
-          IF (interp_val_im .EQ. 0) THEN
-             WRITE (*, *) 'Q3VAL - ERROR!'
-             WRITE (*, *) 'Error in QS3VAL (IMAG), IER = ', interp_val_im
-             STOP
-          END IF
+!!$          IF (interp_val_im .EQ. 0) THEN
+!!$             WRITE (*, *) 'Q3VAL - ERROR!'
+!!$             WRITE (*, *) 'Error in QS3VAL (IMAG), IER = ', interp_val_im
+!!$             STOP
+!!$          END IF
           
           !---------------------------------!
        ENDIF
@@ -604,7 +604,7 @@ CONTAINS
     ! Allocate arrays for the routine
     ! The real ones
     DEALLOCATE(LNEXT_RE)
-    DEALLOCATE(LCELL_RE)
+    DEALLOCATE(LCELL3_RE)
     DEALLOCATE(RSQ_RE)
     DEALLOCATE(RW_RE)
     DEALLOCATE(XYZMIN_RE)
@@ -628,7 +628,7 @@ CONTAINS
     ! Allocate arrays for the routine
     ! The real ones
     DEALLOCATE(LNEXT_RE)
-    DEALLOCATE(LCELL_RE)
+    DEALLOCATE(LCELL3_RE)
     DEALLOCATE(RSQ_RE)
     DEALLOCATE(RW_RE)
     DEALLOCATE(XYZMIN_RE)
@@ -637,7 +637,7 @@ CONTAINS
     DEALLOCATE(AL_RE)
     ! The imaginary ones
     DEALLOCATE(LNEXT_IM)
-    DEALLOCATE(LCELL_IM)
+    DEALLOCATE(LCELL3_IM)
     DEALLOCATE(RSQ_IM)
     DEALLOCATE(RW_IM)
     DEALLOCATE(XYZMIN_IM)
