@@ -18,7 +18,7 @@ SHEPPACK_DIR = interp_libs/sheppack
 #include interp_libs/slatec/interp_routines.lst
 include interp_libs/sheppack/sheppack_routines.lst
 POPSICLE_OBJS = constants.o tools.o bessel.o gaussleg.o \
-	coords.o fourier.o sht.o \
+	coords.o fourier.o sht.o cylboundary.o cartboundary.o \
 	interp.o io_pop.o patchwork.o surface.o popsicle.o
 
 ifeq (${FFT_LIB},fftw)
@@ -48,7 +48,7 @@ ifndef FFT_PATH
 ${error You must provide a path to the FFT routines}
 endif
 FFTW_OBJS = fftw.o
-LIBS += -L${FFT_PATH}/lib
+LIBS += -L${FFT_PATH}/lib -I${FFT_PATH}/include -lfftw3 -lm
 F90FLAGS += -lfftw3 
 ifdef DIRECTIVES
 PREPROC = ${DIRECTIVES},-D_USE_MKL=0,-D_USE_FFTW=1
@@ -98,10 +98,14 @@ LIBS	+= -lsz -lz -ldl -lm
 tools.o: constants.o
 coords.o: constants.o interp.o
 interp.o: constants.o ${SHEPPACK_OBJS}
+cylboundary.o: constants.o gaussleg.o interp.o
+cartboundary.o: constants.o gaussleg.o interp.o
 bessel.o: constants.o
 gaussleg.o: constants.o
-io_pop.o: constants.o patchwork.o coords.o
+io_pop.o: constants.o patchwork.o cylboundary.o \
+	cartboundary.o
 popsicle.o : constants.o fourier.o \
+	cylboundary.o cartboundary.o \
 	coords.o io_pop.o sht.o patchwork.o \
 	bessel.o gaussleg.o
 ifeq (${FFT_LIB},mkl)
@@ -111,7 +115,8 @@ else ifeq (${FFT_LIB},fftw)
 fourier.o: constants.o tools.o fftw.o
 endif
 patchwork.o: constants.o tools.o
-surface.o: constants.o tools.o coords.o io_pop.o
+surface.o: constants.o tools.o cylboundary.o \
+	cartboundary.o io_pop.o
 
 ##-----------------------------------------------
 

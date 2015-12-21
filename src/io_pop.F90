@@ -3,7 +3,8 @@
   USE HDF5
   USE constants
   USE tools
-  USE coords
+  USE cylboundary
+  USE cartboundary
 #if _COM_MPI
   USE MPI
   USE patchwork

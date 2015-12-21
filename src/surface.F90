@@ -17,7 +17,8 @@ MODULE surface
 
   USE constants
   USE tools
-  USE coords
+  USE cylboundary
+  USE cartboundary
   USE io_pop
 #if _COM_MPI
   USE MPI

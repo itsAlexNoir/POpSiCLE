@@ -7,6 +7,8 @@ MODULE POPSICLE
   USE gaussleg
   USE interp
   USE coords
+  USE cylboundary
+  USE cartboundary
   USE fourier
   USE sht
   USE patchwork

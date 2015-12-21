@@ -91,7 +91,7 @@ CONTAINS
   !
   !----------------------------------------------------------------------------
   
-  SUBROUTINE create_interpolant2D(numpts, x1, x2, func, method )
+  SUBROUTINE create_interpolant2D(numpts, x1, x2, func, method, rank )
     
     IMPLICIT NONE
     
@@ -100,6 +100,8 @@ CONTAINS
     REAL(dp), INTENT(IN)            :: x2(:)
     COMPLEX(dp), INTENT(IN)         :: func(:)
     CHARACTER(LEN=*), INTENT(IN)    :: method
+    INTEGER, INTENT(IN), OPTIONAL   :: rank
+    
     INTEGER                         :: ierror
     
     
@@ -139,6 +141,8 @@ CONTAINS
        IF (ierror /= 0) THEN
           WRITE(*,*) 'Error calculating the (real) interpolant at QSHEP2.'
           WRITE(*,*) 'ierror: ',ierror
+          IF(PRESENT(rank)) &
+               WRITE(*,*) 'From processor ',rank
           STOP
        ENDIF
        
@@ -148,6 +152,8 @@ CONTAINS
        IF (ierror /= 0) THEN
           WRITE(*,*) 'Error calculating the (imag) interpolant at QSHEP2.'
           WRITE(*,*) 'ierror: ',ierror
+          IF(PRESENT(rank)) &
+               WRITE(*,*) 'From processor ',rank
           STOP
        ENDIF
        
@@ -167,7 +173,7 @@ CONTAINS
   
   !--------------------------------------------------------------!
   
-  SUBROUTINE dcreate_interpolant3D(numpts, x1, x2, x3, func, method )
+  SUBROUTINE dcreate_interpolant3D(numpts, x1, x2, x3, func, method ,rank)
     
     IMPLICIT NONE
     
@@ -177,6 +183,8 @@ CONTAINS
     REAL(dp), INTENT(IN)            :: x3(:)
     REAL(dp), INTENT(IN)            :: func(:)
     CHARACTER(LEN=*), INTENT(IN)    :: method
+    INTEGER, INTENT(IN), OPTIONAL   :: rank
+    
     INTEGER                         :: ierror
     
     IF(method.EQ.'quadratic') THEN
@@ -204,6 +212,8 @@ CONTAINS
        IF (ierror /= 0) THEN
           WRITE(*,*) 'Error calculating the (real) interpolant at QSHEP3.'
           WRITE(*,*) 'ierror: ',ierror
+          IF(PRESENT(rank)) &
+               WRITE(*,*) 'From processor ',rank
           STOP
        ENDIF
        
@@ -219,7 +229,7 @@ CONTAINS
   
   !-------------------------------------------------!
   
-  SUBROUTINE zcreate_interpolant3D(numpts, x1, x2, x3, func, method )
+  SUBROUTINE zcreate_interpolant3D(numpts, x1, x2, x3, func, method, rank )
     
     IMPLICIT NONE
     
@@ -229,6 +239,8 @@ CONTAINS
     REAL(dp), INTENT(IN)            :: x3(:)
     COMPLEX(dp), INTENT(IN)         :: func(:)
     CHARACTER(LEN=*), INTENT(IN)    :: method
+    INTEGER, INTENT(IN), OPTIONAL   :: rank
+    
     INTEGER                         :: ierror
     
     
@@ -272,6 +284,8 @@ CONTAINS
        IF (ierror /= 0) THEN
           WRITE(*,*) 'Error calculating the (real) interpolant at QSHEP3.'
           WRITE(*,*) 'ierror: ',ierror
+          IF(PRESENT(rank)) &
+               WRITE(*,*) 'From processor ',rank
           STOP
        ENDIF
        
@@ -281,6 +295,8 @@ CONTAINS
        IF (ierror /= 0) THEN
           WRITE(*,*) 'Error calculating the (imag) interpolant at QSHEP3.'
           WRITE(*,*) 'ierror: ',ierror
+          IF(PRESENT(rank)) &
+               WRITE(*,*) 'From processor ',rank
           STOP
        ENDIF
        
@@ -299,7 +315,7 @@ CONTAINS
   !--------------------------------------------------------------!
   
   SUBROUTINE interpolate2D(numpts, y1, y2, x1, x2, func, method, &
-       interp_val, interp_val_dx, interp_val_dy)
+       interp_val, interp_val_dx, interp_val_dy, rank)
     
     IMPLICIT NONE
     
@@ -313,6 +329,7 @@ CONTAINS
     COMPLEX(dp), INTENT(OUT)             :: interp_val
     COMPLEX(dp), INTENT(OUT), OPTIONAL   :: interp_val_dx
     COMPLEX(dp), INTENT(OUT), OPTIONAL   :: interp_val_dy
+    INTEGER, INTENT(IN), OPTIONAL        :: rank
     
     REAL(dp)                     :: interp_val_re
     REAL(dp)                     :: interp_val_im
@@ -333,6 +350,8 @@ CONTAINS
           IF (ierror /= 0) THEN
              WRITE (*, *) 'QS2GRD - ERROR!'
              WRITE (*, *) 'Error in QS2GRD (REAL), IER = ', ierror
+             IF(PRESENT(rank)) &
+                  WRITE(*,*) 'From processor ',rank
              STOP
           END IF
           
@@ -344,6 +363,8 @@ CONTAINS
           IF (ierror /= 0) THEN
              WRITE (*, *) 'QS2GRD - ERROR!'
              WRITE (*, *) 'Error in QS2GRD (IMAG), IER = ', ierror
+             IF(PRESENT(rank)) &
+                  WRITE(*,*) 'From processor ',rank
              STOP
           END IF
           
@@ -365,6 +386,8 @@ CONTAINS
           IF (interp_val_re .EQ. 0) THEN
              WRITE (*, *) 'Q2VAL - ERROR!'
              WRITE (*, *) 'Error in QS2VAL (REAL), IER = ', interp_val_re
+             IF(PRESENT(rank)) &
+                  WRITE(*,*) 'From processor ',rank
              STOP
           END IF
           
@@ -375,6 +398,8 @@ CONTAINS
           IF (interp_val_im .EQ. 0) THEN
              WRITE (*, *) 'Q2VAL - ERROR!'
              WRITE (*, *) 'Error in Q23VAL (IMAG), IER = ', interp_val_im
+             IF(PRESENT(rank)) &
+                  WRITE(*,*) 'From processor ',rank
              STOP
           END IF
           
@@ -382,7 +407,7 @@ CONTAINS
        ENDIF
        
        interp_val    = CMPLX(interp_val_re, interp_val_im, dp)
-
+       
     ELSE
        WRITE(*,*) 'Missing derivatives arrays!'
        RETURN
@@ -394,8 +419,8 @@ CONTAINS
   !-----------------------------------------------------------!
 
     
-  SUBROUTINE dinterpolate3D(numpts, y1, y2, y3, x1, x2, x3, func, method,&
-       interp_val, interp_val_dx, interp_val_dy, interp_val_dz )
+  SUBROUTINE dinterpolate3D(numpts, y1, y2, y3, x1, x2, x3, func, method, &
+       interp_val, interp_val_dx, interp_val_dy, interp_val_dz, rank )
     
     IMPLICIT NONE
     
@@ -412,10 +437,10 @@ CONTAINS
     REAL(dp), INTENT(OUT), OPTIONAL     :: interp_val_dx
     REAL(dp), INTENT(OUT), OPTIONAL     :: interp_val_dy
     REAL(dp), INTENT(OUT), OPTIONAL     :: interp_val_dz
+    INTEGER, INTENT(IN), OPTIONAL       :: rank
     INTEGER                             :: ierror
-    
+
     !-----------------------------------------------!
-    
     
     IF (PRESENT(interp_val_dx).AND.PRESENT(interp_val_dy) &
          .AND.PRESENT(interp_val_dz) ) THEN
@@ -424,9 +449,13 @@ CONTAINS
           CALL QS3GRD(y1, y2, y3, numpts, x1, x2, x3, func, NR, LCELL3_RE, LNEXT_RE,&
                XYZMIN_RE, XYZDEL_RE, RMAX_RE, RSQ_RE, AQ_RE, interp_val, &
                interp_val_dx, interp_val_dy, interp_val_dz, ierror)
-          IF ((ierror /= 0) .AND. (ierror /=2)) THEN
+          !IF ((ierror /= 0) .AND. (ierror /=2)) THEN
+          IF ((ierror /= 0) .AND. (ierror/=2)) THEN
+             write(*,*) y1,y2,y3, rank
              WRITE (*, *) 'Q3GRD - ERROR!'
              WRITE (*, *) 'Error in QS3GRD, IER = ', ierror
+             IF(PRESENT(rank)) &
+                  WRITE(*,*) 'From processor ',rank
              STOP
           END IF
           
@@ -444,6 +473,8 @@ CONTAINS
 !!$          IF (interp_val .EQ. 0) THEN
 !!$             WRITE (*, *) 'Q3VAL - ERROR!'
 !!$             WRITE (*, *) 'Error in QS3VAL (REAL), IER = ', interp_val
+                 IF(PRESENT(rank)) &
+                      WRITE(*,*) 'From processor ',rank
 !!$             STOP
 !!$          END IF
           
@@ -460,7 +491,7 @@ CONTAINS
   !---------------------------------------------------------------------------!
   
   SUBROUTINE zinterpolate3D(numpts, y1, y2, y3, x1, x2, x3, func, method, &
-       interp_val, interp_val_dx, interp_val_dy, interp_val_dz )
+       interp_val, interp_val_dx, interp_val_dy, interp_val_dz, rank )
     
     IMPLICIT NONE
     
@@ -477,6 +508,7 @@ CONTAINS
     COMPLEX(dp), INTENT(OUT), OPTIONAL  :: interp_val_dx
     COMPLEX(dp), INTENT(OUT), OPTIONAL  :: interp_val_dy
     COMPLEX(dp), INTENT(OUT), OPTIONAL  :: interp_val_dz
+    INTEGER, INTENT(IN), OPTIONAL       :: rank
     
     REAL(dp)                     :: interp_val_re
     REAL(dp)                     :: interp_val_im
@@ -501,7 +533,9 @@ CONTAINS
           IF ((ierror /= 0).AND.(ierror /=2)) THEN
              WRITE (*, *) 'QSHEP3 - ERROR!'
              WRITE (*, *) 'Error in QS3GRD (REAL), IER = ', ierror
-             !STOP
+             IF(PRESENT(rank)) &
+                  WRITE(*,*) 'From processor ',rank
+             STOP
           END IF
           
           
@@ -512,7 +546,9 @@ CONTAINS
           IF ((ierror /= 0).AND. (ierror /=2)) THEN
              WRITE (*, *) 'QSHEP3 - ERROR!'
              WRITE (*, *) 'Error in QS3GRD (IMAG), IER = ', ierror
-             !STOP
+             IF(PRESENT(rank)) &
+                  WRITE(*,*) 'From processor ',rank
+             STOP
           END IF
           
        !---------------------------------!
