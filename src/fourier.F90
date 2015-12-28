@@ -527,16 +527,16 @@ CONTAINS
                    
                    CALL FFT(psi_rc, 1, dims_phony)
                    
-!!$                   ! fftshift the array
-!!$                   psi_sd = ZERO
-!!$                   shift = Nrgl - (Nrgl+1)/2
-!!$                   DO ir = 1, shift
-!!$                      psi_sd(ir) = psi_rc(ir+shift+1)
-!!$                   ENDDO
-!!$                   
-!!$                   DO ir = shift+1, Nrgl
-!!$                      psi_sd(ir) = psi_rc(ir-shift)
-!!$                   ENDDO
+                   !! fftshift the array
+                   !psi_sd = ZERO
+                   !shift = Nrgl - (Nrgl+1)/2
+                   !DO ir = 1, shift
+                   !   psi_sd(ir) = psi_rc(ir+shift+1)
+                   !ENDDO
+                   !
+                   !DO ir = shift+1, Nrgl
+                   !   psi_sd(ir) = psi_rc(ir-shift)
+                   !ENDDO
                    
                    ! Copy the result back to the local psik
                    DO ir = 1, Nr
@@ -570,7 +570,7 @@ CONTAINS
                            iprocr+1,numprocx,numprocy,numprocz,numprocr))
                    ENDDO
                    
-                   CALL MPI_GROUP_INCL(group_gl, group_size, members, group_lc, ierror)
+                   CALL MPI_GROUP_INCL(group_gl, numprocr, members, group_lc, ierror)
                    
                    CALL MPI_COMM_CREATE(comm_gl, group_lc, fftcomm(ipro), ierror)
                    
@@ -600,17 +600,17 @@ CONTAINS
                    
                    dims_phony(1) = Nrgl
                    CALL FFT(psi_rc, 1, dims_phony)
-
-!!$                   ! fftshift the array
-!!$                   psi_sd = ZERO
-!!$                   shift = Nrgl - (Nrgl+1)/2
-!!$                   DO ir = 1, shift
-!!$                      psi_sd(ir) = psi_rc(ir+shift+1)
-!!$                   ENDDO
-!!$                   
-!!$                   DO ir = shift+1, Nrgl
-!!$                      psi_sd(ir) = psi_rc(ir-shift)
-!!$                   ENDDO
+                   
+                   !! fftshift the array
+                   !psi_sd = ZERO
+                   !shift = Nrgl - (Nrgl+1)/2
+                   !DO ir = 1, shift
+                   !   psi_sd(ir) = psi_rc(ir+shift+1)
+                   !ENDDO
+                   !
+                   !DO ir = shift+1, Nrgl
+                   !   psi_sd(ir) = psi_rc(ir-shift)
+                   !ENDDO
                    
                    ! Copy the result back to the local psik                   
                    DO ir = 1, Nr
