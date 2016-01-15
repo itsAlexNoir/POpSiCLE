@@ -2,6 +2,6 @@ EXAMPLE_SER_LIST = \
 sheppack_usage_example \
 legendre_test \
 cyl2sph_ex1 \
-cyl2sph_ex2 \
+cyl2sph_ex3 \
 cart2sph_ex1 \
-cart2sph_ex2 
+cart2sph_ex3 

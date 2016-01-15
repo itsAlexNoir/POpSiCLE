@@ -19,7 +19,8 @@ SHEPPACK_DIR = interp_libs/sheppack
 include interp_libs/sheppack/sheppack_routines.lst
 POPSICLE_OBJS = constants.o tools.o bessel.o gaussleg.o \
 	coords.o fourier.o sht.o cylboundary.o cartboundary.o \
-	interp.o io_pop.o patchwork.o surface.o popsicle.o
+	interp.o io_pop.o io_surface.o patchwork.o surface.o \
+	popsicle.o
 
 ifeq (${FFT_LIB},fftw)
 POPSICLE_OBJS += fftw.o 
@@ -102,12 +103,13 @@ cylboundary.o: constants.o gaussleg.o interp.o
 cartboundary.o: constants.o gaussleg.o interp.o
 bessel.o: constants.o
 gaussleg.o: constants.o
-io_pop.o: constants.o patchwork.o cylboundary.o \
-	cartboundary.o
+io_pop.o: constants.o patchwork.o 
+io_surface.o: constants.o tools.o \
+    patchwork.o cylboundary.o cartboundary.o
 popsicle.o : constants.o fourier.o \
 	cylboundary.o cartboundary.o \
-	coords.o io_pop.o sht.o patchwork.o \
-	bessel.o gaussleg.o
+	coords.o io_pop.o io_surface.o sht.o \
+	bessel.o gaussleg.o patchwork.o
 ifeq (${FFT_LIB},mkl)
 fourier.o: ${MKL_DFTI} constants.o tools.o
 sht.o: ${MKL_DFTI} constants.o gaussleg.o
@@ -116,7 +118,7 @@ fourier.o: constants.o tools.o fftw.o
 endif
 patchwork.o: constants.o tools.o
 surface.o: constants.o tools.o cylboundary.o \
-	cartboundary.o io_pop.o
+	cartboundary.o io_surface.o
 
 ##-----------------------------------------------
 

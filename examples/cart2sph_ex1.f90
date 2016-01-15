@@ -34,18 +34,8 @@ PROGRAM cart2sph_ex1
   REAL(dp)                   :: minerror, maxerror
   INTEGER                    :: ix,iy, iz
   INTEGER                    :: ir, itheta, iphi
-  
 
-  ! QSHEP2D control parameters
-  INTEGER                      :: NQ, NR, NW
-  REAL(dp)                     :: DX_RE, DY_RE, RMAX_RE
-  REAL(dp)                     :: XMIN_RE, YMIN_RE
-  REAL(dp), ALLOCATABLE        :: XYZMIN_RE(:), XYZDEL_RE(:)
-  INTEGER, ALLOCATABLE         :: LNEXT_RE(:)
-  INTEGER, ALLOCATABLE         :: LCELL_RE(:, :)
-  INTEGER, ALLOCATABLE         :: LCELL3_RE(:, :, :)
-  REAL(dp), ALLOCATABLE        :: RSQ_RE(:), RW_RE(:)
-  REAL(dp), ALLOCATABLE        :: AQ_RE(:, :), AL_RE(:, :)
+  !------------------------------------------------------!
   
   WRITE(*,*) '****************************'
   WRITE(*,*) '     cart2sph_ex1           '
@@ -161,8 +151,6 @@ PROGRAM cart2sph_ex1
   
   WRITE(*,*) 'Grid spacing in r: ',dr
   WRITE(*,*) 'Maximum angular momenta: ',lmax
-  !WRITE(*,*) 'Grid spacing in theta: ',dtheta
-  !WRITE(*,*) 'Grid spacing in phi: ',dphi
   WRITE(*,*)
   WRITE(*,*)
   WRITE(*,*) '--------------------------'
@@ -287,5 +275,9 @@ PROGRAM cart2sph_ex1
   DEALLOCATE(Y_lm, R_nl)
   DEALLOCATE(cartfunc)
   DEALLOCATE(sphfunc, sphfunc_dr, sphfunc_dth,sphfunc_dphi)
+
+  WRITE(*,*) '¡Se acabó!'
+  WRITE(*,*)
+  WRITE(*,*)
   
 END PROGRAM cart2sph_ex1

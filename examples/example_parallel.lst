@@ -1,3 +1,5 @@
 EXAMPLE_PAR_LIST = \
-cyl2sph_ex3 \
-cart2sph_ex3
+cyl2sph_ex2 \
+cyl2sph_ex4 \
+cart2sph_ex2 \
+cart2sph_ex4

@@ -48,9 +48,9 @@ CONTAINS
     INTEGER                             :: ir, itheta, inum
     INTEGER, DIMENSION(2)               :: dims_in, dims_out
     INTEGER                             :: numpts_in, numpts_out
-    REAL(dp)                            :: rpt
-    REAL(dp), ALLOCATABLE               :: r_inp(:)
-    REAL(dp), ALLOCATABLE               :: theta_inp(:)
+    REAL(dp)                            :: rpt, xpt, ypt
+    REAL(dp), ALLOCATABLE               :: x_inp(:)
+    REAL(dp), ALLOCATABLE               :: y_inp(:)
     COMPLEX(dp), ALLOCATABLE            :: psi_inp(:)
     
     
@@ -60,8 +60,8 @@ CONTAINS
     numpts_in = dims_in(1) *  dims_in(2)
     numpts_out = dims_out(1) *  dims_out(2)
     
-    ALLOCATE(r_inp(1:numpts_in))
-    ALLOCATE(theta_inp(1:numpts_in))
+    ALLOCATE(x_inp(1:numpts_in))
+    ALLOCATE(y_inp(1:numpts_in))
     ALLOCATE(psi_inp(1:numpts_in))
     
     psi_inp = ZERO
@@ -74,14 +74,14 @@ CONTAINS
           ii = ii + 1
           rpt = SQRT(x_ax(ix)**2 + y_ax(iy)**2 )
           
-          r_inp(ii) = rpt
-          theta_inp(ii) = pi - ATAN2( y_ax(iy) , -x_ax(ix) )
+          x_inp(ii) = x_ax(ix)
+          y_inp(ii) = y_ax(iy)
           psi_inp(ii) = psi_cart(ix, iy)
        ENDDO
     ENDDO
     
     IF(PRESENT(rank)) THEN
-       CALL create_interpolant(numpts_in,r_inp,theta_inp,psi_inp,TRIM(method),rank)
+       CALL create_interpolant(numpts_in,x_inp,y_inp,psi_inp,TRIM(method),rank)
        
        IF (PRESENT(psi_sph_dr).AND.PRESENT(psi_sph_dth)) THEN
           psi_sph_dr = ZERO
@@ -89,8 +89,12 @@ CONTAINS
           
           DO itheta = 1, dims_out(2)
              DO ir = 1, dims_out(1)
-                CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), &
-                     r_inp, theta_inp, &
+                
+                xpt = r_ax(ir) * COS(theta_ax(itheta))
+                ypt = r_ax(ir) * SIN(theta_ax(itheta))
+                
+                CALL interpolate(numpts_in,xpt, ypt, &
+                     x_inp, y_inp, &
                      psi_inp, TRIM(method), psi_sph(ir,itheta), &
                      psi_sph_dr(ir,itheta), psi_sph_dth(ir,itheta),rank )
              ENDDO
@@ -102,8 +106,12 @@ CONTAINS
           
           DO itheta = 1, dims_out(2)
              DO ir = 1, dims_out(1)
-                CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), &
-                     r_inp, theta_inp, &
+
+                xpt = r_ax(ir) * COS(theta_ax(itheta))
+                ypt = r_ax(ir) * SIN(theta_ax(itheta))
+                
+                CALL interpolate(numpts_in,xpt, ypt, &
+                     x_inp, y_inp, &
                      psi_inp, TRIM(method), psi_sph(ir,itheta), rank=rank )
              ENDDO
           ENDDO
@@ -115,7 +123,7 @@ CONTAINS
        
     ELSE
        
-       CALL create_interpolant(numpts_in,r_inp,theta_inp,psi_inp,TRIM(method))
+       CALL create_interpolant(numpts_in,x_inp,y_inp,psi_inp,TRIM(method))
        
        IF (PRESENT(psi_sph_dr).AND.PRESENT(psi_sph_dth)) THEN
           psi_sph_dr = ZERO
@@ -123,8 +131,12 @@ CONTAINS
           
           DO itheta = 1, dims_out(2)
              DO ir = 1, dims_out(1)
-                CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), &
-                     r_inp, theta_inp, &
+
+                xpt = r_ax(ir) * COS(theta_ax(itheta))
+                ypt = r_ax(ir) * SIN(theta_ax(itheta))
+                
+                CALL interpolate(numpts_in,xpt, ypt, &
+                     x_inp, y_inp, &
                      psi_inp, TRIM(method), psi_sph(ir,itheta), &
                      psi_sph_dr(ir,itheta), psi_sph_dth(ir,itheta) )
              ENDDO
@@ -136,8 +148,12 @@ CONTAINS
           
           DO itheta = 1, dims_out(2)
              DO ir = 1, dims_out(1)
-                CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), &
-                     r_inp, theta_inp, &
+
+                xpt = r_ax(ir) * COS(theta_ax(itheta))
+                ypt = r_ax(ir) * SIN(theta_ax(itheta))
+                    
+                CALL interpolate(numpts_in,xpt, ypt, &
+                     x_inp, y_inp, &
                      psi_inp, TRIM(method), psi_sph(ir,itheta) )
              ENDDO
           ENDDO
@@ -182,9 +198,9 @@ CONTAINS
     REAL(dp)                            :: minr, maxr
     REAL(dp)                            :: mintheta, maxtheta
     REAL(dp)                            :: minphi, maxphi 
-    REAL(dp), ALLOCATABLE               :: r_inp(:)
-    REAL(dp), ALLOCATABLE               :: theta_inp(:)
-    REAL(dp), ALLOCATABLE               :: phi_inp(:)
+    REAL(dp), ALLOCATABLE               :: x_inp(:)
+    REAL(dp), ALLOCATABLE               :: y_inp(:)
+    REAL(dp), ALLOCATABLE               :: z_inp(:)
     REAL(dp), ALLOCATABLE               :: psi_inp(:)
     
     
@@ -194,23 +210,14 @@ CONTAINS
     numpts_in = dims_in(1) *  dims_in(2) *  dims_in(3)
     numpts_out = dims_out(1) *  dims_out(2) *  dims_out(3)
     
-    ALLOCATE(r_inp(1:numpts_in))
-    ALLOCATE(theta_inp(1:numpts_in))
-    ALLOCATE(phi_inp(1:numpts_in))
+    ALLOCATE(x_inp(1:numpts_in))
+    ALLOCATE(y_inp(1:numpts_in))
+    ALLOCATE(z_inp(1:numpts_in))
     ALLOCATE(psi_inp(1:numpts_in))
     
     psi_inp = ZERO
     psi_sph = ZERO
-    
-    minr = HUGE(minr) !1.0E9_dp
-    maxr = 0.0_dp
-    
-    mintheta = pi
-    maxtheta = 0.0_dp
-    
-    minphi = pi
-    maxphi = -pi
-    
+        
     ii = 0
     DO iz = 1, dims_in(3)
        DO iy = 1, dims_in(2)
@@ -218,49 +225,36 @@ CONTAINS
              ii = ii + 1
              rpt = SQRT(x_ax(ix)**2 + y_ax(iy)**2 + z_ax(iz)**2 )
              
-             r_inp(ii) = rpt
-             IF(rpt.EQ.0.0_dp) THEN
-                theta_inp(ii) = pi / 2.0_dp
-             ELSE
-                theta_inp(ii) = ACOS( z_ax(iz) / rpt )
-             ENDIF
-             phi_inp(ii) = pi - ATAN2( y_ax(iy) , -x_ax(ix) )
-             psi_inp(ii) = psi_cart(ix, iy, iz)
+             x_inp(ii) = x_ax(ix)
+             y_inp(ii) = y_ax(iy)
+             z_inp(ii) = z_ax(iz)
+             psi_inp(ii) = psi_cart(ix,iy,iz)
              
-             minr = MIN(minr,r_inp(ii))
-             mintheta = MIN(mintheta,theta_inp(ii))
-             minphi = MIN(minphi,phi_inp(ii))
-             
-             maxr = MAX(maxr,r_inp(ii))
-             maxtheta = MAX(maxtheta,theta_inp(ii))
-             maxphi = MAX(maxphi,phi_inp(ii))
           ENDDO
        ENDDO
     ENDDO
     
-    
-    ! Check if the new axis are within the cartesian domain.
-    DO iphi = 1, dims_out(3)
-       DO itheta = 1, dims_out(2)
-          DO ir = 1, dims_out(1)
-             xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
-             ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
-             zpt = r_ax(ir) * COS(theta_ax(itheta))
-             IF ((r_ax(ir).GE.minr) .AND. (r_ax(ir).LE.maxr) .AND. &
-                  (theta_ax(itheta).GE.mintheta) .AND. &
-                  (theta_ax(itheta).LE.maxtheta) .AND. &
-                  (phi_ax(iphi).GE.minphi) .AND. (phi_ax(iphi).LE.maxphi) .AND. &
-                  (xpt.GE.MINVAL(x_ax)) .AND. (xpt.LE.MAXVAL(x_ax)) .AND. &
-                  (ypt.GE.MINVAL(y_ax)) .AND. (ypt.LE.MAXVAL(y_ax)) .AND. &
-                  (zpt.GE.MINVAL(z_ax)) .AND. (zpt.LE.MAXVAL(z_ax))) THEN
-                i_am_in(ir,itheta,iphi) = 1
-             ENDIF
+    IF(PRESENT(i_am_in)) THEN
+       ! Check if the new axis are within the cartesian domain.
+       DO iphi = 1, dims_out(3)
+          DO itheta = 1, dims_out(2)
+             DO ir = 1, dims_out(1)
+                xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                zpt = r_ax(ir) * COS(theta_ax(itheta))
+                
+                IF ((xpt.GE.MINVAL(x_ax)) .AND. (xpt.LE.MAXVAL(x_ax)) .AND. &
+                     (ypt.GE.MINVAL(y_ax)) .AND. (ypt.LE.MAXVAL(y_ax)) .AND. &
+                     (zpt.GE.MINVAL(z_ax)) .AND. (zpt.LE.MAXVAL(z_ax))) THEN
+                   i_am_in(ir,itheta,iphi) = 1
+                ENDIF
+             ENDDO
           ENDDO
        ENDDO
-    ENDDO
+    ENDIF
     
     IF(PRESENT(rank)) THEN
-       CALL create_interpolant(numpts_in,r_inp,theta_inp, phi_inp, &
+       CALL create_interpolant(numpts_in,x_inp,y_inp,z_inp, &
             psi_inp,TRIM(method), rank)
        
        IF(PRESENT(i_am_in)) THEN
@@ -273,8 +267,13 @@ CONTAINS
                 DO itheta = 1, dims_out(2)
                    DO ir = 1, dims_out(1)
                       IF(i_am_in(ir,itheta,iphi).EQ.1) THEN
-                         CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                              r_inp, theta_inp, phi_inp, &
+                         
+                         xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                         ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                         zpt = r_ax(ir) * COS(theta_ax(itheta))
+                         
+                         CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                              x_inp, y_inp, z_inp, &
                               psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
                               psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
                               psi_sph_dphi(ir, itheta, iphi), rank )
@@ -291,8 +290,13 @@ CONTAINS
                 DO itheta = 1, dims_out(2)
                    DO ir = 1, dims_out(1)
                       IF(i_am_in(ir,itheta,iphi).EQ.1) THEN
-                         CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                              r_inp, theta_inp, phi_inp, &
+                         
+                         xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                         ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                         zpt = r_ax(ir) * COS(theta_ax(itheta))
+                         
+                         CALL interpolate(numpts_in,xpt, ypt, zpt, &
+                              x_inp, y_inp, z_inp, &
                               psi_inp, TRIM(method), psi_sph(ir,itheta,iphi), rank=rank )
                       ENDIF
                    ENDDO
@@ -313,8 +317,13 @@ CONTAINS
              DO iphi = 1, dims_out(3)
                 DO itheta = 1, dims_out(2)
                    DO ir = 1, dims_out(1)
-                      CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                           r_inp, theta_inp, phi_inp, &
+
+                      xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                      ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                      zpt = r_ax(ir) * COS(theta_ax(itheta))
+                      
+                      CALL interpolate(numpts_in,xpt, ypt, zpt, &
+                           x_inp, y_inp, z_inp, &
                            psi_inp,TRIM(method), psi_sph(ir,itheta, iphi), &
                            psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
                            psi_sph_dphi(ir, itheta, iphi), rank )
@@ -329,8 +338,13 @@ CONTAINS
              DO iphi = 1, dims_out(3)
                 DO itheta = 1, dims_out(2)
                    DO ir = 1, dims_out(1)
-                      CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                           r_inp, theta_inp, phi_inp, &
+
+                      xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                      ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                      zpt = r_ax(ir) * COS(theta_ax(itheta))
+                      
+                      CALL interpolate(numpts_in,xpt, ypt, zpt, &
+                           x_inp, y_inp, z_inp, &
                            psi_inp,TRIM(method), psi_sph(ir,itheta,iphi), rank=rank )
                    ENDDO
                 ENDDO
@@ -344,7 +358,7 @@ CONTAINS
        ENDIF
     ELSE
        
-       CALL create_interpolant(numpts_in,r_inp,theta_inp, phi_inp, &
+       CALL create_interpolant(numpts_in,x_inp,y_inp, z_inp, &
             psi_inp,TRIM(method) )
        
        IF(PRESENT(i_am_in)) THEN
@@ -357,8 +371,13 @@ CONTAINS
                 DO itheta = 1, dims_out(2)
                    DO ir = 1, dims_out(1)
                       IF(i_am_in(ir,itheta,iphi).EQ.1) THEN
-                         CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                              r_inp, theta_inp, phi_inp, &
+                         
+                         xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                         ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                         zpt = r_ax(ir) * COS(theta_ax(itheta))
+                         
+                         CALL interpolate(numpts_in,xpt, ypt, zpt, &
+                              x_inp, y_inp, z_inp, &
                               psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
                               psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
                               psi_sph_dphi(ir, itheta, iphi) )
@@ -375,8 +394,13 @@ CONTAINS
                 DO itheta = 1, dims_out(2)
                    DO ir = 1, dims_out(1)
                       IF(i_am_in(ir,itheta,iphi).EQ.1) THEN
-                         CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                              r_inp, theta_inp, phi_inp, &
+                         
+                         xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                         ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                         zpt = r_ax(ir) * COS(theta_ax(itheta))
+                         
+                         CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                              x_inp, y_inp, z_inp, &
                               psi_inp, TRIM(method), psi_sph(ir,itheta,iphi) )
                       ENDIF
                    ENDDO
@@ -397,8 +421,13 @@ CONTAINS
              DO iphi = 1, dims_out(3)
                 DO itheta = 1, dims_out(2)
                    DO ir = 1, dims_out(1)
-                      CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                           r_inp, theta_inp, phi_inp, &
+                      
+                      xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                      ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                      zpt = r_ax(ir) * COS(theta_ax(itheta))
+                      
+                      CALL interpolate(numpts_in,xpt, ypt, zpt, &
+                           x_inp, y_inp, z_inp, &
                            psi_inp,TRIM(method), psi_sph(ir,itheta, iphi), &
                            psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
                            psi_sph_dphi(ir, itheta, iphi) )
@@ -413,8 +442,13 @@ CONTAINS
              DO iphi = 1, dims_out(3)
                 DO itheta = 1, dims_out(2)
                    DO ir = 1, dims_out(1)
-                      CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                           r_inp, theta_inp, phi_inp, &
+
+                      xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                      ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                      zpt = r_ax(ir) * COS(theta_ax(itheta))
+                      
+                      CALL interpolate(numpts_in,xpt, ypt, zpt, &
+                           x_inp, y_inp, z_inp, &
                            psi_inp,TRIM(method), psi_sph(ir,itheta,iphi) )
                    ENDDO
                 ENDDO
@@ -457,9 +491,9 @@ CONTAINS
     REAL(dp)                            :: minr, maxr
     REAL(dp)                            :: mintheta, maxtheta
     REAL(dp)                            :: minphi, maxphi 
-    REAL(dp), ALLOCATABLE               :: r_inp(:)
-    REAL(dp), ALLOCATABLE               :: theta_inp(:)
-    REAL(dp), ALLOCATABLE               :: phi_inp(:)
+    REAL(dp), ALLOCATABLE               :: x_inp(:)
+    REAL(dp), ALLOCATABLE               :: y_inp(:)
+    REAL(dp), ALLOCATABLE               :: z_inp(:)
     COMPLEX(dp), ALLOCATABLE            :: psi_inp(:)
     
     
@@ -469,9 +503,9 @@ CONTAINS
     numpts_in = dims_in(1) *  dims_in(2) *  dims_in(3)
     numpts_out = dims_out(1) *  dims_out(2) *  dims_out(3)
     
-    ALLOCATE(r_inp(1:numpts_in))
-    ALLOCATE(theta_inp(1:numpts_in))
-    ALLOCATE(phi_inp(1:numpts_in))
+    ALLOCATE(x_inp(1:numpts_in))
+    ALLOCATE(y_inp(1:numpts_in))
+    ALLOCATE(z_inp(1:numpts_in))
     ALLOCATE(psi_inp(1:numpts_in))
     
     psi_inp = ZERO
@@ -484,40 +518,35 @@ CONTAINS
              ii = ii + 1
              rpt = SQRT(x_ax(ix)**2 + y_ax(iy)**2 + z_ax(iz)**2 )
              
-             r_inp(ii) = rpt
-             IF(rpt.EQ.0.0_dp) THEN
-                theta_inp(ii) = pi / 2.0_dp
-             ELSE
-                theta_inp(ii) = ACOS( z_ax(iz) / rpt )
-             ENDIF
-             phi_inp(ii) = pi - ATAN2( y_ax(iy) , -x_ax(ix) )
+             x_inp(ii) = x_ax(ix)
+             y_inp(ii) = y_ax(iy)
+             z_inp(ii) = z_ax(iz)
              psi_inp(ii) = psi_cart(ix, iy, iz)
+             
           ENDDO
        ENDDO
     ENDDO
     
     ! Check if the new axis are within the cartesian domain.
-    DO iphi = 1, dims_out(3)
-       DO itheta = 1, dims_out(2)
-          DO ir = 1, dims_out(1)
-             xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
-             ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
-             zpt = r_ax(ir) * COS(theta_ax(itheta))
-             IF ((r_ax(ir).GE.minr) .AND. (r_ax(ir).LE.maxr) .AND. &
-                  (theta_ax(itheta).GE.mintheta) .AND. &
-                  (theta_ax(itheta).LE.maxtheta) .AND. &
-                  (phi_ax(iphi).GE.minphi) .AND. (phi_ax(iphi).LE.maxphi) .AND. &
-                  (xpt.GE.MINVAL(x_ax)) .AND. (xpt.LE.MAXVAL(x_ax)) .AND. &
-                  (ypt.GE.MINVAL(y_ax)) .AND. (ypt.LE.MAXVAL(y_ax)) .AND. &
-                  (zpt.GE.MINVAL(z_ax)) .AND. (zpt.LE.MAXVAL(z_ax))) THEN
-                i_am_in(ir,itheta,iphi) = 1
-             ENDIF
+    IF(PRESENT(i_am_in)) THEN
+       DO iphi = 1, dims_out(3)
+          DO itheta = 1, dims_out(2)
+             DO ir = 1, dims_out(1)
+                xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                zpt = r_ax(ir) * COS(theta_ax(itheta))
+                IF ((xpt.GE.MINVAL(x_ax)) .AND. (xpt.LE.MAXVAL(x_ax)) .AND. &
+                     (ypt.GE.MINVAL(y_ax)) .AND. (ypt.LE.MAXVAL(y_ax)) .AND. &
+                     (zpt.GE.MINVAL(z_ax)) .AND. (zpt.LE.MAXVAL(z_ax))) THEN
+                   i_am_in(ir,itheta,iphi) = 1
+                ENDIF
+             ENDDO
           ENDDO
        ENDDO
-    ENDDO
+    ENDIF
     
     IF(PRESENT(rank)) THEN
-       CALL create_interpolant(numpts_in,r_inp,theta_inp, phi_inp, &
+       CALL create_interpolant(numpts_in,x_inp,y_inp, z_inp, &
             psi_inp,TRIM(method), rank)
        
        IF(PRESENT(i_am_in)) THEN    
@@ -530,8 +559,13 @@ CONTAINS
                 DO itheta = 1, dims_out(2)
                    DO ir = 1, dims_out(1)
                       IF(i_am_in(ir,itheta,iphi).EQ.1) THEN
-                         CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                              r_inp, theta_inp, phi_inp, &
+
+                         xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                         ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                         zpt = r_ax(ir) * COS(theta_ax(itheta))
+                         
+                         CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                              x_inp, y_inp, z_inp, &
                               psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
                               psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
                               psi_sph_dphi(ir, itheta, iphi), rank )
@@ -548,8 +582,13 @@ CONTAINS
                 DO itheta = 1, dims_out(2)
                    DO ir = 1, dims_out(1)
                       IF(i_am_in(ir,itheta,iphi).EQ.1) THEN
-                         CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                              r_inp, theta_inp, phi_inp, &
+                         
+                         xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                         ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                         zpt = r_ax(ir) * COS(theta_ax(itheta))
+                         
+                         CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                              x_inp, y_inp, z_inp, &
                               psi_inp, TRIM(method), psi_sph(ir,itheta,iphi), rank=rank )
                       ENDIF
                    ENDDO
@@ -570,8 +609,13 @@ CONTAINS
              DO iphi = 1, dims_out(3)
                 DO itheta = 1, dims_out(2)
                    DO ir = 1, dims_out(1)
-                      CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                           r_inp, theta_inp, phi_inp, &
+                      
+                      xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                      ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                      zpt = r_ax(ir) * COS(theta_ax(itheta))
+                      
+                      CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                           x_inp, y_inp, z_inp, &
                            psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
                            psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
                            psi_sph_dphi(ir, itheta, iphi) )
@@ -586,8 +630,13 @@ CONTAINS
              DO iphi = 1, dims_out(3)
                 DO itheta = 1, dims_out(2)
                    DO ir = 1, dims_out(1)
-                      CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                           r_inp, theta_inp, phi_inp, &
+
+                      xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                      ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                      zpt = r_ax(ir) * COS(theta_ax(itheta))
+                      
+                      CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                           x_inp, y_inp, z_inp, &
                            psi_inp, TRIM(method), psi_sph(ir,itheta,iphi) )
                    ENDDO
                 ENDDO
@@ -601,7 +650,7 @@ CONTAINS
        
     ELSE
        
-       CALL create_interpolant(numpts_in,r_inp,theta_inp, phi_inp, &
+       CALL create_interpolant(numpts_in,x_inp,y_inp,z_inp, &
             psi_inp,TRIM(method))
        
        IF(PRESENT(i_am_in)) THEN    
@@ -614,8 +663,13 @@ CONTAINS
                 DO itheta = 1, dims_out(2)
                    DO ir = 1, dims_out(1)
                       IF(i_am_in(ir,itheta,iphi).EQ.1) THEN
-                         CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                              r_inp, theta_inp, phi_inp, &
+                         
+                         xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                         ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                         zpt = r_ax(ir) * COS(theta_ax(itheta))
+                         
+                         CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                              x_inp, y_inp, z_inp, &
                               psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
                               psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
                               psi_sph_dphi(ir, itheta, iphi) )
@@ -632,8 +686,13 @@ CONTAINS
                 DO itheta = 1, dims_out(2)
                    DO ir = 1, dims_out(1)
                       IF(i_am_in(ir,itheta,iphi).EQ.1) THEN
-                         CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                              r_inp, theta_inp, phi_inp, &
+
+                         xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                         ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                         zpt = r_ax(ir) * COS(theta_ax(itheta))
+                         
+                         CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                              x_inp, y_inp, z_inp, &
                               psi_inp, TRIM(method), psi_sph(ir,itheta,iphi) )
                       ENDIF
                    ENDDO
@@ -654,8 +713,13 @@ CONTAINS
              DO iphi = 1, dims_out(3)
                 DO itheta = 1, dims_out(2)
                    DO ir = 1, dims_out(1)
-                      CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                           r_inp, theta_inp, phi_inp, &
+                      
+                      xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                      ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                      zpt = r_ax(ir) * COS(theta_ax(itheta))
+                      
+                      CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                           x_inp, y_inp, z_inp, &
                            psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
                            psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
                            psi_sph_dphi(ir, itheta, iphi) )
@@ -670,8 +734,13 @@ CONTAINS
              DO iphi = 1, dims_out(3)
                 DO itheta = 1, dims_out(2)
                    DO ir = 1, dims_out(1)
-                      CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), phi_ax(iphi), &
-                           r_inp, theta_inp, phi_inp, &
+                      
+                      xpt = r_ax(ir) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                      ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                      zpt = r_ax(ir) * COS(theta_ax(itheta))
+                      
+                      CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                           x_inp, y_inp, z_inp, &
                            psi_inp, TRIM(method), psi_sph(ir,itheta,iphi) )
                    ENDDO
                 ENDDO

@@ -31,19 +31,22 @@ MODULE interp
   
   
   INTERFACE create_interpolant
-     MODULE PROCEDURE create_interpolant2D
+     MODULE PROCEDURE dcreate_interpolant2D
+     MODULE PROCEDURE zcreate_interpolant2D
      MODULE PROCEDURE dcreate_interpolant3D
      MODULE PROCEDURE zcreate_interpolant3D
   END INTERFACE create_interpolant
   
   INTERFACE interpolate
-     MODULE PROCEDURE interpolate2D
+     MODULE PROCEDURE dinterpolate2D
+     MODULE PROCEDURE zinterpolate2D
      MODULE PROCEDURE dinterpolate3D
      MODULE PROCEDURE zinterpolate3D
   END INTERFACE interpolate
   
   INTERFACE destroy_interpolant
-     MODULE PROCEDURE destroy_interpolant2D
+     MODULE PROCEDURE ddestroy_interpolant2D
+     MODULE PROCEDURE zdestroy_interpolant2D
      MODULE PROCEDURE ddestroy_interpolant3D
      MODULE PROCEDURE zdestroy_interpolant3D
   END INTERFACE destroy_interpolant
@@ -90,8 +93,74 @@ CONTAINS
   !> \return locate Array index of xx in which x is centered.
   !
   !----------------------------------------------------------------------------
+
+  SUBROUTINE dcreate_interpolant2D(numpts, x1, x2, func, method, rank )
+    
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)             :: numpts
+    REAL(dp), INTENT(IN)            :: x1(:)
+    REAL(dp), INTENT(IN)            :: x2(:)
+    REAL(dp), INTENT(IN)            :: func(:)
+    CHARACTER(LEN=*), INTENT(IN)    :: method
+    INTEGER, INTENT(IN), OPTIONAL   :: rank
+    
+    INTEGER                         :: ierror
+    
+    
+    IF(method.EQ.'quadratic') THEN
+       
+       ! Assign control parameters for interpolation
+       NR = 3
+       NQ = 13
+       NW = 19
+       
+       ! Allocate arrays for the routine
+       ! The real ones
+       ALLOCATE(LNEXT_RE(numpts))
+       ALLOCATE(LCELL_RE(NR, NR))
+       ALLOCATE(RSQ_RE(numpts))
+       ALLOCATE(RW_RE(numpts))
+       ALLOCATE(AQ_RE(5,numpts))
+       ALLOCATE(AL_RE(2,numpts))
+       ! The imaginary ones
+       ALLOCATE(LNEXT_IM(numpts))
+       ALLOCATE(LCELL_IM(NR, NR))
+       ALLOCATE(RSQ_IM(numpts))
+       ALLOCATE(RW_IM(numpts))
+       ALLOCATE(AQ_IM(5,numpts))
+       ALLOCATE(AL_IM(2,numpts))
+       
+
+       !WRITE(*,*) 'Creating the interpolant...'
+       CALL QSHEP2(numpts, x1, x2, func, NQ, NW, NR, LCELL_RE, &
+            LNEXT_RE, XMIN_RE, YMIN_RE, DX_RE, DY_RE, &
+            RMAX_RE, RSQ_RE, AQ_RE, ierror)
+       IF (ierror /= 0) THEN
+          WRITE(*,*) 'Error calculating the (real) interpolant at QSHEP2.'
+          WRITE(*,*) 'ierror: ',ierror
+          IF(PRESENT(rank)) &
+               WRITE(*,*) 'From processor ',rank
+          STOP
+       ENDIF
+       
+    ELSEIF(method.eq.'cubic') THEN
+       
+       
+    ELSEIF(method.eq.'linear') THEN
+       
+    ELSE
+       
+       WRITE(*,*) 'The input method has been implemented.'
+       STOP
+       
+    END IF
+    
+  END SUBROUTINE dcreate_interpolant2D
   
-  SUBROUTINE create_interpolant2D(numpts, x1, x2, func, method, rank )
+  !------------------------------------------------------------------------!
+  
+  SUBROUTINE zcreate_interpolant2D(numpts, x1, x2, func, method, rank )
     
     IMPLICIT NONE
     
@@ -169,7 +238,7 @@ CONTAINS
        
     END IF
     
-  END SUBROUTINE create_interpolant2D
+  END SUBROUTINE zcreate_interpolant2D
   
   !--------------------------------------------------------------!
   
@@ -314,7 +383,74 @@ CONTAINS
   
   !--------------------------------------------------------------!
   
-  SUBROUTINE interpolate2D(numpts, y1, y2, x1, x2, func, method, &
+  SUBROUTINE dinterpolate2D(numpts, y1, y2, x1, x2, func, method, &
+       interp_val, interp_val_dx, interp_val_dy, rank)
+    
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)                  :: numpts
+    REAL(dp), INTENT(IN)                 :: y1
+    REAL(dp), INTENT(IN)                 :: y2
+    REAL(dp), INTENT(IN)                 :: x1(:)
+    REAL(dp), INTENT(IN)                 :: x2(:)
+    REAL(dp), INTENT(IN)                 :: func(:)
+    CHARACTER(LEN=*), INTENT(IN)         :: method
+    REAL(dp), INTENT(OUT)                :: interp_val
+    REAL(dp), INTENT(OUT), OPTIONAL      :: interp_val_dx
+    REAL(dp), INTENT(OUT), OPTIONAL      :: interp_val_dy
+    INTEGER, INTENT(IN), OPTIONAL        :: rank
+    
+    INTEGER                      :: ierror
+    
+    !-----------------------------------------------!
+    
+    IF (PRESENT(interp_val_dx).AND.PRESENT(interp_val_dy) ) THEN
+       IF (method .EQ. 'quadratic') THEN
+          ! Interpolate the real part
+          CALL QS2GRD(y1, y2, numpts, x1, x2, func, NR, LCELL_RE, LNEXT_RE,&
+               XMIN_RE, YMIN_RE, DX_RE, DY_RE, RMAX_RE, RSQ_RE, AQ_RE, interp_val, &
+               interp_val_dx, interp_val_dy, ierror)
+          IF (ierror /= 0) THEN
+             WRITE (*, *) 'QS2GRD - ERROR!'
+             WRITE (*, *) 'Error in QS2GRD (REAL), IER = ', ierror
+             IF(PRESENT(rank)) &
+                  WRITE(*,*) 'From processor ',rank
+             STOP
+          END IF
+          
+          !---------------------------------!
+          
+       ENDIF
+       
+       
+    ELSEIF (.NOT.PRESENT(interp_val_dx).AND. .NOT.PRESENT(interp_val_dy) ) THEN
+       
+       IF (method .EQ. 'quadratic') THEN
+          ! Interpolate the real part
+          interp_val = QS2VAL(y1, y2, numpts, x1, x2, func, NR, LCELL3_RE, LNEXT_RE, &
+               XMIN_RE, YMIN_RE, DX_RE, DY_RE, RMAX_RE, RSQ_RE, AQ_RE )
+          IF (interp_val .EQ. 0) THEN
+             WRITE (*, *) 'Q2VAL - ERROR!'
+             WRITE (*, *) 'Error in QS2VAL (REAL), IER = ', interp_val
+             IF(PRESENT(rank)) &
+                  WRITE(*,*) 'From processor ',rank
+             STOP
+          END IF
+                 
+          !---------------------------------!
+       ENDIF
+              
+    ELSE
+       WRITE(*,*) 'Missing derivatives arrays!'
+       RETURN
+    ENDIF
+    
+    
+  END SUBROUTINE dinterpolate2D
+  
+  !-----------------------------------------------------------------------!
+  
+  SUBROUTINE zinterpolate2D(numpts, y1, y2, x1, x2, func, method, &
        interp_val, interp_val_dx, interp_val_dy, rank)
     
     IMPLICIT NONE
@@ -414,11 +550,10 @@ CONTAINS
     ENDIF
     
     
-  END SUBROUTINE interpolate2D
-
+  END SUBROUTINE zinterpolate2D
+  
   !-----------------------------------------------------------!
-
-    
+  
   SUBROUTINE dinterpolate3D(numpts, y1, y2, y3, x1, x2, x3, func, method, &
        interp_val, interp_val_dx, interp_val_dy, interp_val_dz, rank )
     
@@ -595,7 +730,29 @@ CONTAINS
   
   !-------------------------------------!
   
-  SUBROUTINE destroy_interpolant2D(numpts, x1, x2, func )
+  SUBROUTINE ddestroy_interpolant2D(numpts, x1, x2, func )
+    
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)             :: numpts
+    REAL(dp), INTENT(IN)            :: x1(:)
+    REAL(dp), INTENT(IN)            :: x2(:)
+    REAL(dp), INTENT(IN)            :: func(:)
+    
+    ! Allocate arrays for the routine
+    ! The real ones
+    DEALLOCATE(LNEXT_RE)
+    DEALLOCATE(LCELL_RE)
+    DEALLOCATE(RSQ_RE)
+    DEALLOCATE(RW_RE)
+    DEALLOCATE(AQ_RE)
+    DEALLOCATE(AL_RE)
+    
+  END SUBROUTINE ddestroy_interpolant2D
+  
+  !----------------------------------------!
+  
+  SUBROUTINE zdestroy_interpolant2D(numpts, x1, x2, func )
     
     IMPLICIT NONE
     
@@ -620,11 +777,11 @@ CONTAINS
     DEALLOCATE(RW_IM)
     DEALLOCATE(AQ_IM)
     DEALLOCATE(AL_IM)
-
+    
     DEALLOCATE(func_re,func_im)
     
-  END SUBROUTINE destroy_interpolant2D
-
+  END SUBROUTINE zdestroy_interpolant2D
+  
   !-------------------------------------!
   
   SUBROUTINE ddestroy_interpolant3D( numpts, x1, x2, x3, func )

@@ -4,15 +4,15 @@
 
 
 FC  = ifort
-MPIF90 = mpifort
+MPIFC = mpifort
 
 # Debugging flags
 #OPT         = -check all
-#OPT         = -g -traceback
+OPT         = -g -traceback -check bounds
 #OPT         = -gen-interfaces -warn interfaces
 
 # Optimisation flags
-OPT         =	-O3
+#OPT         =	-O3
 
 # Performance flags
 #OPT			= -vec-report     # For report on vectorization
