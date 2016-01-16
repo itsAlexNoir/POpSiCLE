@@ -105,14 +105,14 @@ CONTAINS
     CALL h5gcreate_f(file_id, filename, group_id, error)
     
     IF(error.EQ.-1) THEN
-       CALL h5fopen(name,H5F_ACC_RDWR_F, file_id, error) 
+       CALL h5fopen_f(name,H5F_ACC_RDWR_F, file_id, error) 
        ! Open group in the root group
        IF(PRESENT(groupname)) THEN
           name = '/' // TRIM(groupname)
        ELSE
           name = '/' // TRIM(filename)
        ENDIF
-       CALL h5gopen(file_id, name, group_id, error)
+       CALL h5gopen_f(file_id, name, group_id, error)
     ENDIF
     
     
@@ -260,9 +260,9 @@ CONTAINS
     name = TRIM(filename) // '.h5'  
     CALL h5fcreate_f(name, H5F_ACC_EXCL_F, file_id, error, access_prp = plist_id)
     IF(error.EQ.-1) THEN
+
        CALL h5fopen_f(name, H5F_ACC_RDWR_F, file_id, error, access_prp = plist_id)
        CALL h5pclose_f(plist_id, error)
-       
        ! Create group in the root group.
        IF(PRESENT(groupname)) THEN
           name = '/' // TRIM(groupname)
@@ -272,8 +272,8 @@ CONTAINS
        !write(*,*) 'name: ',name
        CALL h5gopen_f(file_id, name, group_id, error)
     ELSE
-       CALL h5pclose_f(plist_id, error)
        
+       CALL h5pclose_f(plist_id, error)
        ! Create group in the root group.
        IF(PRESENT(groupname)) THEN
           name = '/' // TRIM(groupname)
