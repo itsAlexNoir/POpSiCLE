@@ -401,7 +401,7 @@ CONTAINS
   
   
   SUBROUTINE write_slice_xyz(density3D, rank, dims_local, dims_global, &
-       globalcomm, grid_rank, grid_addresses, filename)
+       globalcomm, grid_rank, grid_addresses, filename, groupname, setname)
     
     IMPLICIT NONE
     
@@ -412,7 +412,9 @@ CONTAINS
     INTEGER, INTENT(IN)         :: globalcomm
     INTEGER, INTENT(IN)         :: grid_rank(:)
     INTEGER, INTENT(IN)         :: grid_addresses(:)
-    CHARACTER(LEN=*), INTENT(IN) :: filename 
+    CHARACTER(LEN=*), INTENT(IN) :: filename
+    CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: groupname
+    CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: setname
     
     !--------------------------------------------------!
     
@@ -472,9 +474,23 @@ CONTAINS
     CALL MPI_COMM_CREATE(globalcomm, iogroup, iocomm, ierror)
     
     IF (ipr.EQ.0) THEN
-       CALL write_wave(RESHAPE(densitytotal3D,(/Nx*Ny*Nz/)), 3, &
-            (/Nx,Ny,Nz/), (/Nxgl,Nygl,Nzgl/), &
-            iocomm, ipgrid, filename )
+       IF(PRESENT(groupname).AND.PRESENT(setname)) THEN
+          CALL write_wave(RESHAPE(densitytotal3D,(/Nx*Ny*Nz/)), 3, &
+               (/Nx,Ny,Nz/), (/Nxgl,Nygl,Nzgl/), &
+               iocomm, ipgrid, filename, groupname, setname )
+       ELSEIF(PRESENT(groupname).AND. .NOT.PRESENT(setname)) THEN
+          CALL write_wave(RESHAPE(densitytotal3D,(/Nx*Ny*Nz/)), 3, &
+               (/Nx,Ny,Nz/), (/Nxgl,Nygl,Nzgl/), &
+               iocomm, ipgrid, filename, groupname )
+       ELSEIF(.NOT.PRESENT(groupname).AND. PRESENT(setname)) THEN
+          CALL write_wave(RESHAPE(densitytotal3D,(/Nx*Ny*Nz/)), 3, &
+               (/Nx,Ny,Nz/), (/Nxgl,Nygl,Nzgl/), &
+               iocomm, ipgrid, filename, setname=setname )
+       ELSE
+          CALL write_wave(RESHAPE(densitytotal3D,(/Nx*Ny*Nz/)), 3, &
+               (/Nx,Ny,Nz/), (/Nxgl,Nygl,Nzgl/), &
+               iocomm, ipgrid, filename )
+       ENDIF
     ENDIF
     
     DEALLOCATE(densitytotal3D)
@@ -485,7 +501,7 @@ CONTAINS
   !--------------------------------------------------------!
   
   SUBROUTINE write_slice_xy(density2D, rank, dims_local, dims_global, &
-       globalcomm, grid_rank, grid_addresses, filename)
+       globalcomm, grid_rank, grid_addresses, filename, groupname, setname)
     
     IMPLICIT NONE
     
@@ -497,6 +513,8 @@ CONTAINS
     INTEGER, INTENT(IN)         :: grid_rank(:)
     INTEGER, INTENT(IN)         :: grid_addresses(:)
     CHARACTER(LEN=*), INTENT(IN) :: filename 
+    CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: groupname
+    CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: setname
     
     !--------------------------------------------------!
     
@@ -554,9 +572,23 @@ CONTAINS
     CALL MPI_COMM_CREATE(globalcomm, iogroup, iocomm, ierror)
     
     IF (ipz.EQ.0 .AND. ipr.EQ.0) THEN
-       CALL write_wave(RESHAPE(densitytotal2D,(/Nx * Ny/)), 2, &
-            (/Nx, Ny/), (/Nxgl, Nygl/), &
-            iocomm, ipgrid, filename )
+       IF(PRESENT(groupname).AND. PRESENT(setname)) THEN
+          CALL write_wave(RESHAPE(densitytotal2D,(/Nx * Ny/)), 2, &
+               (/Nx, Ny/), (/Nxgl, Nygl/), &
+               iocomm, ipgrid, filename, groupname, setname )
+       ELSEIF(PRESENT(groupname).AND. .NOT.PRESENT(setname)) THEN
+          CALL write_wave(RESHAPE(densitytotal2D,(/Nx * Ny/)), 2, &
+               (/Nx, Ny/), (/Nxgl, Nygl/), &
+               iocomm, ipgrid, filename, groupname )
+       ELSEIF(.NOT. PRESENT(groupname).AND. PRESENT(setname)) THEN
+          CALL write_wave(RESHAPE(densitytotal2D,(/Nx * Ny/)), 2, &
+               (/Nx, Ny/), (/Nxgl, Nygl/), &
+               iocomm, ipgrid, filename, setname=setname )
+       ELSE
+          CALL write_wave(RESHAPE(densitytotal2D,(/Nx * Ny/)), 2, &
+               (/Nx, Ny/), (/Nxgl, Nygl/), &
+               iocomm, ipgrid, filename )
+       ENDIF
     ENDIF
     
     DEALLOCATE(densitytotal2D)
@@ -567,7 +599,7 @@ CONTAINS
   !--------------------------------------------------------!
   
   SUBROUTINE write_slice_xz(density2D, rank, dims_local, dims_global, &
-       globalcomm, grid_rank, grid_addresses, filename)
+       globalcomm, grid_rank, grid_addresses, filename, groupname, setname)
     
     IMPLICIT NONE
     
@@ -579,6 +611,8 @@ CONTAINS
     INTEGER, INTENT(IN)         :: grid_rank(:)
     INTEGER, INTENT(IN)         :: grid_addresses(:)
     CHARACTER(LEN=*), INTENT(IN) :: filename
+    CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: groupname
+    CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: setname
     
     !--------------------------------------------------!
     
@@ -636,9 +670,23 @@ CONTAINS
     CALL MPI_COMM_CREATE(globalcomm, iogroup, iocomm, ierror)
     
     IF (ipy.EQ.0 .AND. ipr.EQ.0) THEN
-       CALL write_wave(RESHAPE(densitytotal2D,(/Nx * Nz/)), 2, &
-            (/Nx,Nz/),(/Nxgl,Nzgl/), &          
-            iocomm, ipgrid, filename )
+       IF(PRESENT(groupname).AND. PRESENT(setname)) THEN
+          CALL write_wave(RESHAPE(densitytotal2D,(/Nx * Nz/)), 2, &
+               (/Nx,Nz/),(/Nxgl,Nzgl/), &          
+               iocomm, ipgrid, filename, groupname, setname )
+       ELSEIF(PRESENT(groupname).AND. .NOT.PRESENT(setname)) THEN
+          CALL write_wave(RESHAPE(densitytotal2D,(/Nx * Nz/)), 2, &
+               (/Nx,Nz/),(/Nxgl,Nzgl/), &          
+               iocomm, ipgrid, filename, groupname )
+       ELSEIF(.NOT.PRESENT(groupname).AND. PRESENT(setname)) THEN
+          CALL write_wave(RESHAPE(densitytotal2D,(/Nx * Nz/)), 2, &
+               (/Nx,Nz/),(/Nxgl,Nzgl/), &          
+               iocomm, ipgrid, filename, setname=setname )             
+       ELSE
+          CALL write_wave(RESHAPE(densitytotal2D,(/Nx * Nz/)), 2, &
+               (/Nx,Nz/),(/Nxgl,Nzgl/), &          
+               iocomm, ipgrid, filename )
+       ENDIF
     ENDIF
     
     DEALLOCATE(densitytotal2D)
@@ -649,7 +697,7 @@ CONTAINS
   !--------------------------------------------------------!
 
    SUBROUTINE write_slice_yz(density2D, rank, dims_local, dims_global, &
-       globalcomm, grid_rank, grid_addresses, filename)
+       globalcomm, grid_rank, grid_addresses, filename, groupname, setname)
     
     IMPLICIT NONE
 
@@ -661,6 +709,8 @@ CONTAINS
     INTEGER, INTENT(IN)         :: grid_rank(:)
     INTEGER, INTENT(IN)         :: grid_addresses(:)
     CHARACTER(LEN=*), INTENT(IN) :: filename
+    CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: groupname
+    CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: setname
     
     !--------------------------------------------------!
     
@@ -718,9 +768,23 @@ CONTAINS
     CALL MPI_COMM_CREATE(globalcomm, iogroup, iocomm, ierror)
     
     IF (ipx.EQ.0 .AND. ipr.EQ.0) THEN
-       CALL write_wave(RESHAPE(densitytotal2D,(/Ny * Nz/)), 2, &
-            (/Ny, Nz/), (/Nygl, Nzgl/), &
-            iocomm, ipgrid, filename )
+       IF(PRESENT(groupname).AND. PRESENT(setname)) THEN
+          CALL write_wave(RESHAPE(densitytotal2D,(/Ny * Nz/)), 2, &
+               (/Ny, Nz/), (/Nygl, Nzgl/), &
+               iocomm, ipgrid, filename, groupname, setname )   
+       ELSEIF(PRESENT(groupname).AND. .NOT.PRESENT(setname)) THEN
+          CALL write_wave(RESHAPE(densitytotal2D,(/Ny * Nz/)), 2, &
+               (/Ny, Nz/), (/Nygl, Nzgl/), &
+               iocomm, ipgrid, filename, groupname )
+       ELSEIF(.NOT.PRESENT(groupname).AND. PRESENT(setname)) THEN
+          CALL write_wave(RESHAPE(densitytotal2D,(/Ny * Nz/)), 2, &
+               (/Ny, Nz/), (/Nygl, Nzgl/), &
+               iocomm, ipgrid, filename, setname )        
+       ELSE
+          CALL write_wave(RESHAPE(densitytotal2D,(/Ny * Nz/)), 2, &
+               (/Ny, Nz/), (/Nygl, Nzgl/), &
+               iocomm, ipgrid, filename )
+       ENDIF
     ENDIF
     
     DEALLOCATE(densitytotal2D)
@@ -731,7 +795,7 @@ CONTAINS
   !------------------------------------------------------------------------!
 
    SUBROUTINE write_slice_rz( density2D, rank, dims_local, dims_global, &
-       globalcomm, grid_rank, grid_addresses, filename)
+       globalcomm, grid_rank, grid_addresses, filename, groupname, setname)
     
     IMPLICIT NONE
 
@@ -743,6 +807,8 @@ CONTAINS
     INTEGER, INTENT(IN)         :: grid_rank(:)
     INTEGER, INTENT(IN)         :: grid_addresses(:)
     CHARACTER(LEN=*), INTENT(IN) :: filename
+    CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: groupname
+    CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: setname
     
     !--------------------------------------------------!
     
@@ -800,9 +866,23 @@ CONTAINS
     CALL MPI_COMM_CREATE(globalcomm, iogroup, iocomm, ierror)
     
     IF (ipx.EQ.0 .AND. ipy.EQ.0) THEN
-       CALL write_wave(RESHAPE(densitytotal2D,(/Nr * Nz/)), 2, &
-            (/ Nz, Nr/), (/Nzgl, Nrgl/), &
-            iocomm, ipgrid, filename )
+       IF(PRESENT(groupname).AND. PRESENT(setname)) THEN
+          CALL write_wave(RESHAPE(densitytotal2D,(/Nr * Nz/)), 2, &
+               (/ Nz, Nr/), (/Nzgl, Nrgl/), &
+               iocomm, ipgrid, filename, groupname, setname )
+       ELSEIF(PRESENT(groupname).AND. .NOT.PRESENT(setname)) THEN
+          CALL write_wave(RESHAPE(densitytotal2D,(/Nr * Nz/)), 2, &
+               (/ Nz, Nr/), (/Nzgl, Nrgl/), &
+               iocomm, ipgrid, filename, groupname )
+       ELSEIF(PRESENT(groupname).AND. PRESENT(setname)) THEN
+          CALL write_wave(RESHAPE(densitytotal2D,(/Nr * Nz/)), 2, &
+               (/ Nz, Nr/), (/Nzgl, Nrgl/), &
+               iocomm, ipgrid, filename, setname=setname )
+       ELSE
+          CALL write_wave(RESHAPE(densitytotal2D,(/Nr * Nz/)), 2, &
+               (/ Nz, Nr/), (/Nzgl, Nrgl/), &
+               iocomm, ipgrid, filename )
+       ENDIF
     ENDIF
     
     DEALLOCATE(densitytotal2D)
