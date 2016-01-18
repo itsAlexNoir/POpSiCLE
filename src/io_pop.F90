@@ -27,6 +27,10 @@ MODULE io_pop
      MODULE PROCEDURE write_wave_parallel
 #endif
   END INTERFACE write_wave
+
+  !*************************************************!
+
+  LOGICAL             :: file_exists
   
   !*************************************************!
   !*************************************************!
@@ -93,28 +97,26 @@ CONTAINS
     ENDIF
     
     name = TRIM(filename) // '.h5'  
-    CALL h5fcreate_f(name, H5F_ACC_EXCL_F, file_id, error)
-    
-    ! Create group in the root group.     
-    IF(PRESENT(groupname)) THEN
-       name = '/' // TRIM(groupname)
-    ELSE
-       name = '/' // TRIM(filename)
-    ENDIF
-    !write(*,*) 'name: ',name
-    CALL h5gcreate_f(file_id, filename, group_id, error)
-    
-    IF(error.EQ.-1) THEN
-       CALL h5fopen_f(name,H5F_ACC_RDWR_F, file_id, error) 
-       ! Open group in the root group
+    IF(file_exists) THEN
+       CALL h5fopen_f(name, H5F_ACC_RDWR_F, file_id, error)
+       ! Create group in the root group.
        IF(PRESENT(groupname)) THEN
           name = '/' // TRIM(groupname)
        ELSE
           name = '/' // TRIM(filename)
        ENDIF
        CALL h5gopen_f(file_id, name, group_id, error)
+    ELSE
+       CALL h5fcreate_f(name, H5F_ACC_EXCL_F, file_id, error)
+       file_exists = .TRUE.
+       ! Create group in the root group.
+       IF(PRESENT(groupname)) THEN
+          name = '/' // TRIM(groupname)
+       ELSE
+          name = '/' // TRIM(filename)
+       ENDIF
+       CALL h5gcreate_f(file_id, name, group_id, error)
     ENDIF
-    
     
     ! Create the data spaces for the  datasets. 
     CALL h5screate_simple_f(rank, file_dims, dspace_id, error)
@@ -257,10 +259,8 @@ CONTAINS
     CALL h5pset_fapl_mpio_f(plist_id, comm, MPI_INFO_NULL, error) 
     
     ! Create the file collectively.
-    name = TRIM(filename) // '.h5'  
-    CALL h5fcreate_f(name, H5F_ACC_EXCL_F, file_id, error, access_prp = plist_id)
-    IF(error.EQ.-1) THEN
-
+    name = TRIM(filename) // '.h5'
+    IF(file_exists) THEN
        CALL h5fopen_f(name, H5F_ACC_RDWR_F, file_id, error, access_prp = plist_id)
        CALL h5pclose_f(plist_id, error)
        ! Create group in the root group.
@@ -272,8 +272,9 @@ CONTAINS
        !write(*,*) 'name: ',name
        CALL h5gopen_f(file_id, name, group_id, error)
     ELSE
-       
+       CALL h5fcreate_f(name, H5F_ACC_EXCL_F, file_id, error, access_prp = plist_id)
        CALL h5pclose_f(plist_id, error)
+       file_exists = .TRUE.
        ! Create group in the root group.
        IF(PRESENT(groupname)) THEN
           name = '/' // TRIM(groupname)
