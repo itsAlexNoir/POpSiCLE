@@ -823,36 +823,63 @@ CONTAINS
     maxphipts = numphipts
     
     maxsurfaceprocs = numsurfaceprocs
-    maxthetaptsperproc = numthetapts / numsurfaceprocs
-    maxphiptsperproc = numphipts / numsurfaceprocs
 
+    ! Set number of points per proc
+    ! Take into account if the number of points is not
+    ! a multiplier of the number of processors
+    IF(MOD(numthetapts,numsurfaceprocs).NE.0) THEN
+       IF((surfacerank-1).EQ.numsurfaceprocs) THEN
+          maxthetaptsperproc = numthetapts / numsurfaceprocs + &
+               MOD(numthetapts,numsurfaceprocs)
+       ENDIF
+    ELSE
+       maxthetaptsperproc = numthetapts / numsurfaceprocs
+    ENDIF
+    
+    IF(MOD(numphipts,numsurfaceprocs).NE.0) THEN
+       IF((surfacerank-1).EQ.numsurfaceprocs) THEN
+          maxphiptsperproc = numthetapts / numsurfaceprocs + &
+               MOD(numphipts,numsurfaceprocs)
+       ENDIF
+    ELSE
+       maxphiptsperproc = numphipts / numsurfaceprocs
+    ENDIF
+    
     IF(rank.EQ.0) THEN
        WRITE(*,*)
        WRITE(*,*) '*************************************'
        WRITE(*,*) '  Surface parameters (Cartesian).    '
        WRITE(*,*) '*************************************'
        WRITE(*,*)
-       WRITE(*,'(A, F9.3)') ' Radius boundary:                       ',&
+       WRITE(*,'(A, F9.3)') ' Radius boundary:                              ',&
             Rs
-       WRITE(*,'(A,I3)')    ' Maximum angular momentum:              ',&
+       WRITE(*,'(A,I3)')    ' Maximum angular momentum:                     ',&
             lmax
-       WRITE(*,'(A,F9.3)')  ' Radius tolerance :                     ',&
+       WRITE(*,'(A,F9.3)')  ' Radius tolerance :                            ',&
             radtol
-       WRITE(*,'(A, F9.3)') ' Delta R :                              ',&
+       WRITE(*,'(A, F9.3)') ' Delta R :                                     ',&
             deltar
-       WRITE(*,'(A,I3)')    ' Finite difference rule used :          ',&
+       WRITE(*,'(A,I3)')    ' Finite difference rule used :                 ',&
             fdpts
-       WRITE(*,'(A,I3)')    ' Number of processors on the surface:   ',&
+       WRITE(*,'(A,I3)')    ' Number of processors on the surface:          ',&
             numsurfaceprocs
-       WRITE(*,'(A,I3)')    ' Total number of theta points:          ',&
+       WRITE(*,'(A,I3)')    ' Total number of theta points:                 ',&
             numthetapts
-       WRITE(*,'(A,I3)')    ' Number of theta points per processors: ',&
+       WRITE(*,'(A,I3)')    ' Number of theta points per processors:        ',&
             numthetaptsperproc
-       WRITE(*,'(A,I3)')    ' Total number of phi points:            ',&
+       IF(MOD(numthetapts,numsurfaceprocs).NE.0) THEN
+          WRITE(*,'(A,I3)') ' Number of theta points on the last processor: ',&
+               numthetaptsperproc + MOD(numthetapts,numsurfaceprocs)
+       ENDIF
+       WRITE(*,'(A,I3)')    ' Total number of phi points:                   ',&
             numphipts
-       WRITE(*,'(A,I3)')    ' Number of phi points per processors:   ',&
+       WRITE(*,'(A,I3)')    ' Number of phi points per processors:          ',&
             numphiptsperproc
-       WRITE(*,'(A,F9.3)')  ' Delta phi :                            ',&
+       IF(MOD(numphipts,numsurfaceprocs).NE.0) THEN
+          WRITE(*,'(A,I3)') ' Number of phi points on the last processor:   ',&
+               numphiptsperproc + MOD(numphipts,numsurfaceprocs)
+       ENDIF
+       WRITE(*,'(A,F9.3)')  ' Delta phi :                                   ',&
             deltaphi
        WRITE(*,*)
        WRITE(*,*)
