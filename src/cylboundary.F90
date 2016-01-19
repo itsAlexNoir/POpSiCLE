@@ -560,10 +560,10 @@ CONTAINS
        WRITE(*,'(A,I3)')    ' Total number of theta points:                 ',&
             numthetapts
        WRITE(*,'(A,I3)')    ' Number of theta points per processors:        ',&
-            numthetaptsperproc
+            maxthetaptsperproc
        IF(MOD(numthetapts,numsurfaceprocs).NE.0) THEN
           WRITE(*,'(A,I3)') ' Number of theta points on the last processor: ',&
-               numthetaptsperproc + MOD(numthetapts,numsurfaceprocs)
+               maxthetaptsperproc + MOD(numthetapts,numsurfaceprocs)
        ENDIF
        WRITE(*,*)
        WRITE(*,*)

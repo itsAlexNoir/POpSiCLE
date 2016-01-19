@@ -880,18 +880,18 @@ CONTAINS
        WRITE(*,'(A,I3)')    ' Total number of theta points:                 ',&
             numthetapts
        WRITE(*,'(A,I3)')    ' Number of theta points per processors:        ',&
-            numthetaptsperproc
+            maxthetaptsperproc
        IF(MOD(numthetapts,numsurfaceprocs).NE.0) THEN
           WRITE(*,'(A,I3)') ' Number of theta points on the last processor: ',&
-               numthetaptsperproc + MOD(numthetapts,numsurfaceprocs)
+               maxthetaptsperproc + MOD(numthetapts,numsurfaceprocs)
        ENDIF
        WRITE(*,'(A,I3)')    ' Total number of phi points:                   ',&
             numphipts
        WRITE(*,'(A,I3)')    ' Number of phi points per processors:          ',&
-            numphiptsperproc
+            maxphiptsperproc
        IF(MOD(numphipts,numsurfaceprocs).NE.0) THEN
           WRITE(*,'(A,I3)') ' Number of phi points on the last processor:   ',&
-               numphiptsperproc + MOD(numphipts,numsurfaceprocs)
+               maxphiptsperproc + MOD(numphipts,numsurfaceprocs)
        ENDIF
        WRITE(*,'(A,F9.3)')  ' Delta phi :                                   ',&
             deltaphi
