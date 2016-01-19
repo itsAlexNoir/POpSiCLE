@@ -19,8 +19,8 @@ SHEPPACK_DIR = interp_libs/sheppack
 include interp_libs/sheppack/sheppack_routines.lst
 POPSICLE_OBJS = constants.o tools.o bessel.o gaussleg.o \
 	coords.o fourier.o sht.o cylboundary.o cartboundary.o \
-	interp.o io_pop.o io_surface.o patchwork.o surface.o \
-	popsicle.o
+	interp.o io_pop.o io_subset.o io_surface.o patchwork.o \
+	surface.o flux.o popsicle.o
 
 ifeq (${FFT_LIB},fftw)
 POPSICLE_OBJS += fftw.o 
@@ -104,12 +104,13 @@ cartboundary.o: constants.o gaussleg.o interp.o
 bessel.o: constants.o
 gaussleg.o: constants.o
 io_pop.o: constants.o patchwork.o 
-io_surface.o: constants.o tools.o \
-    patchwork.o cylboundary.o cartboundary.o
+io_subset.o: constants.o tools.o patchwork.o
+io_surface.o: constants.o \
+    cylboundary.o cartboundary.o
 popsicle.o : constants.o fourier.o \
 	cylboundary.o cartboundary.o \
-	coords.o io_pop.o io_surface.o sht.o \
-	bessel.o gaussleg.o patchwork.o
+	coords.o io_pop.o io_subset.o io_surface.o\
+	 sht.o bessel.o gaussleg.o patchwork.o
 ifeq (${FFT_LIB},mkl)
 fourier.o: ${MKL_DFTI} constants.o tools.o
 sht.o: ${MKL_DFTI} constants.o gaussleg.o
@@ -119,7 +120,8 @@ endif
 patchwork.o: constants.o tools.o
 surface.o: constants.o tools.o cylboundary.o \
 	cartboundary.o io_surface.o
-
+flux.o: constants.o gaussleg.o bessel.o sht.o \
+    io_surface.o
 ##-----------------------------------------------
 
 lib: ${POPSICLE_OBJS} ${INTERP_OBJS} ${SHEPPACK_OBJS}
@@ -143,7 +145,7 @@ sheppack_tests: ${SHEPPACK_OBJS}
 
 clean:
 	@echo 'Deleting source...'
-	rm -rf *.a *.o interp/*.o ${SHEPPACK_DIR}/*.o
+	rm -rf *.a *.o *.i90 interp/*.o ${SHEPPACK_DIR}/*.o
 	rm -rf *.mod interp/*.mod ${SHEPPACK_DIR}/*.mod
 	@cd ${POPSICLE_ROOT}/lib; rm -rf *.a *.mod
 

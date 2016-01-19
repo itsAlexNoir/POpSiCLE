@@ -33,8 +33,6 @@ MODULE surface
   PUBLIC       :: get_cartesian_surface
   PUBLIC       :: delete_surface2D
   PUBLIC       :: delete_surface3D
-  !PUBLIC       :: get_cylindrical_flux
-  !PUBLIC       :: get_cartesian_flux
   
   !-------------------------------------------!
   
@@ -565,71 +563,5 @@ CONTAINS
     
   END SUBROUTINE delete_surface3D_parallel
 #endif
-  !***********************************************************!
-  
-!!$  SUBROUTINE get_cylindrical_flux( wavefunc )
-!!$    
-!!$    IMPLICIT NONE
-!!$    
-!!$    COMPLEX(dp), INTENT(IN)   :: wavefunc(:,:)
-!!$    
-!!$    !-----------------------------------------!
-!!$    
-!!$    !ALLOCATE(psi_l(1:numrpts,0:lmax))
-!!$    ! Initialize Spherical Harmonics
-!!$    !CALL initialize_spherical_harmonics(lmax, costheta_boundary)
-!!$
-!!$    
-!!$    CALL make_sht(sphfunc, costheta_boundary, &
-!!$         theta_weights, lmax, psi_l)
-!!$
-!!$    CALL calculate_flux( psi_l)
-!!$    
-!!$  END SUBROUTINE get_cylindrical_flux
-  
-  !---------------------------------------------------------------!
-  
-  
-  !---------------------------------------------------------------!
-  
-!!$  SUBROUTINE calculate_radialflux2D(fl, vectorpot )
-!!$    
-!!$    IMPLICIT NONE
-!!$    
-!!$    COMPLEX(dp), INTENT(IN)      :: fl(:,:)
-!!$    REAL(dp), INTENT(IN)         :: vectorpot 
-!!$    
-!!$    COMPLEX(dp)                  :: term1, term2, term3
-!!$    INTEGER                      :: ik
-!!$    
-!!$    DO ik = 1, numkpts
-!!$       
-!!$       term1 = ZERO
-!!$       term2 = ZERO
-!!$       term3 = ZERO
-!!$       
-!!$       DO il = 0, lmax
-!!$          
-!!$          CALL sphbessjy(il,x,sphbessel,sy,sphbesselp,syp)
-!!$          
-!!$          term1 = term1 + krpts(ik) * rb * 0.5_dp * sphbesselp - &
-!!$               0.5_dp * sphbessel ) * fl(indxrb,il)
-!!$          
-!!$          
-!!$          term2 = term2 - rb * 0.5_dp * sphbessel * flp 
-!!$          
-!!$          term3 = term3 - ZIMAG * 0.5_dp / SQRT(pi) * rb * &
-!!$               vectorpot * fl(indxrb,il) * 
-!!$          
-!!$          DO ill = 0, lmax
-!!$             
-!!$          ENDDO
-!!$
-!!$       ENDDO
-!!$
-!!$    ENDDO
-!!$          
-!!$  END SUBROUTINE calculate_flux
-
   
 END MODULE surface

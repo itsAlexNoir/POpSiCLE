@@ -31,8 +31,8 @@ MODULE sht
   ! Interfaces
   
   INTERFACE make_sht
-     MODULE PROCEDURE make_sht_2D
-     !MODULE PROCEDURE make_sht_3D
+     MODULE PROCEDURE make_sht_l
+     !MODULE PROCEDURE make_sht_lm
   END INTERFACE make_sht
   
   ! Public variables
@@ -106,7 +106,7 @@ CONTAINS
   !=======================================================================
   !=======================================================================
   !
-  !   SUBROUTINE make_sht_2D
+  !   SUBROUTINE make_sht_l
   !
   !>  \brief This subroutine returns the Gauss nodes of a particular
   !>  range of values, and the correspondent Gauss weights
@@ -124,44 +124,41 @@ CONTAINS
   !=======================================================================
   !=======================================================================
   
-  SUBROUTINE make_sht_2D(func, axis, weights, lmax, rad_coeffl0)
+  SUBROUTINE make_sht_l(func, axis, weights, lmax, rad_coeffl0)
     
     IMPLICIT NONE
     
-    COMPLEX(dp), INTENT(IN)    :: func(:, :)
+    COMPLEX(dp), INTENT(IN)    :: func( :)
     REAL(dp), INTENT(IN)       :: axis(:)
     REAL(dp), INTENT(IN)       :: weights(:)
     INTEGER, INTENT(IN)        :: lmax
-    COMPLEX(dp), INTENT(OUT)   :: rad_coeffl0(1:5, 0:lmax)
+    COMPLEX(dp), INTENT(OUT)   :: rad_coeffl0(0:lmax)
     
-    INTEGER                    :: numrpts, numthetapts
+    INTEGER                    :: numthetapts
     REAL(dp)                   :: sum
-    INTEGER                    :: il, ir, itheta
+    INTEGER                    :: il, itheta
     
     ! What is the maximum number of points in r and theta?
-    numrpts = SIZE(func,1)
     numthetapts = SIZE(axis)
     
     ! Initialize array to zero
     rad_coeffl0 = ZERO
     
-    DO ir = 1, numrpts
-       DO il = 0, lmax
-          sum = 0.0_dp
-          DO itheta = 1, numthetapts
-             sum = sum + func(ir,itheta) * &
-                  normfact(0,il) * legenpl(itheta-1,0,il) * weights(itheta)
-          ENDDO
-          rad_coeffl0(ir,il) = sum
+    DO il = 0, lmax
+       sum = 0.0_dp
+       DO itheta = 1, numthetapts
+          sum = sum + func(itheta) * &
+               normfact(0,il) * legenpl(itheta-1,0,il) * weights(itheta)
        ENDDO
+       rad_coeffl0(il) = sum
     ENDDO
-           
-  END SUBROUTINE make_sht_2D
+    
+  END SUBROUTINE make_sht_l
   
   !=======================================================================
   !=======================================================================
   !
-  !   SUBROUTINE make_sht_3D
+  !   SUBROUTINE make_sht_lm
   !
   !>  \brief This subroutine returns the Gauss nodes of a particular
   !>  range of values, and the correspondent Gauss weights
@@ -179,7 +176,7 @@ CONTAINS
   !=======================================================================
   !=======================================================================
   
-!!$  SUBROUTINE make_sht_3D(func, th_axis, weights, phi_axis, lmax, rad_coefflm)
+!!$  SUBROUTINE make_sht_lm(func, th_axis, weights, phi_axis, lmax, rad_coefflm)
 !!$    
 !!$    IMPLICIT NONE
 !!$    
@@ -241,6 +238,6 @@ CONTAINS
 !!$    ! Deallocate auxiliary arrays
 !!$    DEALLOCATE(coeffm,coeffmtheta)
 !!$ 
-!!$  END SUBROUTINE make_sht_3D
+!!$  END SUBROUTINE make_sht_lm
   
 END MODULE sht

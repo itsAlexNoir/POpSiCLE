@@ -245,6 +245,27 @@ CONTAINS
     maxrpts = numrpts
     maxthetapts = numthetapts
     
+    WRITE(*,*)
+    WRITE(*,*) '*************************************'
+    WRITE(*,*) '  Surface parameters (Cylindrical).  '
+    WRITE(*,*) '*************************************'
+    WRITE(*,*)
+    WRITE(*,'(A, F9.3)') ' Radius boundary:                       ',&
+         Rs
+    WRITE(*,'(A,F9.3)')  ' Radius tolerance :                     ',&
+         radtol
+    WRITE(*,'(A, F9.3)') ' Delta R :                              ',&
+         deltar
+    WRITE(*,'(A,I3)')    ' Finite difference rule used :          ',&
+         fdpts
+    WRITE(*,'(A,I3)')    ' Maximum angular momentum:              ',&
+         lmax
+    WRITE(*,'(A,I3)')    ' Total number of theta points:          ',&
+         numthetapts
+    WRITE(*,*)
+    WRITE(*,*)
+    
+    
   END SUBROUTINE initialize_cylindrical_boundary2D_serial
   
   !*****************************************************************!
@@ -496,6 +517,33 @@ CONTAINS
     maxthetapts = numthetapts
     maxsurfaceprocs = numsurfaceprocs
     maxthetaptsperproc = numthetapts / numsurfaceprocs
+
+    IF(rank.EQ.0) THEN
+       WRITE(*,*)
+       WRITE(*,*) '*************************************'
+       WRITE(*,*) '  Surface parameters (Cylindrical).  '
+       WRITE(*,*) '*************************************'
+       WRITE(*,*)
+       WRITE(*,'(A, F9.3)') ' Radius boundary:                       ',&
+            Rs
+       WRITE(*,'(A,I3)')    ' Maximum angular momentum:              ',&
+            lmax
+       WRITE(*,'(A,F9.3)')  ' Radius tolerance :                     ',&
+            radtol
+       WRITE(*,'(A, F9.3)') ' Delta R :                              ',&
+            deltar
+       WRITE(*,'(A,I3)')    ' Finite difference rule used :          ',&
+            fdpts
+       WRITE(*,'(A,I3)')    ' Number of processors on the surface:   ',&
+            numsurfaceprocs
+       WRITE(*,'(A,I3)')    ' Total number of theta points:          ',&
+            numthetapts
+       WRITE(*,'(A,I3)')    ' Number of theta points per processors: ',&
+            numthetaptsperproc
+       WRITE(*,*)
+       WRITE(*,*)
+    ENDIF
+
     
   END SUBROUTINE initialize_cylindrical_boundary2D_parallel
 #endif

@@ -4,4 +4,5 @@ legendre_test \
 cyl2sph_ex1 \
 cyl2sph_ex3 \
 cart2sph_ex1 \
-cart2sph_ex3 
+cart2sph_ex3 \
+tsurff_test 

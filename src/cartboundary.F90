@@ -232,6 +232,27 @@ CONTAINS
     maxrpts = numrpts
     maxthetapts = numthetapts
     
+    WRITE(*,*)
+    WRITE(*,*) '*************************************'
+    WRITE(*,*) '  Surface parameters (Cartesian).    '
+    WRITE(*,*) '*************************************'
+    WRITE(*,*)
+    WRITE(*,'(A, F9.3)') ' Radius boundary:                       ',&
+         Rs
+    WRITE(*,'(A,I3)')    ' Maximum angular momentum:              ',&
+         lmax
+    WRITE(*,'(A,F9.3)')  ' Radius tolerance :                     ',&
+         radtol
+    WRITE(*,'(A, F9.3)') ' Delta R :                              ',&
+         deltar
+    WRITE(*,'(A,I3)')    ' Finite difference rule used :          ',&
+         fdpts
+    WRITE(*,'(A,I3)')    ' Total number of theta points:          ',&
+         numthetapts
+    WRITE(*,*)
+    WRITE(*,*)
+    
+    
   END SUBROUTINE initialize_cartesian_boundary2D
   
   !-----------------------------------------------------------------!
@@ -467,6 +488,31 @@ CONTAINS
     maxrpts = numrpts
     maxthetapts = numthetapts
     maxphipts = numphipts
+
+    WRITE(*,*)
+    WRITE(*,*) '*************************************'
+    WRITE(*,*) '  Surface parameters (Cartesian).    '
+    WRITE(*,*) '*************************************'
+    WRITE(*,*)
+    WRITE(*,'(A, F9.3)') ' Radius boundary:                       ',&
+         Rs
+    WRITE(*,'(A,I3)')    ' Maximum angular momentum:              ',&
+         lmax
+    WRITE(*,'(A,F9.3)')  ' Radius tolerance :                     ',&
+         radtol
+    WRITE(*,'(A, F9.3)') ' Delta R :                              ',&
+         deltar
+    WRITE(*,'(A,I3)')    ' Finite difference rule used :          ',&
+         fdpts
+    WRITE(*,'(A,I3)')    ' Total number of theta points:          ',&
+         numthetapts
+    WRITE(*,'(A,I3)')    ' Total number of phi points:            ',&
+         numphipts
+    WRITE(*,'(A,F9.3)')  ' Delta phi :                            ',&
+         deltaphi
+    WRITE(*,*)
+    WRITE(*,*)
+    
     
   END SUBROUTINE initialize_cartesian_boundary3D_serial
   
@@ -779,6 +825,38 @@ CONTAINS
     maxsurfaceprocs = numsurfaceprocs
     maxthetaptsperproc = numthetapts / numsurfaceprocs
     maxphiptsperproc = numphipts / numsurfaceprocs
+
+    IF(rank.EQ.0) THEN
+       WRITE(*,*)
+       WRITE(*,*) '*************************************'
+       WRITE(*,*) '  Surface parameters (Cartesian).    '
+       WRITE(*,*) '*************************************'
+       WRITE(*,*)
+       WRITE(*,'(A, F9.3)') ' Radius boundary:                       ',&
+            Rs
+       WRITE(*,'(A,I3)')    ' Maximum angular momentum:              ',&
+            lmax
+       WRITE(*,'(A,F9.3)')  ' Radius tolerance :                     ',&
+            radtol
+       WRITE(*,'(A, F9.3)') ' Delta R :                              ',&
+            deltar
+       WRITE(*,'(A,I3)')    ' Finite difference rule used :          ',&
+            fdpts
+       WRITE(*,'(A,I3)')    ' Number of processors on the surface:   ',&
+            numsurfaceprocs
+       WRITE(*,'(A,I3)')    ' Total number of theta points:          ',&
+            numthetapts
+       WRITE(*,'(A,I3)')    ' Number of theta points per processors: ',&
+            numthetaptsperproc
+       WRITE(*,'(A,I3)')    ' Total number of phi points:            ',&
+            numphipts
+       WRITE(*,'(A,I3)')    ' Number of phi points per processors:   ',&
+            numphiptsperproc
+       WRITE(*,'(A,F9.3)')  ' Delta phi :                            ',&
+            deltaphi
+       WRITE(*,*)
+       WRITE(*,*)
+    ENDIF
     
   END SUBROUTINE initialize_cartesian_boundary3D_parallel
 #endif  
