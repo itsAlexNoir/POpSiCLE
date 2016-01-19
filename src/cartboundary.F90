@@ -195,6 +195,7 @@ CONTAINS
           STOP
        ENDIF
 
+       i_am_in_local2D = 0
        ! Check if the new axis are within the cartesian domain.
        DO itheta = 1, numthetapts
           DO ir = 1, numrpts
@@ -260,7 +261,7 @@ CONTAINS
   !----------------------------------------------------!
   !  INITIALIZE CARTESIAN BOUNDARY 3D
   !----------------------------------------------------!
-
+  
   
   SUBROUTINE initialize_cartesian_boundary3D_serial(x_ax, y_ax, z_ax, dims, &
        Rs, radtol, fdpts, deltar, lmax, &
@@ -442,6 +443,7 @@ CONTAINS
           STOP
        ENDIF
        
+       i_am_in_local3D = 0
        ! Check if the new axis are within the cartesian domain.
        DO iphi = 1, numphipts
           DO itheta = 1, numthetapts
@@ -488,7 +490,7 @@ CONTAINS
     maxrpts = numrpts
     maxthetapts = numthetapts
     maxphipts = numphipts
-
+    
     WRITE(*,*)
     WRITE(*,*) '*************************************'
     WRITE(*,*) '  Surface parameters (Cartesian).    '
@@ -568,7 +570,7 @@ CONTAINS
     !--------------------------------------------------!
     
     numpts = 0
-   
+    
     halolims(1,:) = (/ lbound(x_ax), ubound(x_ax) /)
     halolims(2,:) = (/ lbound(y_ax), ubound(y_ax) /)
     halolims(3,:) = (/ lbound(z_ax), ubound(z_ax) /)
@@ -576,7 +578,7 @@ CONTAINS
     ! Assign max and min values for the axes
     minx = MINVAL(ABS(x_ax))
     maxx = MAXVAL(ABS(x_ax))
-
+    
     miny = MINVAL(ABS(y_ax))
     maxy = MAXVAL(ABS(y_ax))
     
@@ -606,7 +608,7 @@ CONTAINS
        
        RETURN
     ENDIF
-
+    
     !-----------------!
     mintheta = pi
     maxtheta = 0.0_dp
@@ -702,6 +704,7 @@ CONTAINS
     
     !------------!
     
+    i_am_in_local3D = 0
     ! Check if the new axis are within the cartesian domain.
     DO iphi = 1, numphipts
        DO itheta = 1, numthetapts
@@ -722,7 +725,6 @@ CONTAINS
        ENDDO
     ENDDO
     
-    
     i_am_in_global3D = 0
     ! Get I am in global array if needed.
     CALL MPI_ALLREDUCE(i_am_in_local3D, i_am_in_global3D, numrpts*numthetapts*numphipts, &
@@ -731,6 +733,18 @@ CONTAINS
     ! Check if there is a overlap of points between processors
     IF(ANY(i_am_in_global3D.GT.1)) THEN
        WRITE(*,*) 'There is an overlap of points beetween processors'
+       IF(rank.EQ.0) THEN
+          OPEN(UNIT=101,FORM='formatted',FILE='i_am_in.dat')
+          DO iphi = 1, numphipts
+             DO itheta = 1, numthetapts
+                DO ir = 1, numrpts
+                   WRITE(101,*) rpts_boundary(ir), theta_boundary(itheta), &
+                        phi_boundary(iphi), i_am_in_global3D(ir,itheta,iphi)
+                ENDDO
+             ENDDO
+          ENDDO
+          CLOSE(101)
+       ENDIF
        STOP
     ENDIF
     

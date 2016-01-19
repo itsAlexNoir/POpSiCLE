@@ -186,6 +186,7 @@ CONTAINS
     
     !------------!
     
+    i_am_in_local2D = 0
     ! Check if the new axis are within the cartesian domain.
     DO itheta = 1, numthetapts
        DO ir = 1, numrpts
@@ -213,7 +214,6 @@ CONTAINS
        ALLOCATE(theta_boundary(1))
        ALLOCATE(costheta_boundary(1))
        ALLOCATE(theta_weights(1))
-       
     ELSE
        ALLOCATE(rhopts_scatt(1:numpts))
        ALLOCATE(zpts_scatt(1:numpts))
@@ -405,9 +405,10 @@ CONTAINS
     !        & theta coordinate limits.'
     !   STOP
     !ENDIF
-
+    
     !------------!
     
+    i_am_in_local2D = 0
     ! Check if the new axis are within the cartesian domain.
     DO itheta = 1, numthetapts
        DO ir = 1, numrpts
@@ -432,6 +433,15 @@ CONTAINS
     ! Check if there is a overlap of points between processors
     IF(ANY(i_am_in_global2D.GT.1)) THEN
        WRITE(*,*) 'There is an overlap of points beetween processors'
+       IF(rank.EQ.0) THEN
+          OPEN(UNIT=101,FORM='formatted',FILE='i_am_in.dat')
+          DO itheta = 1, numthetapts
+             DO ir = 1, numrpts
+                WRITE(101,*) rpts_boundary(ir), theta_boundary(itheta), i_am_in_global2D(ir,itheta)
+             ENDDO
+          ENDDO
+          CLOSE(101)
+       ENDIF
        STOP
     ENDIF
     
