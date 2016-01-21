@@ -19,7 +19,7 @@ MODULE sht
   
   USE constants
   USE gaussleg
-  ! USE fftw
+  !USE fourier
   
   IMPLICIT NONE
   
@@ -27,14 +27,7 @@ MODULE sht
   
   PUBLIC       :: initialize_spherical_harmonics
   PUBLIC       :: make_sht
-  
-  ! Interfaces
-  
-  INTERFACE make_sht
-     MODULE PROCEDURE make_sht_l
-     !MODULE PROCEDURE make_sht_lm
-  END INTERFACE make_sht
-  
+    
   ! Public variables
   
   REAL(dp), ALLOCATABLE, PUBLIC  :: legenpl(:, :, :)
@@ -106,138 +99,100 @@ CONTAINS
   !=======================================================================
   !=======================================================================
   !
-  !   SUBROUTINE make_sht_l
+  !   SUBROUTINE make_sht
   !
-  !>  \brief This subroutine returns the Gauss nodes of a particular
-  !>  range of values, and the correspondent Gauss weights
-  !>  \brief This subroutine make the SHT for a function that depends
-  !>  only on theta. It uses a Gauss-Legendre algorithm, in other words,
-  !>  it computes a Gaussian quadrature with gauss nodes and weights. 
+  !>  \brief This subroutine performs the (fast) Spherical
+  !>    Harmonics Transform (SHT). It uses a FFT to decompose
+  !>    into the magnetic quantum number m, and a Gauss-Legendre
+  !>    quadrature to decompose into angular momentum number l.
   !
   !======================SUBROUTINE ARGUMENTS=============================
   !
-  !> \param[in] lower_bound Minimum value of the passed array
-  !> \param[in] upper_bound Maximum value of the passed array
-  !> \param[out] axis Returned axis with gaussian nodes.
-  !> \param[out] weights Returned weights array.
+  !> \param[in] func Function to be transformed
+  !> \param[in] lmax Maximum angular momentum
+  !> \param[in] weights Gauss weigths needed to perform the quadrature
+  !> \param[out] func_lm Transformed function, decomposed into l,m
   !
   !=======================================================================
   !=======================================================================
   
-  SUBROUTINE make_sht_l(func, axis, weights, lmax, rad_coeffl0)
+  SUBROUTINE make_sht(func, lmax, weights, func_lm)
     
     IMPLICIT NONE
     
-    COMPLEX(dp), INTENT(IN)    :: func( :)
-    REAL(dp), INTENT(IN)       :: axis(:)
-    REAL(dp), INTENT(IN)       :: weights(:)
+    COMPLEX(dp), INTENT(IN)    :: func(:, :)
     INTEGER, INTENT(IN)        :: lmax
-    COMPLEX(dp), INTENT(OUT)   :: rad_coeffl0(0:lmax)
+    REAL(dp), INTENT(IN)       :: weights(:)
+    COMPLEX(dp), INTENT(OUT)   :: func_lm(:, :)
     
-    INTEGER                    :: numthetapts
+    INTEGER                    :: dims(2)
+    COMPLEX(dp), ALLOCATABLE   :: coeffm(:), gm(:, :)
+    INTEGER                    :: numthetapts, numphipts
+    INTEGER                    :: mmax
     REAL(dp)                   :: sum
-    INTEGER                    :: il, itheta
+    INTEGER                    :: il, im, itheta
     
-    ! What is the maximum number of points in r and theta?
-    numthetapts = SIZE(axis)
+    ! What is the maximum number of theta and phi points?
+    !numthetapts = SIZE(axis)
+    dims = SHAPE(func)
+    numthetapts = dims(1)
+    numphipts   = dims(2)
+    IF(numphipts.EQ.1) THEN
+       mmax = 0
+       ALLOCATE(gm(1:numthetapts,0:0))
+    ELSE
+       mmax = lmax
+       ! Allocate auxiliary arrays
+       ALLOCATE(gm(1:numthetapts,-mmax:mmax))
+       ALLOCATE(coeffm(-mmax:mmax))
+    ENDIF
+    
     
     ! Initialize array to zero
-    rad_coeffl0 = ZERO
+    func_lm = ZERO
+    gm = ZERO
     
-    DO il = 0, lmax
-       sum = 0.0_dp
+    ! Do first the FFT (if necessary)
+    IF(numphipts.EQ.1) THEN
        DO itheta = 1, numthetapts
-          sum = sum + func(itheta) * &
-               normfact(0,il) * legenpl(itheta-1,0,il) * weights(itheta)
-       ENDDO
-       rad_coeffl0(il) = sum
-    ENDDO
-    
-  END SUBROUTINE make_sht_l
-  
-  !=======================================================================
-  !=======================================================================
-  !
-  !   SUBROUTINE make_sht_lm
-  !
-  !>  \brief This subroutine returns the Gauss nodes of a particular
-  !>  range of values, and the correspondent Gauss weights
-  !>  \brief This subroutine make the SHT for a function that depends
-  !>  on theta and phi. It uses a Gauss-Legendre algorithm, in other words,
-  !>  it computes a Gaussian quadrature with gauss nodes and weights. 
-  !
-  !======================SUBROUTINE ARGUMENTS=============================
-  !
-  !> \param[in] lower_bound Minimum value of the passed array
-  !> \param[in] upper_bound Maximum value of the passed array
-  !> \param[out] axis Returned axis with gaussian nodes.
-  !> \param[out] weights Returned weights array.
-  !
-  !=======================================================================
-  !=======================================================================
-  
-!!$  SUBROUTINE make_sht_lm(func, th_axis, weights, phi_axis, lmax, rad_coefflm)
-!!$    
-!!$    IMPLICIT NONE
-!!$    
-!!$    COMPLEX(dp), INTENT(IN)     :: func(:, :, :)
-!!$    REAL(dp), INTENT(IN)        :: th_axis(:)
-!!$    REAL(dp), INTENT(IN)        :: weights(:)
-!!$    REAL(dp), INTENT(IN)        :: phi_axis(:)
-!!$    INTEGER, INTENT(IN)         :: lmax
-!!$    COMPLEX(dp), INTENT(OUT)    :: rad_coefflm(: ,:, :)
-!!$    
-!!$    COMPLEX(dp), ALLOCATABLE   :: coeffm(:)
-!!$    COMPLEX(dp), ALLOCATABLE   :: coeffmtheta(:, :)
-!!$    INTEGER                    :: numrpts, numthetapts
-!!$    INTEGER                    :: numphipts
-!!$    INTEGER                    :: il, ir, itheta, iphi
-!!$    
-!!$    ! What is the maximum number of points in r and theta?
-!!$    numrpts = SIZE(func,1)
-!!$    numthetapts = SIZE(th_axis)
-!!$    numphipts = SIZE(phi_axis)
-!!$    ! Initialize array to zero
-!!$    rad_coefflm = ZERO
-!!$    
-!!$    ALLOCATE(coeffm(1:numphipts))
-!!$    ALLOCATE(coeffmtheta(1:numthetapts,1:numphipts))
-!!$    
-!!$    DO ir = 1, numrpts
-!!$       
-!!$       ! FFT to calculate m number
-!!$       DO itheta = 1, numthetapts
-!!$          coeffm = ZERO
-!!$          CALL FourierTransform(func(ir,itheta,:),coeffm,1,(/numphipts/))
+          coeffm = ZERO
+!!$          CALL FourierTransform(func(itheta,:),coeffm,1,(/numphipts/))
+!!$          
 !!$          ! Reorder coeffm array after fourier transform
 !!$          shift = numphipts - (numphipts+1)/2
 !!$          DO im = 1, shift
-!!$             coeffmtheta(itheta,im) = coeffm(im+shift)
+!!$             gm(itheta,im) = coeffm(im+shift)
 !!$          ENDDO
 !!$          
 !!$          DO im = shift+1, numphipts
-!!$             coeffmtheta(itheta,im) = coeffm(im-shift)
+!!$             gm(itheta,im) = coeffm(im-shift)
 !!$          ENDDO
-!!$          
-!!$       ENDDO
-!!$       
-!!$       ! Now it is the turn of l
-!!$       DO il = 0, lmax
-!!$          DO im = 
-!!$             sum = 0.0_dp
-!!$             DO itheta = 1, numthetapts
-!!$                sum = sum + coeffmtheta(itheta,im) * &
-!!$                     normfact(im,il) * legenpl(itheta-1,im,il) * weights(itheta)
-!!$             ENDDO
-!!$             rad_coefflm(ir,il,im) = sum
-!!$          ENDDO
-!!$       ENDDO
-!!$       
-!!$    ENDDO ! End of r loop
-!!$    
-!!$    ! Deallocate auxiliary arrays
-!!$    DEALLOCATE(coeffm,coeffmtheta)
-!!$ 
-!!$  END SUBROUTINE make_sht_lm
-  
+       ENDDO
+    ELSE
+       DO itheta = 1, numthetapts
+          gm(itheta,0) = func(itheta,1)
+       ENDDO
+    ENDIF
+    
+    ! Now, the Gauss-Legendre quadrature
+    DO il = 0, lmax
+       DO im = 0, mmax
+          sum = 0.0_dp
+          DO itheta = 1, numthetapts
+             sum = sum + gm(itheta, im) * &
+                  normfact(im,il) * legenpl(itheta-1,im,il) &
+                  * weights(itheta)
+          ENDDO
+          func_lm(im,il) = sum
+       ENDDO
+    ENDDO
+    
+    ! Deallocate stuff
+    DEALLOCATE(gm)
+    IF(numphipts.EQ.1) &
+         DEALLOCATE(coeffm)
+    
+  END SUBROUTINE make_sht
+
+  !*****************************************************************!
 END MODULE sht

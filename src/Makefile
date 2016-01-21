@@ -113,9 +113,10 @@ popsicle.o : constants.o fourier.o \
 	 sht.o bessel.o gaussleg.o patchwork.o
 ifeq (${FFT_LIB},mkl)
 fourier.o: ${MKL_DFTI} constants.o tools.o
-sht.o: ${MKL_DFTI} constants.o gaussleg.o
+sht.o: ${MKL_DFTI} constants.o gaussleg.o fourier.o
 else ifeq (${FFT_LIB},fftw)
 fourier.o: constants.o tools.o fftw.o
+sht.o: constants.o gaussleg.o fftw.o
 endif
 patchwork.o: constants.o tools.o
 surface.o: constants.o tools.o cylboundary.o \

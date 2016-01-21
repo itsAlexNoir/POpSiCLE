@@ -14,51 +14,50 @@
 !
 !------------------------------------------------------------------------------
 MODULE flux
-
+  
   USE constants
   USE gaussleg
   USE bessel
   USE sht
   USE io_surface
-
+  
   IMPLICIT NONE
-
+  
   PRIVATE
-
+  
   ! Public routines
   PUBLIC        :: initialize_tsurff
   PUBLIC        :: get_volkov_phase
-  !PUBLIC        :: get_flux
+  PUBLIC        :: get_flux
   !PUBLIC        :: calculate_flux
-
+  
   !-------------------------------------------------------------!
   
   ! Public variables
-  INTEGER, PUBLIC               :: numkpts
-  REAL(dp), PUBLIC              :: dk, kmax
   REAL(dp), PUBLIC, ALLOCATABLE :: kaxis(:)
-  INTEGER, PUBLIC               :: ntime
+  REAL(dp), PUBLIC, ALLOCATABLE :: theta_ax(:), costheta_ax(:)
+  REAL(dp), PUBLIC, ALLOCATABLE :: phi_ax(:)
+  REAL(dp), PUBLIC, ALLOCATABLE :: gauss_weights(:)
   
   
   ! Private variables
+  INTEGER                       :: numkpts
+  REAL(dp)                      :: dk, kmax
+  INTEGER                       :: ntime
   COMPLEX(dp), ALLOCATABLE      :: psi_sph(:, :), psip_sph(:, :)
   COMPLEX(dp), ALLOCATABLE      :: psi_lm(:, :), psip_lm(:, :)
   REAL(dp)                      :: rb
   INTEGER                       :: lmax, lmaxtotal, mmax
   INTEGER                       :: numpts, numrpts
   INTEGER                       :: numthetapts, numphipts
-  REAL(dp), PUBLIC, ALLOCATABLE :: theta_ax(:), costheta_ax(:)
-  REAL(dp), PUBLIC, ALLOCATABLE :: phi_ax(:)
-  REAL(dp), PUBLIC, ALLOCATABLE :: gauss_weights(:)
-
-  !-------------------------------------------------------------!
-  !-------------------------------------------------------------!
   
+  !-------------------------------------------------------------!
+  !-------------------------------------------------------------!
   
 CONTAINS
   
-  
-  SUBROUTINE initialize_tsurff(filename, radb, lmax_desired, ddk, kkmax)
+  SUBROUTINE initialize_tsurff(filename, radb, lmax_desired, &
+       ddk, kkmax, maxkpts, mmax_out)
     
     IMPLICIT NONE
     
@@ -66,12 +65,16 @@ CONTAINS
     INTEGER, INTENT(IN)              :: lmax_desired
     REAL(dp), INTENT(IN)             :: radb
     REAL(dp), INTENT(IN)             :: ddk, kkmax
-    
+    INTEGER, INTENT(OUT)             :: maxkpts
+    INTEGER, INTENT(OUT)             :: mmax_out
     INTEGER                          :: iphi, ik
+
+    !-------------------------------------------------!
     
     ! Create momentum axis
     kmax = kkmax
     numkpts = INT( kmax / dk)
+    maxkpts = numkpts
     
     ALLOCATE(kaxis(1:numkpts))
     
@@ -82,7 +85,7 @@ CONTAINS
     ! Find out the number of time steps in the file
     CALL get_surface_dims(filename,ntime, &
          numthetapts, numphipts, lmaxtotal)
-    
+
     ! Assign  surface radius
     rb = radb
     ! Assign angular momenta
@@ -93,17 +96,20 @@ CONTAINS
     ELSE
        lmax = lmax_desired
        IF(numphipts.EQ.1) THEN
-          mmax = 1
+          mmax = 0
        ELSE
           mmax = lmax
        ENDIF
     ENDIF
     
+    mmax_out = mmax
+    
     ! Allocate wavefunction arrays
     ALLOCATE(psi_sph(1:numthetapts,1:numphipts))
     ALLOCATE(psip_sph(1:numthetapts,1:numphipts))
-    ALLOCATE(psi_lm(0:lmax,0:mmax))
-    ALLOCATE(psip_lm(0:lmax,0:mmax))
+    ALLOCATE(psi_lm(0:mmax,0:lmax))
+    ALLOCATE(psip_lm(0:mmax,0:lmax))
+    
     
     ! Create spherical coordinates
     ALLOCATE(theta_ax(1:numthetapts),costheta_ax(1:numthetapts))
@@ -125,70 +131,96 @@ CONTAINS
   
   !**************************************!
   
-  SUBROUTINE get_volkov_phase(phase, kaxis, afield, dt)
+  SUBROUTINE get_volkov_phase(phase, kaxis, afield)
     
     IMPLICIT NONE
     
-    REAL(dp), INTENT(INOUT) :: phase(:)
-    REAL(dp), INTENT(IN)    :: kaxis(:)
-    REAL(dp), INTENT(IN)    :: afield, dt
+    COMPLEX(dp), INTENT(INOUT) :: phase(:)
+    REAL(dp), INTENT(IN)       :: kaxis(:)
+    REAL(dp), INTENT(IN)       :: afield
     
-    REAL(dp)                :: newterm(SIZE(kaxis))
+    COMPLEX(dp)                :: newterm(SIZE(kaxis))
+    INTEGER                    :: ik
+    !-------------------------------------------------!
     
-    newterm(:) = EXP(-ZIMAGONE * 0.5_dp * (kaxis(:) * afield)**2 * dt)
+    DO ik = 1, SIZE(kaxis)
+       newterm(:) = EXP(-ZIMAGONE * 0.5_dp * &
+            (kaxis(ik) * afield)**2)
+    ENDDO
     
     phase = phase * newterm
     
   END SUBROUTINE get_volkov_phase
   
   !****************************************************************!
+  
+  SUBROUTINE get_flux(filename, blm)
+    
+    IMPLICIT NONE
+    
+    CHARACTER(LEN=*), INTENT(IN) :: filename
+    COMPLEX(dp), INTENT(OUT)     :: blm(:, :, :)
 
-!!$  SUBROUTINE get_flux(dt, afield, )
-!!$    
-!!$    IMPLICIT NONE
-!!$
-!!$    REAL(dp), INTENT(IN)       :: dt
-!!$    REAL(dp), INTENT(IN)       :: afield
-!!$
-!!$    COMPLEX(dp), ALLOCATABLE  :: intflux(:, :)
-!!$    !()
-!!$    INTEGER                   :: itime
-!!$
-!!$    !----------------------------------------!
-!!$
-!!$    ALLOCATE(intflux(0:lmax,0:mmax))
-!!$    intflux = ZERO
-!!$    
-!!$    
-!!$    DO itime = 1, ntime
-!!$       ! Read flux from file
-!!$       CALL read_surface(filename, itime, psi_sph )
-!!$       ! Decompose into spherical harmonics
-!!$       CALL make_sht(psitheta, theta_ax, gauss_weights, &
-!!$            lmax, psil)
-!!$       
-!!$       
-!!$       ! Calculate flux
-!!$       intflux = ZERO
-!!$       CALL calculate_flux(psil, psilp, lmax, intflux)
-!!$       
-!!$       CALL get_volkov_phase(volkov_phase, kaxis, afield, dt)
-!!$       
-!!$       intflux = intflux * volkov_phase
-!!$       
-!!$       DO il = 0, lmax
-!!$          DO ik = 1, numkpts
-!!$             bl(ik,il) = bl(ik,il) + intflux(ik,il)
-!!$          ENDDO
-!!$       ENDDO
-!!$       
-!!$    ENDDO
-!!$    
-!!$    bl = bl * dt
-!!$    
-!!$  END SUBROUTINE get_flux
-!!$
-!!$  !***************************************!
+    REAL(dp)                     :: dt
+    REAL(dp), ALLOCATABLE        :: time(:)
+    REAL(dp), ALLOCATABLE        :: efield(:), afield(:)
+    COMPLEX(dp), ALLOCATABLE     :: intflux(:, :, :)
+    COMPLEX(dp), ALLOCATABLE     :: volkov_phase(:)
+    INTEGER                      :: itime, ik, il, im
+    
+    !----------------------------------------!
+    
+    ALLOCATE(intflux(1:numkpts,0:lmax,0:mmax))
+    intflux = ZERO
+    ALLOCATE(volkov_phase(1:numkpts))
+    volkov_phase = ZERO
+    ALLOCATE(time(ntime))
+    ALLOCATE(efield(ntime),afield(ntime))
+
+    WRITE(*,*)
+    WRITE(*,*)
+    
+    ! We begin the time loop!!
+    DO itime = 1, ntime
+
+       WRITE(*,'(A,I3)') 'Begin loop number: ',itime
+       
+       ! Read wavefunction at Rb from file
+       CALL read_surface(filename, itime - 1, numthetapts, numphipts, &
+            psi_sph, psip_sph, time(itime), efield(itime), afield(itime) )
+       
+       ! Decompose into spherical harmonics:
+       ! The wavefunction
+       CALL make_sht(psi_sph, lmax, gauss_weights, &
+            psi_lm)
+       ! His first derivative
+       !CALL make_sht(psip_sph, lmax, gauss_weights, &
+       !     psip_lm)
+       
+       
+       ! Calculate flux
+       intflux = ZERO
+       !CALL calculate_flux(psi_lm, psip_lm, lmax, intflux)
+       
+       ! Get the Volkov phase (one per time step)
+       CALL get_volkov_phase(volkov_phase, kaxis, afield(itime))
+       
+       DO im = 0, mmax
+          DO il = 0, lmax
+             DO ik = 1, numkpts
+                blm(ik,il,im) = blm(ik,il,im) + &
+                     intflux(ik,il,im) * volkov_phase(ik)
+             ENDDO
+          ENDDO
+       ENDDO
+       
+    ENDDO
+    
+    !blm = blm * dt
+    
+  END SUBROUTINE get_flux
+
+  !***************************************!
 !!$
 !!$  SUBROUTINE calculate_flux
 !!$    

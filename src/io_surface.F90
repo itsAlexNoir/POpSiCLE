@@ -16,7 +16,7 @@ MODULE io_surface
   PUBLIC               :: write_surface_file
   PUBLIC               :: close_surface_file
   PUBLIC               :: get_surface_dims
-  !PUBLIC               :: read_surface
+  PUBLIC               :: read_surface
   
   !-----------------------------!
   
@@ -724,7 +724,7 @@ CONTAINS
     IMPLICIT NONE
     
     CHARACTER(LEN=*), INTENT(IN)      :: filename
-    INTEGER, INTENT(IN)               :: ntime
+    INTEGER, INTENT(OUT)              :: ntime
     INTEGER, INTENT(OUT)              :: numthetapts, numphipts
     INTEGER, INTENT(OUT)              :: lmax
     
@@ -764,6 +764,9 @@ CONTAINS
     CALL h5gget_info_f(group_id, storage_type, nlinks, &
          maxcorder, error)
 
+    ! Assign number of time steps
+    ntime = nlinks
+    
     name = '/wave/000000'
     CALL h5dopen_f(file_id, name, dset_id, error)
 
@@ -783,7 +786,7 @@ CONTAINS
     ENDIF
     
     WRITE(*,*) 'Path and name of the file: ',TRIM(filename) // '.h5'
-    WRITE(*,*) 'Number of time step in the file: ',nlinks
+    WRITE(*,*) 'Number of time step in the file: ',ntime
     WRITE(*,*) 'Number of theta points: ',numthetapts
     WRITE(*,*) 'Number of phi points: ',numphipts
     WRITE(*,*) 'Maximun angular momenta: ',lmax
@@ -799,6 +802,196 @@ CONTAINS
     CALL h5close_f(error)
     
   END SUBROUTINE get_surface_dims
+
+
+  !***************************************************!
+  
+  SUBROUTINE read_surface(filename, itime, numthetapts, &
+       numphipts, psi_sph, psip_sph, time, efield, afield)
+
+    IMPLICIT NONE
+    
+    CHARACTER(LEN=*), INTENT(IN)       :: filename
+    INTEGER, INTENT(IN)                :: itime
+    INTEGER, INTENT(IN)                :: numthetapts
+    INTEGER, INTENT(IN)                :: numphipts
+    COMPLEX(dp), INTENT(OUT)           :: psi_sph(:, :)
+    COMPLEX(dp), INTENT(OUT)           :: psip_sph(:, :)
+    REAL(dp), INTENT(OUT)              :: time
+    REAL(dp), INTENT(OUT)              :: efield, afield
+    
+    REAL(dp), ALLOCATABLE         :: psi2D(:, :)
+    REAL(dp), ALLOCATABLE         :: psip2D(:, :)
+    REAL(dp), ALLOCATABLE         :: psi3D(:, :, :)
+    REAL(dp), ALLOCATABLE         :: psip3D(:, :, :)
+    REAL(dp)                      :: field(3)
+    INTEGER                       :: itheta, iphi
+    ! File identifier
+    INTEGER(HID_T)                 :: file_id
+    ! Group identifiers
+    INTEGER(HID_T)                 :: wave_group_id 
+    INTEGER(HID_T)                 :: wavep_group_id 
+    INTEGER(HID_T)                 :: field_group_id 
+    ! Dataspace identifier
+    INTEGER(HID_T)                 :: wave_dspace_id    
+    INTEGER(HID_T)                 :: wavep_dspace_id    
+    INTEGER(HID_T)                 :: field_dspace_id    
+    ! Dataset identifier  
+    INTEGER(HID_T)                 :: wave_dset_id      
+    INTEGER(HID_T)                 :: wavep_dset_id      
+    INTEGER(HID_T)                 :: field_dset_id      
+    ! Dataset dimensions  
+    INTEGER(HSIZE_T), ALLOCATABLE  :: dspace_dims(:)
+    INTEGER(HSIZE_T), ALLOCATABLE  :: dspace_offset(:)
+    INTEGER(HSIZE_T)               :: field_dim(1)
+    INTEGER(HSIZE_T)               :: field_offset(1)
+    ! Memspace identifier
+    INTEGER(HID_T)                 :: wave_memspace
+    INTEGER(HID_T)                 :: wavep_memspace
+    INTEGER(HID_T)                 :: field_memspace
+    INTEGER                        :: error     
+    ! Auxiliary strings
+    CHARACTER(LEN=6)               :: cstep
+    CHARACTER(LEN = 100)           :: name
+
+    !---------------------------------------------------!
+    
+    ! Set time step as a string
+    WRITE(cstep,'(I6.6)') itime
+    
+    ! Initialize FORTRAN interface for hdf5.
+    CALL h5open_f(error)    
+    
+    ! Open file
+    name = TRIM(filename) // '.h5'
+    CALL h5fopen_f(name,H5F_ACC_RDONLY_F, file_id, error) 
+    
+    ! Open wave group. 
+    name = '/wave'
+    CALL h5gopen_f(file_id, name, wave_group_id, error)
+    name = '/wavederiv'
+    CALL h5gopen_f(file_id, name, wavep_group_id, error)
+    
+    ! Open dataset
+    name = '/wave/' // cstep
+    CALL h5dopen_f(file_id, name, wave_dset_id, error)
+    ! Get dataspace identifier
+    CALL h5dget_space_f(wave_dset_id, wave_dspace_id, error)
+    name = '/wavederiv/' // cstep
+    CALL h5dopen_f(file_id, name, wavep_dset_id, error)
+    ! Get dataspace identifier
+    CALL h5dget_space_f(wavep_dset_id, wavep_dspace_id, error)
+    
+    IF(numphipts.EQ.1) THEN
+       ALLOCATE(dspace_dims(2),dspace_offset(2))
+       dspace_dims = (/ numthetapts, 2/)
+       ALLOCATE(psi2D(1:numthetapts,1:2))
+       ALLOCATE(psip2D(1:numthetapts,1:2))
+    ELSE
+       ALLOCATE(dspace_dims(3),dspace_offset(3))
+       dspace_dims = (/ numthetapts, numphipts, 2/)
+       ALLOCATE(psi3D(1:numthetapts,1:numphipts,1:2))
+       ALLOCATE(psip3D(1:numthetapts,1:numphipts,1:2))
+    ENDIF
+    dspace_offset = 0
+    
+    CALL h5sselect_hyperslab_f(wave_dspace_id, H5S_SELECT_SET_F, &
+         dspace_offset, dspace_dims, error)
+    CALL h5sselect_hyperslab_f(wavep_dspace_id, H5S_SELECT_SET_F, &
+         dspace_offset, dspace_dims, error)
+    
+    ! Create memspace and read dataset
+    IF(numphipts.EQ.1) THEN
+       CALL h5screate_simple_f(2,dspace_dims,wave_memspace,error)
+       CALL h5screate_simple_f(2,dspace_dims,wavep_memspace,error)
+       
+       CALL h5dread_f(wave_dset_id, H5T_NATIVE_DOUBLE, psi2D, dspace_dims, error, &
+            wave_memspace, wave_dspace_id )
+       CALL h5dread_f(wavep_dset_id, H5T_NATIVE_DOUBLE, psip2D, dspace_dims, error, &
+            wavep_memspace, wavep_dspace_id )
+       
+       DO itheta = 1, numthetapts
+          psi_sph(itheta,1) = CMPLX(psi2D(itheta,1), psi2D(itheta,2))
+          psip_sph(itheta,1) = CMPLX(psip2D(itheta,1), psip2D(itheta,2))
+       ENDDO
+       
+    ELSE
+       CALL h5screate_simple_f(3,dspace_dims,wave_memspace,error)
+       CALL h5screate_simple_f(3,dspace_dims,wavep_memspace,error)
+       
+       CALL h5dread_f(wave_dset_id, H5T_NATIVE_DOUBLE, psi2D, dspace_dims, error, &
+            wave_memspace, wave_dspace_id )
+       CALL h5dread_f(wavep_dset_id, H5T_NATIVE_DOUBLE, psip2D, dspace_dims, error, &
+            wavep_memspace, wavep_dspace_id )
+       
+       DO iphi = 1, numphipts
+          DO itheta = 1, numthetapts
+             psi_sph(itheta,iphi) = CMPLX(psi3D(itheta,iphi,1), psi3D(itheta,iphi,2))
+             psip_sph(itheta,iphi) = CMPLX(psip3D(itheta,iphi,1), psip3D(itheta,iphi,2))
+          ENDDO
+       ENDDO
+    ENDIF
+    
+    ! Close (almost) everything
+    CALL h5sclose_f(wave_dspace_id, error)
+    CALL h5sclose_f(wave_memspace, error)
+    CALL h5dclose_f(wave_dset_id, error)
+    CALL h5gclose_f(wave_group_id, error)
+    
+    CALL h5sclose_f(wavep_dspace_id, error)
+    CALL h5sclose_f(wavep_memspace, error)
+    CALL h5dclose_f(wavep_dset_id, error)
+    CALL h5gclose_f(wavep_group_id, error)
+    
+    DEALLOCATE(dspace_dims, dspace_offset)
+    IF(numphipts.EQ.1) THEN
+       DEALLOCATE(psi2D, psip2D)
+    ELSE
+       DEALLOCATE(psi3D, psip3D)
+    ENDIF
+    
+    !
+    ! Now, we read the field
+    !
+    
+    ! Open wave group. 
+    name = '/field'
+    CALL h5gopen_f(file_id, name, field_group_id, error)
+    
+    ! Open dataset
+    name = '/field/' // cstep
+    CALL h5dopen_f(file_id, name, field_dset_id, error)
+    ! Get dataspace identifier
+    CALL h5dget_space_f(field_dset_id, field_dspace_id, error)
+
+    field_dim = 3
+    field_offset = 0
+    field = 0
+    
+    CALL h5sselect_hyperslab_f(field_dspace_id, H5S_SELECT_SET_F, &
+         field_offset, field_dim, error)
+    
+    CALL h5screate_simple_f(1,field_dim,field_memspace,error)
+    
+    CALL h5dread_f(field_dset_id, H5T_NATIVE_DOUBLE, field, field_dim, error, &
+         field_memspace, field_dspace_id )
+    
+    time = field(1)
+    efield = field(2)
+    afield = field(3)
+    
+    CALL h5sclose_f(field_dspace_id, error)
+    CALL h5sclose_f(field_memspace, error)
+    CALL h5dclose_f(field_dset_id, error)
+    CALL h5gclose_f(field_group_id, error)
+    
+    ! Close the file.
+    CALL h5fclose_f(file_id, error)
+    
+    ! Close HDF5 fortran interface
+    CALL h5close_f(error)
+    
+  END SUBROUTINE read_surface
   
   !***************************************************!
   !***************************************************!

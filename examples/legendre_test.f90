@@ -16,8 +16,8 @@ PROGRAM legendre_test
   INTEGER                :: itheta, ir
   INTEGER                :: il, im, ill, imm
   
-  numthetapts = 20
-  lmax = 5
+  numthetapts = 21
+  lmax = 10
   maxfactlog = 3 * lmax + 1
   
   ALLOCATE(theta(1:numthetapts),costheta(1:numthetapts))
