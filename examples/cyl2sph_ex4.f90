@@ -112,7 +112,7 @@ PROGRAM cyl2sph_ex4
   newnumzpts = newmaxzpts * newnumproc1dz
     
   dims_local = (/ newmaxrhopts, newmaxzpts /)
-  dims_global = (/ newnumrhopts, newnumzpts /)
+  dims_global = (/ newnumrhopts, newnumzpts /) 
   
   ! The radius of the boundary
   Rboundary    = 50.0_dp
@@ -241,9 +241,10 @@ PROGRAM cyl2sph_ex4
   IF(i_am_surface(rank).EQ.1) &
        WRITE(*,*) 'Get the surface. Write it to a file...'
   
+  filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL cpu_time(start_time)
   
-  CALL get_cylindrical_surface(psi, fdrule, 0.0_dp , &
+  CALL get_cylindrical_surface(filename, psi, fdrule, 0.0_dp , &
        0.0_dp, 0.0_dp, lmax, rank, .TRUE. )
   
   CALL cpu_time(end_time)

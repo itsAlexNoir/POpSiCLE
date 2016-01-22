@@ -11,6 +11,8 @@ PROGRAM cart2sph_ex4
   INTEGER                    :: oldnumxpts, oldnumypts, oldnumzpts
   INTEGER                    :: newmaxxpts, newmaxypts, newmaxzpts
   INTEGER                    :: newnumxpts, newnumypts, newnumzpts
+  INTEGER                    :: minx, miny, minz
+  INTEGER                    :: maxx, maxy, maxz
   INTEGER                    :: dims_local(3), dims_global(3)
   
   INTEGER                    :: oldnumproc1dx, oldnumproc1dy, oldnumproc1dz
@@ -119,6 +121,15 @@ PROGRAM cart2sph_ex4
   newmaxxpts = oldmaxxpts * ratioprocx
   newmaxypts = oldmaxypts * ratioprocy 
   newmaxzpts = oldmaxzpts * ratioprocz
+
+  minx = 1
+  maxx = newmaxxpts + 1
+
+  miny = 1
+  maxy = newmaxypts + 1
+  
+  minz = 1
+  maxz = newmaxzpts + 1
   
   newnumxpts = newmaxxpts * newnumproc1dx
   newnumypts = newmaxypts * newnumproc1dy
@@ -128,8 +139,8 @@ PROGRAM cart2sph_ex4
   dims_global = (/ newnumxpts, newnumypts, newnumzpts /)
   
   ! The radius of the boundary
-  Rboundary    = 5.0_dp
-  tolerance = 0.23_dp
+  Rboundary    = 8.0_dp
+  tolerance = 0.25_dp
   deltar = 0.1_dp
   fdrule = 2
   lmax = 10
@@ -144,17 +155,17 @@ PROGRAM cart2sph_ex4
   IF(rank.EQ.0) &
        WRITE(*,*) 'Building meshes ...'
   
-  ALLOCATE(x_ax(1:newmaxxpts))
-  ALLOCATE(y_ax(1:newmaxypts))
-  ALLOCATE(z_ax(1:newmaxzpts))
-  ALLOCATE(xpts(1:newmaxxpts))
-  ALLOCATE(xp(1:newmaxxpts))
-  ALLOCATE(ypts(1:newmaxypts))
-  ALLOCATE(yp(1:newmaxypts))
-  ALLOCATE(zpts(1:newmaxzpts))
-  ALLOCATE(zp(1:newmaxzpts))
+  ALLOCATE(x_ax(minx:maxx))
+  ALLOCATE(y_ax(miny:maxy))
+  ALLOCATE(z_ax(minz:maxz))
+  ALLOCATE(xpts(minx:maxx))
+  ALLOCATE(xp(minx:maxx))
+  ALLOCATE(ypts(miny:maxy))
+  ALLOCATE(yp(miny:maxy))
+  ALLOCATE(zpts(minz:maxz))
+  ALLOCATE(zp(minz:maxz))
   
-  DO ix = 1, newmaxxpts
+  DO ix = minx, maxx
      xpt = (-0.5_dp * REAL(newnumxpts-1,dp) + &
           REAL(newmaxxpts * rank + ix-1,dp)) * deltax
      x_ax(ix) = xpt
@@ -162,7 +173,7 @@ PROGRAM cart2sph_ex4
      xp(ix) = 1.0_dp
   ENDDO
   
-  DO iy = 1, newnumypts
+  DO iy = miny, maxy
      ypt = (-0.5_dp * REAL(newnumypts-1,dp) + &
           REAL(iy-1,dp)) * deltay
      y_ax(iy) = ypt
@@ -170,14 +181,14 @@ PROGRAM cart2sph_ex4
      yp(iy) = 1.0_dp
   ENDDO
   
-  DO iz = 1, newnumzpts
+  DO iz = minz, maxz
      zpt = (-0.5_dp * REAL(newnumzpts-1,dp) + &
           REAL(iz-1,dp)) * deltaz
      z_ax(iz) = zpt
      zpts(iz) = zpt
      zp(iz) = 1.0_dp
   ENDDO
-  
+    
   !----------------------------------------!
   ! Initialize cylindrical surface stuff
   !----------------------------------------!
@@ -202,7 +213,8 @@ PROGRAM cart2sph_ex4
        WRITE(*,*) 'Allocating wavefunctions...'
   
   ALLOCATE(psipro(1:oldmaxxpts, 1:oldmaxypts, 1:oldmaxzpts))
-  ALLOCATE(psi(1:newmaxxpts, 1:newmaxypts, 1:newmaxzpts))
+  !ALLOCATE(psi(1:newmaxxpts, 1:newmaxypts, 1:newmaxzpts))
+  ALLOCATE(psi(minx:maxx, miny:maxy, minz:maxz))
   
   IF(rank.EQ.0) &
        WRITE(*,*) 'Read data...'
@@ -266,9 +278,10 @@ PROGRAM cart2sph_ex4
   IF(i_am_surface(rank).EQ.1) &
        WRITE(*,*) 'Get the surface. Write it to a file...'
   
+ filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr  
   CALL cpu_time(start_time)
   
-  CALL get_cartesian_surface(psi, fdrule, 0.0_dp , &
+  CALL get_cartesian_surface(filename, psi, fdrule, 0.0_dp , &
        0.0_dp, 0.0_dp, lmax, rank, .TRUE. )
   
   CALL cpu_time(end_time)

@@ -75,7 +75,7 @@ PROGRAM cy2sph_ex3
   dims = (/ numrhopts, numzpts /)
   
   ! The radius of the boundary
-  Rboundary    = 40.0_dp
+  Rboundary    = 50.0_dp
   tolerance = 1.0_dp !0.75_dp
   deltar = 0.1_dp
   fdrule = 2
@@ -115,12 +115,12 @@ PROGRAM cy2sph_ex3
   ENDDO
   
   DO iz = 1, numzpts
-     zpt = (-0.5_dp * (numzpts) + REAL(iz-1,dp)) * deltaz
+     zpt = (-0.5_dp * (numzpts-1) + REAL(iz-1,dp)) * deltaz
      z_ax(iz) = zpt
      hpts(iz) = zpt
      hp(iz) = 1.0_dp
   ENDDO
-  
+
 !!$  ALLOCATE(halopts(2,2))
 !!$  halopts(1,1) = -1
 !!$  halopts(2,1) = -1
@@ -205,10 +205,11 @@ PROGRAM cy2sph_ex3
   WRITE(*,*) 'Get the surface. Write it to a file...'
 
   CALL cpu_time(start_time)
-  
-  CALL get_cylindrical_surface(psi, fdrule, 0.0_dp , &
-       0.0_dp, 0.0_dp, lmax, .TRUE. )
 
+  filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
+  CALL get_cylindrical_surface(filename, psi, fdrule, 0.0_dp , &
+       0.0_dp, 0.0_dp, lmax, .TRUE. )
+  
   CALL cpu_time(end_time)
 
   comp_time = end_time - start_time

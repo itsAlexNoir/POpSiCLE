@@ -12,20 +12,19 @@ MODULE io_surface
   
   PRIVATE
   
-  PUBLIC               :: open_surface_file
+  PUBLIC               :: create_surface_file
   PUBLIC               :: write_surface_file
-  PUBLIC               :: close_surface_file
   PUBLIC               :: get_surface_dims
   PUBLIC               :: read_surface
   
   !-----------------------------!
   
-  INTERFACE open_surface_file
-     MODULE PROCEDURE open_surface_file_serial
+  INTERFACE create_surface_file
+     MODULE PROCEDURE create_surface_file_serial
 #if _COM_MPI
-     MODULE PROCEDURE open_surface_file_parallel
+     MODULE PROCEDURE create_surface_file_parallel
 #endif
-  END INTERFACE open_surface_file
+  END INTERFACE create_surface_file
   
   INTERFACE write_surface_file
      MODULE PROCEDURE write_surface_file2D_serial
@@ -36,25 +35,9 @@ MODULE io_surface
 #endif
   END INTERFACE write_surface_file
   
-  INTERFACE close_surface_file
-     MODULE PROCEDURE close_surface_file_serial
-#if _COM_MPI
-     MODULE PROCEDURE close_surface_file_parallel
-#endif
-  END INTERFACE close_surface_file
-    
   !--------------------!
   ! Private variables  !
   !--------------------!
-
-  ! File identifier
-  INTEGER(HID_T)                 :: file_id
-  ! Property list identifier 
-  INTEGER(HID_T)                 :: plist_id
-  ! Group identifiers
-  INTEGER(HID_T)                 :: wave_group
-  INTEGER(HID_T)                 :: wavederiv_group 
-  INTEGER(HID_T)                 :: field_group
   
   INTEGER                        :: dataset_count
   
@@ -63,10 +46,19 @@ MODULE io_surface
   
 CONTAINS
   
-  SUBROUTINE open_surface_file_serial(filename)
+  SUBROUTINE create_surface_file_serial(filename)
     IMPLICIT NONE
     
     CHARACTER(LEN=*), INTENT(IN) :: filename
+
+    ! File identifier
+    INTEGER(HID_T)                 :: file_id
+    ! Property list identifier 
+    INTEGER(HID_T)                 :: plist_id
+    ! Group identifiers
+    INTEGER(HID_T)                 :: wave_group
+    INTEGER(HID_T)                 :: wavederiv_group 
+    INTEGER(HID_T)                 :: field_group
     
     ! Error flag
     INTEGER                        :: error, info
@@ -89,19 +81,34 @@ CONTAINS
     name = '/field'     
     CALL h5gcreate_f(file_id, name, field_group, error)
     
+    ! Close the property list, group, file and interface
+    CALL h5gclose_f(wave_group, error)
+    CALL h5gclose_f(wavederiv_group, error)
+    CALL h5gclose_f(field_group, error)
+    CALL h5fclose_f(file_id, error)
+    CALL h5close_f(error)
+    
     ! Set the count of datasets to zero. Start 
     dataset_count = 0
-    
-  END SUBROUTINE open_surface_file_serial
+
+  END SUBROUTINE create_surface_file_serial
   
   !******************************************************!
 #if _COM_MPI  
-  SUBROUTINE open_surface_file_parallel(filename, comm)
+  SUBROUTINE create_surface_file_parallel(filename, comm)
     IMPLICIT NONE
     
     CHARACTER(LEN=*), INTENT(IN) :: filename
     INTEGER, INTENT(IN)          :: comm
-    
+
+    ! File identifier
+    INTEGER(HID_T)                 :: file_id
+    ! Property list identifier 
+    INTEGER(HID_T)                 :: plist_id
+    ! Group identifiers
+    INTEGER(HID_T)                 :: wave_group
+    INTEGER(HID_T)                 :: wavederiv_group 
+    INTEGER(HID_T)                 :: field_group
     ! Error flag
     INTEGER                        :: error, info
     ! Auxiliary strings
@@ -128,20 +135,28 @@ CONTAINS
     CALL h5gcreate_f(file_id, name, wavederiv_group, error)
     name = '/field'     
     CALL h5gcreate_f(file_id, name, field_group, error)
-
+    
+    ! Close the property list, group, file and interface
+    CALL h5gclose_f(wave_group, error)
+    CALL h5gclose_f(wavederiv_group, error)
+    CALL h5gclose_f(field_group, error)
+    CALL h5fclose_f(file_id, error)
+    CALL h5close_f(error)
+    
     ! Set the count of datasets to zero. Start 
     dataset_count = 0
     
-  END SUBROUTINE open_surface_file_parallel
+  END SUBROUTINE create_surface_file_parallel
 #endif
   !***************************************************!
   
   !***************************************************!
   
-  SUBROUTINE write_surface_file2D_serial(wave, wavederiv, time, &
-       efield, afield, lmax )
+  SUBROUTINE write_surface_file2D_serial(filename, wave, &
+       wavederiv, time, efield, afield, lmax )
     IMPLICIT NONE
-    
+
+    CHARACTER(LEN=*), INTENT(IN)   :: filename
     COMPLEX(dp), INTENT(IN)        :: wave(:)
     COMPLEX(dp), INTENT(IN)        :: wavederiv(:)
     REAL(dp), INTENT(IN)           :: time, efield, afield
@@ -152,6 +167,14 @@ CONTAINS
     REAL(dp), ALLOCATABLE          :: complex_wavederiv(:, :)
     REAL(dp)                       :: field(3)
     INTEGER                        :: numthetapts
+    ! File identifier
+    INTEGER(HID_T)                 :: file_id
+    ! Property list identifier 
+    INTEGER(HID_T)                 :: plist_id
+    ! Group identifiers
+    INTEGER(HID_T)                 :: wave_group
+    INTEGER(HID_T)                 :: wavederiv_group 
+    INTEGER(HID_T)                 :: field_group
     ! Dataspace identifier
     INTEGER(HID_T)                 :: wave_dspace_id
     INTEGER(HID_T)                 :: wavederiv_dspace_id
@@ -166,6 +189,7 @@ CONTAINS
     ! Error flag
     INTEGER                        :: error
     CHARACTER(LEN=6)               :: cstep
+    CHARACTER(LEN=100)             :: name
     CHARACTER(LEN = 100)           :: setname
     
     !------------------------------------------------------!
@@ -173,6 +197,20 @@ CONTAINS
     ! Increase in 1 the count
     WRITE(cstep,'(I6.6)') dataset_count
     dataset_count = dataset_count + 1
+    
+    ! Initialize fortran interface
+    CALL h5open_f(error)
+    
+    ! Open files and groups
+    name = TRIM(filename) // '.h5'
+    CALL h5fopen_f(name, H5F_ACC_RDWR_F, file_id, error)
+    
+    name = '/wave'
+    CALL h5gopen_f(file_id, name, wave_group, error)
+    name = '/wavederiv'
+    CALL h5gopen_f(file_id, name, wavederiv_group, error)
+    name = '/field'
+    CALL h5gopen_f(file_id, name, field_group, error)
     
     ! Number of theta points in a serial run, its
     numthetapts = 2 * lmax + 1
@@ -228,6 +266,13 @@ CONTAINS
     CALL h5sclose_f(wavederiv_dspace_id, error)
     CALL h5sclose_f(field_dspace_id, error)
     
+    ! Close the property list, group, file and interface
+    CALL h5gclose_f(wave_group, error)
+    CALL h5gclose_f(wavederiv_group, error)
+    CALL h5gclose_f(field_group, error)
+    CALL h5fclose_f(file_id, error)
+    CALL h5close_f(error)
+    
     ! Deallocate aux arrays for data
     DEALLOCATE(complex_wave,complex_wavederiv)
     
@@ -235,14 +280,17 @@ CONTAINS
   
   !******************************************************!
 #if _COM_MPI
-  SUBROUTINE write_surface_file2D_parallel(wave, wavederiv, time, &
-       efield, afield, lmax, surfacerank, numthetaptsperproc )
+  SUBROUTINE write_surface_file2D_parallel(filename, wave, &
+       wavederiv, time, efield, afield, lmax, comm, &
+       surfacerank, numthetaptsperproc )
     IMPLICIT NONE
     
+    CHARACTER(LEN=*), INTENT(IN)   :: filename
     COMPLEX(dp), INTENT(IN)        :: wave(:)
     COMPLEX(dp), INTENT(IN)        :: wavederiv(:)
     REAL(dp), INTENT(IN)           :: time, efield, afield
     INTEGER, INTENT(IN)            :: lmax
+    INTEGER, INTENT(IN)            :: comm
     INTEGER, INTENT(IN)            :: surfacerank
     INTEGER, INTENT(IN)            :: numthetaptsperproc
     
@@ -251,6 +299,14 @@ CONTAINS
     REAL(dp), ALLOCATABLE          :: complex_wavederiv(:, :)
     REAL(dp)                       :: field(3)
     INTEGER                        :: numthetapts
+    ! File identifier
+    INTEGER(HID_T)                 :: file_id
+    ! Property list identifier 
+    INTEGER(HID_T)                 :: plist_id
+    ! Group identifiers
+    INTEGER(HID_T)                 :: wave_group
+    INTEGER(HID_T)                 :: wavederiv_group 
+    INTEGER(HID_T)                 :: field_group
     ! Dataspace identifier in file 
     INTEGER(HID_T)                 :: wave_filespace
     INTEGER(HID_T)                 :: wavederiv_filespace
@@ -280,12 +336,34 @@ CONTAINS
     INTEGER                        :: error
     
     CHARACTER(LEN=6)               :: cstep
+    CHARACTER(LEN=100)             :: name
     CHARACTER(LEN = 100)           :: setname
+    
     !------------------------------------------------------!
     
     ! Increase in 1 the count
     WRITE(cstep,'(I6.6)') dataset_count
     dataset_count = dataset_count + 1
+
+    ! Initialize fortran interface
+    CALL h5open_f(error)
+    
+    ! Setup file access property list with
+    ! parallel I/O access.
+    CALL h5pcreate_f(H5P_FILE_ACCESS_F, plist_id, error)
+    CALL h5pset_fapl_mpio_f(plist_id, comm, MPI_INFO_NULL, error)
+    
+    ! Open files and groups
+    name = TRIM(filename) // '.h5'
+    CALL h5fopen_f(name, H5F_ACC_RDWR_F, file_id, error, access_prp = plist_id)
+    CALL h5pclose_f(plist_id, error)
+    
+    name = '/wave'
+    CALL h5gopen_f(file_id, name, wave_group, error)
+    name = '/wavederiv'
+    CALL h5gopen_f(file_id, name, wavederiv_group, error)
+    name = '/field'
+    CALL h5gopen_f(file_id, name, field_group, error)
     
     numthetapts = 2 * lmax + 1
     !Define rank, in this case 2.
@@ -323,7 +401,7 @@ CONTAINS
     
     cont = wave_dims
     offset = (/ numthetaptsperproc * surfacerank, 0 /)
-    
+
     ! Select hyperslab in the file.
     CALL h5dget_space_f(wave_dset_id, wave_filespace, error)
     CALL h5sselect_hyperslab_f (wave_filespace, H5S_SELECT_SET_F, offset,&
@@ -352,6 +430,9 @@ CONTAINS
     ! Close the dataset.
     CALL h5dclose_f(wave_dset_id, error)
     CALL h5dclose_f(wavederiv_dset_id, error)
+    
+    ! Deallocate aux arrays for data
+    DEALLOCATE(complex_wave,complex_wavederiv)
     
     ! For the field, only the first processor in the group
     ! write the field data.
@@ -389,9 +470,15 @@ CONTAINS
     CALL h5sclose_f(field_filespace, error)
     CALL h5sclose_f(field_memspace, error)
     CALL h5dclose_f(field_dset_id, error)
+
+     ! Close the property list, group, file and interface
+    CALL h5pclose_f(plist_id, error)
+    CALL h5gclose_f(wave_group, error)
+    CALL h5gclose_f(wavederiv_group, error)
+    CALL h5gclose_f(field_group, error)
+    CALL h5fclose_f(file_id, error)
+    CALL h5close_f(error)
     
-    ! Deallocate aux arrays for data
-    DEALLOCATE(complex_wave,complex_wavederiv)
     
   END SUBROUTINE write_surface_file2D_parallel
 #endif
@@ -400,10 +487,11 @@ CONTAINS
   
   !***************************************************!
   
-  SUBROUTINE write_surface_file3D_serial(wave, wavederiv, time, &
-       efield, afield, lmax )
+  SUBROUTINE write_surface_file3D_serial(filename, wave, &
+       wavederiv, time, efield, afield, lmax )
     IMPLICIT NONE
-    
+
+    CHARACTER(LEN=*), INTENT(IN)   :: filename
     COMPLEX(dp), INTENT(IN)        :: wave(:, :)
     COMPLEX(dp), INTENT(IN)        :: wavederiv(:, :)
     REAL(dp), INTENT(IN)           :: time, efield, afield
@@ -414,6 +502,14 @@ CONTAINS
     REAL(dp), ALLOCATABLE          :: complex_wavederiv(:, :, :)
     REAL(dp)                       :: field(3)
     INTEGER                        :: numthetapts, numphipts
+    ! File identifier
+    INTEGER(HID_T)                 :: file_id
+    ! Property list identifier 
+    INTEGER(HID_T)                 :: plist_id
+    ! Group identifiers
+    INTEGER(HID_T)                 :: wave_group
+    INTEGER(HID_T)                 :: wavederiv_group 
+    INTEGER(HID_T)                 :: field_group
     ! Dataspace identifier
     INTEGER(HID_T)                 :: wave_dspace_id
     INTEGER(HID_T)                 :: wavederiv_dspace_id
@@ -428,6 +524,7 @@ CONTAINS
     ! Error flag
     INTEGER                        :: error
     CHARACTER(LEN=6)               :: cstep
+    CHARACTER(LEN=100)             :: name
     CHARACTER(LEN = 100)           :: setname
     
     !------------------------------------------------------!
@@ -435,6 +532,20 @@ CONTAINS
     ! Increase in 1 the count
     WRITE(cstep,'(I6.6)') dataset_count
     dataset_count = dataset_count + 1
+    
+    ! Initialize fortran interface
+    CALL h5open_f(error)
+    
+    ! Open files and groups
+    name = TRIM(filename) // '.h5'
+    CALL h5fopen_f(name, H5F_ACC_RDWR_F, file_id, error)
+    
+    name = '/wave'
+    CALL h5gopen_f(file_id, name, wave_group, error)
+    name = '/wavederiv'
+    CALL h5gopen_f(file_id, name, wavederiv_group, error)
+    name = '/field'
+    CALL h5gopen_f(file_id, name, field_group, error)
     
     ! Number of theta points in a serial run, its
     numthetapts = 2 * lmax + 1
@@ -491,6 +602,13 @@ CONTAINS
     CALL h5sclose_f(wavederiv_dspace_id, error)
     CALL h5sclose_f(field_dspace_id, error)
     
+    ! Close the property list, group, file and interface
+    CALL h5gclose_f(wave_group, error)
+    CALL h5gclose_f(wavederiv_group, error)
+    CALL h5gclose_f(field_group, error)
+    CALL h5fclose_f(file_id, error)
+    CALL h5close_f(error)
+    
     ! Deallocate aux arrays for data
     DEALLOCATE(complex_wave,complex_wavederiv)
     
@@ -498,15 +616,17 @@ CONTAINS
   
   !******************************************************!
 #if _COM_MPI
-  SUBROUTINE write_surface_file3D_parallel(wave, wavederiv, time, &
-       efield, afield, lmax, surfacerank, &
-       numthetaptsperproc, numphiptsperproc )
+  SUBROUTINE write_surface_file3D_parallel(filename, wave, &
+       wavederiv, time, efield, afield, lmax, comm, &
+       surfacerank,numthetaptsperproc, numphiptsperproc )
     IMPLICIT NONE
-    
+
+    CHARACTER(LEN=*), INTENT(IN)   :: filename
     COMPLEX(dp), INTENT(IN)        :: wave(:, :)
     COMPLEX(dp), INTENT(IN)        :: wavederiv(:, :)
     REAL(dp), INTENT(IN)           :: time, efield, afield
     INTEGER, INTENT(IN)            :: lmax
+    INTEGER, INTENT(IN)            :: comm
     INTEGER, INTENT(IN)            :: surfacerank
     INTEGER, INTENT(IN)            :: numthetaptsperproc
     INTEGER, INTENT(IN)            :: numphiptsperproc
@@ -516,6 +636,14 @@ CONTAINS
     REAL(dp), ALLOCATABLE          :: complex_wavederiv(:, :, :)
     REAL(dp)                       :: field(3)
     INTEGER                        :: numthetapts, numphipts
+    ! File identifier
+    INTEGER(HID_T)                 :: file_id
+    ! Property list identifier 
+    INTEGER(HID_T)                 :: plist_id
+    ! Group identifiers
+    INTEGER(HID_T)                 :: wave_group
+    INTEGER(HID_T)                 :: wavederiv_group 
+    INTEGER(HID_T)                 :: field_group
     ! Dataspace identifier in file 
     INTEGER(HID_T)                 :: wave_filespace
     INTEGER(HID_T)                 :: wavederiv_filespace
@@ -545,12 +673,34 @@ CONTAINS
     INTEGER                        :: error
     
     CHARACTER(LEN=6)               :: cstep
+    CHARACTER(LEN=100)             :: name
     CHARACTER(LEN = 100)           :: setname
+
     !------------------------------------------------------!
     
     ! Increase in 1 the count
     WRITE(cstep,'(I6.6)') dataset_count
     dataset_count = dataset_count + 1
+    
+    ! Initialize fortran interface
+    CALL h5open_f(error)
+
+    ! Setup file access property list with
+    ! parallel I/O access.
+    CALL h5pcreate_f(H5P_FILE_ACCESS_F, plist_id, error)
+    CALL h5pset_fapl_mpio_f(plist_id, comm, MPI_INFO_NULL, error)
+    
+    ! Open files and groups
+    name = TRIM(filename) // '.h5'
+    CALL h5fopen_f(name, H5F_ACC_RDWR_F, file_id, error, access_prp = plist_id)
+    CALL h5pclose_f(plist_id, error)
+    
+    name = '/wave'
+    CALL h5gopen_f(file_id, name, wave_group, error)
+    name = '/wavederiv'
+    CALL h5gopen_f(file_id, name, wavederiv_group, error)
+    name = '/field'
+    CALL h5gopen_f(file_id, name, field_group, error)
     
     numthetapts = 2 * lmax + 1
     numphipts = 2 * lmax + 1
@@ -662,58 +812,15 @@ CONTAINS
     CALL h5sclose_f(field_memspace, error)
     CALL h5dclose_f(field_dset_id, error)    
     
-  END SUBROUTINE write_surface_file3D_parallel
-#endif
-
-  !***************************************************!
-  
-  SUBROUTINE close_surface_file_serial( )
-    IMPLICIT NONE
-    
-    ! Error flag
-    INTEGER                        :: error, info
-    !--------------------------------------------!
-    
-    ! Close the group.
+    ! Close the property list, group, file and interface
+    CALL h5pclose_f(plist_id, error)
     CALL h5gclose_f(wave_group, error)
     CALL h5gclose_f(wavederiv_group, error)
     CALL h5gclose_f(field_group, error)
-    
-    ! Close the file.
     CALL h5fclose_f(file_id, error)
-    
-    ! Close FORTRAN interfaces and HDF5 library.
     CALL h5close_f(error)
     
-  END SUBROUTINE close_surface_file_serial
-  
-  !***************************************************!
-#if _COM_MPI
-  SUBROUTINE close_surface_file_parallel( rank )
-    IMPLICIT NONE
-    
-    INTEGER, INTENT(IN)            :: rank
-    ! Error flag
-    INTEGER                        :: error, info
-    !--------------------------------------------!
-    
-    IF(i_am_surface(rank).EQ.1) THEN
-       ! Close the property list.
-       CALL h5pclose_f(plist_id, error)
-       
-       ! Close the group.
-       CALL h5gclose_f(wave_group, error)
-       CALL h5gclose_f(wavederiv_group, error)
-       CALL h5gclose_f(field_group, error)
-       
-       ! Close the file.
-       CALL h5fclose_f(file_id, error)
-       
-       ! Close FORTRAN interfaces and HDF5 library.
-       CALL h5close_f(error)
-    ENDIF
-    
-  END SUBROUTINE close_surface_file_parallel
+  END SUBROUTINE write_surface_file3D_parallel
 #endif
   
   !***************************************************!
@@ -747,7 +854,7 @@ CONTAINS
     INTEGER                        :: error     
     ! Auxiliary strings
     CHARACTER(LEN = 100)           :: name
-
+    
     !----------------------------------------------!
     
     ! Initialize FORTRAN interface for hdf5.

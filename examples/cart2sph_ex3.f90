@@ -83,8 +83,8 @@ PROGRAM cart2sph_ex2
   dims = (/ numxpts, numypts, numzpts /)
   
   ! The radius of the boundary
-  Rboundary    = 5.0_dp
-  tolerance = 0.23_dp
+  Rboundary    = 8.0_dp
+  tolerance = 0.25_dp
   deltar = 0.1_dp
   fdrule = 2
   lmax = 10
@@ -210,10 +210,11 @@ PROGRAM cart2sph_ex2
   ! Get cylindrical surface, and write it to a file
   !-------------------------------------------------!
   WRITE(*,*) 'Get the surface. Write it to a file...'
-  
+
+  filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL cpu_time(start_time)
   
-  CALL get_cartesian_surface(psi, fdrule, 0.0_dp , &
+  CALL get_cartesian_surface(filename, psi, fdrule, 0.0_dp , &
        0.0_dp, 0.0_dp, lmax, .TRUE. )
   
   CALL cpu_time(end_time)

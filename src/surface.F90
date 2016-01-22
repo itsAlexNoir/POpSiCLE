@@ -64,11 +64,6 @@ MODULE surface
 #endif
   END INTERFACE get_cartesian_surface
   
-!!$  INTERFACE get_cartesian_flux
-!!$     MODULE PROCEDURE get_cartesian2D_flux
-!!$     MODULE PROCEDURE get_cartesian3D_flux
-!!$  END INTERFACE get_cartesian_flux
-  
   INTERFACE delete_surface2D
      MODULE PROCEDURE delete_surface2D_serial
 #if _COM_MPI
@@ -154,7 +149,7 @@ CONTAINS
     rb = Rboundary
     
     IF(write_to_file) &
-         CALL open_surface_file(filename)
+         CALL create_surface_file(filename)
     
   END SUBROUTINE initialize_cylindrical_surface_serial
   
@@ -207,7 +202,7 @@ CONTAINS
        rb = Rboundary
        
        IF(write_to_file) &
-            CALL open_surface_file(filename, surfacecomm)
+            CALL create_surface_file(filename, surfacecomm)
     ENDIF
     
   END SUBROUTINE initialize_cylindrical_surface_parallel
@@ -255,7 +250,7 @@ CONTAINS
     rb = Rboundary
     
     IF(write_to_file) &
-         CALL open_surface_file(filename)
+         CALL create_surface_file(filename)
     
   END SUBROUTINE initialize_cartesian3D_surface_serial
   
@@ -313,7 +308,7 @@ CONTAINS
        rb = Rboundary
        
        IF(write_to_file) &
-            CALL open_surface_file(filename, surfacecomm)
+            CALL create_surface_file(filename, surfacecomm)
     ENDIF
     
   END SUBROUTINE initialize_cartesian3D_surface_parallel
@@ -321,63 +316,67 @@ CONTAINS
   !****************************************************************!
   !****************************************************************!
   
-  SUBROUTINE get_cylindrical_surface_serial(wavefunc, fd_rule, time, &
-       efield, afield, lmax, write_to_file)
+  SUBROUTINE get_cylindrical_surface_serial(filename, wavefunc, &
+       fd_rule, time, efield, afield, lmax, write_to_file)
     
     IMPLICIT NONE
     
-    COMPLEX(dp), INTENT(IN)   :: wavefunc(:, :)
-    INTEGER, INTENT(IN)       :: fd_rule
-    REAL(dp), INTENT(IN)      :: time, efield, afield
-    INTEGER, INTENT(IN)       :: lmax
-    LOGICAL, INTENT(IN)       :: write_to_file
+    CHARACTER(LEN=*), INTENT(IN) :: filename
+    COMPLEX(dp), INTENT(IN)      :: wavefunc(:, :)
+    INTEGER, INTENT(IN)          :: fd_rule
+    REAL(dp), INTENT(IN)         :: time, efield, afield
+    INTEGER, INTENT(IN)          :: lmax
+    LOGICAL, INTENT(IN)          :: write_to_file
 
-    INTEGER                   :: middle_pt
+    INTEGER                      :: middle_pt
     !----------------------------------------------------------!
     
     CALL get_cylindrical_boundary( wavefunc, spherical_wave2D, &
          spherical_wave2D_dr, spherical_wave2D_dtheta, &
          'quadratic')
-       
+    
     middle_pt = fd_rule + 1
     CALL make_wave_boundary_derivative(spherical_wave2D,&
          spherical_wave2D_deriv,fd_rule,numrpts,numthetapts)
     
     ! Write boundary points to a HDF5 file
     IF (write_to_file) &
-         CALL write_surface_file(spherical_wave2D(middle_pt,:), &
+         CALL write_surface_file(filename, spherical_wave2D(middle_pt,:), &
          spherical_wave2D_deriv, time, efield, afield, lmax)
         
   END SUBROUTINE get_cylindrical_surface_serial
 
   !**********************************************************************!
 #if _COM_MPI
-  SUBROUTINE get_cylindrical_surface_parallel(wavefunc, fd_rule, time, &
-       efield, afield, lmax, rank, write_to_file)
+  SUBROUTINE get_cylindrical_surface_parallel(filename, wavefunc, &
+       fd_rule, time, efield, afield, lmax, rank, write_to_file)
     
     IMPLICIT NONE
-    
-    COMPLEX(dp), INTENT(IN)   :: wavefunc(:, :)
-    INTEGER, INTENT(IN)       :: fd_rule
-    REAL(dp), INTENT(IN)      :: time, efield, afield
-    INTEGER, INTENT(IN)       :: lmax, rank
-    LOGICAL, INTENT(IN)       :: write_to_file
 
-    INTEGER                   :: numtotalpts
-    INTEGER                   :: middle_pt, offset
-    INTEGER                   :: ir, itheta, ierror
+    CHARACTER(LEN=*), INTENT(IN) :: filename
+    COMPLEX(dp), INTENT(IN)      :: wavefunc(:, :)
+    INTEGER, INTENT(IN)          :: fd_rule
+    REAL(dp), INTENT(IN)         :: time, efield, afield
+    INTEGER, INTENT(IN)          :: lmax, rank
+    LOGICAL, INTENT(IN)          :: write_to_file
+
+    INTEGER                      :: numtotalpts
+    INTEGER                      :: middle_pt, offset
+    INTEGER                      :: ir, itheta, ierror
     !----------------------------------------------------------!
     
     IF(i_am_surface(rank) .EQ. 1) THEN
-       CALL get_cylindrical_boundary( wavefunc, spherical_wave2D, &
+       CALL get_cylindrical_boundary( wavefunc, spherical_wave2D_local, &
             spherical_wave2D_dr, spherical_wave2D_dtheta, &
-            'quadratic')
+            'quadratic', rank)
        
        ! Communicate the spherical wavefunction
        numtotalpts = numrpts * numthetapts
+       spherical_wave2D_global = ZERO
        CALL MPI_ALLREDUCE(spherical_wave2D_local, spherical_wave2D_global, &
-            numtotalpts, MPI_DOUBLE_PRECISION, MPI_SUM, surfacecomm, ierror)
+            numtotalpts, MPI_DOUBLE_COMPLEX, MPI_SUM, surfacecomm, ierror)
        
+     
        middle_pt = fd_rule + 1
        offset = numthetaptsperproc * surfacerank       
        DO itheta = 1, numthetaptsperproc
@@ -392,27 +391,28 @@ CONTAINS
        
        ! Write boundary points to a HDF5 file
        IF (write_to_file) &
-            CALL write_surface_file(spherical_wave2D(middle_pt,:), &
+            CALL write_surface_file(filename, spherical_wave2D(middle_pt,:), &
             spherical_wave2D_deriv, time, efield, afield, lmax, &
-            surfacerank, numthetapts)
+            surfacecomm, surfacerank, numthetaptsperproc)
     ENDIF
     
   END SUBROUTINE get_cylindrical_surface_parallel
 #endif
   !*****************************************************************!
   
-  SUBROUTINE get_cartesian3D_surface_serial(wavefunc, fd_rule, time, &
-       efield, afield, lmax, write_to_file)
+  SUBROUTINE get_cartesian3D_surface_serial(filename, wavefunc, &
+       fd_rule, time, efield, afield, lmax, write_to_file)
     
     IMPLICIT NONE
+
+    CHARACTER(LEN=*), INTENT(IN) :: filename
+    COMPLEX(dp), INTENT(IN)      :: wavefunc(:, :, :)
+    INTEGER, INTENT(IN)          :: fd_rule
+    REAL(dp), INTENT(IN)         :: time, efield, afield
+    INTEGER, INTENT(IN)          :: lmax
+    LOGICAL, INTENT(IN)          :: write_to_file
     
-    COMPLEX(dp), INTENT(IN)   :: wavefunc(:, :, :)
-    INTEGER, INTENT(IN)       :: fd_rule
-    REAL(dp), INTENT(IN)      :: time, efield, afield
-    INTEGER, INTENT(IN)       :: lmax
-    LOGICAL, INTENT(IN)       :: write_to_file
-    
-    INTEGER                   :: middle_pt
+    INTEGER                      :: middle_pt
     !----------------------------------------------------------!
     
     CALL get_cartesian_boundary( wavefunc, spherical_wave3D, &
@@ -425,39 +425,41 @@ CONTAINS
     
     ! Write boundary points to a HDF5 file
     IF (write_to_file) &
-         CALL write_surface_file(spherical_wave3D(middle_pt,:, :), &
+         CALL write_surface_file(filename, spherical_wave3D(middle_pt,:, :), &
          spherical_wave3D_deriv, time, efield, afield, lmax)
     
   END SUBROUTINE get_cartesian3D_surface_serial
   
   !**********************************************************************!
 #if _COM_MPI
-  SUBROUTINE get_cartesian3D_surface_parallel(wavefunc, fd_rule, time, &
-       efield, afield, lmax, rank, write_to_file)
+  SUBROUTINE get_cartesian3D_surface_parallel(filename, wavefunc, &
+       fd_rule, time, efield, afield, lmax, rank, write_to_file)
     
     IMPLICIT NONE
-    
-    COMPLEX(dp), INTENT(IN)   :: wavefunc(:, :, :)
-    INTEGER, INTENT(IN)       :: fd_rule
-    REAL(dp), INTENT(IN)      :: time, efield, afield
-    INTEGER, INTENT(IN)       :: lmax, rank
-    LOGICAL, INTENT(IN)       :: write_to_file
 
-    INTEGER                   :: numtotalpts
-    INTEGER                   :: middle_pt
-    INTEGER                   :: thetaoffset, phioffset
-    INTEGER                   :: ir, itheta, iphi, ierror
+    CHARACTER(LEN=*), INTENT(IN) :: filename
+    COMPLEX(dp), INTENT(IN)      :: wavefunc(:, :, :)
+    INTEGER, INTENT(IN)          :: fd_rule
+    REAL(dp), INTENT(IN)         :: time, efield, afield
+    INTEGER, INTENT(IN)          :: lmax, rank
+    LOGICAL, INTENT(IN)          :: write_to_file
+
+    INTEGER                      :: numtotalpts
+    INTEGER                      :: middle_pt
+    INTEGER                      :: thetaoffset, phioffset
+    INTEGER                      :: ir, itheta, iphi, ierror
     !----------------------------------------------------------!
     
     IF(i_am_surface(rank) .EQ. 1) THEN
        CALL get_cartesian_boundary( wavefunc, spherical_wave3D_local, &
             spherical_wave3D_dr, spherical_wave3D_dtheta, &
-            spherical_wave3D_dphi, 'quadratic')
+            spherical_wave3D_dphi, 'quadratic',rank)
        
        ! Communicate the spherical wavefunction
        numtotalpts = numrpts * numthetapts * numphipts
+       spherical_wave3D_global = ZERO
        CALL MPI_ALLREDUCE(spherical_wave3D_local, spherical_wave3D_global, &
-            numtotalpts, MPI_DOUBLE_PRECISION, MPI_SUM, surfacecomm, ierror)
+            numtotalpts, MPI_DOUBLE_COMPLEX, MPI_SUM, surfacecomm, ierror)
        
        middle_pt = fd_rule + 1
        thetaoffset = numthetaptsperproc * surfacerank       
@@ -467,20 +469,20 @@ CONTAINS
           DO itheta = 1, numthetaptsperproc
              DO ir = 1, numrpts
                 spherical_wave3D(ir,itheta, iphi) = &
-                     spherical_wave3D_global(ir,thetaoffset+itheta, phioffset + iphi)
+                     spherical_wave3D_global(ir,thetaoffset+itheta, phioffset+iphi)
              ENDDO
           ENDDO
        ENDDO
        
-          CALL make_wave_boundary_derivative(spherical_wave3D,&
+       CALL make_wave_boundary_derivative(spherical_wave3D,&
             spherical_wave3D_deriv,fd_rule,numrpts,numthetaptsperproc,&
             numphiptsperproc)
        
        ! Write boundary points to a HDF5 file
        IF (write_to_file) &
-            CALL write_surface_file(spherical_wave3D(middle_pt,:, :), &
+            CALL write_surface_file(filename, spherical_wave3D(middle_pt,:, :), &
             spherical_wave3D_deriv, time, efield, afield, lmax, &
-            surfacerank, numthetaptsperproc, numphiptsperproc )
+            surfacecomm, surfacerank, numthetaptsperproc, numphiptsperproc )
     ENDIF
     
   END SUBROUTINE get_cartesian3D_surface_parallel
@@ -492,9 +494,6 @@ CONTAINS
   SUBROUTINE delete_surface2D_serial()
     
     IMPLICIT NONE
-    
-    ! Close HDF5 file
-    CALL close_surface_file()
     
     ! Deallocate fd coeffs
     CALL delete_fd_coeffs()
@@ -512,9 +511,6 @@ CONTAINS
     
     INTEGER, INTENT(IN)        :: rank
     
-    ! Close HDF5 parallel file
-    CALL close_surface_file(rank)
-
     ! Deallocate fd coeffs
     CALL delete_fd_coeffs()
     
@@ -531,10 +527,7 @@ CONTAINS
   SUBROUTINE delete_surface3D_serial()
     
     IMPLICIT NONE
-    
-    ! Close HDF5 file
-    CALL close_surface_file()
-    
+      
     DEALLOCATE(spherical_wave3D,spherical_wave3D_deriv)
     DEALLOCATE(spherical_wave3D_dr)
     DEALLOCATE(spherical_wave3D_dtheta)
@@ -549,9 +542,6 @@ CONTAINS
     IMPLICIT NONE
     
     INTEGER, INTENT(IN)         :: rank
-    
-    ! Close HDF5 parallel file
-    CALL close_surface_file(rank)
     
     IF(i_am_surface(rank) .EQ. 1) THEN
        DEALLOCATE(spherical_wave3D_local,spherical_wave3D_global)
