@@ -416,7 +416,7 @@ CONTAINS
   
   !----------------------------------------!
 
-  ! The parallel version of the above routine
+  ! The parallel version of the routine above.
   
   SUBROUTINE sphbessjy_v(n,x,sj,sy,sjp,syp)
     
@@ -430,9 +430,9 @@ CONTAINS
     REAL(dp), DIMENSION(size(x)) :: factor,rj,rjp,ry,ryp
     INTEGER               :: i
     
-    IF((SIZE(x).EQ.SIZE(sj)) .AND. (SIZE(x).EQ.SIZE(sy)) &
-         .AND. (SIZE(x).EQ.SIZE(sjp)) &
-         .AND. (SIZE(x).EQ.SIZE(syp))) THEN
+    IF((SIZE(x).NE.SIZE(sj)) .OR. (SIZE(x).NE.SIZE(sy)) &
+         .OR. (SIZE(x).NE.SIZE(sjp)) &
+         .OR. (SIZE(x).NE.SIZE(syp))) THEN
        WRITE(*, *) 'Input arrays have not the same length.'
        STOP
     ENDIF

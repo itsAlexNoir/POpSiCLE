@@ -11,7 +11,7 @@
 !> \brief Gauss legendre related routines
 !> \details This module contains routines to prepare and perform
 !> Gauss-Legendre quadratures. Also, it calculates Legendre polynomials,
-!> Clebsh-Gordon coeffcients and spherical harmonics transforms.
+!> Clebsch-Gordon coeffcients and spherical harmonics transforms.
 !
 !------------------------------------------------------------------------------
 MODULE gaussleg
@@ -27,7 +27,7 @@ MODULE gaussleg
   PUBLIC      :: make_legendre
   PUBLIC      :: plgndr
   PUBLIC      :: make_factlog
-  PUBLIC      :: clebsh
+  PUBLIC      :: clebsch
   
   INTERFACE plgndr
      MODULE PROCEDURE plgndr_s
@@ -444,9 +444,9 @@ CONTAINS
   !=======================================================================
   !=======================================================================
   !
-  ! SUBROUTINE clebsh
+  ! SUBROUTINE clebsch
   !
-  !> \brief This function calculates the Clebsh-Gordon co-efficient for
+  !> \brief This function calculates the Clebsch-Gordon co-efficient for
   !> given angular momentum and magnetic quantum numbers using an
   !> expression due to Racah---See Rose, M.E., `Elementary Theory of
   !> Angular Momentum', [1963], Wiley, pp 40.
@@ -468,14 +468,14 @@ CONTAINS
   !=======================================================================
   !=======================================================================
   
-  FUNCTION clebsh( j1, j2, ibigj, m1, m2, ibigm, factlog, NUMPTS )
+  FUNCTION clebsch( j1, j2, ibigj, m1, m2, ibigm, factlog, NUMPTS )
     
     IMPLICIT NONE
     
     ! Passed variables
     INTEGER, INTENT(IN)   :: NUMPTS, j1, m1, j2, m2, ibigj, ibigm
     REAL(dp), INTENT(IN)  :: factlog(0:NUMPTS)
-    REAL(dp)              :: clebsh
+    REAL(dp)              :: clebsch
     
     ! Local variables
     INTEGER                :: ik, kmin, kmax, ja, jb, jc, jd, je
@@ -484,7 +484,7 @@ CONTAINS
     REAL(dp), PARAMETER    :: half = 0.5_dp
     REAL(dp), PARAMETER    :: one = 1.0_dp
     
-    clebsh = zero
+    clebsch = zero
     
     ! Only proceed if various triangularity constraints for the
     ! quantum numbers are fulfilled.                                   
@@ -512,17 +512,17 @@ CONTAINS
        kmax = MIN(ja, jb, jc)
        
        DO ik = kmin, kmax
-          clebsh = clebsh + (-1.0_dp) ** ik * EXP(a - factlog(ik) -  &
+          clebsch = clebsch + (-1.0_dp) ** ik * EXP(a - factlog(ik) -  &
                factlog(ja - ik) - factlog(jb - ik) -                 & 
                factlog(jc - ik) - factlog(jd + ik) -                 &
                factlog(je + ik))
        ENDDO
        
-       clebsh = clebsh * SQRT(DBLE(2 * ibigj) + one)
+       clebsch = clebsch * SQRT(DBLE(2 * ibigj) + one)
        
     ENDIF
     
-  END FUNCTION clebsh
+  END FUNCTION clebsch
   
   !----------------------------------------------------------------!
   

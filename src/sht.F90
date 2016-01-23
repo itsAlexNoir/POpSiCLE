@@ -116,37 +116,36 @@ CONTAINS
   !=======================================================================
   !=======================================================================
   
-  SUBROUTINE make_sht(func, lmax, weights, func_lm)
+  SUBROUTINE make_sht(func, lmax, mmax, weights, func_lm)
     
     IMPLICIT NONE
     
     COMPLEX(dp), INTENT(IN)    :: func(:, :)
-    INTEGER, INTENT(IN)        :: lmax
+    INTEGER, INTENT(IN)        :: lmax, mmax
     REAL(dp), INTENT(IN)       :: weights(:)
-    COMPLEX(dp), INTENT(OUT)   :: func_lm(:, :)
+    COMPLEX(dp), INTENT(OUT)   :: func_lm(-mmax:, 0:)
     
     INTEGER                    :: dims(2)
     COMPLEX(dp), ALLOCATABLE   :: coeffm(:), gm(:, :)
     INTEGER                    :: numthetapts, numphipts
-    INTEGER                    :: mmax
+    INTEGER                    :: mmin
     REAL(dp)                   :: sum
     INTEGER                    :: il, im, itheta
+    
+    !----------------------------------------------------!
     
     ! What is the maximum number of theta and phi points?
     !numthetapts = SIZE(axis)
     dims = SHAPE(func)
     numthetapts = dims(1)
     numphipts   = dims(2)
-    IF(numphipts.EQ.1) THEN
-       mmax = 0
-       ALLOCATE(gm(1:numthetapts,0:0))
-    ELSE
-       mmax = lmax
-       ! Allocate auxiliary arrays
-       ALLOCATE(gm(1:numthetapts,-mmax:mmax))
-       ALLOCATE(coeffm(-mmax:mmax))
-    ENDIF
     
+    mmin = -mmax
+    ! Allocate auxiliary arrays
+    IF(mmax.NE.0) &
+         ALLOCATE(coeffm(mmin:mmax))
+    
+    ALLOCATE(gm(1:numthetapts,mmin:mmax))
     
     ! Initialize array to zero
     func_lm = ZERO
@@ -176,20 +175,28 @@ CONTAINS
     
     ! Now, the Gauss-Legendre quadrature
     DO il = 0, lmax
-       DO im = 0, mmax
+       DO im = mmin, mmax
           sum = 0.0_dp
-          DO itheta = 1, numthetapts
-             sum = sum + gm(itheta, im) * &
-                  normfact(im,il) * legenpl(itheta-1,im,il) &
-                  * weights(itheta)
-          ENDDO
+          IF(im.LT.0) THEN
+             DO itheta = 1, numthetapts
+                sum = sum + gm(itheta, im) * &
+                     normfact(ABS(im),il) * legenpl(itheta-1,ABS(im),il) &
+                     * (-1.0_dp)**ABS(im) * weights(itheta)
+             ENDDO
+          ELSE
+             DO itheta = 1, numthetapts
+                sum = sum + gm(itheta, im) * &
+                     normfact(im,il) * legenpl(itheta-1,im,il) &
+                     * weights(itheta)
+             ENDDO
+          ENDIF
           func_lm(im,il) = sum
        ENDDO
     ENDDO
     
     ! Deallocate stuff
     DEALLOCATE(gm)
-    IF(numphipts.EQ.1) &
+    IF(mmax.NE.0) &
          DEALLOCATE(coeffm)
     
   END SUBROUTINE make_sht
