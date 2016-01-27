@@ -17,8 +17,7 @@ MODULE surface
   
   USE constants
   USE tools
-  USE cylboundary
-  USE cartboundary
+  USE boundary
   USE io_surface
 #if _COM_MPI
   USE MPI
@@ -98,7 +97,7 @@ MODULE surface
   COMPLEX(dp), ALLOCATABLE  :: psi_l(:, :)
   COMPLEX(dp), ALLOCATABLE  :: psi_lm(:, :, :)
   
-  REAL(dp)                  :: rb
+  REAL(dp)                  :: rb, deltar
   INTEGER                   :: numpts, numrpts
   INTEGER                   :: numthetapts, numphipts
   INTEGER                   :: numthetaptsperproc
@@ -129,12 +128,18 @@ CONTAINS
     !------------------------------------------------------------!
     
     ! Initialize finite-difference coefficients
-    CALL initialize_fd_coeffs(fd_rule,dr)
+    CALL initialize_fd_coeffs(fd_rule)
     
-    ! Initialize spherical grid
+    !! Initialize spherical grid
+    !! For scattered interpolation uncomment the paragraph below.
     CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
          Rboundary, radius_tolerance, fd_rule, dr, lmax, numpts, &
          numrpts, numthetapts )
+    
+    ! For bicubic interpolation, the paragraph below.
+    !CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
+    !     fd_rule, dr, lmax, numrpts, numthetapts)
+    
     
     ALLOCATE(spherical_wave2D(1:numrpts,1:numthetapts))   
     ALLOCATE(spherical_wave2D_dr(1:numrpts,1:numthetapts))
@@ -147,6 +152,7 @@ CONTAINS
     spherical_wave2D_deriv  = ZERO
     
     rb = Rboundary
+    deltar = dr
     
     IF(write_to_file) &
          CALL create_surface_file(filename)
@@ -176,7 +182,7 @@ CONTAINS
     !------------------------------------------------------------!
     
     ! Initilize finite-difference coefficients
-    CALL initialize_fd_coeffs(fd_rule,dr)
+    CALL initialize_fd_coeffs(fd_rule)
     
     ! Initialize spherical grid
     CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
@@ -200,6 +206,7 @@ CONTAINS
        spherical_wave2D_deriv  = ZERO
        
        rb = Rboundary
+       deltar = dr
        
        IF(write_to_file) &
             CALL create_surface_file(filename, surfacecomm)
@@ -228,7 +235,7 @@ CONTAINS
     !------------------------------------------------------------!
     
     ! Initilize finite-difference coefficients
-    CALL initialize_fd_coeffs(fd_rule,dr)
+    CALL initialize_fd_coeffs(fd_rule)
     
     ! Initialize spherical grid
     CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
@@ -248,6 +255,7 @@ CONTAINS
     spherical_wave3D_deriv  = ZERO
     
     rb = Rboundary
+    deltar = dr
     
     IF(write_to_file) &
          CALL create_surface_file(filename)
@@ -277,7 +285,7 @@ CONTAINS
     !------------------------------------------------------------!
     
     ! Initilize finite-difference coefficients
-    CALL initialize_fd_coeffs(fd_rule,dr)
+    CALL initialize_fd_coeffs(fd_rule)
     
     ! Initialize spherical grid
     CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
@@ -306,6 +314,7 @@ CONTAINS
        spherical_wave3D_deriv  = ZERO
        
        rb = Rboundary
+       deltar = dr
        
        IF(write_to_file) &
             CALL create_surface_file(filename, surfacecomm)
@@ -337,7 +346,8 @@ CONTAINS
     
     middle_pt = fd_rule + 1
     CALL make_wave_boundary_derivative(spherical_wave2D,&
-         spherical_wave2D_deriv,fd_rule,numrpts,numthetapts)
+         spherical_wave2D_deriv,fd_rule,deltar,&
+         numrpts,numthetapts)
     
     ! Write boundary points to a HDF5 file
     IF (write_to_file) &
@@ -387,7 +397,8 @@ CONTAINS
        ENDDO
        
        CALL make_wave_boundary_derivative(spherical_wave2D,&
-            spherical_wave2D_deriv,fd_rule,numrpts,numthetaptsperproc)
+            spherical_wave2D_deriv,fd_rule,deltar,&
+            numrpts,numthetaptsperproc)
        
        ! Write boundary points to a HDF5 file
        IF (write_to_file) &
@@ -421,7 +432,8 @@ CONTAINS
     
     middle_pt = fd_rule + 1
     CALL make_wave_boundary_derivative(spherical_wave3D,&
-         spherical_wave3D_deriv,fd_rule,numrpts,numthetapts,numphipts)
+         spherical_wave3D_deriv,fd_rule,deltar,&
+         numrpts,numthetapts,numphipts)
     
     ! Write boundary points to a HDF5 file
     IF (write_to_file) &
@@ -475,8 +487,8 @@ CONTAINS
        ENDDO
        
        CALL make_wave_boundary_derivative(spherical_wave3D,&
-            spherical_wave3D_deriv,fd_rule,numrpts,numthetaptsperproc,&
-            numphiptsperproc)
+            spherical_wave3D_deriv,fd_rule,deltar,&
+            numrpts,numthetaptsperproc,numphiptsperproc)
        
        ! Write boundary points to a HDF5 file
        IF (write_to_file) &

@@ -12,6 +12,9 @@ MODULE tools
   PUBLIC        :: initialize_fd_coeffs
   PUBLIC        :: delete_fd_coeffs
   PUBLIC        :: make_wave_boundary_derivative
+  PUBLIC        :: make_derivative
+  PUBLIC        :: make_cross_derivative
+  PUBLIC        :: fdweights
 
   ! Interfaces
   INTERFACE make_wave_boundary_derivative
@@ -19,6 +22,18 @@ MODULE tools
      MODULE PROCEDURE make_wave_boundary_derivative3D
   END INTERFACE make_wave_boundary_derivative
 
+  INTERFACE make_derivative
+     MODULE PROCEDURE dmake_derivative
+     MODULE PROCEDURE zmake_derivative
+  END INTERFACE make_derivative
+
+  INTERFACE make_cross_derivative
+     MODULE PROCEDURE dmake_cross_derivative2D
+     MODULE PROCEDURE zmake_cross_derivative2D
+     !MODULE PROCEDURE dmake_cross_derivative3D
+     !MODULE PROCEDURE zmake_cross_derivative3D
+  END INTERFACE make_cross_derivative
+  
   ! Private variables
   REAL(dp), ALLOCATABLE        :: fd_coeff1(:)
   REAL(dp), ALLOCATABLE        :: fd_coeff2(:)
@@ -140,12 +155,11 @@ CONTAINS
 
   !****************************************!
   
-  SUBROUTINE initialize_fd_coeffs(fd_rule, deltar)
+  SUBROUTINE initialize_fd_coeffs(fd_rule)
 
     IMPLICIT NONE
 
     INTEGER, INTENT(IN)        :: fd_rule
-    REAL(dp), INTENT(IN)       :: deltar 
     
     ALLOCATE(fd_coeff1(-fd_rule:fd_rule))
     ALLOCATE(fd_coeff2(-fd_rule:fd_rule))
@@ -276,9 +290,6 @@ CONTAINS
     	STOP
     ENDIF
     
-    fd_coeff1        =  fd_coeff1 / (deltar)
-    fd_coeff2        =  fd_coeff2 / (deltar * deltar)
-    
   END SUBROUTINE initialize_fd_coeffs
   
   !********************************************************!
@@ -292,13 +303,14 @@ CONTAINS
   
   !********************************************************!
   SUBROUTINE make_wave_boundary_derivative2D(wave,wave_deriv, &
-       fd_rule, numrpts, numthetapts)
+       fd_rule, deltar, numrpts, numthetapts)
     
     IMPLICIT NONE
     
     COMPLEX(dp), INTENT(IN)     :: wave(:, :)
     COMPLEX(dp), INTENT(OUT)    :: wave_deriv(:)
     INTEGER, INTENT(IN)         :: fd_rule
+    REAL(dp), INTENT(IN)        :: deltar
     INTEGER, INTENT(IN)         :: numrpts
     INTEGER, INTENT(IN)         :: numthetapts
     
@@ -316,7 +328,8 @@ CONTAINS
        sum = ZERO
        DO ifd = -fd_rule , fd_rule
           sum = sum + &
-               fd_coeff1(ifd) * wave(fd_rule+1+ifd,itheta)
+               fd_coeff1(ifd) / deltar * &
+               wave(fd_rule+1+ifd,itheta)
        ENDDO
        wave_deriv(itheta) = sum
     ENDDO
@@ -327,13 +340,14 @@ CONTAINS
   !**************************************************!
 
     SUBROUTINE make_wave_boundary_derivative3D(wave,wave_deriv, &
-       fd_rule, numrpts, numthetapts, numphipts)
+       fd_rule, deltar, numrpts, numthetapts, numphipts)
     
     IMPLICIT NONE
     
     COMPLEX(dp), INTENT(IN)     :: wave(:, :, :)
     COMPLEX(dp), INTENT(OUT)    :: wave_deriv(:, :)
     INTEGER, INTENT(IN)         :: fd_rule
+    REAL(dp), INTENT(IN)        :: deltar
     INTEGER, INTENT(IN)         :: numrpts
     INTEGER, INTENT(IN)         :: numthetapts
     INTEGER, INTENT(IN)         :: numphipts
@@ -360,5 +374,301 @@ CONTAINS
     ENDDO
     
   END SUBROUTINE make_wave_boundary_derivative3D
+
+  !*******************************************************!
+  
+  SUBROUTINE dmake_derivative(func,func_dx,&
+       fd_rule, dx, fdcoeffs )
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)            :: fd_rule    
+    REAL(dp), INTENT(IN)           :: func(-fd_rule:fd_rule)
+    REAL(dp), INTENT(OUT)          :: func_dx
+    REAL(dp), INTENT(IN)           :: dx
+    REAL(dp), INTENT(IN), OPTIONAL :: fdcoeffs(-fd_rule:fd_rule)
+    
+    INTEGER                        :: ifd
+    
+    !------------------------------------------------!
+    
+    func_dx = 0.0_dp
+    
+    IF(PRESENT(fdcoeffs)) THEN
+       DO ifd = -fd_rule, fd_rule
+          func_dx = func_dx + &
+               fdcoeffs(ifd) / dx * func(ifd)
+       ENDDO
+    ELSE
+       DO ifd = -fd_rule, fd_rule
+          func_dx = func_dx + &
+               fd_coeff1(ifd) / dx * func(ifd)
+       ENDDO
+    ENDIF
+    
+  END SUBROUTINE dmake_derivative
+
+   !*******************************************************!
+  
+  SUBROUTINE zmake_derivative(func,func_dx,&
+       fd_rule, dx, fdcoeffs)
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)            :: fd_rule  
+    COMPLEX(dp), INTENT(IN)        :: func(-fd_rule:fd_rule)
+    COMPLEX(dp), INTENT(OUT)       :: func_dx
+    REAL(dp), INTENT(IN)           :: dx
+    REAL(dp), INTENT(IN), OPTIONAL :: fdcoeffs(-fd_rule:fd_rule)
+
+    INTEGER                        :: ifd
+    
+    !------------------------------------------------!
+    
+    func_dx = ZERO
+    
+    IF(PRESENT(fdcoeffs)) THEN
+       DO ifd = -fd_rule, fd_rule
+          func_dx = func_dx + &
+               fdcoeffs(ifd) / dx * func(ifd)
+       ENDDO
+    ELSE
+       DO ifd = -fd_rule, fd_rule
+          func_dx = func_dx + &
+               fd_coeff1(ifd) / dx * func(ifd)
+       ENDDO
+    ENDIF
+    
+  END SUBROUTINE zmake_derivative
+  
+  !*******************************************************!
+  
+  SUBROUTINE dmake_cross_derivative2D(func,func_dxdy,&
+       fd_rule, dx, dy, xcoeffs, ycoeffs)
+    IMPLICIT NONE
+
+    INTEGER, INTENT(IN)        :: fd_rule
+    REAL(dp), INTENT(IN)       :: func(-fd_rule:fd_rule,-fd_rule:fd_rule)
+    REAL(dp), INTENT(OUT)      :: func_dxdy
+    REAL(dp), INTENT(IN)       :: dx, dy
+    REAL(dp), INTENT(IN), OPTIONAL :: xcoeffs(-fd_rule:fd_rule)
+    REAL(dp), INTENT(IN), OPTIONAL :: ycoeffs(-fd_rule:fd_rule)
+    
+    REAL(dp)                   :: func_dx(-fd_rule:fd_rule)
+    INTEGER                    :: ifdx, ifdy
+    
+    !------------------------------------------------!
+    
+    func_dxdy = 0.0_dp
+
+    IF(PRESENT(xcoeffs)) THEN
+       DO ifdy = -fd_rule, fd_rule
+          DO ifdx = -fd_rule, fd_rule
+             func_dx(ifdy) = func_dx(ifdy) + &
+                  fd_coeff1(ifdx) / dx * func(ifdx,ifdy)
+          ENDDO
+       ENDDO
+    ELSE
+       DO ifdy = -fd_rule, fd_rule
+          DO ifdx = -fd_rule, fd_rule
+             func_dx(ifdy) = func_dx(ifdy) + &
+                  fd_coeff1(ifdx) / dx * func(ifdx,ifdy)
+          ENDDO
+       ENDDO
+    ENDIF
+    
+    IF(PRESENT(ycoeffs)) THEN
+       DO ifdy = -fd_rule, fd_rule
+          func_dxdy = func_dxdy + &
+               fd_coeff1(ifdy) / dy * func_dx(ifdy)
+       ENDDO
+    ELSE
+       DO ifdy = -fd_rule, fd_rule
+          func_dxdy = func_dxdy + &
+               fd_coeff1(ifdy) / dy * func_dx(ifdy)
+       ENDDO
+    ENDIF
+    
+  END SUBROUTINE dmake_cross_derivative2D
+
+  !*******************************************************!
+  
+  SUBROUTINE zmake_cross_derivative2D(func,func_dxdy,&
+       fd_rule, dx, dy, xcoeffs, ycoeffs)
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)            :: fd_rule
+    COMPLEX(dp), INTENT(IN)        :: func(-fd_rule:fd_rule,&
+         -fd_rule:fd_rule)
+    COMPLEX(dp), INTENT(OUT)       :: func_dxdy
+    REAL(dp), INTENT(IN)           :: dx, dy
+    REAL(dp), INTENT(IN), OPTIONAL :: xcoeffs(-fd_rule:fd_rule)
+    REAL(dp), INTENT(IN), OPTIONAL :: ycoeffs(-fd_rule:fd_rule)
+    
+    COMPLEX(dp)                    :: func_dx(-fd_rule:fd_rule)
+    INTEGER                        :: ifdx, ifdy
+    
+    !------------------------------------------------!
+
+    func_dxdy = ZERO
+    
+    IF(PRESENT(xcoeffs)) THEN
+       DO ifdy = -fd_rule, fd_rule
+          DO ifdx = -fd_rule, fd_rule
+             func_dx(ifdy) = func_dx(ifdy) + &
+                  fd_coeff1(ifdx) / dx * func(ifdx,ifdy)
+          ENDDO
+       ENDDO
+    ELSE
+       DO ifdy = -fd_rule, fd_rule
+          DO ifdx = -fd_rule, fd_rule
+             func_dx(ifdy) = func_dx(ifdy) + &
+                  fd_coeff1(ifdx) / dx * func(ifdx,ifdy)
+          ENDDO
+       ENDDO
+    ENDIF
+    
+    IF(PRESENT(ycoeffs)) THEN
+       DO ifdy = -fd_rule, fd_rule
+          func_dxdy = func_dxdy + &
+               fd_coeff1(ifdy) / dy * func_dx(ifdy)
+       ENDDO
+    ELSE
+       DO ifdy = -fd_rule, fd_rule
+          func_dxdy = func_dxdy + &
+               fd_coeff1(ifdy) / dy * func_dx(ifdy)
+       ENDDO
+    ENDIF
+    
+  END SUBROUTINE zmake_cross_derivative2D
+
+    !*******************************************************!
+  
+!!$  SUBROUTINE dmake_cross_derivative3D(func,func_dxdy,&
+!!$       fd_rule, dx, dy, dz)
+!!$    IMPLICIT NONE
+!!$    
+!!$    REAL(dp), INTENT(IN)          :: func(:, :, :)
+!!$    REAL(dp), INTENT(IN)          :: func_dxdydz
+!!$    INTEGER, INTENT(IN)           :: fd_rule
+!!$    REAL(dp), INTENT(IN)          :: dx, dy, dz
+!!$    
+!!$    COMPLEX(dp)                   :: func_dx
+!!$    INTEGER                       :: ifd
+!!$    
+!!$    !------------------------------------------------!
+!!$    
+!!$    DO ifd = -fd_rule, fd_rule
+!!$       psi_dx = psi_dx + &
+!!$            fd_coeff1(idf) / dx * func(ifd,fd_rule+1)
+!!$    ENDDO
+!!$
+!!$    DO ifd = -fd_rule, fd_rule
+!!$       psi_dxdy = psi_dxdy + &
+!!$            fd_coeff1(idf) / dy * func(fd_rule+1,ifd)
+!!$    ENDDO
+!!$
+!!$    DO ifd = -fd_rule, fd_rule
+!!$       psi_dxdydz = psi_dxdydz + &
+!!$            fd_coeff1(idf) / dz * func(fd_rule+1,ifd)
+!!$    ENDDO
+!!$    
+!!$    
+!!$  END SUBROUTINE zmake_cross_derivative3D
+!!$
+!!$    !*******************************************************!
+!!$  
+!!$  SUBROUTINE zmake_cross_derivative3D(func,func_dxdy,&
+!!$       fd_rule, dx, dy)
+!!$    IMPLICIT NONE
+!!$    
+!!$    COMPLEX(dp), INTENT(IN)       :: func(:, :)
+!!$    COMPLEX(dp), INTENT(IN)       :: func_dxdy
+!!$    INTEGER, INTENT(IN)           :: fd_rule
+!!$    REAL(dp), INTENT(IN)          :: dx, dy
+!!$    
+!!$    COMPLEX(dp)                   :: func_dx
+!!$    INTEGER                       :: ifd
+!!$    
+!!$    !------------------------------------------------!
+!!$    
+!!$    DO ifd = -fd_rule, fd_rule
+!!$       psi_dx = psi_dx + &
+!!$            fd_coeff1(idf) / dx * func(ifd,fd_rule+1)
+!!$    ENDDO
+!!$
+!!$    DO ifd = -fd_rule, fd_rule
+!!$       psi_dxdy = psi_dxdy + &
+!!$            fd_coeff1(idf) / dy * func(fd_rule+1,ifd)
+!!$    ENDDO
+!!$    
+!!$    
+!!$  END SUBROUTINE zmake_cross_derivative3D
+!!$
+  !*******************************************************!
+  
+  !----------------------------------------------------------------------------
+  !
+  !  SUBROUTINE fdweights
+  !
+  !> \brief Create finite-difference weights.
+  !> \details Create coefficients to be used for
+  !> finite-difference rules.
+  !
+  !> \param[in] xi Central grid point.
+  !> \param[in] x Grid points.
+  !> \param[in] n Order of the finite-difference rule.
+  !> \param[in] m Order of the highest derivative + 1 (This includes 0th).
+  !> \param[out] Finite-difference coefficients.
+  !
+  !----------------------------------------------------------------------------
+  
+  SUBROUTINE fdweights(xi, x, n, m, c)
+    
+    IMPLICIT NONE
+    
+    REAL(dp), INTENT(IN)     :: xi
+    REAL(dp), INTENT(IN)     :: x(:)
+    INTEGER, INTENT(IN)      :: n
+    INTEGER, INTENT(IN)      :: m
+    REAL(dp), INTENT(OUT)    :: c(:,:)
+    
+    REAL(dp)                 :: c1,c2,c3,c4,c5
+    INTEGER                  :: mn
+    INTEGER                  :: i,j,k
+
+    !---------------------------------------------------!
+    
+    c1 = 1.0_dp
+    c4 = x(1) - xi
+    
+    DO k = 1, m
+       DO j = 1, n
+          c(j,k) = 0.0_dp
+       ENDDO
+    ENDDO
+    
+    c(1,1) = 1.0_dp
+    DO i = 2, n
+       mn = MIN(i,m)
+       c2 = 1.0_dp
+       c5 = c4
+       c4 = x(i) - xi
+       DO j = 1, i-1
+          c3 = x(i) - x(j)
+          c2 = c2 * c3
+          DO k = mn, 2, -1
+             c(i,k) = c1 * ((k-1) * c(i-1,k-1) - c5 * c(i-1,k)) / c2
+          ENDDO
+          c(i,1) = -c1 * c5 * c(i-1,1) / c2
+          DO k = mn, 2, -1
+             c(j,k) = (c4 * c(j,k) - (k-1) * c(j,k-1)) / c3
+          ENDDO
+          c(j,1) = c4 * c(j,1) / c3
+       ENDDO
+       c1 = c2
+    ENDDO
+    
+  END SUBROUTINE fdweights
+  
+  !********************************************************!
   
 END MODULE tools

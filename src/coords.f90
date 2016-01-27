@@ -1,7 +1,7 @@
 MODULE coords
   
   USE constants
-  USE interp
+  USE scatt_interp
   
   IMPLICIT NONE
   
@@ -81,7 +81,7 @@ CONTAINS
     ENDDO
     
     IF(PRESENT(rank)) THEN
-       CALL create_interpolant(numpts_in,x_inp,y_inp,psi_inp,TRIM(method),rank)
+       CALL create_scatt_interpolant(numpts_in,x_inp,y_inp,psi_inp,TRIM(method),rank)
        
        IF (PRESENT(psi_sph_dr).AND.PRESENT(psi_sph_dth)) THEN
           psi_sph_dr = ZERO
@@ -93,7 +93,7 @@ CONTAINS
                 xpt = r_ax(ir) * COS(theta_ax(itheta))
                 ypt = r_ax(ir) * SIN(theta_ax(itheta))
                 
-                CALL interpolate(numpts_in,xpt, ypt, &
+                CALL scatt_interpolate(numpts_in,xpt, ypt, &
                      x_inp, y_inp, &
                      psi_inp, TRIM(method), psi_sph(ir,itheta), &
                      psi_sph_dr(ir,itheta), psi_sph_dth(ir,itheta),rank )
@@ -110,7 +110,7 @@ CONTAINS
                 xpt = r_ax(ir) * COS(theta_ax(itheta))
                 ypt = r_ax(ir) * SIN(theta_ax(itheta))
                 
-                CALL interpolate(numpts_in,xpt, ypt, &
+                CALL scatt_interpolate(numpts_in,xpt, ypt, &
                      x_inp, y_inp, &
                      psi_inp, TRIM(method), psi_sph(ir,itheta), rank=rank )
              ENDDO
@@ -123,7 +123,7 @@ CONTAINS
        
     ELSE
        
-       CALL create_interpolant(numpts_in,x_inp,y_inp,psi_inp,TRIM(method))
+       CALL create_scatt_interpolant(numpts_in,x_inp,y_inp,psi_inp,TRIM(method))
        
        IF (PRESENT(psi_sph_dr).AND.PRESENT(psi_sph_dth)) THEN
           psi_sph_dr = ZERO
@@ -135,7 +135,7 @@ CONTAINS
                 xpt = r_ax(ir) * COS(theta_ax(itheta))
                 ypt = r_ax(ir) * SIN(theta_ax(itheta))
                 
-                CALL interpolate(numpts_in,xpt, ypt, &
+                CALL scatt_interpolate(numpts_in,xpt, ypt, &
                      x_inp, y_inp, &
                      psi_inp, TRIM(method), psi_sph(ir,itheta), &
                      psi_sph_dr(ir,itheta), psi_sph_dth(ir,itheta) )
@@ -152,7 +152,7 @@ CONTAINS
                 xpt = r_ax(ir) * COS(theta_ax(itheta))
                 ypt = r_ax(ir) * SIN(theta_ax(itheta))
                     
-                CALL interpolate(numpts_in,xpt, ypt, &
+                CALL scatt_interpolate(numpts_in,xpt, ypt, &
                      x_inp, y_inp, &
                      psi_inp, TRIM(method), psi_sph(ir,itheta) )
              ENDDO
@@ -254,7 +254,7 @@ CONTAINS
     ENDIF
     
     IF(PRESENT(rank)) THEN
-       CALL create_interpolant(numpts_in,x_inp,y_inp,z_inp, &
+       CALL create_scatt_interpolant(numpts_in,x_inp,y_inp,z_inp, &
             psi_inp,TRIM(method), rank)
        
        IF(PRESENT(i_am_in)) THEN
@@ -272,7 +272,7 @@ CONTAINS
                          ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
                          zpt = r_ax(ir) * COS(theta_ax(itheta))
                          
-                         CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                         CALL scatt_interpolate(numpts_in,xpt,ypt,zpt, &
                               x_inp, y_inp, z_inp, &
                               psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
                               psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
@@ -295,7 +295,7 @@ CONTAINS
                          ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
                          zpt = r_ax(ir) * COS(theta_ax(itheta))
                          
-                         CALL interpolate(numpts_in,xpt, ypt, zpt, &
+                         CALL scatt_interpolate(numpts_in,xpt, ypt, zpt, &
                               x_inp, y_inp, z_inp, &
                               psi_inp, TRIM(method), psi_sph(ir,itheta,iphi), rank=rank )
                       ENDIF
@@ -322,7 +322,7 @@ CONTAINS
                       ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
                       zpt = r_ax(ir) * COS(theta_ax(itheta))
                       
-                      CALL interpolate(numpts_in,xpt, ypt, zpt, &
+                      CALL scatt_interpolate(numpts_in,xpt, ypt, zpt, &
                            x_inp, y_inp, z_inp, &
                            psi_inp,TRIM(method), psi_sph(ir,itheta, iphi), &
                            psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
@@ -343,7 +343,7 @@ CONTAINS
                       ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
                       zpt = r_ax(ir) * COS(theta_ax(itheta))
                       
-                      CALL interpolate(numpts_in,xpt, ypt, zpt, &
+                      CALL scatt_interpolate(numpts_in,xpt, ypt, zpt, &
                            x_inp, y_inp, z_inp, &
                            psi_inp,TRIM(method), psi_sph(ir,itheta,iphi), rank=rank )
                    ENDDO
@@ -358,7 +358,7 @@ CONTAINS
        ENDIF
     ELSE
        
-       CALL create_interpolant(numpts_in,x_inp,y_inp, z_inp, &
+       CALL create_scatt_interpolant(numpts_in,x_inp,y_inp, z_inp, &
             psi_inp,TRIM(method) )
        
        IF(PRESENT(i_am_in)) THEN
@@ -376,7 +376,7 @@ CONTAINS
                          ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
                          zpt = r_ax(ir) * COS(theta_ax(itheta))
                          
-                         CALL interpolate(numpts_in,xpt, ypt, zpt, &
+                         CALL scatt_interpolate(numpts_in,xpt, ypt, zpt, &
                               x_inp, y_inp, z_inp, &
                               psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
                               psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
@@ -399,7 +399,7 @@ CONTAINS
                          ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
                          zpt = r_ax(ir) * COS(theta_ax(itheta))
                          
-                         CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                         CALL scatt_interpolate(numpts_in,xpt,ypt,zpt, &
                               x_inp, y_inp, z_inp, &
                               psi_inp, TRIM(method), psi_sph(ir,itheta,iphi) )
                       ENDIF
@@ -426,7 +426,7 @@ CONTAINS
                       ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
                       zpt = r_ax(ir) * COS(theta_ax(itheta))
                       
-                      CALL interpolate(numpts_in,xpt, ypt, zpt, &
+                      CALL scatt_interpolate(numpts_in,xpt, ypt, zpt, &
                            x_inp, y_inp, z_inp, &
                            psi_inp,TRIM(method), psi_sph(ir,itheta, iphi), &
                            psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
@@ -447,7 +447,7 @@ CONTAINS
                       ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
                       zpt = r_ax(ir) * COS(theta_ax(itheta))
                       
-                      CALL interpolate(numpts_in,xpt, ypt, zpt, &
+                      CALL scatt_interpolate(numpts_in,xpt, ypt, zpt, &
                            x_inp, y_inp, z_inp, &
                            psi_inp,TRIM(method), psi_sph(ir,itheta,iphi) )
                    ENDDO
@@ -546,7 +546,7 @@ CONTAINS
     ENDIF
     
     IF(PRESENT(rank)) THEN
-       CALL create_interpolant(numpts_in,x_inp,y_inp, z_inp, &
+       CALL create_scatt_interpolant(numpts_in,x_inp,y_inp, z_inp, &
             psi_inp,TRIM(method), rank)
        
        IF(PRESENT(i_am_in)) THEN    
@@ -564,7 +564,7 @@ CONTAINS
                          ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
                          zpt = r_ax(ir) * COS(theta_ax(itheta))
                          
-                         CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                         CALL scatt_interpolate(numpts_in,xpt,ypt,zpt, &
                               x_inp, y_inp, z_inp, &
                               psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
                               psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
@@ -587,7 +587,7 @@ CONTAINS
                          ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
                          zpt = r_ax(ir) * COS(theta_ax(itheta))
                          
-                         CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                         CALL scatt_interpolate(numpts_in,xpt,ypt,zpt, &
                               x_inp, y_inp, z_inp, &
                               psi_inp, TRIM(method), psi_sph(ir,itheta,iphi), rank=rank )
                       ENDIF
@@ -614,7 +614,7 @@ CONTAINS
                       ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
                       zpt = r_ax(ir) * COS(theta_ax(itheta))
                       
-                      CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                      CALL scatt_interpolate(numpts_in,xpt,ypt,zpt, &
                            x_inp, y_inp, z_inp, &
                            psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
                            psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
@@ -635,7 +635,7 @@ CONTAINS
                       ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
                       zpt = r_ax(ir) * COS(theta_ax(itheta))
                       
-                      CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                      CALL scatt_interpolate(numpts_in,xpt,ypt,zpt, &
                            x_inp, y_inp, z_inp, &
                            psi_inp, TRIM(method), psi_sph(ir,itheta,iphi) )
                    ENDDO
@@ -650,7 +650,7 @@ CONTAINS
        
     ELSE
        
-       CALL create_interpolant(numpts_in,x_inp,y_inp,z_inp, &
+       CALL create_scatt_interpolant(numpts_in,x_inp,y_inp,z_inp, &
             psi_inp,TRIM(method))
        
        IF(PRESENT(i_am_in)) THEN    
@@ -668,7 +668,7 @@ CONTAINS
                          ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
                          zpt = r_ax(ir) * COS(theta_ax(itheta))
                          
-                         CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                         CALL scatt_interpolate(numpts_in,xpt,ypt,zpt, &
                               x_inp, y_inp, z_inp, &
                               psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
                               psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
@@ -691,7 +691,7 @@ CONTAINS
                          ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
                          zpt = r_ax(ir) * COS(theta_ax(itheta))
                          
-                         CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                         CALL scatt_interpolate(numpts_in,xpt,ypt,zpt, &
                               x_inp, y_inp, z_inp, &
                               psi_inp, TRIM(method), psi_sph(ir,itheta,iphi) )
                       ENDIF
@@ -718,7 +718,7 @@ CONTAINS
                       ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
                       zpt = r_ax(ir) * COS(theta_ax(itheta))
                       
-                      CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                      CALL scatt_interpolate(numpts_in,xpt,ypt,zpt, &
                            x_inp, y_inp, z_inp, &
                            psi_inp, TRIM(method), psi_sph(ir,itheta, iphi), &
                            psi_sph_dr(ir,itheta, iphi), psi_sph_dth(ir,itheta, iphi),&
@@ -739,7 +739,7 @@ CONTAINS
                       ypt = r_ax(ir) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
                       zpt = r_ax(ir) * COS(theta_ax(itheta))
                       
-                      CALL interpolate(numpts_in,xpt,ypt,zpt, &
+                      CALL scatt_interpolate(numpts_in,xpt,ypt,zpt, &
                            x_inp, y_inp, z_inp, &
                            psi_inp, TRIM(method), psi_sph(ir,itheta,iphi) )
                    ENDDO
@@ -812,7 +812,7 @@ CONTAINS
     ENDDO
     
     IF(PRESENT(rank)) THEN
-       CALL create_interpolant(numpts_in,r_inp,theta_inp,psi_inp,TRIM(method),rank)
+       CALL create_scatt_interpolant(numpts_in,r_inp,theta_inp,psi_inp,TRIM(method),rank)
        
        IF (PRESENT(psi_sph_dx).AND.PRESENT(psi_sph_dy)) THEN
           psi_sph_dx = ZERO
@@ -820,7 +820,7 @@ CONTAINS
           
           DO ir = 1, numrpts
              DO itheta = 1, numthetapts
-                CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), r_inp, theta_inp, &
+                CALL scatt_interpolate(numpts_in,r_ax(ir), theta_ax(itheta), r_inp, theta_inp, &
                      psi_inp, TRIM(method), psi_sph(ir,itheta), &
                      psi_sph_dx(ir,itheta), psi_sph_dy(ir,itheta),rank)
              ENDDO
@@ -830,7 +830,7 @@ CONTAINS
           
           DO ir = 1, numrpts
              DO itheta = 1, numthetapts
-                CALL interpolate(numpts,r_ax(ir), theta_ax(itheta), r_inp, theta_inp, &
+                CALL scatt_interpolate(numpts,r_ax(ir), theta_ax(itheta), r_inp, theta_inp, &
                      psi_inp, TRIM(method), psi_sph(ir,itheta), rank=rank)
              ENDDO
           ENDDO
@@ -838,7 +838,7 @@ CONTAINS
        ENDIF
        
     ELSE
-       CALL create_interpolant(numpts_in,r_inp,theta_inp,psi_inp,TRIM(method))
+       CALL create_scatt_interpolant(numpts_in,r_inp,theta_inp,psi_inp,TRIM(method))
        
        IF (PRESENT(psi_sph_dx).AND.PRESENT(psi_sph_dy)) THEN
           psi_sph_dx = ZERO
@@ -846,7 +846,7 @@ CONTAINS
           
           DO ir = 1, numrpts
              DO itheta = 1, numthetapts
-                CALL interpolate(numpts_in,r_ax(ir), theta_ax(itheta), r_inp, theta_inp, &
+                CALL scatt_interpolate(numpts_in,r_ax(ir), theta_ax(itheta), r_inp, theta_inp, &
                      psi_inp, TRIM(method), psi_sph(ir,itheta), &
                      psi_sph_dx(ir,itheta), psi_sph_dy(ir,itheta))
              ENDDO
@@ -856,7 +856,7 @@ CONTAINS
           
           DO ir = 1, numrpts
              DO itheta = 1, numthetapts
-                CALL interpolate(numpts,r_ax(ir), theta_ax(itheta), r_inp, theta_inp, &
+                CALL scatt_interpolate(numpts,r_ax(ir), theta_ax(itheta), r_inp, theta_inp, &
                      psi_inp, TRIM(method), psi_sph(ir,itheta))
              ENDDO
           ENDDO

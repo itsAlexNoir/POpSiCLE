@@ -1,0 +1,8 @@
+POPSICLE_LIST = \
+constants tools bessel gaussleg \
+coords fourier sht scattboundcyl \
+scattboundcart cubboundcyl boundary \
+scatt_interp cubic_interp io_pop io_subset io_surface \
+patchwork surface flux popsicle
+
+FFTW_LIST = fftw

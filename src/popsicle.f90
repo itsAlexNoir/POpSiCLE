@@ -5,10 +5,14 @@ MODULE POPSICLE
   USE tools
   USE bessel
   USE gaussleg
-  USE interp
+  USE scatt_interp
+  USE cubic_interp
   USE coords
-  USE cylboundary
-  USE cartboundary
+  USE scattboundcyl
+  USE scattboundcart
+  USE cubboundcyl
+  !USE cubboundcart
+  USE boundary
   USE fourier
   USE sht
   USE patchwork

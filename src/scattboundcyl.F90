@@ -1,8 +1,8 @@
-MODULE cylboundary
+MODULE scattboundcyl
   
   USE constants
   USE gaussleg
-  USE interp
+  USE scatt_interp
 #if _COM_MPI
   USE MPI
 #endif
@@ -11,26 +11,15 @@ MODULE cylboundary
   
   PRIVATE
   
-  PUBLIC           initialize_cylindrical_boundary
-  PUBLIC           get_cylindrical_boundary
-  PUBLIC           delete_cylindrical_boundary
-  
-  INTERFACE initialize_cylindrical_boundary
-     MODULE PROCEDURE initialize_cylindrical_boundary2D_serial
+  PUBLIC           initialize_scatt_cylindrical_boundary2D_serial
 #if _COM_MPI
-     MODULE PROCEDURE initialize_cylindrical_boundary2D_parallel
+  PUBLIC           initialize_scatt_cylindrical_boundary2D_parallel
 #endif
-  END INTERFACE initialize_cylindrical_boundary
+  PUBLIC           dget_scatt_cylindrical_boundary2D
+  PUBLIC           zget_scatt_cylindrical_boundary2D
+  PUBLIC           delete_scatt_cylindrical_boundary2D
   
-  INTERFACE get_cylindrical_boundary
-     MODULE PROCEDURE dget_cylindrical_boundary2D
-     MODULE PROCEDURE zget_cylindrical_boundary2D
-  END INTERFACE get_cylindrical_boundary
-
-  INTERFACE delete_cylindrical_boundary
-     MODULE PROCEDURE delete_cylindrical_boundary2D
-  END INTERFACE delete_cylindrical_boundary
-
+  
   ! Module variables
   
   REAL(dp), ALLOCATABLE, PUBLIC    :: rpts_boundary(:)
@@ -62,7 +51,7 @@ CONTAINS
   !----------------------------------------------------!
   
   
-  SUBROUTINE initialize_cylindrical_boundary2D_serial(rho_ax, z_ax, dims, &
+  SUBROUTINE initialize_scatt_cylindrical_boundary2D_serial(rho_ax, z_ax, dims, &
        Rs, radtol, fdpts, deltar, lmax, &
        maxpts, maxrpts, maxthetapts )
     
@@ -266,13 +255,13 @@ CONTAINS
     WRITE(*,*)
     
     
-  END SUBROUTINE initialize_cylindrical_boundary2D_serial
+  END SUBROUTINE initialize_scatt_cylindrical_boundary2D_serial
   
   !*****************************************************************!
   !*****************************************************************!
 #if _COM_MPI
   
-  SUBROUTINE initialize_cylindrical_boundary2D_parallel(rho_ax, z_ax, dims, &
+  SUBROUTINE initialize_scatt_cylindrical_boundary2D_parallel(rho_ax, z_ax, dims, &
        Rs, radtol, fdpts, deltar, lmax, rank, size, comm, &
        maxpts, maxrpts, maxthetapts, surfacerank, maxsurfaceprocs, newcomm, &
        maxthetaptsperproc)
@@ -570,7 +559,7 @@ CONTAINS
     ENDIF
     
     
-  END SUBROUTINE initialize_cylindrical_boundary2D_parallel
+  END SUBROUTINE initialize_scatt_cylindrical_boundary2D_parallel
 #endif
   !-----------------------------------------------------------------!
   !-----------------------------------------------------------------!
@@ -580,7 +569,7 @@ CONTAINS
   !  GET CYLINDRICAL BOUNDARY 2D
   !----------------------------------------------------!
   
-  SUBROUTINE dget_cylindrical_boundary2D(psi_cyl,psi2D_sph, &
+  SUBROUTINE dget_scatt_cylindrical_boundary2D(psi_cyl,psi2D_sph, &
        psi2D_sph_dx, psi2D_sph_dy, method, rank)
     
     IMPLICIT NONE
@@ -607,7 +596,7 @@ CONTAINS
     
     
     IF(PRESENT(rank)) THEN
-       CALL create_interpolant(numpts,rhopts_scatt,zpts_scatt, &
+       CALL create_scatt_interpolant(numpts,rhopts_scatt,zpts_scatt, &
             REAL(psi_scatt),TRIM(method),rank=rank)
        
        DO itheta = 1, numthetapts
@@ -617,7 +606,7 @@ CONTAINS
                 rhopt = rpts_boundary(ir) * SIN(theta_boundary(itheta))
                 zpt   = rpts_boundary(ir) * COS(theta_boundary(itheta))
                 
-                CALL interpolate(numpts,rhopt, zpt, &
+                CALL scatt_interpolate(numpts,rhopt, zpt, &
                      rhopts_scatt, zpts_scatt, REAL(psi_scatt), TRIM(method), &
                      psi2D_sph(ir,itheta), psi2D_sph_dx(ir,itheta), &
                      psi2D_sph_dy(ir,itheta), rank=rank)
@@ -627,7 +616,7 @@ CONTAINS
        
     ELSE
        
-       CALL create_interpolant(numpts,rhopts_scatt,zpts_scatt, &
+       CALL create_scatt_interpolant(numpts,rhopts_scatt,zpts_scatt, &
             REAL(psi_scatt),TRIM(method))
        
        DO itheta = 1, numthetapts
@@ -637,7 +626,7 @@ CONTAINS
                 rhopt = rpts_boundary(ir) * SIN(theta_boundary(itheta))
                 zpt   = rpts_boundary(ir) * COS(theta_boundary(itheta))
                 
-                CALL interpolate(numpts,rhopt, zpt, &
+                CALL scatt_interpolate(numpts,rhopt, zpt, &
                      rhopts_scatt, zpts_scatt, REAL(psi_scatt), TRIM(method), &
                      psi2D_sph(ir,itheta), psi2D_sph_dx(ir,itheta), psi2D_sph_dy(ir,itheta))
              ENDIF
@@ -645,13 +634,13 @@ CONTAINS
        ENDDO
     ENDIF
     
-    CALL destroy_interpolant(numpts, rhopts_scatt, zpts_scatt, REAL(psi_scatt))
+    CALL destroy_scatt_interpolant(numpts, rhopts_scatt, zpts_scatt, REAL(psi_scatt))
     
-  END SUBROUTINE dget_cylindrical_boundary2D
+  END SUBROUTINE dget_scatt_cylindrical_boundary2D
   
   !------------------------------------------!
 
-   SUBROUTINE zget_cylindrical_boundary2D(psi_cyl,psi2D_sph, &
+   SUBROUTINE zget_scatt_cylindrical_boundary2D(psi_cyl,psi2D_sph, &
        psi2D_sph_dx, psi2D_sph_dy, method, rank)
     
     IMPLICIT NONE
@@ -677,7 +666,7 @@ CONTAINS
     ENDDO
     
     IF(PRESENT(rank)) THEN
-       CALL create_interpolant(numpts,rhopts_scatt,zpts_scatt, &
+       CALL create_scatt_interpolant(numpts,rhopts_scatt,zpts_scatt, &
             psi_scatt,TRIM(method),rank=rank)
        
        DO itheta = 1, numthetapts
@@ -687,7 +676,7 @@ CONTAINS
                 rhopt = rpts_boundary(ir) * SIN(theta_boundary(itheta))
                 zpt   = rpts_boundary(ir) * COS(theta_boundary(itheta))
                 
-                CALL interpolate(numpts,rhopt, zpt, &
+                CALL scatt_interpolate(numpts,rhopt, zpt, &
                      rhopts_scatt, zpts_scatt, psi_scatt, TRIM(method), &
                      psi2D_sph(ir,itheta), psi2D_sph_dx(ir,itheta), &
                      psi2D_sph_dy(ir,itheta), rank=rank)
@@ -697,7 +686,7 @@ CONTAINS
        
     ELSE
        
-       CALL create_interpolant(numpts,rhopts_scatt,zpts_scatt,psi_scatt,TRIM(method))
+       CALL create_scatt_interpolant(numpts,rhopts_scatt,zpts_scatt,psi_scatt,TRIM(method))
        
        DO itheta = 1, numthetapts
           DO ir = 1, numrpts
@@ -706,7 +695,7 @@ CONTAINS
                 rhopt = rpts_boundary(ir) * SIN(theta_boundary(itheta))
                 zpt   = rpts_boundary(ir) * COS(theta_boundary(itheta))
                 
-                CALL interpolate(numpts,rhopt, zpt, &
+                CALL scatt_interpolate(numpts,rhopt, zpt, &
                      rhopts_scatt, zpts_scatt, psi_scatt, TRIM(method), &
                      psi2D_sph(ir,itheta), psi2D_sph_dx(ir,itheta), psi2D_sph_dy(ir,itheta))
              ENDIF
@@ -714,16 +703,16 @@ CONTAINS
        ENDDO
     ENDIF
     
-    CALL destroy_interpolant(numpts, rhopts_scatt, zpts_scatt, psi_scatt)
+    CALL destroy_scatt_interpolant(numpts, rhopts_scatt, zpts_scatt, psi_scatt)
     
-  END SUBROUTINE zget_cylindrical_boundary2D
+  END SUBROUTINE zget_scatt_cylindrical_boundary2D
  
   !----------------------------------------------------------------!
   
   !----------------------------------------------------!
   !----------------------------------------------------!
   
-  SUBROUTINE delete_cylindrical_boundary2D(rpts,theta,rank)
+  SUBROUTINE delete_scatt_cylindrical_boundary2D(rpts,theta,rank)
     IMPLICIT NONE
     
     REAL(dp), INTENT(IN)            :: rpts(:), theta(:)   
@@ -745,8 +734,8 @@ CONTAINS
        DEALLOCATE(surface_members)
     ENDIF
     
-  END SUBROUTINE delete_cylindrical_boundary2D
+  END SUBROUTINE delete_scatt_cylindrical_boundary2D
   
   !----------------------------------------------------------------!
   
-END MODULE cylboundary
+END MODULE scattboundcyl

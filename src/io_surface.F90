@@ -2,8 +2,7 @@ MODULE io_surface
   
   USE HDF5
   USE constants
-  USE cylboundary
-  USE cartboundary
+  USE boundary
 #if _COM_MPI
   USE MPI
 #endif

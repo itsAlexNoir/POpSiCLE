@@ -1,0 +1,18 @@
+SLATEC_LIST = \
+bint4 dbint4 bintk dbintk \
+bspdoc pchdoc pchic dpchic \
+pchim dpchim pchsp dpchsp \
+polcof dpolcf polint dplint \
+bfqad dbfqad bspdr dbspdr \
+bspev dbspev bsppp dbsppp \
+bspvd dbspvd bspvn dbspvn \
+bsqad dbsqad bvalu dbvalu \
+chfdv dchfdv chfev dchfev \
+intrv dintrv pchbs dpchbs \
+pchcm dpchcm pchfd dpchfd \
+pchfe dpchfe pchia dpchia \
+pchid dpchid pfqad dpfqad \
+polyvl dpolvl ppqad dppqad \
+ppval dppval xermsg xercnt \
+xerhlt xerprn xersve xgetua \
+fdump j4save i1mach

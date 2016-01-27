@@ -130,10 +130,14 @@ PROGRAM cyl2sph_ex1
   WRITE(*,*) 'Creating interpolant...'
   
   CALL cpu_time(start_time)
+
+  !! For scattered interpolation uncomment the subroutine below
+  !CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
+  !     Rboundary, tolerance, 2, dr, lmax,  &
+  !     numpts, numrpts, numthetapts)
   
   CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
-       Rboundary, tolerance, 2, dr, lmax,  &
-       numpts, numrpts, numthetapts)
+       Rboundary, 2, dr, lmax, numrpts, numthetapts)
   
   CALL cpu_time(end_time)
   
@@ -163,9 +167,13 @@ PROGRAM cyl2sph_ex1
   WRITE(*,*) 'Interpolating boundary...'
   
   CALL cpu_time(start_time)
+
+  !! For scattered interpolation uncomment the subroutine below
+  !CALL get_cylindrical_boundary(cylfunc, sphfunc, sphfunc_dr, &
+  !     sphfunc_dth, 'quadratic')
   
-  CALL get_cylindrical_boundary(cylfunc, sphfunc, sphfunc_dr, &
-       sphfunc_dth, 'quadratic')
+  CALL get_cylindrical_boundary(rho_ax, z_ax, dims, cylfunc, &
+       2, sphfunc, sphfunc_dr, sphfunc_dth)
   
   CALL cpu_time(end_time)
   

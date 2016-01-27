@@ -4,7 +4,8 @@
 
 
 FC  = ifort
-MPIFC = mpif90
+PFC = mpif90
+LIBTOOL = libtool
 
 # Debugging flags
 #OPT         = -check all
@@ -61,3 +62,5 @@ PHDF5		= $(PHDF5LIBS) $(PHDF5INCLUDE)
 FFTW3LIBS	+=	-I${FFTW3ROOT}/include -lfftw3 -lm
 
 DIRECTIVES  = -Wp,-D_COM_MPI=1,-D_USE_BLAS=1
+
+POPSICLE_ROOT = /users/adelacalle/Documents/Code/POpSiCLE

@@ -1,0 +1,4 @@
+SHEPPACK_LIST = \
+real_precision blas lapack blas_shep \
+linear_shepard cshep2d qshep2d qshep3d \
+qshepmdata qshepmd sheppack

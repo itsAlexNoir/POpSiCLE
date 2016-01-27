@@ -87,8 +87,69 @@ $(SHMOD): sheppack.f90 $(REALMOD) $(QSMMOD) \
 	$(LSMOD)
 	$(F77) $(FFLAGS) -c ${SRC}/sheppack.f90
 
+#------------------------------------------------#
+
+blas.lo: blas.f
+	$(LIBTOOL) --tag=F77 --mode=compile \
+	$(F77) $(FFLAGS) $(F77FLAGS) -c ${SUPPORT}/blas.f
+
+$(REALMOD_DYLD): real_precision.f90
+	$(LIBTOOL) --tag=FC --mode=compile \
+	$(F77) $(FFLAGS) -c ${SRC}/real_precision.f90
+
+blas_shep.lo: blas_shep.f90
+	$(LIBTOOL) --tag=FC --mode=compile \
+	$(F77) $(FFLAGS) -c ${SRC}/blas_shep.f90
+
+lapack.lo: lapack.f
+	$(LIBTOOL) --tag=F77 --mode=compile \
+	$(F77) $(FFLAGS) $(F77FLAGS) -c ${SUPPORT}/lapack.f
+
+$(LSMOD_DYLD): linear_shepard.f90 $(REALMOD_DYLD)
+	$(LIBTOOL) --tag=FC --mode=compile \
+	$(F77) $(FFLAGS) -c ${SRC}/linear_shepard.f90 
+
+$(CSMOD_DYLD): cshep2d.f90 $(REALMOD_DYLD)
+	$(LIBTOOL) --tag=FC --mode=compile \
+	$(F77) $(FFLAGS) -c ${SRC}/cshep2d.f90
+
+$(QS2MOD_DYLD): qshep2d.f90 $(REALMOD_DYLD)
+	$(LIBTOOL) --tag=FC --mode=compile \
+	$(F77) $(FFLAGS) -c ${SRC}/qshep2d.f90
+
+$(QS3MOD_DYLD): qshep3d.f90 $(REALMOD_DYLD)
+	$(LIBTOOL) --tag=FC --mode=compile \
+	$(F77) $(FFLAGS) -c ${SRC}/qshep3d.f90
+
+$(QSDATA_DYLD): qshepmdata.f90 $(REALMOD_DYLD)
+	$(LIBTOOL) --tag=FC --mode=compile \
+	$(F77) $(FFLAGS) -c ${SRC}/qshepmdata.f90
+
+$(QSMMOD_DYLD): qshepmd.f90 $(REALMOD_DYLD) $(QSDATA_DYLD)
+	$(LIBTOOL) --tag=FC --mode=compile \
+	$(F77) $(FFLAGS) -c ${SRC}/qshepmd.f90
+
+$(SHMOD_DYLD): sheppack.f90 $(REALMOD_DYLD) $(QSMMOD_DYLD) \
+	$(QSDATA_DYLD) $(QS3MOD_DYLD) $(QS2MOD_DYLD) \
+	$(CSMOD_DYLD) $(LSMOD_DYLD)
+	$(LIBTOOL) --tag=FC --mode=compile \
+	$(F77) $(FFLAGS) -c ${SRC}/sheppack.f90
+
+#-----------------------------------------------------------#
+
+lib: install
+	ar ${ARFLAGS} libsheppack.a *.o
+	ranlib libsheppack.a
+
+dylib: install
+	${LIBTOOL} --tag=FC --mode=link ${F77} \
+	${FFLAGS} -o libsheppack.la *.lo
+
 install: $(SHMOD) blas.o lapack.o blas_shep.o
 
+install_dylib: $(SHMOD_DYLD) blas.lo lapack.lo blas_shep.lo
+
+#---------------------------------------------------------------#
 
 test_cshep2d: cshep2d_test.f90 $(SHMOD) blas_shep.o
 	$(F77) $(FFLAGS) -o test_cshep2d ${DRIVERS}/cshep2d_test.f90 sheppack.o \
@@ -116,3 +177,4 @@ test_all: test_cshep2d test_qshep2d test_qshep3d test_qshepmd test_lshep
 clean: 
 	rm -f test_lshep test_cshep2d test_qshep2d test_qshep3d \
 	test_qshepmd *.o *.mod
+	rm -rf *.lo *.la *.a ./libs

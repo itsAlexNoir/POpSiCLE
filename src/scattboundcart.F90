@@ -1,9 +1,9 @@
-MODULE cartboundary
+MODULE scattboundcart
   
   USE constants
   USE gaussleg
-  USE interp
-  USE cylboundary
+  USE scatt_interp
+  USE scattboundcyl
 #if _COM_MPI
   USE MPI
 #endif
@@ -12,29 +12,18 @@ MODULE cartboundary
   
   PRIVATE
   
-  PUBLIC           initialize_cartesian_boundary
-  PUBLIC           get_cartesian_boundary
-  PUBLIC           delete_cartesian_boundary
-  
-  
-  INTERFACE initialize_cartesian_boundary
-     MODULE PROCEDURE initialize_cartesian_boundary2D
-     MODULE PROCEDURE initialize_cartesian_boundary3D_serial
+  PUBLIC           initialize_scatt_cartesian_boundary2D
+  PUBLIC           initialize_scatt_cartesian_boundary3D_serial
 #if _COM_MPI
-     MODULE PROCEDURE initialize_cartesian_boundary3D_parallel
+  PUBLIC           initialize_scatt_cartesian_boundary3D_parallel
 #endif
-  END INTERFACE initialize_cartesian_boundary
+  PUBLIC           get_scatt_cartesian_boundary2D
+  PUBLIC           dget_scatt_cartesian_boundary3D
+  PUBLIC           zget_scatt_cartesian_boundary3D
   
-  INTERFACE get_cartesian_boundary
-     MODULE PROCEDURE get_cartesian_boundary2D
-     MODULE PROCEDURE dget_cartesian_boundary3D
-     MODULE PROCEDURE zget_cartesian_boundary3D
-  END INTERFACE get_cartesian_boundary
+  PUBLIC           delete_scatt_cartesian_boundary2D
+  PUBLIC           delete_scatt_cartesian_boundary3D
   
-  INTERFACE delete_cartesian_boundary
-     MODULE PROCEDURE delete_cartesian_boundary2D
-     MODULE PROCEDURE delete_cartesian_boundary3D
-  END INTERFACE delete_cartesian_boundary
   
   ! Module variables
   
@@ -53,14 +42,14 @@ MODULE cartboundary
   INTEGER, ALLOCATABLE             :: index_x1(:)
   INTEGER, ALLOCATABLE             :: index_x2(:)
   INTEGER, ALLOCATABLE             :: index_x3(:)
- 
+  
 CONTAINS
   
   !----------------------------------------------------!
   !  INITIALIZE CARTESIAN BOUNDARY 2D
   !----------------------------------------------------!
   
-  SUBROUTINE initialize_cartesian_boundary2D(x_ax, y_ax, dims, &
+  SUBROUTINE initialize_scatt_cartesian_boundary2D(x_ax, y_ax, dims, &
        Rs, radtol, fdpts, deltar, lmax, &
        maxpts, maxrpts, maxthetapts )
     
@@ -254,7 +243,7 @@ CONTAINS
     WRITE(*,*)
     
     
-  END SUBROUTINE initialize_cartesian_boundary2D
+  END SUBROUTINE initialize_scatt_cartesian_boundary2D
   
   !-----------------------------------------------------------------!
   
@@ -263,7 +252,7 @@ CONTAINS
   !----------------------------------------------------!
   
   
-  SUBROUTINE initialize_cartesian_boundary3D_serial(x_ax, y_ax, z_ax, dims, &
+  SUBROUTINE initialize_scatt_cartesian_boundary3D_serial(x_ax, y_ax, z_ax, dims, &
        Rs, radtol, fdpts, deltar, lmax, &
        maxpts, maxrpts, maxthetapts, maxphipts )
     
@@ -516,11 +505,11 @@ CONTAINS
     WRITE(*,*)
     
     
-  END SUBROUTINE initialize_cartesian_boundary3D_serial
+  END SUBROUTINE initialize_scatt_cartesian_boundary3D_serial
   
   !-----------------------------------------------------------------!
 #if _COM_MPI
-  SUBROUTINE initialize_cartesian_boundary3D_parallel(x_ax, y_ax, z_ax, dims, &
+  SUBROUTINE initialize_scatt_cartesian_boundary3D_parallel(x_ax, y_ax, z_ax, dims, &
        Rs, radtol, fdpts, deltar, lmax, rank, size, comm, &
        maxpts, maxrpts, maxthetapts, maxphipts, surfacerank, maxsurfaceprocs, &
        newcomm, maxthetaptsperproc, maxphiptsperproc )
@@ -899,7 +888,7 @@ CONTAINS
        WRITE(*,*)
     ENDIF
     
-  END SUBROUTINE initialize_cartesian_boundary3D_parallel
+  END SUBROUTINE initialize_scatt_cartesian_boundary3D_parallel
 #endif  
   
   !----------------------------------------------------!
@@ -909,7 +898,7 @@ CONTAINS
   !  GET CARTESIAN BOUNDARY 2D
   !----------------------------------------------------!
   
-  SUBROUTINE get_cartesian_boundary2D(psi_cart,psi2D_sph, &
+  SUBROUTINE get_scatt_cartesian_boundary2D(psi_cart,psi2D_sph, &
        psi2D_sph_dx, psi2D_sph_dy, method, rank)
     
     IMPLICIT NONE
@@ -934,7 +923,7 @@ CONTAINS
     ENDDO
     
     IF(PRESENT(rank)) THEN
-       CALL create_interpolant(numpts,xpts_scatt,ypts_scatt,psi_scatt,&
+       CALL create_scatt_interpolant(numpts,xpts_scatt,ypts_scatt,psi_scatt,&
             TRIM(method),rank)
        
        DO itheta = 1, numthetapts
@@ -943,7 +932,7 @@ CONTAINS
              xpt = rpts_boundary(ir) * COS(theta_boundary(itheta))
              ypt = rpts_boundary(ir) * SIN(theta_boundary(itheta))
              
-             CALL interpolate(numpts,xpt, ypt, &
+             CALL scatt_interpolate(numpts,xpt, ypt, &
                   xpts_scatt, ypts_scatt, psi_scatt, TRIM(method), &
                   psi2D_sph(ir,itheta), psi2D_sph_dx(ir,itheta), &
                   psi2D_sph_dy(ir,itheta), rank)
@@ -952,7 +941,7 @@ CONTAINS
        
     ELSE
        
-       CALL create_interpolant(numpts,xpts_scatt,ypts_scatt,psi_scatt,&
+       CALL create_scatt_interpolant(numpts,xpts_scatt,ypts_scatt,psi_scatt,&
             TRIM(method),rank)
        
        DO itheta = 1, numthetapts
@@ -961,7 +950,7 @@ CONTAINS
              xpt = rpts_boundary(ir) * COS(theta_boundary(itheta))
              ypt = rpts_boundary(ir) * SIN(theta_boundary(itheta))
              
-             CALL interpolate(numpts,xpt, ypt, &
+             CALL scatt_interpolate(numpts,xpt, ypt, &
                   xpts_scatt, ypts_scatt, psi_scatt, TRIM(method), &
                   psi2D_sph(ir,itheta), psi2D_sph_dx(ir,itheta), &
                   psi2D_sph_dy(ir,itheta), rank)
@@ -969,9 +958,9 @@ CONTAINS
        ENDDO
     ENDIF
     
-    CALL destroy_interpolant(numpts, xpts_scatt, ypts_scatt, psi_scatt)
+    CALL destroy_scatt_interpolant(numpts, xpts_scatt, ypts_scatt, psi_scatt)
     
-  END SUBROUTINE get_cartesian_boundary2D
+  END SUBROUTINE get_scatt_cartesian_boundary2D
   
   !----------------------------------------------------!
   
@@ -979,7 +968,7 @@ CONTAINS
   !  GET CARTESIAN BOUNDARY 3D
   !----------------------------------------------------!
   
-  SUBROUTINE dget_cartesian_boundary3D(psi_cart,psi3D_sph, &
+  SUBROUTINE dget_scatt_cartesian_boundary3D(psi_cart,psi3D_sph, &
        psi3D_sph_dx, psi3D_sph_dy, psi3D_sph_dz, method, rank)
     
     IMPLICIT NONE
@@ -1007,7 +996,7 @@ CONTAINS
     ENDDO
     
     IF(PRESENT(rank)) THEN
-       CALL create_interpolant(numpts,xpts_scatt,ypts_scatt,zpts_scatt, &
+       CALL create_scatt_interpolant(numpts,xpts_scatt,ypts_scatt,zpts_scatt, &
             REAL(psi_scatt),TRIM(method),rank)
        
        DO iphi = 1, numphipts
@@ -1019,7 +1008,7 @@ CONTAINS
                    ypt = rpts_boundary(ir) * SIN(theta_boundary(itheta)) * SIN(phi_boundary(iphi))
                    zpt = rpts_boundary(ir) * COS(theta_boundary(itheta))
                    
-                   CALL interpolate(numpts,xpt, ypt, zpt, &
+                   CALL scatt_interpolate(numpts,xpt, ypt, zpt, &
                         xpts_scatt, ypts_scatt, zpts_scatt, &
                         REAL(psi_scatt), TRIM(method), psi3D_sph(ir,itheta,iphi), &
                         psi3D_sph_dx(ir,itheta,iphi), psi3D_sph_dy(ir,itheta,iphi), &
@@ -1031,7 +1020,7 @@ CONTAINS
        
     ELSE
        
-       CALL create_interpolant(numpts,xpts_scatt,ypts_scatt,zpts_scatt, &
+       CALL create_scatt_interpolant(numpts,xpts_scatt,ypts_scatt,zpts_scatt, &
             REAL(psi_scatt),TRIM(method),rank)
        
        DO iphi = 1, numphipts
@@ -1043,7 +1032,7 @@ CONTAINS
                    ypt = rpts_boundary(ir) * SIN(theta_boundary(itheta)) * SIN(phi_boundary(iphi))
                    zpt = rpts_boundary(ir) * COS(theta_boundary(itheta))
                    
-                   CALL interpolate(numpts,xpt, ypt, zpt, &
+                   CALL scatt_interpolate(numpts,xpt, ypt, zpt, &
                         xpts_scatt, ypts_scatt, zpts_scatt, &
                         REAL(psi_scatt), TRIM(method), psi3D_sph(ir,itheta,iphi), &
                         psi3D_sph_dx(ir,itheta,iphi), psi3D_sph_dy(ir,itheta,iphi), &
@@ -1054,14 +1043,14 @@ CONTAINS
        ENDDO
     ENDIF
     
-    CALL destroy_interpolant(numpts, xpts_scatt, ypts_scatt, zpts_scatt, &
+    CALL destroy_scatt_interpolant(numpts, xpts_scatt, ypts_scatt, zpts_scatt, &
          REAL(psi_scatt))    
     
-  END SUBROUTINE dget_cartesian_boundary3D
+  END SUBROUTINE dget_scatt_cartesian_boundary3D
 
   !-----------------------------------------!
 
-    SUBROUTINE zget_cartesian_boundary3D(psi_cart,psi3D_sph, &
+    SUBROUTINE zget_scatt_cartesian_boundary3D(psi_cart,psi3D_sph, &
        psi3D_sph_dx, psi3D_sph_dy, psi3D_sph_dz, method, rank)
     
     IMPLICIT NONE
@@ -1089,7 +1078,7 @@ CONTAINS
     ENDDO
     
     IF(PRESENT(rank)) THEN
-       CALL create_interpolant(numpts,xpts_scatt,ypts_scatt,zpts_scatt, &
+       CALL create_scatt_interpolant(numpts,xpts_scatt,ypts_scatt,zpts_scatt, &
             psi_scatt,TRIM(method),rank)
        
        DO iphi = 1, numphipts
@@ -1101,7 +1090,7 @@ CONTAINS
                    ypt = rpts_boundary(ir) * SIN(theta_boundary(itheta)) * SIN(phi_boundary(iphi))
                    zpt = rpts_boundary(ir) * COS(theta_boundary(itheta))
                    
-                   CALL interpolate(numpts,xpt, ypt, zpt, &
+                   CALL scatt_interpolate(numpts,xpt, ypt, zpt, &
                         xpts_scatt, ypts_scatt, zpts_scatt, &
                         psi_scatt, TRIM(method), psi3D_sph(ir,itheta,iphi), &
                         psi3D_sph_dx(ir,itheta,iphi), psi3D_sph_dy(ir,itheta,iphi), &
@@ -1113,7 +1102,7 @@ CONTAINS
        
     ELSE
        
-       CALL create_interpolant(numpts,xpts_scatt,ypts_scatt,zpts_scatt, &
+       CALL create_scatt_interpolant(numpts,xpts_scatt,ypts_scatt,zpts_scatt, &
             psi_scatt,TRIM(method))
        
        DO iphi = 1, numphipts
@@ -1125,7 +1114,7 @@ CONTAINS
                    ypt = rpts_boundary(ir) * SIN(theta_boundary(itheta)) * SIN(phi_boundary(iphi))
                    zpt = rpts_boundary(ir) * COS(theta_boundary(itheta))
                    
-                   CALL interpolate(numpts,xpt, ypt, zpt, &
+                   CALL scatt_interpolate(numpts,xpt, ypt, zpt, &
                         xpts_scatt, ypts_scatt, zpts_scatt, &
                         psi_scatt, TRIM(method), psi3D_sph(ir,itheta,iphi), &
                         psi3D_sph_dx(ir,itheta,iphi), psi3D_sph_dy(ir,itheta,iphi), &
@@ -1136,15 +1125,15 @@ CONTAINS
        ENDDO
     ENDIF
     
-    CALL destroy_interpolant(numpts, xpts_scatt, ypts_scatt, zpts_scatt, &
+    CALL destroy_scatt_interpolant(numpts, xpts_scatt, ypts_scatt, zpts_scatt, &
          psi_scatt)
     
-  END SUBROUTINE zget_cartesian_boundary3D
+  END SUBROUTINE zget_scatt_cartesian_boundary3D
   
   !----------------------------------------------------!
   !----------------------------------------------------!
   
-  SUBROUTINE delete_cartesian_boundary2D(rpts,theta,rank)
+  SUBROUTINE delete_scatt_cartesian_boundary2D(rpts,theta,rank)
     IMPLICIT NONE
     
     REAL(dp), INTENT(IN)            :: rpts(:), theta(:)   
@@ -1164,11 +1153,11 @@ CONTAINS
        DEALLOCATE(surface_members)
     ENDIF
     
-  END SUBROUTINE delete_cartesian_boundary2D
+  END SUBROUTINE delete_scatt_cartesian_boundary2D
   
   !----------------------------------------------------------------!
   
-  SUBROUTINE delete_cartesian_boundary3D(rpts,theta,phi,rank)
+  SUBROUTINE delete_scatt_cartesian_boundary3D(rpts,theta,phi,rank)
     IMPLICIT NONE
     
     REAL(dp), INTENT(IN)            :: rpts(:), theta(:), phi(:)
@@ -1190,8 +1179,8 @@ CONTAINS
        DEALLOCATE(surface_members)
     ENDIF
     
-  END SUBROUTINE delete_cartesian_boundary3D
+  END SUBROUTINE delete_scatt_cartesian_boundary3D
   
   !---------------------------------------------!
   
-END MODULE cartboundary
+END MODULE scattboundcart

@@ -4,7 +4,8 @@
 
 
 FC  = ifort
-MPIF90 = mpif90
+PF90 = mpif90
+LIBTOOL = libtool
 
 # Debugging flags
 #OPT         = -check all
@@ -61,3 +62,5 @@ FFTW3ROOT	= /usr/local/codes/fftw/3.3.4/intel/14.0
 FFTW3LIBS	+=	-I${FFTW3ROOT}/include -lfftw3 -lm
 
 DIRECTIVES  = -Wp,-D_COM_MPI=1,-D_USE_BLAS=1
+
+POPSICLE_ROOT = /s/adelacalle/POpSiCLE

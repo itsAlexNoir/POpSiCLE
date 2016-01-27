@@ -179,7 +179,7 @@ CONTAINS
     
     mmin = -mmax
     ! Allocate and set to zero
-    ALLOCATE(intflux(1:numkpts,:mmax,0:lmax))
+    ALLOCATE(intflux(1:numkpts,mmin:mmax,0:lmax))
     ALLOCATE(volkov_phase(1:numkpts))
     ALLOCATE(time(ntime))
     ALLOCATE(efield(ntime),afield(ntime))
@@ -311,7 +311,7 @@ CONTAINS
              term3 = 0.5_dp * ZIMAGONE * afield * rb * &
                   psi_lm(im,il)
              
-             DO ill = 0, lmax
+             DO ill = il - 1, il + 1
                 write(*,*) 'loop', ill
                 write(*,*) ABS(im).GT.il .OR. 0.GT.1 .OR. ABS(im).GT.ill .OR. &
                      (2 * MAX(il, 1, ill)).GT.(il +1 + ill) .OR.              &

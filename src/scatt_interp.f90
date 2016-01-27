@@ -2,7 +2,7 @@
 ! POpSiCLE (PhOtoelectron SpeCtrum library for Laser-matter intEractions)
 !-----------------------------------------------------------------------------
 !
-! MODULE: interp
+! MODULE: scatt_interp
 !> \author Alejandro de la Calle. Queen's University Belfast.
 !> \author Daniel Dundas. Queen's University Belfast.
 !> \date 15/04/2015
@@ -10,13 +10,12 @@
 ! DESCRIPTION:
 !> \brief Interpolating routines.
 !> \details This module contains all the subprograms needed for
-!> an interpolation of the wavefunction, including routines for
-!> multidimensions grid. Many of the routines in this module have
-!> been extract form the numerical recipes books.
+!> a scattered interpolation of the wavefunction. The method used is
+!> Sheppard method, implemented through the SHEPPACK package.
 !
 !------------------------------------------------------------------------------
 
-MODULE interp
+MODULE scatt_interp
   
   USE constants
   USE sheppack
@@ -25,31 +24,31 @@ MODULE interp
   
   PRIVATE
   
-  PUBLIC      :: create_interpolant
-  PUBLIC      :: interpolate
-  PUBLIC      :: destroy_interpolant
+  PUBLIC      :: create_scatt_interpolant
+  PUBLIC      :: scatt_interpolate
+  PUBLIC      :: destroy_scatt_interpolant
   
   
-  INTERFACE create_interpolant
-     MODULE PROCEDURE dcreate_interpolant2D
-     MODULE PROCEDURE zcreate_interpolant2D
-     MODULE PROCEDURE dcreate_interpolant3D
-     MODULE PROCEDURE zcreate_interpolant3D
-  END INTERFACE create_interpolant
+  INTERFACE create_scatt_interpolant
+     MODULE PROCEDURE dcreate_scatt_interpolant2D
+     MODULE PROCEDURE zcreate_scatt_interpolant2D
+     MODULE PROCEDURE dcreate_scatt_interpolant3D
+     MODULE PROCEDURE zcreate_scatt_interpolant3D
+  END INTERFACE create_scatt_interpolant
   
-  INTERFACE interpolate
-     MODULE PROCEDURE dinterpolate2D
-     MODULE PROCEDURE zinterpolate2D
-     MODULE PROCEDURE dinterpolate3D
-     MODULE PROCEDURE zinterpolate3D
-  END INTERFACE interpolate
+  INTERFACE scatt_interpolate
+     MODULE PROCEDURE scatt_dinterpolate2D
+     MODULE PROCEDURE scatt_zinterpolate2D
+     MODULE PROCEDURE scatt_dinterpolate3D
+     MODULE PROCEDURE scatt_zinterpolate3D
+  END INTERFACE scatt_interpolate
   
-  INTERFACE destroy_interpolant
-     MODULE PROCEDURE ddestroy_interpolant2D
-     MODULE PROCEDURE zdestroy_interpolant2D
-     MODULE PROCEDURE ddestroy_interpolant3D
-     MODULE PROCEDURE zdestroy_interpolant3D
-  END INTERFACE destroy_interpolant
+  INTERFACE destroy_scatt_interpolant
+     MODULE PROCEDURE ddestroy_scatt_interpolant2D
+     MODULE PROCEDURE zdestroy_scatt_interpolant2D
+     MODULE PROCEDURE ddestroy_scatt_interpolant3D
+     MODULE PROCEDURE zdestroy_scatt_interpolant3D
+  END INTERFACE destroy_scatt_interpolant
   
   
   ! Variables
@@ -81,7 +80,7 @@ CONTAINS
   
   !----------------------------------------------------------------------------
   !
-  !  SUBROUTINE create_interpolant
+  !  SUBROUTINE create_scatt_interpolant
   !
   !> \brief Create the interpolant for scattered interpolantion
   !> \details Create and interpolant for scattered interpolation.
@@ -94,7 +93,7 @@ CONTAINS
   !
   !----------------------------------------------------------------------------
 
-  SUBROUTINE dcreate_interpolant2D(numpts, x1, x2, func, method, rank )
+  SUBROUTINE dcreate_scatt_interpolant2D(numpts, x1, x2, func, method, rank )
     
     IMPLICIT NONE
     
@@ -156,11 +155,11 @@ CONTAINS
        
     END IF
     
-  END SUBROUTINE dcreate_interpolant2D
+  END SUBROUTINE dcreate_scatt_interpolant2D
   
   !------------------------------------------------------------------------!
   
-  SUBROUTINE zcreate_interpolant2D(numpts, x1, x2, func, method, rank )
+  SUBROUTINE zcreate_scatt_interpolant2D(numpts, x1, x2, func, method, rank )
     
     IMPLICIT NONE
     
@@ -238,11 +237,11 @@ CONTAINS
        
     END IF
     
-  END SUBROUTINE zcreate_interpolant2D
+  END SUBROUTINE zcreate_scatt_interpolant2D
   
   !--------------------------------------------------------------!
   
-  SUBROUTINE dcreate_interpolant3D(numpts, x1, x2, x3, func, method ,rank)
+  SUBROUTINE dcreate_scatt_interpolant3D(numpts, x1, x2, x3, func, method ,rank)
     
     IMPLICIT NONE
     
@@ -294,11 +293,11 @@ CONTAINS
        STOP
        
     END IF
-  END SUBROUTINE dcreate_interpolant3D
+  END SUBROUTINE dcreate_scatt_interpolant3D
   
   !-------------------------------------------------!
   
-  SUBROUTINE zcreate_interpolant3D(numpts, x1, x2, x3, func, method, rank )
+  SUBROUTINE zcreate_scatt_interpolant3D(numpts, x1, x2, x3, func, method, rank )
     
     IMPLICIT NONE
     
@@ -379,11 +378,11 @@ CONTAINS
        
     END IF
     
-  END SUBROUTINE zcreate_interpolant3D
+  END SUBROUTINE zcreate_scatt_interpolant3D
   
   !--------------------------------------------------------------!
   
-  SUBROUTINE dinterpolate2D(numpts, y1, y2, x1, x2, func, method, &
+  SUBROUTINE scatt_dinterpolate2D(numpts, y1, y2, x1, x2, func, method, &
        interp_val, interp_val_dx, interp_val_dy, rank)
     
     IMPLICIT NONE
@@ -446,11 +445,11 @@ CONTAINS
     ENDIF
     
     
-  END SUBROUTINE dinterpolate2D
+  END SUBROUTINE scatt_dinterpolate2D
   
   !-----------------------------------------------------------------------!
   
-  SUBROUTINE zinterpolate2D(numpts, y1, y2, x1, x2, func, method, &
+  SUBROUTINE scatt_zinterpolate2D(numpts, y1, y2, x1, x2, func, method, &
        interp_val, interp_val_dx, interp_val_dy, rank)
     
     IMPLICIT NONE
@@ -550,11 +549,11 @@ CONTAINS
     ENDIF
     
     
-  END SUBROUTINE zinterpolate2D
+  END SUBROUTINE scatt_zinterpolate2D
   
   !-----------------------------------------------------------!
   
-  SUBROUTINE dinterpolate3D(numpts, y1, y2, y3, x1, x2, x3, func, method, &
+  SUBROUTINE scatt_dinterpolate3D(numpts, y1, y2, y3, x1, x2, x3, func, method, &
        interp_val, interp_val_dx, interp_val_dy, interp_val_dz, rank )
     
     IMPLICIT NONE
@@ -621,11 +620,11 @@ CONTAINS
        RETURN
     ENDIF
     
-  END SUBROUTINE dinterpolate3D
+  END SUBROUTINE scatt_dinterpolate3D
   
   !---------------------------------------------------------------------------!
   
-  SUBROUTINE zinterpolate3D(numpts, y1, y2, y3, x1, x2, x3, func, method, &
+  SUBROUTINE scatt_zinterpolate3D(numpts, y1, y2, y3, x1, x2, x3, func, method, &
        interp_val, interp_val_dx, interp_val_dy, interp_val_dz, rank )
     
     IMPLICIT NONE
@@ -726,11 +725,11 @@ CONTAINS
        RETURN
     ENDIF
     
-  END SUBROUTINE zinterpolate3D
+  END SUBROUTINE scatt_zinterpolate3D
   
   !-------------------------------------!
   
-  SUBROUTINE ddestroy_interpolant2D(numpts, x1, x2, func )
+  SUBROUTINE ddestroy_scatt_interpolant2D(numpts, x1, x2, func )
     
     IMPLICIT NONE
     
@@ -748,11 +747,11 @@ CONTAINS
     DEALLOCATE(AQ_RE)
     DEALLOCATE(AL_RE)
     
-  END SUBROUTINE ddestroy_interpolant2D
+  END SUBROUTINE ddestroy_scatt_interpolant2D
   
   !----------------------------------------!
   
-  SUBROUTINE zdestroy_interpolant2D(numpts, x1, x2, func )
+  SUBROUTINE zdestroy_scatt_interpolant2D(numpts, x1, x2, func )
     
     IMPLICIT NONE
     
@@ -780,11 +779,11 @@ CONTAINS
     
     DEALLOCATE(func_re,func_im)
     
-  END SUBROUTINE zdestroy_interpolant2D
+  END SUBROUTINE zdestroy_scatt_interpolant2D
   
   !-------------------------------------!
   
-  SUBROUTINE ddestroy_interpolant3D( numpts, x1, x2, x3, func )
+  SUBROUTINE ddestroy_scatt_interpolant3D( numpts, x1, x2, x3, func )
     
     IMPLICIT NONE
     
@@ -805,10 +804,10 @@ CONTAINS
     DEALLOCATE(AQ_RE)
     DEALLOCATE(AL_RE)
     
-  END SUBROUTINE ddestroy_interpolant3D
+  END SUBROUTINE ddestroy_scatt_interpolant3D
   
   !--------------------------------------!
-  SUBROUTINE zdestroy_interpolant3D( numpts, x1, x2, x3, func )
+  SUBROUTINE zdestroy_scatt_interpolant3D( numpts, x1, x2, x3, func )
     
     IMPLICIT NONE
     
@@ -840,9 +839,9 @@ CONTAINS
     
     DEALLOCATE(func_re,func_im)
     
-  END SUBROUTINE zdestroy_interpolant3D
+  END SUBROUTINE zdestroy_scatt_interpolant3D
   
   !------------------------------------------!
   !------------------------------------------!
   
-END MODULE interp
+END MODULE scatt_interp
