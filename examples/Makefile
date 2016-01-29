@@ -8,7 +8,7 @@
 ##    POpSiCLE examples
 ##************************************************
 
-include Sys/intel15_mkl.make
+include Sys/aigis_mkl.make
 
 default: example_serial
 
@@ -113,7 +113,7 @@ ${RES_SER}: %.res: %.f90
 
 ${RES_PAR}: %.res: %.f90
 	mkdir -p ./${RES_DIR}
-	${MPIFC}  $< -o ${RES_DIR}/$*.exec ${FLAGS} -I${POPSICLE_INCL} ${POPSICLE_LIB_PAR} ${PHDF5}
+	${PFC}  $< -o ${RES_DIR}/$*.exec ${FLAGS} -I${POPSICLE_INCL} ${POPSICLE_LIB_PAR} ${PHDF5}
 
 
 clean: clean_src clean_include clean_lib clean_examples

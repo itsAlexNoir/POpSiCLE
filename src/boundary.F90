@@ -7,7 +7,7 @@ MODULE boundary
   
   IMPLICIT NONE
   
-  PRIVATE
+  !PRIVATE
   
   PUBLIC           initialize_cylindrical_boundary
   PUBLIC           get_cylindrical_boundary

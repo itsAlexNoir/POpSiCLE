@@ -33,7 +33,7 @@ PROGRAM tsurff_test
   lmax = 10
 
   
-  filename = './data/h2p/surfaces/sphfunc.rb40.000.lmax010'
+  filename = './data/h2p/surfaces/sphfunc.rb50.000.lmax010'
   
   CALL initialize_tsurff(filename, radius_boundary, lmax, &
        deltak, k_cutoff, numkpts, lmax_total, mmax )

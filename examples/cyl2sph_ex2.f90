@@ -165,30 +165,35 @@ PROGRAM cyl2sph_ex2
   
   CALL cpu_time(start_time)
   
+  !! For scattered interpolation uncomment the subroutine below
+  !CALL initialize_cylindrical_boundary(rho_ax, z_ax, local_dims, &
+  !     Rboundary, tolerance, 2, dr, lmax, rank, size, MPI_COMM_WORLD,  &
+  !     numpts, numrpts, numthetapts, surfacerank, maxsurfprocs, &
+  !     newcomm, numthetaptsperproc )
+  
   CALL initialize_cylindrical_boundary(rho_ax, z_ax, local_dims, &
-       Rboundary, tolerance, 2, dr, lmax, rank, size, MPI_COMM_WORLD,  &
-       numpts, numrpts, numthetapts, surfacerank, maxsurfprocs, &
+       Rboundary, 2, dr, lmax, rank, size, MPI_COMM_WORLD,  &
+       numrpts, numthetapts, surfacerank, maxsurfprocs, &
        newcomm, numthetaptsperproc )
   
   CALL cpu_time(end_time)
   
   interp_time = end_time - start_time
   
-  WRITE(*,*) 'From rank ',rank,' Interpolation time (seconds): ', interp_time
-  WRITE(*,*) 'Interpolant time (seconds): ', interp_time
+  WRITE(*,*) 'From rank ',rank,' Interpolant time (seconds): ', interp_time
   WRITE(*,*) 
   
-  WRITE(*,*) 'Total number of points to be interpolated: ',numpts
-  
-  WRITE(*,*) 'Number of radial boundary points: ',numrpts
-  WRITE(*,*) 'Number of polar boundary points: ',numthetapts
-  WRITE(*,*) 'Number of proccessors involved: ',maxsurfprocs
-  
-  WRITE(*,*) 'Grid spacing in r: ',dr
-  WRITE(*,*) 'Maximum angular momenta: ',lmax
-  WRITE(*,*)
-  WRITE(*,*) '--------------------------'
-  
+!!$  WRITE(*,*) 'Total number of points to be interpolated: ',numpts
+!!$  
+!!$  WRITE(*,*) 'Number of radial boundary points: ',numrpts
+!!$  WRITE(*,*) 'Number of polar boundary points: ',numthetapts
+!!$  WRITE(*,*) 'Number of proccessors involved: ',maxsurfprocs
+!!$  
+!!$  WRITE(*,*) 'Grid spacing in r: ',dr
+!!$  WRITE(*,*) 'Maximum angular momenta: ',lmax
+!!$  WRITE(*,*)
+!!$  WRITE(*,*) '--------------------------'
+!!$  
   
   ALLOCATE(sphfunc(1:numrpts,1:numthetapts))
   ALLOCATE(sphfunc_dr(1:numrpts,1:numthetapts))
@@ -200,9 +205,13 @@ PROGRAM cyl2sph_ex2
   
   IF(i_am_surface_local(rank)) THEN
      CALL cpu_time(start_time)
+
+     !! For scattered interpolation uncomment the subroutine below
+     !CALL get_cylindrical_boundary(cylfunc, sphfunc, sphfunc_dr, &
+     !     sphfunc_dth, 'quadratic')
      
-     CALL get_cylindrical_boundary(cylfunc, sphfunc, sphfunc_dr, &
-          sphfunc_dth, 'quadratic')
+     CALL get_cylindrical_boundary(rho_ax, z_ax, local_dims, cylfunc, &
+          2, sphfunc, sphfunc_dr, sphfunc_dth)
      
      CALL cpu_time(end_time)
      
@@ -305,6 +314,8 @@ PROGRAM cyl2sph_ex2
   CALL MPI_finalize( ierror )
   
   IF(rank.EQ.0) THEN
+     WRITE(*,*)
+     WRITE(*,*)
      WRITE(*,*) '¡Se acabó!'
      WRITE(*,*)
      WRITE(*,*)

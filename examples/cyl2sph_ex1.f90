@@ -35,7 +35,7 @@ PROGRAM cyl2sph_ex1
   REAL(dp)                   :: minerror, maxerror
   INTEGER                    :: irho,iz
   INTEGER                    :: ir, itheta
-  
+
   !------------------------------------------------------------
   
   WRITE(*,*)
@@ -125,7 +125,8 @@ PROGRAM cyl2sph_ex1
   WRITE(*,*) 'Radius tolerance: ',tolerance
   WRITE(*,*)
   WRITE(*,*) '--------------------------'
-  
+
+
   ! Build interpolant
   WRITE(*,*) 'Creating interpolant...'
   
@@ -142,21 +143,21 @@ PROGRAM cyl2sph_ex1
   CALL cpu_time(end_time)
   
   interp_time = end_time - start_time
-  
-  WRITE(*,*) 'Interpolation time (seconds): ', interp_time
-  WRITE(*,*) 'Interpolant time (seconds): ', interp_time
+  WRITE(*,*)
+  WRITE(*,*)           '*********************************************'
+  WRITE(*,'(A,F11.8)') 'Interpolant time (seconds):       ', interp_time
+  WRITE(*,*)           '*********************************************'  
   WRITE(*,*) 
   
-  WRITE(*,*) 'Total number of points to be interpolated: ',numpts
-  
-  WRITE(*,*) 'Number of radial boundary points: ',numrpts
-  WRITE(*,*) 'Number of polar boundary points: ',numthetapts
-  
-  WRITE(*,*) 'Grid spacing in r: ',dr
-  WRITE(*,*) 'Maximum angular momenta: ',lmax
-  WRITE(*,*)
-  WRITE(*,*)
-  WRITE(*,*) '--------------------------'
+!!$  !WRITE(*,*) 'Total number of points to be interpolated: ',numpts
+!!$  
+!!$  WRITE(*,'(A,I3)')   'Number of radial boundary points: ',numrpts
+!!$  WRITE(*,'(A,I3)')   'Number of polar boundary points:  ',numthetapts
+!!$  
+!!$  WRITE(*,'(A,F9.3)') 'Grid spacing in r:                ',dr
+!!$  WRITE(*,'(A,I3)')   'Maximum angular momenta:          ',lmax
+!!$  WRITE(*,*)
+!!$  WRITE(*,*) '--------------------------'
   
   
   ALLOCATE(sphfunc(1:numrpts,1:numthetapts))
@@ -178,8 +179,12 @@ PROGRAM cyl2sph_ex1
   CALL cpu_time(end_time)
   
   interp_time = end_time - start_time
-  
-  WRITE(*,*) ' Interpolation time (seconds): ', interp_time
+
+  WRITE(*,*)
+  WRITE(*,*)           '*********************************************'
+  WRITE(*,'(A,F11.8)') ' Interpolation time (seconds): ', interp_time
+  WRITE(*,*)           '*********************************************'
+  WRITE(*,*)
   
   DO itheta = 1, numthetapts
      DO ir = 1, numrpts
@@ -213,15 +218,15 @@ PROGRAM cyl2sph_ex1
 !!$     
 !!$  ! RHO
 !!$  OPEN(unit=33,form='formatted',file='./results/rho_ax.dat')
-!!$  DO irho = 1, numrhopts
-!!$     WRITE(33,*) rho_ax(irho) 
+!!$  DO irho = minrho, maxrho
+!!$     WRITE(33,*) irho, rho_ax(irho) 
 !!$  ENDDO
 !!$  CLOSE(33)
 !!$  
 !!$  ! Z
 !!$  OPEN(unit=33,form='formatted',file='./results/z_ax.dat')
-!!$  DO iz = 1, numzpts
-!!$     WRITE(33,*) z_ax(iz)
+!!$  DO iz = minz, maxz
+!!$     WRITE(33,*) iz,z_ax(iz)
 !!$  ENDDO
 !!$  CLOSE(33)
 !!$  
@@ -266,7 +271,9 @@ PROGRAM cyl2sph_ex1
   DEALLOCATE(Y_lm, R_nl)
   DEALLOCATE(cylfunc)
   DEALLOCATE(sphfunc, sphfunc_dr, sphfunc_dth)
-  
+
+  WRITE(*,*)
+  WRITE(*,*)
   WRITE(*,*) '¡Se acabó!'
   WRITE(*,*)
   WRITE(*,*)

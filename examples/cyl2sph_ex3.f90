@@ -205,9 +205,10 @@ PROGRAM cy2sph_ex3
   WRITE(*,*) 'Get the surface. Write it to a file...'
 
   CALL cpu_time(start_time)
-
+  
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
-  CALL get_cylindrical_surface(filename, psi, fdrule, 0.0_dp , &
+  CALL get_cylindrical_surface(filename, psi, gpts, hpts, dims, &
+       fdrule, 0.0_dp , &
        0.0_dp, 0.0_dp, lmax, .TRUE. )
   
   CALL cpu_time(end_time)

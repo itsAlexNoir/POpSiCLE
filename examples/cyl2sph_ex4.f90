@@ -244,7 +244,8 @@ PROGRAM cyl2sph_ex4
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL cpu_time(start_time)
   
-  CALL get_cylindrical_surface(filename, psi, fdrule, 0.0_dp , &
+  CALL get_cylindrical_surface(filename, psi, gpts, hpts, dims_local, &
+       fdrule, 0.0_dp , &
        0.0_dp, 0.0_dp, lmax, rank, .TRUE. )
   
   CALL cpu_time(end_time)
