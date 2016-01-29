@@ -519,7 +519,7 @@ CONTAINS
              IF(left_rho-fdrule.LT.LBOUND(rho_ax,DIM=1)) THEN
                 lower_rho = left_rho
                 upper_rho = left_rho + rulepts
-             ELSEIF(left_rho+fdrule.GT.UBOUND(rho_ax,DIM=1)) THEN
+             ELSEIF(left_rho+fdrule+1.GT.UBOUND(rho_ax,DIM=1)) THEN
                 lower_rho = left_rho - rulepts
                 upper_rho = left_rho
              ELSE
@@ -533,7 +533,7 @@ CONTAINS
              IF(left_z-fdrule.LT.LBOUND(z_ax,DIM=1)) THEN
                 lower_z = left_z
                 upper_z = left_z + rulepts
-             ELSEIF(left_z+fdrule.GT.UBOUND(z_ax,DIM=1)) THEN
+             ELSEIF(left_z+fdrule+1.GT.UBOUND(z_ax,DIM=1)) THEN
                 lower_z = left_z - rulepts
                 upper_z = left_z
              ELSE
@@ -672,7 +672,7 @@ CONTAINS
              IF(left_rho-fdrule.LT.LBOUND(rho_ax,DIM=1)) THEN
                 lower_rho = left_rho
                 upper_rho = left_rho + rulepts
-             ELSEIF(left_rho+fdrule.GT.UBOUND(rho_ax,DIM=1)) THEN
+             ELSEIF(left_rho+fdrule+1.GT.UBOUND(rho_ax,DIM=1)) THEN
                 lower_rho = left_rho - rulepts
                 upper_rho = left_rho
              ELSE
@@ -686,7 +686,7 @@ CONTAINS
              IF(left_z-fdrule.LT.LBOUND(z_ax,DIM=1)) THEN
                 lower_z = left_z
                 upper_z = left_z + rulepts
-             ELSEIF(left_z+fdrule.GT.UBOUND(z_ax,DIM=1)) THEN
+             ELSEIF(left_z+fdrule+1.GT.UBOUND(z_ax,DIM=1)) THEN
                 lower_z = left_z - rulepts
                 upper_z = left_z
              ELSE
