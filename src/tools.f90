@@ -15,6 +15,7 @@ MODULE tools
   PUBLIC        :: make_derivative
   PUBLIC        :: make_cross_derivative
   PUBLIC        :: fdweights
+  PUBLIC        :: interv
 
   ! Interfaces
   INTERFACE make_wave_boundary_derivative
@@ -396,7 +397,7 @@ CONTAINS
     IF(PRESENT(fdcoeffs)) THEN
        DO ifd = -fd_rule, fd_rule
           func_dx = func_dx + &
-               fdcoeffs(ifd) / dx * func(ifd)
+               fdcoeffs(ifd) * func(ifd)
        ENDDO
     ELSE
        DO ifd = -fd_rule, fd_rule
@@ -428,7 +429,8 @@ CONTAINS
     IF(PRESENT(fdcoeffs)) THEN
        DO ifd = -fd_rule, fd_rule
           func_dx = func_dx + &
-               fdcoeffs(ifd) / dx * func(ifd)
+               fdcoeffs(ifd) * func(ifd)
+          
        ENDDO
     ELSE
        DO ifd = -fd_rule, fd_rule
@@ -463,7 +465,7 @@ CONTAINS
        DO ifdy = -fd_rule, fd_rule
           DO ifdx = -fd_rule, fd_rule
              func_dx(ifdy) = func_dx(ifdy) + &
-                  fd_coeff1(ifdx) / dx * func(ifdx,ifdy)
+                  xcoeffs(ifdx) * func(ifdx,ifdy)
           ENDDO
        ENDDO
     ELSE
@@ -478,7 +480,7 @@ CONTAINS
     IF(PRESENT(ycoeffs)) THEN
        DO ifdy = -fd_rule, fd_rule
           func_dxdy = func_dxdy + &
-               fd_coeff1(ifdy) / dy * func_dx(ifdy)
+               ycoeffs(ifdy) * func_dx(ifdy)
        ENDDO
     ELSE
        DO ifdy = -fd_rule, fd_rule
@@ -514,7 +516,7 @@ CONTAINS
        DO ifdy = -fd_rule, fd_rule
           DO ifdx = -fd_rule, fd_rule
              func_dx(ifdy) = func_dx(ifdy) + &
-                  fd_coeff1(ifdx) / dx * func(ifdx,ifdy)
+                  xcoeffs(ifdx) * func(ifdx,ifdy)
           ENDDO
        ENDDO
     ELSE
@@ -529,7 +531,7 @@ CONTAINS
     IF(PRESENT(ycoeffs)) THEN
        DO ifdy = -fd_rule, fd_rule
           func_dxdy = func_dxdy + &
-               fd_coeff1(ifdy) / dy * func_dx(ifdy)
+               ycoeffs(ifdy) * func_dx(ifdy)
        ENDDO
     ELSE
        DO ifdy = -fd_rule, fd_rule
@@ -669,6 +671,96 @@ CONTAINS
     
   END SUBROUTINE fdweights
   
+  !********************************************************!
+  
+  !----------------------------------------------------------------------------
+  !
+  !  SUBROUTINE interv
+  !
+  !> \brief FInd the interval within T containing x.
+  !> \details  The program is designed to be efficient in the common
+  !> situation that it is called repeatedly, with  x  taken from an
+  !> increasing or decreasing sequence. This will happen, e.g., when
+  !> a pp function is to be graphed. The first guess for  left  is
+  !> therefore taken to be the value returned at the previous call
+  !> and stored in the
+  !> local variable  ilo . A first check ascertains that  ilo .lt. lxt
+  !> (this is necessary since the present call may have nothing to do
+  !> with the previous call). Then, if  xt(ilo) .le. x .lt. xt(ilo+1),
+  !> we set  left = ilo  and are done after just three comparisons.
+  !> Otherwise, we repeatedly double the difference  istep = ihi - ilo
+  !> while also moving  ilo  and  ihi  in the direction of  x , until
+  !> xt(ilo) .le. x .lt. xt(ihi), after which we use bisection to get,
+  !> in addition, ilo+1 = ihi .left = ilo  is then returned.
+  !>                   ******  o u t p u t  ******
+  !> left, mflag.....both integers, whose value is
+  !>
+  !>   1     -1      if               x .lt.  xt(1)
+  !>   i      0      if   xt(i)  .le. x .lt. xt(i+1)
+  !> i      0      if   xt(i)  .lt. x .eq. xt(i+1) .eq. xt(lxt)
+  !> i      1      if   xt(i)  .lt.        xt(i+1) .eq. xt(lxt) .lt. x
+  !>
+  !> In particular,  mflag = 0  is the 'usual' case.  mflag .ne. 0
+  !> indicates that  x  lies outside the CLOSED interval
+  !> xt(1) .le. y .le. xt(lxt) . The asymmetric treatment of the
+  !> intervals is due to the decision to make all pp functions cont-
+  !> inuous from the right, but, by returning  mflag = 0  even if
+  !> x = xt(lxt), there is the option of having the computed pp function
+  !> continuous from the left at  xt(lxt) .
+  !
+  !> \param[in] xt .a real sequence, of length  lxt ,
+  !>   assumed to be nondecreasing.
+  !> \param[in] lxt .number of terms in the sequence  xt.
+  !> \param[in] x the point whose location with respect to the sequence
+  !>   xt is to be determined.
+  !> \param[out] left Left index on the interval.
+  !> \param[out] mflag Control parameter.
+  !
+  !----------------------------------------------------------------------------
+  
+  SUBROUTINE interv(xt,lxt,x,left,mflag)
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)      :: lxt
+    REAL(dp), INTENT(IN)     :: xt(lxt)
+    REAL(dp), INTENT(IN)     :: x
+    INTEGER, INTENT(OUT)     :: left, mflag
+    
+    INTEGER                  :: ihi,ilo,istep
+    INTEGER                  :: middle, i, n
+    
+    !------------------------------------------------!
+    
+    ilo=1
+    ihi=lxt
+    left=0
+    mflag=0
+    
+    IF((x.LT.xt(ilo)).OR.(lxt.LE.1)) THEN
+       left = 1
+       mflag = -1
+    ELSE
+       IF(x.GT.xt(ihi)) THEN
+          left = lxt
+          mflag = 1
+       ELSE
+          N=INT(LOG(REAL(lxt-1))/LOG(2.0_dp)+2.0_dp)
+          DO i = 1, n
+             middle=(ihi+ilo)/2
+             IF(middle.EQ.ilo) left = ilo
+             IF(x.LT.xt(middle)) ihi = middle
+             IF(x.GE.xt(middle)) ilo = middle
+          ENDDO
+       ENDIF
+    ENDIF
+    IF(left.EQ.0) THEN
+       WRITE(*,*) 'Possible problem in interv'
+       STOP
+    ENDIF
+    
+  END SUBROUTINE interv
+  
+  !********************************************************!
   !********************************************************!
   
 END MODULE tools

@@ -26,7 +26,7 @@ MODULE scattboundcyl
   REAL(dp), ALLOCATABLE, PUBLIC    :: theta_boundary(:)
   REAL(dp), ALLOCATABLE, PUBLIC    :: costheta_boundary(:)
   REAL(dp), ALLOCATABLE, PUBLIC    :: theta_weights(:)
-  
+
   INTEGER, ALLOCATABLE, PUBLIC     :: i_am_surface_local(:)
   INTEGER, ALLOCATABLE, PUBLIC     :: i_am_surface(:) 
   INTEGER, ALLOCATABLE, PUBLIC     :: surface_members(:)
@@ -426,7 +426,8 @@ CONTAINS
           OPEN(UNIT=101,FORM='formatted',FILE='i_am_in.dat')
           DO itheta = 1, numthetapts
              DO ir = 1, numrpts
-                WRITE(101,*) rpts_boundary(ir), theta_boundary(itheta), i_am_in_global2D(ir,itheta)
+                WRITE(101,*) rpts_boundary(ir), &
+                     theta_boundary(itheta), i_am_in_global2D(ir,itheta)
              ENDDO
           ENDDO
           CLOSE(101)

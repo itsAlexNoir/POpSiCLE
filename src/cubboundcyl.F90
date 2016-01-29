@@ -25,7 +25,7 @@ MODULE cubboundcyl
   
   INTEGER, ALLOCATABLE, PUBLIC     :: cellindex2D(: ,: ,:)
   
-  INTEGER                          :: numpts, numrpts
+  INTEGER                          :: numrpts
   INTEGER                          :: numthetapts
   INTEGER                          :: numsurfaceprocs
   
@@ -159,15 +159,17 @@ CONTAINS
              i_am_in_local2D(ir,itheta) = 1
              
              ! Look for cell indexes
-             CALL intrv(rho_ax, dims(1),rhopt,left,mflag)
+             CALL interv(rho_ax,SIZE(rho_ax),rhopt,left,mflag)
              cellindex2D(ir,itheta,1) = left
-             CALL intrv(z_ax, dims(2),zpt,left,mflag)
+             CALL interv(z_ax,SIZE(z_ax),zpt,left,mflag)
              cellindex2D(ir,itheta,2) = left
-             
           ENDIF
+          
        ENDDO
     ENDDO
-
+    
+    
+    
     ! Also, initialize the bicubic matrix
     CALL initialize_bicubic_matrix( )
     
@@ -200,7 +202,7 @@ CONTAINS
 #if _COM_MPI
   
   SUBROUTINE initialize_bicubic_cylindrical_boundary2D_parallel(rho_ax, z_ax, dims, &
-       Rb, fdpts, deltar, lmax, rank, size, comm, &
+       Rb, fdpts, deltar, lmax, mpi_rank, mpi_size, comm, &
        maxrpts, maxthetapts, surfacerank, maxsurfaceprocs, newcomm, &
        maxthetaptsperproc)
     
@@ -213,7 +215,7 @@ CONTAINS
     INTEGER, INTENT(IN)       :: fdpts
     REAL(dp), INTENT(IN)      :: deltar
     INTEGER, INTENT(IN)       :: lmax
-    INTEGER, INTENT(IN)       :: rank, size
+    INTEGER, INTENT(IN)       :: mpi_rank, mpi_size
     INTEGER, INTENT(IN)       :: comm
     INTEGER, INTENT(OUT)      :: maxrpts, maxthetapts
     INTEGER, INTENT(OUT)      :: surfacerank
@@ -234,9 +236,9 @@ CONTAINS
     INTEGER                   :: irho, iz, inum
     INTEGER                   :: ir, itheta, ii
     INTEGER                   :: left, mflag
-    
+ 
     !--------------------------------------------------!
-     
+    
     halolims(1,:) = (/ lbound(rho_ax), ubound(rho_ax) /)
     halolims(2,:) = (/ lbound(z_ax), ubound(z_ax) /)
     
@@ -297,6 +299,7 @@ CONTAINS
     ! Create desired axis for interpolation
     ! Radial axis
     Rb_start = (Rb - deltar * (fdpts + 1))
+    
     DO ir = 1, numrpts
        rpts_boundary(ir) = Rb_start + REAL( ir * deltar, dp )
     ENDDO
@@ -322,11 +325,11 @@ CONTAINS
                (zpt.GE.MINVAL(z_ax)) .AND. (zpt.LE.MAXVAL(z_ax))) THEN
              
              i_am_in_local2D(ir,itheta) = 1
-             
+
              ! Look for cell indexes
-             CALL intrv(rho_ax, dims(1),rhopt,left,mflag)
+             CALL interv(rho_ax,SIZE(rho_ax),rhopt,left,mflag)
              cellindex2D(ir,itheta,1) = left
-             CALL intrv(z_ax, dims(2),zpt,left,mflag)
+             CALL interv(z_ax,SIZE(z_ax),zpt,left,mflag)
              cellindex2D(ir,itheta,2) = left
              
           ENDIF
@@ -341,11 +344,12 @@ CONTAINS
     ! Check if there is a overlap of points between processors
     IF(ANY(i_am_in_global2D.GT.1)) THEN
        WRITE(*,*) 'There is an overlap of points beetween processors'
-       IF(rank.EQ.0) THEN
+       IF(mpi_rank.EQ.0) THEN
           OPEN(UNIT=101,FORM='formatted',FILE='i_am_in.dat')
           DO itheta = 1, numthetapts
              DO ir = 1, numrpts
-                WRITE(101,*) rpts_boundary(ir), theta_boundary(itheta), i_am_in_global2D(ir,itheta)
+                WRITE(101,*) rpts_boundary(ir), &
+                     theta_boundary(itheta), i_am_in_global2D(ir,itheta)
              ENDDO
           ENDDO
           CLOSE(101)
@@ -359,27 +363,25 @@ CONTAINS
     
     ! Create communicator and surface members
     !-----------------------------------------!
-    ALLOCATE(i_am_surface_local(0:size-1))
-    ALLOCATE(i_am_surface(0:size-1))
+    ALLOCATE(i_am_surface_local(0:mpi_size-1))
+    ALLOCATE(i_am_surface(0:mpi_size-1))
     i_am_surface_local = 0
     i_am_surface = 0
+
     
-    IF(numpts.NE.0) &
-         i_am_surface_local(rank) = 1
+    IF(SUM(i_am_in_local2D).NE.0) &
+         i_am_surface_local(mpi_rank) = 1
     
     ! Communicate to all processors if they are
     ! at the surface
-    CALL MPI_ALLREDUCE(i_am_surface_local, i_am_surface, size, &
+    CALL MPI_ALLREDUCE(i_am_surface_local, i_am_surface, mpi_size, &
          MPI_INTEGER, MPI_SUM, comm, ierror )
     
-    DO inum = 0, size - 1
-       IF(i_am_surface(inum).EQ.1) &
-            numsurfaceprocs = numsurfaceprocs + 1
-    ENDDO
+    numsurfaceprocs = SUM(i_am_surface)
     
     ALLOCATE(surface_members(0:numsurfaceprocs-1))
     ii = -1
-    DO inum = 0, size-1
+    DO inum = 0, mpi_size-1
        IF(i_am_surface(inum).EQ.1) THEN
           ii = ii + 1
           surface_members(ii) = inum
@@ -395,7 +397,7 @@ CONTAINS
     CALL MPI_COMM_CREATE(comm, surfacegroup, newcomm, ierror)
     
     !Assign ranks for those who are on the surface
-    IF(i_am_surface_local(rank).EQ.1) &
+    IF(i_am_surface_local(mpi_rank).EQ.1) &
          CALL MPI_COMM_RANK( newcomm, surfacerank, ierror)
     
     ! Assign points to return
@@ -415,18 +417,16 @@ CONTAINS
     maxthetaptsperproc = INT(numthetapts / numsurfaceprocs)
     
     
-    IF(rank.EQ.0) THEN
+    IF(mpi_rank.EQ.0) THEN
        WRITE(*,*)
        WRITE(*,*) '*************************************'
        WRITE(*,*) '  Surface parameters (Cylindrical).  '
        WRITE(*,*) '*************************************'
        WRITE(*,*)
        WRITE(*,'(A, F9.3)') ' Radius boundary:                              ',&
-            Rs
+            Rb
        WRITE(*,'(A,I3)')    ' Maximum angular momentum:                     ',&
             lmax
-       WRITE(*,'(A,F9.3)')  ' Radius tolerance :                            ',&
-            radtol
        WRITE(*,'(A, F9.3)') ' Delta R :                                     ',&
             deltar
        WRITE(*,'(A,I3)')    ' Finite difference rule used :                 ',&
@@ -571,7 +571,7 @@ CONTAINS
                 psi_in_drhodz(ipt) = deriv
              ENDDO
              
-             CALL bicubic_interpolate(psi_in,psi_in_drho, psi_in_dz, &
+             CALL bicubic_interpolation(psi_in,psi_in_drho, psi_in_dz, &
                   psi_in_drhodz, rho_ax(left_rho),rho_ax(left_rho+1),&
                   z_ax(left_z),z_ax(left_z+1),rhopt,zpt,&
                   psi2D_sph(ir,itheta),psi2D_sph_dx(ir,itheta),&
@@ -696,7 +696,7 @@ CONTAINS
              ! Calculate fd weights for differentiation in z case             
              CALL fdweights(z_ax(left_z),z_ax(lower_z:upper_z),&
                   rulepts,2,zfdcoeffs)
-          
+
              psi_in_vol_rho(:,1) = psi_cyl(lower_rho:upper_rho,left_z)
              psi_in_vol_rho(:,2) = psi_cyl(lower_rho+1:upper_rho+1,left_z)
              psi_in_vol_rho(:,3) = psi_cyl(lower_rho+1:upper_rho+1,left_z+1)
@@ -735,13 +735,13 @@ CONTAINS
              
              
              ! Real part
-             CALL bicubic_interpolate(realpsi_in,realpsi_in_drho, realpsi_in_dz, &
+             CALL bicubic_interpolation(realpsi_in,realpsi_in_drho, realpsi_in_dz, &
                   realpsi_in_drhodz, rho_ax(left_rho),rho_ax(left_rho+1),&
                   z_ax(left_z),z_ax(left_z+1),rhopt,zpt,&
                   realpsi2D_sph,realpsi2D_sph_dx,realpsi2D_sph_dy)
              
              ! Imaginary part
-             CALL bicubic_interpolate(imagpsi_in,imagpsi_in_drho, imagpsi_in_dz, &
+             CALL bicubic_interpolation(imagpsi_in,imagpsi_in_drho, imagpsi_in_dz, &
                   imagpsi_in_drhodz, rho_ax(left_rho),rho_ax(left_rho+1),&
                   z_ax(left_z),z_ax(left_z+1),rhopt,zpt,&
                   imagpsi2D_sph,imagpsi2D_sph_dx,imagpsi2D_sph_dy)
@@ -759,7 +759,7 @@ CONTAINS
              !ENDIF
              
           ENDIF
-             
+          
        ENDDO
     ENDDO
     

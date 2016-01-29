@@ -114,7 +114,7 @@ cub_interp.o: constants.o
 scattboundcyl.o: constants.o gaussleg.o scatt_interp.o
 scattboundcart.o: constants.o gaussleg.o scatt_interp.o
 cubboundcyl.o: constants.o tools.o gaussleg.o scattboundcyl.o \
-	cubic_interp.o ${SLATEC_OBJS}
+	cubic_interp.o
 boundary.o: scattboundcyl.o scattboundcart.o cubboundcyl.o
 bessel.o: constants.o
 gaussleg.o: constants.o
@@ -148,7 +148,7 @@ cub_interp.lo: constants.lo
 scattboundcyl.lo: constants.lo gaussleg.lo scatt_interp.lo
 scattboundcart.lo: constants.lo gaussleg.lo scatt_interp.lo
 cubboundcyl.lo: constants.lo tools.o gaussleg.lo \
-	scattboundcyl.lo cubic_interp.lo ${SLATEC_LO}
+	scattboundcyl.lo cubic_interp.lo
 boundary.lo: scattboundcyl.lo scattboundcart.lo cubboundcyl.lo
 bessel.lo: constants.lo
 gaussleg.lo: constants.lo
@@ -182,7 +182,7 @@ popsicle.lo : constants.lo fourier.lo \
 lib: ${POPSICLE_OBJS}
 	@echo 'Creating static library...'
 	ar ${ARFLAGS} libpopsicle_${PLIB}.a ${POPSICLE_OBJS} \
-	${SLATEC_OBJS} ${SHEPPACK_OBJS}; \
+	${SHEPPACK_OBJS}; \
 	ranlib libpopsicle_${PLIB}.a
 	cp -rf libpopsicle_${PLIB}.a ${POPSICLE_LIB}
 	cp -rf *.mod ${POPSICLE_INCL}
@@ -192,7 +192,7 @@ dylib: ${POPSICLE_LO}
 	@echo 'Creating dynamic library...'
 	${LIBTOOL} --tag=FC --mode=link \
 	${FC} ${F90FLAGS} -o libpopsicle_${PLIB}.la \
-	${POPSICLE_LO} ${SLATEC_LO} ${SHEPPACK_LO}\
+	${POPSICLE_LO} ${SHEPPACK_LO}\
 	-rpath ${POPSICLE_LIB} ${LIBS}
 	cp -rf *.mod ${POPSICLE_INCL}
 
