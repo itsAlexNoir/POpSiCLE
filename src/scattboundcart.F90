@@ -835,16 +835,14 @@ CONTAINS
           maxthetaptsperproc = numthetapts / numsurfaceprocs + &
                MOD(numthetapts,numsurfaceprocs)
        ENDIF
-    ENDIF
-    maxthetaptsperproc = numthetapts / numsurfaceprocs
-    
-    
-    IF((surfacerank-1).EQ.numsurfaceprocs) THEN
+       
        IF(MOD(numphipts,numsurfaceprocs).NE.0) THEN
           maxphiptsperproc = numthetapts / numsurfaceprocs + &
                MOD(numphipts,numsurfaceprocs)
        ENDIF
+       
     ENDIF
+    maxthetaptsperproc = numthetapts / numsurfaceprocs
     maxphiptsperproc = numphipts / numsurfaceprocs
     
     

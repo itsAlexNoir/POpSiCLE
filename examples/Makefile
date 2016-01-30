@@ -8,7 +8,7 @@
 ##    POpSiCLE examples
 ##************************************************
 
-include Sys/aigis_mkl.make
+include Sys/intel15_mkl.make
 
 default: example_serial
 
