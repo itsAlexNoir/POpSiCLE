@@ -11,7 +11,7 @@ MODULE POPSICLE
   USE scattboundcyl
   USE scattboundcart
   USE cubboundcyl
-  !USE cubboundcart
+  USE cubboundcart
   USE boundary
   USE fourier
   USE sht

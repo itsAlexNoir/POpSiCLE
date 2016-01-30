@@ -115,7 +115,10 @@ scattboundcyl.o: constants.o gaussleg.o scatt_interp.o
 scattboundcart.o: constants.o gaussleg.o scatt_interp.o
 cubboundcyl.o: constants.o tools.o gaussleg.o scattboundcyl.o \
 	cubic_interp.o
-boundary.o: scattboundcyl.o scattboundcart.o cubboundcyl.o
+cubboundcart.o: constants.o tools.o gaussleg.o scattboundcyl.o \
+	scattboundcart.o cubic_interp.o
+boundary.o: scattboundcyl.o scattboundcart.o\
+	cubboundcyl.o cubboundcart.o
 bessel.o: constants.o
 gaussleg.o: constants.o
 io_pop.o: constants.o patchwork.o 
@@ -132,12 +135,12 @@ patchwork.o: constants.o tools.o
 surface.o: constants.o tools.o boundary.o \
 	io_surface.o
 flux.o: constants.o gaussleg.o bessel.o sht.o \
-    io_surface.o
+	io_surface.o
 popsicle.o : constants.o fourier.o \
 	scattboundcyl.o scattboundcart.o \
-    cubboundcyl.o  \
+	cubboundcyl.o  cubboundcart.o \
 	coords.o io_pop.o io_subset.o io_surface.o\
-	 sht.o bessel.o gaussleg.o patchwork.o
+	sht.o bessel.o gaussleg.o patchwork.o
 
 ########################################################
 
@@ -149,7 +152,10 @@ scattboundcyl.lo: constants.lo gaussleg.lo scatt_interp.lo
 scattboundcart.lo: constants.lo gaussleg.lo scatt_interp.lo
 cubboundcyl.lo: constants.lo tools.o gaussleg.lo \
 	scattboundcyl.lo cubic_interp.lo
-boundary.lo: scattboundcyl.lo scattboundcart.lo cubboundcyl.lo
+cubboundcart.lo: constants.lo tools.lo gaussleg.lo scattboundcyl.lo \
+	scattboundcart.lo cubic_interp.lo
+boundary.lo: scattboundcyl.lo scattboundcart.lo \
+	cubboundcyl.lo cubboundcart.lo
 bessel.lo: constants.lo
 gaussleg.lo: constants.lo
 io_pop.lo: constants.lo patchwork.lo 
@@ -166,12 +172,12 @@ patchwork.lo: constants.lo tools.lo
 surface.lo: constants.lo tools.lo boundary.lo \
 	io_surface.lo
 flux.lo: constants.lo gaussleg.lo bessel.lo sht.lo \
-    io_surface.lo
+	io_surface.lo
 popsicle.lo : constants.lo fourier.lo \
 	scattboundcyl.lo scattboundcart.lo \
-    cubboundcyl.lo  \
+	cubboundcyl.lo  cubboundcart.lo \
 	coords.lo io_pop.lo io_subset.lo io_surface.lo\
-	 sht.lo bessel.lo gaussleg.lo patchwork.lo
+	sht.lo bessel.lo gaussleg.lo patchwork.lo
 
 #################################################################
 ##                                                             ##

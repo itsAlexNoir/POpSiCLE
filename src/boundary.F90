@@ -3,7 +3,7 @@ MODULE boundary
   USE scattboundcyl
   USE cubboundcyl
   USE scattboundcart
-  !USE cubboundcart
+  USE cubboundcart
   
   IMPLICIT NONE
   
@@ -29,10 +29,10 @@ MODULE boundary
   INTERFACE initialize_cartesian_boundary
      MODULE PROCEDURE initialize_scatt_cartesian_boundary2D
      MODULE PROCEDURE initialize_scatt_cartesian_boundary3D_serial
-     !MODULE PROCEDURE initialize_bicubic_cartesian_boundary3D_serial
+     MODULE PROCEDURE initialize_tricubic_cartesian_boundary3D_serial
 #if _COM_MPI
      MODULE PROCEDURE initialize_scatt_cartesian_boundary3D_parallel
-     !MODULE PROCEDURE initialize_bicubic_cartesian_boundary3D_parallel
+     MODULE PROCEDURE initialize_tricubic_cartesian_boundary3D_parallel
 #endif
   END INTERFACE initialize_cartesian_boundary
   
@@ -47,8 +47,8 @@ MODULE boundary
      MODULE PROCEDURE get_scatt_cartesian_boundary2D
      MODULE PROCEDURE dget_scatt_cartesian_boundary3D
      MODULE PROCEDURE zget_scatt_cartesian_boundary3D
-     !MODULE PROCEDURE dget_bicubic_cartesian_boundary3D
-     !MODULE PROCEDURE zget_bicubic_catesian_boundary3D
+     MODULE PROCEDURE dget_tricubic_cartesian_boundary3D
+     MODULE PROCEDURE zget_tricubic_cartesian_boundary3D
   END INTERFACE get_cartesian_boundary
   
   INTERFACE delete_cylindrical_boundary
@@ -59,7 +59,7 @@ MODULE boundary
   INTERFACE delete_cartesian_boundary
      MODULE PROCEDURE delete_scatt_cartesian_boundary2D
      MODULE PROCEDURE delete_scatt_cartesian_boundary3D
-     !MODULE PROCEDURE delete_bicubic_cylindrical_boundary3D
+     MODULE PROCEDURE delete_tricubic_cartesian_boundary3D
   END INTERFACE delete_cartesian_boundary
   
 END MODULE boundary
