@@ -15,27 +15,27 @@
 !
 !------------------------------------------------------------------------------
 MODULE gaussleg
-  
+
   USE constants
-  
+
   IMPLICIT NONE
-  
+
   PRIVATE
-  
+
   PUBLIC      :: get_gauss_stuff
   PUBLIC      :: make_rnormal
   PUBLIC      :: make_legendre
   PUBLIC      :: plgndr
   PUBLIC      :: make_factlog
   PUBLIC      :: clebsch
-  
+
   INTERFACE plgndr
      MODULE PROCEDURE plgndr_s
      MODULE PROCEDURE plgndr_v
   END INTERFACE plgndr
-  
+
 CONTAINS
-  
+
   !=======================================================================
   !=======================================================================
   !
@@ -53,16 +53,16 @@ CONTAINS
   !
   !=======================================================================
   !=======================================================================
-  
+
   SUBROUTINE get_gauss_stuff(lower_bound, upper_bound, axis, weights)
-    
+
     IMPLICIT NONE
-    
+
     REAL(dp), INTENT(IN)         :: lower_bound
     REAL(dp), INTENT(IN)         :: upper_bound
     REAL(dp), INTENT(OUT)        :: axis(:)
     REAL(dp), INTENT(OUT)        :: weights(:)
-    
+
     INTEGER                      :: i,j
     INTEGER                      :: n, m, its
     REAL(dp), PARAMETER          :: precision = 1.0e-14_dp
@@ -71,7 +71,7 @@ CONTAINS
     REAL(dp), DIMENSION((size(axis)+1)/2) :: z1, z
     REAL(dp), DIMENSION((size(axis)+1)/2) :: pp, p3, p2, p1
     LOGICAL, DIMENSION((size(axis)+1)/2)  :: unfinished
-        
+
     ! Check the size of the arrays. They must be equal
     IF (SIZE(axis).NE.SIZE(weights)) THEN
        WRITE(*,*) 'Axis and weights arrays have not equal length.'
@@ -83,7 +83,7 @@ CONTAINS
     xm=0.5_dp*(upper_bound + lower_bound)
     xl=0.5_dp*(upper_bound - lower_bound)
     z=COS( pi * (arth(1,1,m) - 0.25_dp) / ( n + 0.5_dp))
-    
+
     unfinished=.TRUE.
     DO its=1,MAXIT
        WHERE (unfinished)
@@ -97,7 +97,7 @@ CONTAINS
              p1=((2.0_dp*j-1.0_dp)*z*p2-(j-1.0_dp)*p3)/j
           END WHERE
        ENDDO
-       
+
        WHERE (unfinished)
           pp=n*(z*p1-p2)/(z*z-1.0_dp)
           z1=z
@@ -106,17 +106,17 @@ CONTAINS
        END WHERE
        IF (.NOT. ANY(unfinished)) EXIT
     ENDDO
-    
+
     IF (its == MAXIT+1) THEN
        WRITE(*,*) 'Too many iterations in gaussleg!'
        STOP
     ENDIF
-    
+
     axis(1:m)=xm-xl*z
     axis(n:n-m+1:-1)=xm+xl*z
     weights(1:m)=2.0_dp*xl/((1.0_dp-z**2)*pp**2)
     weights(n:n-m+1:-1)=weights(1:m)
-        
+
   END SUBROUTINE get_gauss_stuff
 
   !------------------------------------------------------------------------------!
@@ -141,30 +141,30 @@ CONTAINS
   !
   !=======================================================================
   !=======================================================================
-  
+
   FUNCTION arth(first,increment,n)
-    
+
     INTEGER, INTENT(IN)    :: first, increment
     INTEGER, INTENT(IN)    :: n
     REAL(dp), DIMENSION(n) :: arth
-    
+
     INTEGER                :: k
-    
+
     IF( n > 0 ) arth(1) = first
     DO k= 2, n
        arth(k) = arth(k-1) + increment
     ENDDO
-    
+
   END FUNCTION arth
-  
+
   !------------------------------------------------------------------------------!
-  
+
   !=======================================================================
   !=======================================================================
   !
   !   SUBROUTINE make_rnormal
   !
-  !>  \brief This subroutine calculates the normalization co-efficients 
+  !>  \brief This subroutine calculates the normalization co-efficients
   !>  of the Legendre polynomials for all the {il, im} combinations
   !>  which are required.
   !
@@ -173,43 +173,43 @@ CONTAINS
   !> \param[out] rnormal The array which holds the normalization
   !>                   co-efficients as norm(im, il).
   !> \param[in] factlog The log of factorials.
-  !> \param[in] MAXL The maximum value of the angular momentum quantum 
+  !> \param[in] MAXL The maximum value of the angular momentum quantum
   !>                 number.
-  !> \param[in] NUMPTS The number of points at which the factorials are 
+  !> \param[in] NUMPTS The number of points at which the factorials are
   !>                  calculated at.
   !
   !=======================================================================
   !=======================================================================
-  
+
   SUBROUTINE make_rnormal( rnormal, factlog, MAXL, NUMPTS )
-    
+
     IMPLICIT NONE
-    
+
     ! Passed variables
     INTEGER      :: MAXL, NUMPTS
-    REAL(dp)     :: factlog(0:NUMPTS)  
+    REAL(dp)     :: factlog(0:NUMPTS)
     REAL(dp)     :: rnormal(0:MAXL, 0:MAXL)
-    
+
     ! Local variables
     INTEGER       :: il, im
     REAL(dp)      :: rintera, rinterb, rinterc, rinterd
     REAL(dp), PARAMETER :: oneovpi = 1.0_dp / pi
-    
+
     DO il = 0, MAXL
        DO im = 0, il
-          
+
           rintera = LOG(0.25_dp * oneovpi * DBLE(2 * il + 1))
           rinterb = factlog(il - im)
-          rinterc = factlog(il + im)   
+          rinterc = factlog(il + im)
           rinterd = 0.5_dp * (rintera + rinterb - rinterc)
-          
+
           rnormal(im, il) = EXP(rinterd)
-          
+
        ENDDO
     ENDDO
-    
+
   END SUBROUTINE make_rnormal
-  
+
   !------------------------------------------------------------------!
 
   !=======================================================================
@@ -217,33 +217,33 @@ CONTAINS
   !
   ! SUBROUTINE make_legendre
   !
-  !> \brief This subroutine calculates the Legendre polynomials for all 
-  !> permissible {il,im} combinations which are given by 
-  !> il={0,MAXL} => im={0,il}. This routine is based on that given in 
-  !> Numerical Recipies in FORTRAN, 2nd Edition, page 246-248, in which 
-  !> the Legendre polynomial was calculated as a function value using a 
-  !> recurrence relation. This routine improves this relation by 
-  !> storing the intermediate Legendre polynomials which the 
-  !> recurrrence relation discarded. 
+  !> \brief This subroutine calculates the Legendre polynomials for all
+  !> permissible {il,im} combinations which are given by
+  !> il={0,MAXL} => im={0,il}. This routine is based on that given in
+  !> Numerical Recipies in FORTRAN, 2nd Edition, page 246-248, in which
+  !> the Legendre polynomial was calculated as a function value using a
+  !> recurrence relation. This routine improves this relation by
+  !> storing the intermediate Legendre polynomials which the
+  !> recurrrence relation discarded.
   !
   !======================SUBROUTINE ARGUMENTS=============================
   !
-  !> \param[out] legenpl The array storing the Legendre polynomials given by: 
+  !> \param[out] legenpl The array storing the Legendre polynomials given by:
   !>                   legenpl(x, im, il)
-  !> \param[in] costheta The array storing the cosine of the angle at which 
-  !>                   the Legendre polynomial is calculated at, i.e. 
+  !> \param[in] costheta The array storing the cosine of the angle at which
+  !>                   the Legendre polynomial is calculated at, i.e.
   !>                   x={-1,1}
-  !> \param[in] MAXL The maximum value of the single electron angular 
-  !>                   momentum quantum number.    
+  !> \param[in] MAXL The maximum value of the single electron angular
+  !>                   momentum quantum number.
   !> \param[in] MAXTHETAPTS The maximum theta point.
-  !    
+  !
   !=======================================================================
   !=======================================================================
-  
+
   SUBROUTINE make_legendre( legenpl, costheta, MAXL, MAXTHETAPTS )
-    
+
     IMPLICIT NONE
-    
+
     ! Passed variables
     INTEGER      :: MAXL, MAXTHETAPTS
     REAL(dp)     :: legenpl(0:MAXTHETAPTS, 0:MAXL, 0:MAXL)
@@ -251,43 +251,43 @@ CONTAINS
 
     ! Local variables
     INTEGER       :: i, ill, imagqn, itheta
-    REAL(dp)      :: somx2, fact, pmm, pmmp1, pll  
-    
-    !Three nested do-loops. For each point the value of P(l, m) is    
-    !calculated.                                                      
+    REAL(dp)      :: somx2, fact, pmm, pmmp1, pll
+
+    !Three nested do-loops. For each point the value of P(l, m) is
+    !calculated.
     DO itheta = 0, MAXTHETAPTS
-     
+
        DO imagqn = 0, MAXL
-          
-          !The value of P(im, im) is calculated first.                      
+
+          !The value of P(im, im) is calculated first.
           pmm = 1.0_dp
-          
+
           IF (imagqn.GT.0) THEN
-             
+
              somx2 = SQRT((1.0_dp - costheta(itheta)) * &
                   (1.0_dp + costheta(itheta)))
              fact = 1.0_dp
-             
-             DO i = 1, imagqn   
+
+             DO i = 1, imagqn
                 pmm = -pmm * fact * somx2
                 fact = fact + 2.0_dp
              ENDDO
-             
+
           ENDIF
-          
+
           legenpl(itheta, imagqn, imagqn) = pmm
-          
-          !If im + 1 </= MAXL then the value of  P(im, imm + 1) is           
-          !calculated.                                                       
+
+          !If im + 1 </= MAXL then the value of  P(im, imm + 1) is
+          !calculated.
           IF ((imagqn + 1).LE.MAXL) THEN
              pmmp1 = costheta(itheta) * DBLE(2 * imagqn + 1) * pmm
              legenpl(itheta, imagqn, imagqn + 1) = pmmp1
           ENDIF
-          
-          !If im + 2</ = MAXL then the value of P(im, {im+1, imaxm})           
-          !is calculated.                                                      
-          IF ((imagqn + 2).LE.MAXL) THEN 
-             
+
+          !If im + 2</ = MAXL then the value of P(im, {im+1, imaxm})
+          !is calculated.
+          IF ((imagqn + 2).LE.MAXL) THEN
+
              DO ill = imagqn + 2, MAXL
                 pll = (costheta(itheta) * DBLE(2 * ill - 1) * pmmp1 - &
                      DBLE(ill + imagqn - 1) * pmm) / &
@@ -296,16 +296,16 @@ CONTAINS
                 pmm = pmmp1
                 pmmp1 = pll
              ENDDO
-             
+
           ENDIF
-          
+
        ENDDO
     ENDDO
-    
+
   END SUBROUTINE make_legendre
-  
+
   !-----------------------------------------------------------------!
-  
+
   FUNCTION plgndr_s(l,m,x)
     IMPLICIT NONE
     INTEGER, INTENT(IN)  :: l,m
@@ -314,7 +314,7 @@ CONTAINS
 
     INTEGER              :: ll
     REAL(dp)             :: pll,pmm,pmmp1,somx2
-    
+
     IF(m<0 .OR. m>l .OR. ABS(x)>1.0_dp ) THEN
        WRITE(*,*) 'Input error in plgndr_s!'
        STOP
@@ -325,12 +325,12 @@ CONTAINS
        pmm=PRODUCT(DBLE(arth(1,2,m)))*somx2**m
        IF (MOD(m,2) == 1) pmm=-pmm
     ENDIF
-    
+
     IF (l == m) THEN
        plgndr_s=pmm
     ELSE
        pmmp1=x*(2*m+1)*pmm
-       
+
        IF (l == m+1) THEN
           plgndr_s=pmmp1
        ELSE
@@ -343,7 +343,7 @@ CONTAINS
           plgndr_s=pll
        ENDIF
     ENDIF
-    
+
   END FUNCTION plgndr_s
 
 
@@ -359,19 +359,19 @@ CONTAINS
 
     INTEGER :: ll
     REAL(dp), DIMENSION(size(x)) :: pll,pmm,pmmp1,somx2
-    
+
     IF(m<0 .OR. m>l .OR. ALL(ABS(x)>1.0_dp) ) THEN
        WRITE(*,*) 'Input error in plgndr_v!'
        STOP
     ENDIF
-    
+
     pmm=1.0
     IF (m > 0) THEN
        somx2=SQRT((1.0_dp-x)*(1.0_dp+x))
        pmm=PRODUCT(DBLE(arth(1,2,m)))*somx2**m
        IF (MOD(m,2) == 1) pmm=-pmm
     ENDIF
-    
+
     IF (l == m) THEN
        plgndr_v=pmm
     ELSE
@@ -387,60 +387,60 @@ CONTAINS
           plgndr_v=pll
        ENDIF
     ENDIF
-    
+
   END FUNCTION plgndr_v
-  
+
   !=======================================================================
   !=======================================================================
   !
   ! SUBROUTINE make_factlog
   !
-  !> \brief This subroutine calculates the log of factorials. The log of the 
-  !> factorials is chosen since we can then use addition/subtraction 
-  !> instead of multiplication/division when calculating quantities 
+  !> \brief This subroutine calculates the log of factorials. The log of the
+  !> factorials is chosen since we can then use addition/subtraction
+  !> instead of multiplication/division when calculating quantities
   !> involving factorials. This gives more stability.
   !
   !======================SUBROUTINE ARGUMENTS=============================
   !
-  !> \param[out] factlog The array storing the log of the factorials. 
+  !> \param[out] factlog The array storing the log of the factorials.
   !> \param[in]  NUMPTS  The number of factorials we wish to calculate.
-  !> The log of the factorials for all integers in the range 
+  !> The log of the factorials for all integers in the range
   !> {0,NUMPTS} are calculated.
   !
   !=======================================================================
   !=======================================================================
-  
+
   SUBROUTINE make_factlog( factlog, NUMPTS )
-    
+
     IMPLICIT NONE
-    
+
     ! Passed variables
     INTEGER     :: NUMPTS
-    REAL(dp)    :: factlog(0:NUMPTS) 
-    
+    REAL(dp)    :: factlog(0:NUMPTS)
+
     ! Local variables
     INTEGER     ::  i, j
     REAL(dp)    ::  rinter
-    
-    ! The log of the factorial of zero is one in this routine.         
+
+    ! The log of the factorial of zero is one in this routine.
     factlog(0) = 0.0_dp
-    
-    ! Calculate the log of the factorials of all other numbers.        
+
+    ! Calculate the log of the factorials of all other numbers.
     DO i = 1, NUMPTS
        rinter = 1.0_dp
-       
+
        DO j = 1, i
           rinter = rinter * DBLE(j)
        ENDDO
-       
+
        factlog(i) = LOG(rinter)
-       
+
     ENDDO
-    
+
   END SUBROUTINE make_factlog
-  
+
   !----------------------------------------------------------!
-  
+
   !=======================================================================
   !=======================================================================
   !
@@ -454,11 +454,11 @@ CONTAINS
   !======================SUBROUTINE ARGUMENTS=============================
   !
   !> \param[in] factlog The log of factorials.
-  !> \param[in] NUMPTS The number of points at which the factorials are  
+  !> \param[in] NUMPTS The number of points at which the factorials are
   !>            calculated at.
-  !> \param[in] j1 Single electron angular momentum quantum number for 
+  !> \param[in] j1 Single electron angular momentum quantum number for
   !>            electron 1.
-  !> \param[in] j2 Single electron angular momentum quantum number for 
+  !> \param[in] j2 Single electron angular momentum quantum number for
   !>            electron 2.
   !> \param[in] ibigj Total angular momentum quantum number.
   !> \param[in] m1 Magnetic momentum quantum number for electron 1.
@@ -467,42 +467,44 @@ CONTAINS
   !
   !=======================================================================
   !=======================================================================
-  
+
   FUNCTION clebsch( j1, j2, ibigj, m1, m2, ibigm, factlog, NUMPTS )
-    
+
     IMPLICIT NONE
-    
+
     ! Passed variables
     INTEGER, INTENT(IN)   :: NUMPTS, j1, m1, j2, m2, ibigj, ibigm
     REAL(dp), INTENT(IN)  :: factlog(0:NUMPTS)
     REAL(dp)              :: clebsch
-    
+
     ! Local variables
     INTEGER                :: ik, kmin, kmax, ja, jb, jc, jd, je
     REAL(dp)               :: a
     REAL(dp), PARAMETER    :: zero = 0.0_dp
     REAL(dp), PARAMETER    :: half = 0.5_dp
     REAL(dp), PARAMETER    :: one = 1.0_dp
-    
+
     clebsch = zero
-    
+
     ! Only proceed if various triangularity constraints for the
-    ! quantum numbers are fulfilled.                                   
+    ! quantum numbers are fulfilled.
     IF (ABS(m1).GT.j1 .OR. ABS(m2).GT.j2 .OR. ABS(ibigm).GT.ibigj .OR. &
          (2 * MAX(j1, j2, ibigj)).GT.(j1 + j2 + ibigj) .OR.              &
          (m1 + m2).NE.ibigm) THEN
-       
-       WRITE(*,*) 'Error in quantum numbers'
-       STOP
-       
+
+       clebsch = zero
+       RETURN
+       !WRITE(*,*) 'Error in quantum numbers'
+       !STOP
+
     ELSE
-       
+
        a = half * (factlog(j1 + j2 - ibigj) +                          &
-            factlog(j2 + ibigj - j1) + factlog(ibigj + j1 - j2) -      & 
+            factlog(j2 + ibigj - j1) + factlog(ibigj + j1 - j2) -      &
             factlog(j1 + j2 + ibigj + 1) + factlog(j1 + m1) +          &
             factlog( j1 - m1) + factlog(j2 + m2) + factlog( j2 - m2) + &
             factlog(ibigj + ibigm) + factlog(ibigj - ibigm))
-       
+
        ja = j1 + j2 - ibigj
        jb = j1 - m1
        jc = j2 + m2
@@ -510,20 +512,20 @@ CONTAINS
        je = ibigj - j1 - m2
        kmin = MAX(0, -jd, -je)
        kmax = MIN(ja, jb, jc)
-       
+
        DO ik = kmin, kmax
           clebsch = clebsch + (-1.0_dp) ** ik * EXP(a - factlog(ik) -  &
-               factlog(ja - ik) - factlog(jb - ik) -                 & 
+               factlog(ja - ik) - factlog(jb - ik) -                 &
                factlog(jc - ik) - factlog(jd + ik) -                 &
                factlog(je + ik))
        ENDDO
-       
+
        clebsch = clebsch * SQRT(DBLE(2 * ibigj) + one)
-       
+
     ENDIF
-    
+
   END FUNCTION clebsch
-  
+
   !----------------------------------------------------------------!
-  
+
 END MODULE gaussleg

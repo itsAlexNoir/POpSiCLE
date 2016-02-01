@@ -186,17 +186,17 @@ CONTAINS
     
     ! Initialize spherical grid
     ! For scattered interpolation
-    !CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
-    !     radius_tolerance, fd_rule, dr, lmax, rank, size, comm, &
-    !     numpts, numrpts, numthetapts, surfacerank, numsurfaceprocs, &
-    !     surfacecomm, numthetaptsperproc )
+    CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
+         radius_tolerance, fd_rule, dr, lmax, rank, size, comm, &
+         numpts, numrpts, numthetapts, surfacerank, numsurfaceprocs, &
+         surfacecomm, numthetaptsperproc )
     
     ! For bicubic interpolation
-    CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
-         fd_rule, dr, lmax, rank, size, comm, &
-         numrpts, numthetapts, surfacerank, numsurfaceprocs, &
-         surfacecomm, numthetaptsperproc )
-
+!!$    CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
+!!$         fd_rule, dr, lmax, rank, size, comm, &
+!!$         numrpts, numthetapts, surfacerank, numsurfaceprocs, &
+!!$         surfacecomm, numthetaptsperproc )
+    
     IF(i_am_surface(rank).EQ.1) THEN
        ALLOCATE(spherical_wave2D_local(1:numrpts,1:numthetapts))
        ALLOCATE(spherical_wave2D_global(1:numrpts,1:numthetapts))
@@ -343,7 +343,8 @@ CONTAINS
     REAL(dp), INTENT(IN)         :: rho_ax(:), z_ax(:)
     INTEGER, INTENT(IN)          :: dims(:)
     INTEGER, INTENT(IN)          :: fd_rule
-    REAL(dp), INTENT(IN)         :: time, efield, afield
+    REAL(dp), INTENT(IN)         :: time
+    REAL(dp), INTENT(IN)         :: efield(:), afield(:)
     INTEGER, INTENT(IN)          :: lmax
     LOGICAL, INTENT(IN)          :: write_to_file
     
@@ -351,14 +352,14 @@ CONTAINS
     !----------------------------------------------------------!
     
     ! For scattered interpolation
-    !CALL get_cylindrical_boundary( wavefunc, spherical_wave2D, &
-    !     spherical_wave2D_dr, spherical_wave2D_dtheta, &
-    !     'quadratic')
+    CALL get_cylindrical_boundary( wavefunc, spherical_wave2D, &
+         spherical_wave2D_dr, spherical_wave2D_dtheta, &
+         'quadratic')
     
-    ! For bicubic interpolation
-    CALL get_cylindrical_boundary( rho_ax, z_ax, dims, &
-         wavefunc, fd_rule, spherical_wave2D, &
-         spherical_wave2D_dr, spherical_wave2D_dtheta)
+!!$    ! For bicubic interpolation
+!!$    CALL get_cylindrical_boundary( rho_ax, z_ax, dims, &
+!!$         wavefunc, fd_rule, spherical_wave2D, &
+!!$         spherical_wave2D_dr, spherical_wave2D_dtheta)
     
     middle_pt = fd_rule + 1
     CALL make_wave_boundary_derivative(spherical_wave2D,&
@@ -385,11 +386,13 @@ CONTAINS
     REAL(dp), INTENT(IN)         :: rho_ax(:), z_ax(:)
     INTEGER, INTENT(IN)          :: dims(:)
     INTEGER, INTENT(IN)          :: fd_rule
-    REAL(dp), INTENT(IN)         :: time, efield, afield
+    REAL(dp), INTENT(IN)         :: time
+    REAL(dp), INTENT(IN)         :: efield(:), afield(:)
     INTEGER, INTENT(IN)          :: lmax, rank
     LOGICAL, INTENT(IN)          :: write_to_file
     
     INTEGER                      :: numtotalpts
+    INTEGER                      :: numthetaoffset
     INTEGER                      :: middle_pt, offset
     INTEGER                      :: ir, itheta, ierror
     
@@ -397,13 +400,13 @@ CONTAINS
     
     IF(i_am_surface(rank) .EQ. 1) THEN
        !! For scattered interpolation
-       !CALL get_cylindrical_boundary( wavefunc, spherical_wave2D_local, &
-       !     spherical_wave2D_dr, spherical_wave2D_dtheta, &
-       !     'quadratic', rank)
+       CALL get_cylindrical_boundary( wavefunc, spherical_wave2D_local, &
+            spherical_wave2D_dr, spherical_wave2D_dtheta, &
+            'quadratic', rank)
        
-       CALL get_cylindrical_boundary( rho_ax, z_ax, dims, &
-            wavefunc, fd_rule, spherical_wave2D_local, &
-            spherical_wave2D_dr, spherical_wave2D_dtheta, rank)
+       !CALL get_cylindrical_boundary( rho_ax, z_ax, dims, &
+       !     wavefunc, fd_rule, spherical_wave2D_local, &
+       !     spherical_wave2D_dr, spherical_wave2D_dtheta, rank)
        
        ! Communicate the spherical wavefunction
        numtotalpts = numrpts * numthetapts
@@ -411,9 +414,10 @@ CONTAINS
        CALL MPI_ALLREDUCE(spherical_wave2D_local, spherical_wave2D_global, &
             numtotalpts, MPI_DOUBLE_COMPLEX, MPI_SUM, surfacecomm, ierror)
        
-       
        middle_pt = fd_rule + 1
-       offset = numthetaptsperproc * surfacerank       
+       numthetaoffset = INT(numthetapts / numsurfaceprocs)
+       offset = numthetaoffset * surfacerank       
+       
        DO itheta = 1, numthetaptsperproc
           DO ir = 1, numrpts
              spherical_wave2D(ir,itheta) = &
@@ -429,7 +433,7 @@ CONTAINS
        IF (write_to_file) &
             CALL write_surface_file(filename, spherical_wave2D(middle_pt,:), &
             spherical_wave2D_deriv, time, efield, afield, lmax, &
-            surfacecomm, surfacerank, numthetaptsperproc)
+            surfacerank, numsurfaceprocs, surfacecomm, numthetaptsperproc)
     ENDIF
     
   END SUBROUTINE get_cylindrical_surface_parallel
@@ -480,10 +484,11 @@ CONTAINS
     REAL(dp), INTENT(IN)         :: time, efield, afield
     INTEGER, INTENT(IN)          :: lmax, rank
     LOGICAL, INTENT(IN)          :: write_to_file
-
+    
     INTEGER                      :: numtotalpts
     INTEGER                      :: middle_pt
     INTEGER                      :: thetaoffset, phioffset
+    INTEGER                      :: numthetaoffset, numphioffset
     INTEGER                      :: ir, itheta, iphi, ierror
     !----------------------------------------------------------!
     
@@ -499,8 +504,11 @@ CONTAINS
             numtotalpts, MPI_DOUBLE_COMPLEX, MPI_SUM, surfacecomm, ierror)
        
        middle_pt = fd_rule + 1
-       thetaoffset = numthetaptsperproc * surfacerank       
-       phioffset = numphiptsperproc * surfacerank       
+       numthetaoffset = INT(numthetapts / numsurfaceprocs)
+       numphioffset = INT(numphipts / numsurfaceprocs)
+       
+       thetaoffset = numthetaoffset * surfacerank       
+       phioffset = numphioffset * surfacerank       
        
        DO iphi = 1, numphiptsperproc
           DO itheta = 1, numthetaptsperproc
@@ -519,7 +527,8 @@ CONTAINS
        IF (write_to_file) &
             CALL write_surface_file(filename, spherical_wave3D(middle_pt,:, :), &
             spherical_wave3D_deriv, time, efield, afield, lmax, &
-            surfacecomm, surfacerank, numthetaptsperproc, numphiptsperproc )
+            surfacerank, numsurfaceprocs, surfacecomm, &
+            numthetaptsperproc, numphiptsperproc )
     ENDIF
     
   END SUBROUTINE get_cartesian3D_surface_parallel

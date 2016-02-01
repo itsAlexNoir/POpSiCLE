@@ -1,3 +1,4 @@
+
 PROGRAM cyl2sph_ex2
   
   USE MPI
@@ -205,7 +206,7 @@ PROGRAM cyl2sph_ex2
   
   IF(i_am_surface_local(rank)) THEN
      CALL cpu_time(start_time)
-
+     
      !! For scattered interpolation uncomment the subroutine below
      !CALL get_cylindrical_boundary(cylfunc, sphfunc, sphfunc_dr, &
      !     sphfunc_dth, 'quadratic')

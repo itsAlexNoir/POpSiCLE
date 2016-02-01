@@ -38,7 +38,8 @@ PROGRAM cy2sph_ex3
   REAL(dp)                   :: rhoalpha, rhobeta
   REAL(dp)                   :: sqrtrho, sqrt1rho
   REAL(dp)                   :: rhopt, zpt
-  
+
+  REAL(dp)                   :: efield(3), afield(3)
   REAL(dp)                   :: start_time, end_time
   REAL(dp)                   :: comp_time
   
@@ -202,6 +203,9 @@ PROGRAM cy2sph_ex3
   !-------------------------------------------------!
   ! Get cylindrical surface, and write it to a file
   !-------------------------------------------------!
+  efield = 0.0_dp
+  afield = 0.0_dp
+  
   WRITE(*,*) 'Get the surface. Write it to a file...'
 
   CALL cpu_time(start_time)
@@ -209,7 +213,7 @@ PROGRAM cy2sph_ex3
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL get_cylindrical_surface(filename, psi, gpts, hpts, dims, &
        fdrule, 0.0_dp , &
-       0.0_dp, 0.0_dp, lmax, .TRUE. )
+       efield, afield, lmax, .TRUE. )
   
   CALL cpu_time(end_time)
 

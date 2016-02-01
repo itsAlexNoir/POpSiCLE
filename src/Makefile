@@ -132,7 +132,7 @@ patchwork.o: constants.o tools.o
 surface.o: constants.o tools.o boundary.o \
 	io_surface.o
 flux.o: constants.o gaussleg.o bessel.o sht.o \
-    io_surface.o
+    io_surface.o io_pop.o
 popsicle.o : constants.o fourier.o \
 	scattboundcyl.o scattboundcart.o \
     cubboundcyl.o  \
@@ -166,7 +166,7 @@ patchwork.lo: constants.lo tools.lo
 surface.lo: constants.lo tools.lo boundary.lo \
 	io_surface.lo
 flux.lo: constants.lo gaussleg.lo bessel.lo sht.lo \
-    io_surface.lo
+    io_surface.lo io_pop.lo
 popsicle.lo : constants.lo fourier.lo \
 	scattboundcyl.lo scattboundcart.lo \
     cubboundcyl.lo  \

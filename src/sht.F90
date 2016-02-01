@@ -154,7 +154,11 @@ CONTAINS
     ! Do first the FFT (if necessary)
     IF(numphipts.EQ.1) THEN
        DO itheta = 1, numthetapts
-          coeffm = ZERO
+          gm(itheta,0) = func(itheta,1)
+       ENDDO
+    ELSE
+!!$       DO itheta = 1, numthetapts
+!!$          coeffm = ZERO
 !!$          CALL FourierTransform(func(itheta,:),coeffm,1,(/numphipts/))
 !!$          
 !!$          ! Reorder coeffm array after fourier transform
@@ -166,11 +170,7 @@ CONTAINS
 !!$          DO im = shift+1, numphipts
 !!$             gm(itheta,im) = coeffm(im-shift)
 !!$          ENDDO
-       ENDDO
-    ELSE
-       DO itheta = 1, numthetapts
-          gm(itheta,0) = func(itheta,1)
-       ENDDO
+!!$       ENDDO
     ENDIF
     
     ! Now, the Gauss-Legendre quadrature
