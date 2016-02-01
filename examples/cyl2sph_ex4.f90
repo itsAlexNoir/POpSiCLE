@@ -45,6 +45,7 @@ PROGRAM cyl2sph_ex4
   
   REAL(dp)                   :: start_time, end_time
   REAL(dp)                   :: comp_time
+  REAL(dp)                   :: efield(3), afield(3)
   
   INTEGER                    :: size, rank, comm
   INTEGER                    :: maxprocessor, ierror
@@ -240,13 +241,15 @@ PROGRAM cyl2sph_ex4
   !-------------------------------------------------!
   IF(i_am_surface(rank).EQ.1) &
        WRITE(*,*) 'Get the surface. Write it to a file...'
-  
+
+  efield = 0.0_dp
+  afield = 0.0_dp
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL cpu_time(start_time)
   
   CALL get_cylindrical_surface(filename, psi, gpts, hpts, dims_local, &
        fdrule, 0.0_dp , &
-       0.0_dp, 0.0_dp, lmax, rank, .TRUE. )
+       efield, afield, lmax, rank, .TRUE. )
   
   CALL cpu_time(end_time)
   

@@ -58,7 +58,7 @@ CONTAINS
     INTEGER(HID_T)                 :: wave_group
     INTEGER(HID_T)                 :: wavederiv_group 
     INTEGER(HID_T)                 :: field_group
-    
+    INTEGER(HID_T)                 :: time_group    
     ! Error flag
     INTEGER                        :: error, info
     ! Auxiliary strings
@@ -79,11 +79,14 @@ CONTAINS
     CALL h5gcreate_f(file_id, name, wavederiv_group, error)
     name = '/field'     
     CALL h5gcreate_f(file_id, name, field_group, error)
+    name = '/time'
+    CALL h5gcreate_f(file_id, name, time_group, error)
     
     ! Close the property list, group, file and interface
     CALL h5gclose_f(wave_group, error)
     CALL h5gclose_f(wavederiv_group, error)
     CALL h5gclose_f(field_group, error)
+    CALL h5gclose_f(time_group, error) 
     CALL h5fclose_f(file_id, error)
     CALL h5close_f(error)
     
@@ -108,6 +111,7 @@ CONTAINS
     INTEGER(HID_T)                 :: wave_group
     INTEGER(HID_T)                 :: wavederiv_group 
     INTEGER(HID_T)                 :: field_group
+    INTEGER(HID_T)                 :: time_group
     ! Error flag
     INTEGER                        :: error, info
     ! Auxiliary strings
@@ -134,11 +138,14 @@ CONTAINS
     CALL h5gcreate_f(file_id, name, wavederiv_group, error)
     name = '/field'     
     CALL h5gcreate_f(file_id, name, field_group, error)
+    name = '/time'     
+    CALL h5gcreate_f(file_id, name, time_group, error)
     
     ! Close the property list, group, file and interface
     CALL h5gclose_f(wave_group, error)
     CALL h5gclose_f(wavederiv_group, error)
     CALL h5gclose_f(field_group, error)
+    CALL h5gclose_f(time_group, error)
     CALL h5fclose_f(file_id, error)
     CALL h5close_f(error)
     
@@ -158,13 +165,15 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN)   :: filename
     COMPLEX(dp), INTENT(IN)        :: wave(:)
     COMPLEX(dp), INTENT(IN)        :: wavederiv(:)
-    REAL(dp), INTENT(IN)           :: time, efield, afield
+    REAL(dp), INTENT(IN)           :: time
+    REAL(dp), INTENT(IN)           :: efield(:), afield(:)
     INTEGER, INTENT(IN)            :: lmax
     
     INTEGER                        :: wave_rank, field_rank
+    INTEGER                        :: time_rank
     REAL(dp), ALLOCATABLE          :: complex_wave(:, :)
     REAL(dp), ALLOCATABLE          :: complex_wavederiv(:, :)
-    REAL(dp)                       :: field(3)
+    REAL(dp)                       :: field(3,2)
     INTEGER                        :: numthetapts
     ! File identifier
     INTEGER(HID_T)                 :: file_id
@@ -174,17 +183,21 @@ CONTAINS
     INTEGER(HID_T)                 :: wave_group
     INTEGER(HID_T)                 :: wavederiv_group 
     INTEGER(HID_T)                 :: field_group
+    INTEGER(HID_T)                 :: time_group
     ! Dataspace identifier
     INTEGER(HID_T)                 :: wave_dspace_id
     INTEGER(HID_T)                 :: wavederiv_dspace_id
     INTEGER(HID_T)                 :: field_dspace_id  
+    INTEGER(HID_T)                 :: time_dspace_id  
     ! Dataset identifier  
     INTEGER(HID_T)                 :: wave_dset_id
     INTEGER(HID_T)                 :: wavederiv_dset_id
     INTEGER(HID_T)                 :: field_dset_id
+    INTEGER(HID_T)                 :: time_dset_id
     ! Dataset dimensions 
     INTEGER(HSIZE_T)               :: wave_dims(2)
-    INTEGER(HSIZE_T)               :: field_dim(1)
+    INTEGER(HSIZE_T)               :: field_dims(2)
+    INTEGER(HSIZE_T)               :: time_dim(1)  
     ! Error flag
     INTEGER                        :: error
     CHARACTER(LEN=6)               :: cstep
@@ -210,14 +223,18 @@ CONTAINS
     CALL h5gopen_f(file_id, name, wavederiv_group, error)
     name = '/field'
     CALL h5gopen_f(file_id, name, field_group, error)
+    name = '/time'
+    CALL h5gopen_f(file_id, name, time_group, error)
     
     ! Number of theta points in a serial run, its
     numthetapts = 2 * lmax + 1
     !Define rank, in this case 2.
     wave_rank = 2
-    field_rank = 1
+    field_rank = 2
+    time_rank = 1
     wave_dims = (/numthetapts, 2/)
-    field_dim = 3
+    field_dims = (/ 3,2/)
+    time_dim = 1
     
     ! Write field array
     ALLOCATE(complex_wave(numthetapts,2))
@@ -226,12 +243,14 @@ CONTAINS
     complex_wave(:,2) = AIMAG(wave)
     complex_wavederiv(:,1) = REAL(wavederiv,dp)
     complex_wavederiv(:,2) = AIMAG(wavederiv)
-    field = (/ time, efield, afield /)
+    field(:,1) = (/ efield(1), efield(2), efield(3) /)
+    field(:,2) = (/ afield(1), afield(2), afield(3) /)
     
     ! Create the data spaces for the  datasets. 
     CALL h5screate_simple_f(wave_rank, wave_dims, wave_dspace_id, error)
     CALL h5screate_simple_f(wave_rank, wave_dims, wavederiv_dspace_id, error)
-    CALL h5screate_simple_f(field_rank, field_dim, field_dspace_id, error)
+    CALL h5screate_simple_f(field_rank, field_dims, field_dspace_id, error)
+    CALL h5screate_simple_f(time_rank, time_dim, time_dspace_id, error)
     
     setname = '/wave/'// cstep
     ! Create the dataset.
@@ -252,23 +271,33 @@ CONTAINS
     CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
          field_dspace_id, field_dset_id, error)
     CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, &
-         field_dim, error)
+         field_dims, error)
     
+    setname = '/time/'// cstep
+    ! Create the dataset.
+    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
+         time_dspace_id, time_dset_id, error)
+    CALL h5dwrite_f(time_dset_id, H5T_NATIVE_DOUBLE, time, &
+         time_dim, error)
+
     ! End access to the dataset and release 
     ! resources used by it.
     CALL h5dclose_f(wave_dset_id, error)
     CALL h5dclose_f(wavederiv_dset_id, error)
     CALL h5dclose_f(field_dset_id, error)
+    CALL h5dclose_f(time_dset_id, error)
     
     ! Terminate access to the data space.
     CALL h5sclose_f(wave_dspace_id, error)
     CALL h5sclose_f(wavederiv_dspace_id, error)
     CALL h5sclose_f(field_dspace_id, error)
+    CALL h5sclose_f(time_dspace_id, error)
     
     ! Close the property list, group, file and interface
     CALL h5gclose_f(wave_group, error)
     CALL h5gclose_f(wavederiv_group, error)
     CALL h5gclose_f(field_group, error)
+    CALL h5gclose_f(time_group, error)
     CALL h5fclose_f(file_id, error)
     CALL h5close_f(error)
     
@@ -280,24 +309,28 @@ CONTAINS
   !******************************************************!
 #if _COM_MPI
   SUBROUTINE write_surface_file2D_parallel(filename, wave, &
-       wavederiv, time, efield, afield, lmax, comm, &
-       surfacerank, numthetaptsperproc )
+       wavederiv, time, efield, afield, lmax, &
+       surfacerank, numsurfaceprocs, comm, numthetaptsperproc )
     IMPLICIT NONE
     
     CHARACTER(LEN=*), INTENT(IN)   :: filename
     COMPLEX(dp), INTENT(IN)        :: wave(:)
     COMPLEX(dp), INTENT(IN)        :: wavederiv(:)
-    REAL(dp), INTENT(IN)           :: time, efield, afield
+    REAL(dp), INTENT(IN)           :: time
+    REAL(dp), INTENT(IN)           :: efield(:), afield(:)
     INTEGER, INTENT(IN)            :: lmax
-    INTEGER, INTENT(IN)            :: comm
+    INTEGER, INTENT(IN)            :: numsurfaceprocs
     INTEGER, INTENT(IN)            :: surfacerank
+    INTEGER, INTENT(IN)            :: comm
     INTEGER, INTENT(IN)            :: numthetaptsperproc
     
     INTEGER                        :: wave_rank, field_rank
+    INTEGER                        :: time_rank
     REAL(dp), ALLOCATABLE          :: complex_wave(:, :)
     REAL(dp), ALLOCATABLE          :: complex_wavederiv(:, :)
-    REAL(dp)                       :: field(3)
+    REAL(dp)                       :: field(3,2)
     INTEGER                        :: numthetapts
+    INTEGER                        :: numthetaoffset
     ! File identifier
     INTEGER(HID_T)                 :: file_id
     ! Property list identifier 
@@ -306,14 +339,17 @@ CONTAINS
     INTEGER(HID_T)                 :: wave_group
     INTEGER(HID_T)                 :: wavederiv_group 
     INTEGER(HID_T)                 :: field_group
+    INTEGER(HID_T)                 :: time_group   
     ! Dataspace identifier in file 
     INTEGER(HID_T)                 :: wave_filespace
     INTEGER(HID_T)                 :: wavederiv_filespace
     INTEGER(HID_T)                 :: field_filespace
+    INTEGER(HID_T)                 :: time_filespace
     ! Dataspace identifier in memory
     INTEGER(HID_T)                 :: wave_memspace
     INTEGER(HID_T)                 :: wavederiv_memspace
     INTEGER(HID_T)                 :: field_memspace
+    INTEGER(HID_T)                 :: time_memspace
     ! Dataspace identifier
     !INTEGER(HID_T)                 :: wave_dspace_id
     !INTEGER(HID_T)                 :: wavederiv_dspace_id
@@ -322,15 +358,19 @@ CONTAINS
     INTEGER(HID_T)                 :: wave_dset_id
     INTEGER(HID_T)                 :: wavederiv_dset_id
     INTEGER(HID_T)                 :: field_dset_id
+    INTEGER(HID_T)                 :: time_dset_id
     ! Dataset dimensions 
     INTEGER(HSIZE_T)               :: wave_global_dims(2)
     INTEGER(HSIZE_T)               :: wave_dims(2)
-    INTEGER(HSIZE_T)               :: field_dim(1)
+    INTEGER(HSIZE_T)               :: field_dims(2)
+    INTEGER(HSIZE_T)               :: time_dim(1)
     ! Memory variables, per proc
     INTEGER(HSIZE_T)               :: cont(2)  
     INTEGER(HSSIZE_T)              :: offset(2)
-    INTEGER(HSIZE_T)               :: cont_field(1) 
-    INTEGER(HSSIZE_T)              :: offset_field(1)  
+    INTEGER(HSIZE_T)               :: cont_field(2)
+    INTEGER(HSSIZE_T)              :: offset_field(2)  
+    INTEGER(HSIZE_T)               :: cont_time(1) 
+    INTEGER(HSSIZE_T)              :: offset_time(1)  
     ! Error flag
     INTEGER                        :: error
     
@@ -363,14 +403,19 @@ CONTAINS
     CALL h5gopen_f(file_id, name, wavederiv_group, error)
     name = '/field'
     CALL h5gopen_f(file_id, name, field_group, error)
+    name = '/time'
+    CALL h5gopen_f(file_id, name, time_group, error)
     
     numthetapts = 2 * lmax + 1
+    numthetaoffset = INT(numthetapts / numsurfaceprocs)
     !Define rank, in this case 2.
     wave_rank = 2
-    field_rank = 1
+    field_rank = 2
+    time_rank = 1
     wave_dims = (/numthetaptsperproc, 2/)
-    field_dim = 3
+    field_dims = (/ 3, 2/)
     wave_global_dims = (/numthetapts, 2/)
+    time_dim = 1
     
     ! Write field array
     ALLOCATE(complex_wave(numthetaptsperproc,2))
@@ -380,7 +425,8 @@ CONTAINS
     complex_wavederiv(:,1) = REAL(wavederiv,dp)
     complex_wavederiv(:,2) = AIMAG(wavederiv)
     
-    field = (/ time, efield, afield /)
+    field(:, 1) = (/efield(1), efield(2), efield(3)/)
+    field(:, 2) = (/afield(1), afield(2), afield(3)/)
     
     ! Create the data space for the dataset.
     CALL h5screate_simple_f(wave_rank, wave_global_dims, wave_filespace, error)
@@ -399,7 +445,7 @@ CONTAINS
     CALL h5sclose_f(wavederiv_filespace, error)
     
     cont = wave_dims
-    offset = (/ numthetaptsperproc * surfacerank, 0 /)
+    offset = (/ numthetaoffset * surfacerank, 0 /)
 
     ! Select hyperslab in the file.
     CALL h5dget_space_f(wave_dset_id, wave_filespace, error)
@@ -437,8 +483,8 @@ CONTAINS
     ! write the field data.
 
     ! Create the data space for the dataset.
-    CALL h5screate_simple_f(field_rank, field_dim, field_filespace, error)
-    CALL h5screate_simple_f(field_rank, field_dim, field_memspace, error)
+    CALL h5screate_simple_f(field_rank, field_dims, field_filespace, error)
+    CALL h5screate_simple_f(field_rank, field_dims, field_memspace, error)
     IF(surfacerank.NE.1) &
          CALL h5sselect_none_f(field_memspace,error)
     
@@ -448,7 +494,7 @@ CONTAINS
          field_dset_id, error)!, plist_id)
     CALL h5sclose_f(field_filespace, error)
 
-    cont_field = field_dim
+    cont_field = field_dims
     offset_field = 0
     ! Select hyperslab in the file.
     CALL h5dget_space_f(field_dset_id, field_filespace, error)
@@ -461,20 +507,54 @@ CONTAINS
     CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
     CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
     
-    CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, field_dim, &
+    CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, field_dims, &
          error, file_space_id = field_filespace, mem_space_id = field_memspace, &
          xfer_prp = plist_id)
+
+    !-------------------------------------!
+
+     ! Create the data space for the dataset.
+    CALL h5screate_simple_f(time_rank, time_dim, time_filespace, error)
+    CALL h5screate_simple_f(time_rank, time_dim, time_memspace, error)
+    IF(surfacerank.NE.1) &
+         CALL h5sselect_none_f(time_memspace,error)
+    
+    ! Create dataset
+    setname = '/time/'// cstep
+    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, time_filespace, &
+         time_dset_id, error)!, plist_id)
+    CALL h5sclose_f(time_filespace, error)
+
+    cont_time = time_dim
+    offset_time = 0
+    ! Select hyperslab in the file.
+    CALL h5dget_space_f(time_dset_id, time_filespace, error)
+    CALL h5sselect_hyperslab_f (time_filespace, H5S_SELECT_SET_F, offset_time,&
+         cont_time, error)!, stride, blck)
+    IF(surfacerank.NE.1) &
+         CALL h5sselect_none_f(time_filespace,error)
+       
+    ! Create property list for collective dataset write
+    CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
+    CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
+    
+    CALL h5dwrite_f(time_dset_id, H5T_NATIVE_DOUBLE, time, time_dim, &
+         error, file_space_id = time_filespace, mem_space_id = time_memspace, &
+         xfer_prp = plist_id)
+    !---------------!
     
     ! Close dataspace and dataset
     CALL h5sclose_f(field_filespace, error)
     CALL h5sclose_f(field_memspace, error)
     CALL h5dclose_f(field_dset_id, error)
+    CALL h5dclose_f(time_dset_id, error)
 
      ! Close the property list, group, file and interface
     CALL h5pclose_f(plist_id, error)
     CALL h5gclose_f(wave_group, error)
     CALL h5gclose_f(wavederiv_group, error)
     CALL h5gclose_f(field_group, error)
+    CALL h5gclose_f(time_group, error)
     CALL h5fclose_f(file_id, error)
     CALL h5close_f(error)
     
@@ -616,17 +696,19 @@ CONTAINS
   !******************************************************!
 #if _COM_MPI
   SUBROUTINE write_surface_file3D_parallel(filename, wave, &
-       wavederiv, time, efield, afield, lmax, comm, &
-       surfacerank,numthetaptsperproc, numphiptsperproc )
+       wavederiv, time, efield, afield, lmax, &
+       surfacerank,numsurfaceprocs, comm, &
+       numthetaptsperproc, numphiptsperproc )
     IMPLICIT NONE
-
+    
     CHARACTER(LEN=*), INTENT(IN)   :: filename
     COMPLEX(dp), INTENT(IN)        :: wave(:, :)
     COMPLEX(dp), INTENT(IN)        :: wavederiv(:, :)
     REAL(dp), INTENT(IN)           :: time, efield, afield
     INTEGER, INTENT(IN)            :: lmax
-    INTEGER, INTENT(IN)            :: comm
     INTEGER, INTENT(IN)            :: surfacerank
+    INTEGER, INTENT(IN)            :: numsurfaceprocs
+    INTEGER, INTENT(IN)            :: comm
     INTEGER, INTENT(IN)            :: numthetaptsperproc
     INTEGER, INTENT(IN)            :: numphiptsperproc
     
@@ -635,6 +717,7 @@ CONTAINS
     REAL(dp), ALLOCATABLE          :: complex_wavederiv(:, :, :)
     REAL(dp)                       :: field(3)
     INTEGER                        :: numthetapts, numphipts
+    INTEGER                        :: numthetaoffset, numphioffset 
     ! File identifier
     INTEGER(HID_T)                 :: file_id
     ! Property list identifier 
@@ -703,6 +786,8 @@ CONTAINS
     
     numthetapts = 2 * lmax + 1
     numphipts = 2 * lmax + 1
+    numthetaoffset = INT(numthetapts / numsurfaceprocs)
+    numphioffset = INT(numphipts / numsurfaceprocs)
     wave_rank = 3
     field_rank = 1
     field_dim = 3
@@ -736,7 +821,7 @@ CONTAINS
     CALL h5sclose_f(wavederiv_filespace, error)
     
     cont = wave_dims
-    offset = (/ numthetaptsperproc * surfacerank, numphiptsperproc * surfacerank, 0 /)
+    offset = (/ numthetaoffset * surfacerank, numphioffset * surfacerank, 0 /)
     
     ! Select hyperslab in the file.
     CALL h5dget_space_f(wave_dset_id, wave_filespace, error)
@@ -924,12 +1009,13 @@ CONTAINS
     COMPLEX(dp), INTENT(OUT)           :: psi_sph(:, :)
     COMPLEX(dp), INTENT(OUT)           :: psip_sph(:, :)
     REAL(dp), INTENT(OUT)              :: time
-    REAL(dp), INTENT(OUT)              :: efield, afield
+    REAL(dp), INTENT(OUT)              :: efield(:), afield(:)
     
     REAL(dp), ALLOCATABLE         :: psi2D(:, :)
     REAL(dp), ALLOCATABLE         :: psip2D(:, :)
     REAL(dp), ALLOCATABLE         :: psi3D(:, :, :)
     REAL(dp), ALLOCATABLE         :: psip3D(:, :, :)
+    !REAL(dp)                      :: field(3,2)
     REAL(dp)                      :: field(3)
     INTEGER                       :: itheta, iphi
     ! File identifier
@@ -938,23 +1024,29 @@ CONTAINS
     INTEGER(HID_T)                 :: wave_group_id 
     INTEGER(HID_T)                 :: wavep_group_id 
     INTEGER(HID_T)                 :: field_group_id 
+    INTEGER(HID_T)                 :: time_group_id 
     ! Dataspace identifier
     INTEGER(HID_T)                 :: wave_dspace_id    
     INTEGER(HID_T)                 :: wavep_dspace_id    
     INTEGER(HID_T)                 :: field_dspace_id    
+    INTEGER(HID_T)                 :: time_dspace_id    
     ! Dataset identifier  
     INTEGER(HID_T)                 :: wave_dset_id      
     INTEGER(HID_T)                 :: wavep_dset_id      
     INTEGER(HID_T)                 :: field_dset_id      
+    INTEGER(HID_T)                 :: time_dset_id      
     ! Dataset dimensions  
     INTEGER(HSIZE_T), ALLOCATABLE  :: dspace_dims(:)
     INTEGER(HSIZE_T), ALLOCATABLE  :: dspace_offset(:)
-    INTEGER(HSIZE_T)               :: field_dim(1)
-    INTEGER(HSIZE_T)               :: field_offset(1)
+    INTEGER(HSIZE_T)               :: field_dims(2)
+    INTEGER(HSIZE_T)               :: field_offset(2)
+    INTEGER(HSIZE_T)               :: time_dim(1)
+    INTEGER(HSIZE_T)               :: time_offset(1)
     ! Memspace identifier
     INTEGER(HID_T)                 :: wave_memspace
     INTEGER(HID_T)                 :: wavep_memspace
     INTEGER(HID_T)                 :: field_memspace
+    INTEGER(HID_T)                 :: time_memspace
     INTEGER                        :: error     
     ! Auxiliary strings
     CHARACTER(LEN=6)               :: cstep
@@ -1060,7 +1152,7 @@ CONTAINS
     ! Now, we read the field
     !
     
-    ! Open wave group. 
+    ! Open field group. 
     name = '/field'
     CALL h5gopen_f(file_id, name, field_group_id, error)
     
@@ -1069,27 +1161,87 @@ CONTAINS
     CALL h5dopen_f(file_id, name, field_dset_id, error)
     ! Get dataspace identifier
     CALL h5dget_space_f(field_dset_id, field_dspace_id, error)
-
-    field_dim = 3
-    field_offset = 0
+    
+    time_dim = 3
+    time_offset = 0
     field = 0
     
     CALL h5sselect_hyperslab_f(field_dspace_id, H5S_SELECT_SET_F, &
-         field_offset, field_dim, error)
+         time_offset, time_dim, error)
     
-    CALL h5screate_simple_f(1,field_dim,field_memspace,error)
+    CALL h5screate_simple_f(1,time_dim,field_memspace,error)
     
-    CALL h5dread_f(field_dset_id, H5T_NATIVE_DOUBLE, field, field_dim, error, &
+    CALL h5dread_f(field_dset_id, H5T_NATIVE_DOUBLE, field, time_dim, error, &
          field_memspace, field_dspace_id )
-    
+
     time = field(1)
-    efield = field(2)
-    afield = field(3)
+    efield(3) = field(2)
+    afield(3) = field(3)
     
     CALL h5sclose_f(field_dspace_id, error)
     CALL h5sclose_f(field_memspace, error)
     CALL h5dclose_f(field_dset_id, error)
     CALL h5gclose_f(field_group_id, error)
+
+!!$        ! Open field group. 
+!!$    name = '/field'
+!!$    CALL h5gopen_f(file_id, name, field_group_id, error)
+!!$    
+!!$    ! Open dataset
+!!$    name = '/field/' // cstep
+!!$    CALL h5dopen_f(file_id, name, field_dset_id, error)
+!!$    ! Get dataspace identifier
+!!$    CALL h5dget_space_f(field_dset_id, field_dspace_id, error)
+!!$    
+!!$    field_dims = (/3,2/)
+!!$    field_offset = 0
+!!$    field = 0
+!!$    
+!!$    CALL h5sselect_hyperslab_f(field_dspace_id, H5S_SELECT_SET_F, &
+!!$         field_offset, field_dims, error)
+!!$    
+!!$    CALL h5screate_simple_f(2,field_dims,field_memspace,error)
+!!$    
+!!$    CALL h5dread_f(field_dset_id, H5T_NATIVE_DOUBLE, field, field_dims, error, &
+!!$         field_memspace, field_dspace_id )
+!!$    
+!!$    efield(:) = field(:,1)
+!!$    afield(:) = field(:,2)
+!!$    
+!!$    CALL h5sclose_f(field_dspace_id, error)
+!!$    CALL h5sclose_f(field_memspace, error)
+!!$    CALL h5dclose_f(field_dset_id, error)
+!!$    CALL h5gclose_f(field_group_id, error)
+
+    !--------!
+    
+!!$    ! Open field group. 
+!!$    name = '/time'
+!!$    CALL h5gopen_f(file_id, name, time_group_id, error)
+!!$    
+!!$    ! Open dataset
+!!$    name = '/time/' // cstep
+!!$    CALL h5dopen_f(file_id, name, time_dset_id, error)
+!!$    ! Get dataspace identifier
+!!$    CALL h5dget_space_f(time_dset_id, time_dspace_id, error)
+!!$    
+!!$    time_dim = 1
+!!$    time_offset = 0
+!!$    time = 0.0_dp
+!!$    
+!!$    CALL h5sselect_hyperslab_f(time_dspace_id, H5S_SELECT_SET_F, &
+!!$         time_offset, time_dim, error)
+!!$    
+!!$    CALL h5screate_simple_f(1,time_dim,time_memspace,error)
+!!$    
+!!$    CALL h5dread_f(time_dset_id, H5T_NATIVE_DOUBLE, time, time_dim, error, &
+!!$         time_memspace, time_dspace_id )
+!!$        
+!!$    CALL h5sclose_f(time_dspace_id, error)
+!!$    CALL h5sclose_f(time_memspace, error)
+!!$    CALL h5dclose_f(time_dset_id, error)
+!!$    CALL h5gclose_f(time_group_id, error)
+
     
     ! Close the file.
     CALL h5fclose_f(file_id, error)

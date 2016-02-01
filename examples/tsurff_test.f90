@@ -5,8 +5,11 @@ PROGRAM tsurff_test
   REAL(dp)                   :: radius_boundary
   INTEGER                    :: lmax, mmin, mmax
   INTEGER                    :: lmax_total
+  INTEGER                    :: numkpts
+  INTEGER                    :: numthetapts
+  INTEGER                    :: numphipts 
   REAL(dp)                   :: k_cutoff, deltak
-  COMPLEX(dp), ALLOCATABLE   :: b_lm(:, :, :)
+  COMPLEX(dp), ALLOCATABLE   :: b(:, :, :)
   CHARACTER(LEN=100)         :: filename
   
   !--------------------------------------!
@@ -29,21 +32,28 @@ PROGRAM tsurff_test
   
   k_cutoff = 2.0_dp
   
-  radius_boundary = 40.0_dp
+  radius_boundary = 50.0_dp
   lmax = 10
 
   
-  filename = './data/h2p/surfaces/sphfunc.rb50.000.lmax010'
+  filename = 'data/h2p/surfaces/sphfunc.rb50.000.lmax010'
   
   CALL initialize_tsurff(filename, radius_boundary, lmax, &
-       deltak, k_cutoff, numkpts, lmax_total, mmax )
+       deltak, k_cutoff, numkpts, numthetapts, numphipts, &
+       lmax_total, mmax )
   
   mmin = - mmax
-
-  ALLOCATE(b_lm(1:numkpts,mmin:mmax,0:lmax))
   
-  CALL get_flux(filename, lmax, mmax, b_lm )
+  ALLOCATE(b(1:numkpts,1:numthetapts,1:numphipts))
   
-  DEALLOCATE(b_lm)
+  CALL get_flux(filename, lmax, mmax, b )
+  
+  CALL write_polar_amplitude(b,'results/probkrktheta',&
+       'probkrtheta')
+  
+  !CALL write_momentum_amplitude(b,'results/probk')
+  
+  WRITE(*,*) 'Our spectra is ready!!!'
+  DEALLOCATE(b)
   
 END PROGRAM tsurff_test
