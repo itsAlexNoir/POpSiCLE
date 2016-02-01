@@ -492,20 +492,23 @@ CONTAINS
     ! Set number of points per proc
     ! Take into account if the number of points is not
     ! a multiplier of the number of processors
-    IF((surfacerank-1).EQ.numsurfaceprocs) THEN
-       IF(MOD(numthetapts,numsurfaceprocs).NE.0) THEN
+    maxthetaptsperproc = INT(numthetapts / numsurfaceprocs)
+    
+    IF(MOD(numthetapts,numsurfaceprocs).NE.0) THEN
+       IF((surfacerank-1).EQ.numsurfaceprocs) THEN
           maxthetaptsperproc = numthetapts / numsurfaceprocs + &
                MOD(numthetapts,numsurfaceprocs)
        ENDIF
-       
-       IF(MOD(numphipts,numsurfaceprocs).NE.0) THEN
+    ENDIF
+
+    maxphiptsperproc = INT(numphipts / numsurfaceprocs)
+    
+    IF(MOD(numphipts,numsurfaceprocs).NE.0) THEN
+       IF((surfacerank-1).EQ.numsurfaceprocs) THEN
           maxphiptsperproc = numthetapts / numsurfaceprocs + &
                MOD(numphipts,numsurfaceprocs)
        ENDIF
-       
     ENDIF
-    maxthetaptsperproc = numthetapts / numsurfaceprocs
-    maxphiptsperproc = numphipts / numsurfaceprocs    
     
     IF(mpi_rank.EQ.0) THEN
        WRITE(*,*)
