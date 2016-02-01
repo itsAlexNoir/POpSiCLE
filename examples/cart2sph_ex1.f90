@@ -91,10 +91,10 @@ PROGRAM cart2sph_ex1
            
            phipt = ATAN2( y_ax(iy) , x_ax(ix) )
            
-!!$           Y_lm(ix,iy,iz) = 0.25_dp * SQRT(5.0_dp / pi) * &
-!!$                ( 3.0_dp * COS(thetapt)**2 - 1.0_dp) !* COS(phipt) !EXP(ZIMAGONE*phipt)
+           Y_lm(ix,iy,iz) = 0.25_dp * SQRT(5.0_dp / pi) * &
+                ( 3.0_dp * COS(thetapt)**2 - 1.0_dp) !* COS(phipt) !EXP(ZIMAGONE*phipt)
            
-           Y_lm(ix,iy,iz) = 0.5_dp * SQRT(3.0_dp / pi ) * COS(thetapt)
+           !Y_lm(ix,iy,iz) = 0.5_dp * SQRT(3.0_dp / pi ) * COS(thetapt)
            R_nl(ix,iy,iz) = 1.0_dp
            
            cartfunc(ix,iy,iz) = EXP(-rpt / 2.0_dp) * R_nl(ix,iy,iz) * &
@@ -131,10 +131,14 @@ PROGRAM cart2sph_ex1
   ! Build interpolant
   WRITE(*,*) 'Creating interpolant...'
   CALL cpu_time(start_time)
-  
+
+  !! For scattered interpolation uncomment the subroutine below
   CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
        Rboundary, tolerance, 2, dr, lmax, &
        numpts, numrpts, numthetapts, numphipts )
+  
+  !CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
+  !     Rboundary, 2, dr, lmax, numrpts, numthetapts, numphipts)
   
   CALL cpu_time(end_time)
   
@@ -164,9 +168,13 @@ PROGRAM cart2sph_ex1
   ! Interpolate!!
   WRITE(*,*) 'Interpolating boundary...'
   CALL cpu_time(start_time)
-  
+
+  !! For scattered interpolation uncomment the subroutine below
   CALL get_cartesian_boundary(cartfunc, sphfunc, sphfunc_dr, &
        sphfunc_dth, sphfunc_dphi, 'quadratic')
+  
+  !CALL get_cartesian_boundary(x_ax, y_ax, z_ax, dims, cartfunc, &
+  !, sphfunc, sphfunc_dr, sphfunc_dth, sphfunc_dphi)
   
   CALL cpu_time(end_time)
   
@@ -178,9 +186,9 @@ PROGRAM cart2sph_ex1
      DO itheta = 1, numthetapts
         DO ir = 1, numrpts
            ref_value =  EXP(-rpts_boundary(ir) / 2.0_dp) *  &
-                !0.25_dp * SQRT(5.0_dp / pi) * &
-                !( 3.0_dp * COS(theta_boundary(itheta))**2 - 1.0_dp)
-                0.5_dp * SQRT(3.0_dp / pi) * COS(theta_boundary(itheta))
+                0.25_dp * SQRT(5.0_dp / pi) * &
+                ( 3.0_dp * COS(theta_boundary(itheta))**2 - 1.0_dp)
+                !0.5_dp * SQRT(3.0_dp / pi) * COS(theta_boundary(itheta))
 
            maxerror = MAX(maxerror, ABS(sphfunc(ir,itheta, iphi) -&
                 ref_value))

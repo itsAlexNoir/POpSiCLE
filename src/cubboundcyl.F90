@@ -564,7 +564,7 @@ CONTAINS
                      drho,rhofdcoeffs(:,2))
                 psi_in_drho(ipt) = deriv
                 CALL make_derivative(psi_in_vol_z(:,ipt),deriv,fdrule,&
-                     drho,zfdcoeffs(:,2))
+                     dz,zfdcoeffs(:,2))
                 psi_in_dz(ipt) = deriv
                 CALL make_cross_derivative(psi_in_vol_rhoz(:,:,ipt),deriv,&
                      fdrule,drho, dz, rhofdcoeffs(:,2),zfdcoeffs(:,2))
@@ -717,7 +717,7 @@ CONTAINS
                      drho,rhofdcoeffs(:,2))
                 psi_in_drho(ipt) = deriv
                 CALL make_derivative(psi_in_vol_z(:,ipt),deriv,fdrule,&
-                     drho,zfdcoeffs(:,2))
+                     dz,zfdcoeffs(:,2))
                 psi_in_dz(ipt) = deriv
                 CALL make_cross_derivative(psi_in_vol_rhoz(:,:,ipt),deriv,&
                      fdrule,drho, dz, rhofdcoeffs(:,2),zfdcoeffs(:,2))
