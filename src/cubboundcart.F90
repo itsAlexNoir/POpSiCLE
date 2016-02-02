@@ -276,6 +276,10 @@ CONTAINS
     REAL(dp)                  :: minr, maxr
     REAL(dp)                  :: mintheta, maxtheta
     REAL(dp)                  :: minphi, maxphi
+    REAL(dp)                  :: min_angles_local(2)
+    REAL(dp)                  :: max_angles_local(2)
+    REAL(dp)                  :: min_angles_global(2)
+    REAL(dp)                  :: max_angles_global(2)
     REAL(dp)                  :: deltaphi
     INTEGER                   :: halolims(3,2)
     REAL(dp)                  :: Rb_start    
@@ -486,7 +490,7 @@ CONTAINS
     ! Assign points to return
     maxrpts = numrpts
     maxthetapts = numthetapts
-    maxphiapts = numphipts
+    maxphipts = numphipts
     maxsurfaceprocs = numsurfaceprocs
     
     ! Set number of points per proc
