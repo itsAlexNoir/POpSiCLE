@@ -47,7 +47,7 @@ PROGRAM cart2sph_ex4
   
   REAL(dp)                   :: start_time, end_time
   REAL(dp)                   :: comp_time
-  
+  REAL(dp)                   :: efield(3), afield(3)  
   INTEGER                    :: size, rank, comm
   INTEGER                    :: maxprocessor, ierror
   
@@ -275,6 +275,9 @@ PROGRAM cart2sph_ex4
   !-------------------------------------------------!
   ! Get cylindrical surface, and write it to a file
   !-------------------------------------------------!
+  efield = 0.0_dp
+  afield = 0.0_dp
+  
   IF(i_am_surface(rank).EQ.1) &
        WRITE(*,*) 'Get the surface. Write it to a file...'
   
@@ -282,7 +285,7 @@ PROGRAM cart2sph_ex4
   CALL cpu_time(start_time)
   
   CALL get_cartesian_surface(filename, psi, fdrule, 0.0_dp , &
-       0.0_dp, 0.0_dp, lmax, rank, .TRUE. )
+       efield, afield, lmax, rank, .TRUE. )
   
   CALL cpu_time(end_time)
   

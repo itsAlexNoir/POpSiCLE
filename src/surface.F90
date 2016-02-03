@@ -448,7 +448,8 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN) :: filename
     COMPLEX(dp), INTENT(IN)      :: wavefunc(:, :, :)
     INTEGER, INTENT(IN)          :: fd_rule
-    REAL(dp), INTENT(IN)         :: time, efield, afield
+    REAL(dp), INTENT(IN)         :: time
+    REAL(dp), INTENT(IN)         :: efield(:), afield(:)
     INTEGER, INTENT(IN)          :: lmax
     LOGICAL, INTENT(IN)          :: write_to_file
     
@@ -481,7 +482,8 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN) :: filename
     COMPLEX(dp), INTENT(IN)      :: wavefunc(:, :, :)
     INTEGER, INTENT(IN)          :: fd_rule
-    REAL(dp), INTENT(IN)         :: time, efield, afield
+    REAL(dp), INTENT(IN)         :: time
+    REAL(dp), INTENT(IN)         :: efield(:), afield(:)
     INTEGER, INTENT(IN)          :: lmax, rank
     LOGICAL, INTENT(IN)          :: write_to_file
     

@@ -8,12 +8,12 @@
 ##    POpSiCLE examples
 ##************************************************
 
-include Sys/intel15_mkl.make
+include Sys/aigis_mkl.make
 
 default: example_serial
 
 .PHONY: clean clean_src clean_include clean_lib \
-	clean_examples help
+	clean_examples clean_all help data_checker
 
 help:
 	@echo "Usage: make example [function='example source name.]"
@@ -75,6 +75,8 @@ ifndef function_parallel
 function_parallel = ${EXAMPLE_PAR_LIST}
 endif
 
+DATA_DIR=$(shell ls -A data)
+
 FLAGS = -O3
 
 RES_SER = $(addsuffix .res ,$(function_serial))
@@ -83,40 +85,44 @@ RES_PAR = $(addsuffix .res ,$(function_parallel))
 POPSICLE_LIB_SER = ${POPSICLE_LIB}/libpopsicle_serial.a
 POPSICLE_LIB_PAR = ${POPSICLE_LIB}/libpopsicle_parallel.a
 
-example_serial: ${POPSICLE_LIB_SER}
-	${MAKE} ${RES_SER}	
+example_serial: ${POPSICLE_LIB_SER} data_checker
+	${MAKE} ${RES_SER}
 
-example_parallel: ${POPSICLE_LIB_PAR}
+example_parallel: ${POPSICLE_LIB_PAR} data_checker
 	${MAKE} ${RES_PAR}	
 
 ${POPSICLE_LIB_SER}:
-	cd ${POPSICLE_SRC}; ${MAKE} "FC=${FC}" "F77FLAGS=${F77FLAGS}" \
-	"F90FLAGS=${F90FLAGS}" "ARFLAGS=${ARFLAGS}" \
-	"POPSICLE_ROOT=${POPSICLE_ROOT}" "FFT_LIB=${FFT_LIB}" \
-	"FFT_PATH=${FFT_PATH}" "MKLROOT=${MKLROOT}" \
-	"PLIB=serial" "HDF5_PATH=${HDF5ROOT}" \
-	"SZIP_PATH=${SZIPROOT}" "LIBTOOL=${LIBTOOL}" \
-	"DIRECTIVES=-Wp,-D_COM_MPI=0"
+	cd ${POPSICLE_ROOT}; ${MAKE} lib "FC=${FC}" "compiler=${compiler}" \
+	"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
+	"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
+	"HDF5_PATH=${HDF5ROOT}"
 
 ${POPSICLE_LIB_PAR}:
-	cd ${POPSICLE_SRC}; ${MAKE} "FC=${PFC}" "F77FLAGS=${F77FLAGS}" \
-	"F90FLAGS=${F90FLAGS}" "ARFLAGS=$(ARFLAGS)" \
-	"POPSICLE_ROOT=${POPSICLE_ROOT}" "FFT_LIB=${FFT_LIB}" \
-	"FFT_PATH=${FFT_PATH}" "MKLROOT=${MKLROOT}" \
-	"PLIB=parallel" \
-	"PHDF5_PATH=${PHDF5ROOT}" "SZIP_PATH=${SZIPROOT}" \
-	"DIRECTIVES=-Wp,-D_COM_MPI=1" "LIBTOOL=${LIBTOOL}"
+	cd ${POPSICLE_ROOT}; ${MAKE} plib "FC=${PFC}" "compiler=${compiler}" \
+	"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
+	"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
+	"HDF5_PATH=${PHDF5ROOT}"
 
 ${RES_SER}: %.res: %.f90
 	mkdir -p ./${RES_DIR}
-	${FC}  $< -o ${RES_DIR}/$*.exec ${FLAGS} -I${POPSICLE_INCL} ${POPSICLE_LIB_SER} ${HDF5}
+	${FC}  $< -o ${RES_DIR}/$*.exec ${FLAGS} \
+	-I${POPSICLE_INCL} ${POPSICLE_LIB_SER} ${HDF5} ${OMPLIBS}
 
 ${RES_PAR}: %.res: %.f90
 	mkdir -p ./${RES_DIR}
-	${PFC}  $< -o ${RES_DIR}/$*.exec ${FLAGS} -I${POPSICLE_INCL} ${POPSICLE_LIB_PAR} ${PHDF5}
+	${PFC}  $< -o ${RES_DIR}/$*.exec ${FLAGS} \
+	-I${POPSICLE_INCL} ${POPSICLE_LIB_PAR} ${PHDF5} ${OMPLIBS}
 
+data_checker:
+ifeq (,${DATA_DIR})
+	wget http://titus.phy.qub.ac.uk/members/alex/popsicle_data.tar.gz
+	tar -xzvf popsicle_data.tar.gz
+	rm -rf popsicle_data.tar.gz
+endif
 
-clean: clean_src clean_include clean_lib clean_examples
+clean: clean_examples
+
+clean_all: clean_src clean_include clean_lib clean_examples
 
 clean_src:
 	@echo 'Deleting source...'

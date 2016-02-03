@@ -1,0 +1,15 @@
+In order to run the examples, you must download the data provided for this use.
+The data is provided separately due to its size (around 60 Mb), and because it
+is not necessary for building and running the library.
+The data will be automatically downloaded if needed (you will be asked if you
+want to do so), otherwise the data can be manually download from the following url:
+
+http://titus.phy.qub.ac.uk/members/alex/popsicle_data.tar.gz
+
+If you wish to download the data from the command line, you only have to copy
+and paste the following line in the command line:
+
+wget http://titus.phy.qub.ac.uk/members/alex/popsicle_data.tar.gz
+
+Once you have download it, untar the file (tar -xzvf data.tar.gz), and
+place the data in the examples folder.

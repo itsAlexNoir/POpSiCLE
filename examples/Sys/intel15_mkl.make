@@ -6,6 +6,7 @@
 FC  = ifort
 PFC = mpifort
 LIBTOOL = glibtool
+compiler = intel
 
 # Debugging flags
 #OPT         = -check all
@@ -56,7 +57,5 @@ PHDF5INCLUDE	=	-I${PHDF5ROOT}/include
 PHDF5		= $(PHDF5LIBS) $(PHDF5INCLUDE)
 
 FFTW3LIBS	+=	-I${FFTW3ROOT}/include -lfftw3 -lm
-
-DIRECTIVES  = -Wp,-D_COM_MPI=1,-D_USE_BLAS=1
 
 POPSICLE_ROOT = /Users/adelacalle/Documents/Codigo/POpSiCLE

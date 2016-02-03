@@ -21,6 +21,7 @@ MODULE flux
   USE sht
   USE io_surface
   USE io_pop
+  USE  omp_lib
   
   IMPLICIT NONE
 
@@ -32,8 +33,10 @@ MODULE flux
   PUBLIC        :: get_flux
   PUBLIC        :: calculate_time_integrand
   PUBLIC        :: get_angular_resolution
+  PUBLIC        :: get_amplitude
   PUBLIC        :: get_polar_amplitude
   PUBLIC        :: get_momentum_amplitude
+  PUBLIC        :: write_amplitude
   PUBLIC        :: write_polar_amplitude
   PUBLIC        :: write_momentum_amplitude
   
@@ -48,7 +51,7 @@ MODULE flux
 
   ! Private variables
   INTEGER                       :: numkpts
-  REAL(dp)                      :: dk, kmax
+  REAL(dp)                      :: dt, dk, kmax, kmax_th
   INTEGER                       :: ntime
   INTEGER                       :: maxfactlog
   COMPLEX(dp), ALLOCATABLE      :: psi_sph(:, :), psip_sph(:, :)
@@ -68,7 +71,7 @@ MODULE flux
 CONTAINS
   
   SUBROUTINE initialize_tsurff(filename, radb, lmax_desired, &
-       ddk, kkmax, maxkpts, maxthetapts, maxphipts, &
+       kmax_input, maxkpts, maxthetapts, maxphipts, &
        lmax_total, mmax)
     
     IMPLICIT NONE
@@ -76,7 +79,7 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN)     :: filename
     INTEGER, INTENT(IN)              :: lmax_desired
     REAL(dp), INTENT(IN)             :: radb
-    REAL(dp), INTENT(IN)             :: ddk, kkmax
+    REAL(dp), INTENT(IN)             :: kmax_input
     INTEGER, INTENT(OUT)             :: maxkpts
     INTEGER, INTENT(OUT)             :: maxthetapts
     INTEGER, INTENT(OUT)             :: maxphipts
@@ -88,9 +91,29 @@ CONTAINS
     
     !-------------------------------------------------!
     
+    ! Find out the number of time steps in the file
+    CALL get_surface_dims(filename, ntime, dt, &
+         numthetapts, numphipts, lmax_total)
+    
+    maxthetapts = numthetapts
+    maxphipts = numphipts
+    
     ! Create momentum axis
-    kmax = kkmax
-    dk = ddk
+    kmax_th = twopi / dt
+    dk = twopi / ntime / dt
+    
+    kmax = kmax_input
+    if(kmax.GT.kmax_th) THEN
+       WRITE(*,*) 'Kmax desired large than the theoretical.'
+       STOP
+    ENDIF
+
+    WRITE(*,'(A,F9.3)')  'Theoretical kmax:                ',kmax_th
+    WRITE(*,'(A,F9.3)')  'Desired kmax:                    ',kmax 
+    WRITE(*,'(A,F9.3)')  'dk:                              ',dk
+    WRITE(*,*)           '-------------------------------------------'
+    WRITE(*,*)
+    
     numkpts = INT( kmax / dk)
     maxkpts = numkpts
 
@@ -100,13 +123,7 @@ CONTAINS
        k_ax(ik) = REAL(ik,dp) * dk
     ENDDO
 
-    ! Find out the number of time steps in the file
-    CALL get_surface_dims(filename,ntime, &
-         numthetapts, numphipts, lmax_total)
 
-    maxthetapts = numthetapts
-    maxphipts = numphipts
-    
     ! Assign  surface radius
     rb = radb
     ! Assign angular momenta
@@ -124,7 +141,7 @@ CONTAINS
           mmin = -lmax
        ENDIF
     ENDIF
-
+    
     ! Allocate wavefunction arrays
     ALLOCATE(psi_sph(1:numthetapts,1:numphipts))
     ALLOCATE(psip_sph(1:numthetapts,1:numphipts))
@@ -181,8 +198,8 @@ CONTAINS
     REAL(dp), INTENT(IN)       :: afield(:)
 
     REAL(dp), ALLOCATABLE      :: newterm(:, :, :)
-    REAL(dp)                   :: term1, term3
-    REAL(dp)                   :: term4, term5
+    REAL(dp)                   :: term1, term2
+    REAL(dp)                   :: term3, term4
     REAL(dp)                   :: afieldsq
     INTEGER                    :: ik, itheta, iphi
 
@@ -192,20 +209,28 @@ CONTAINS
     
     afieldsq = afield(1)**2 + afield(2)**2 + &
          afield(3)**2
-    
+
+    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
+    !$OMP& PRIVATE(term1,term2,term3,term4)
+
+    !$OMP DO COLLAPSE(3)
     DO ik = 1, numkpts
-       term1 =  k_ax(ik) * k_ax(ik)
        DO iphi = 1, numphipts
           DO itheta = 1, numthetapts
-             term3 = k_ax(ik) * afield(1) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
-             term4 = k_ax(ik) * afield(2) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
-             term5 = k_ax(ik) * afield(3) * COS(theta_ax(itheta))
-             newterm(ik,itheta,iphi) = term1 + afieldsq + 2.0_dp * (term3 + term4 + term5)
+             term1 =  k_ax(ik) * k_ax(ik)
+             
+             term2 = k_ax(ik) * afield(1) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+             term3 = k_ax(ik) * afield(2) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+             term4 = k_ax(ik) * afield(3) * COS(theta_ax(itheta))
+             newterm(ik,itheta,iphi) = term1 + afieldsq + 2.0_dp * (term2 + term3 + term4)
+             
+             phase(ik,itheta,iphi) = phase(ik,itheta,iphi) * &
+                  EXP(-ZIMAGONE * 0.5_dp * newterm(ik,itheta,iphi))
           ENDDO
        ENDDO
     ENDDO
-    
-    phase = phase * EXP(-ZIMAGONE * 0.5_dp * newterm)
+    !$OMP END DO NOWAIT
+    !$OMP END PARALLEL
     
     DEALLOCATE(newterm)
     
@@ -271,10 +296,14 @@ CONTAINS
        
        ! Get the Volkov phase (one per time step)
        CALL get_volkov_phase(volkov_phase, afield(:,itime))
-              
+
+       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi)
+       
+       !$OMP DO COLLAPSE(3)
        DO iphi = 1, numphipts
           DO itheta = 1, numthetapts
              DO ik = 1, numkpts
+                
                 intflux(ik,itheta,iphi) = intflux(ik,itheta,iphi) * &
                      volkov_phase(ik,itheta,iphi)
                 
@@ -297,6 +326,8 @@ CONTAINS
              ENDDO
           ENDDO
        ENDDO
+       !$OMP END DO NOWAIT
+       !$OMP END PARALLEL
        ! End loop over coordinates
 
     ENDDO ! End time loop
@@ -331,7 +362,12 @@ CONTAINS
     
     mmin = -mmax
     sph_harm = 0.0_dp
+
+    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
+    !$OMP& PRIVATE(term1,term2,term3,term4) &
+    !$OMP& PRIVATE(sph_harm, sqrtcoeff)
     
+    !$OMP DO COLLAPSE(3)
     DO iphi = 1, numphipts
        DO itheta = 1, numthetapts
           DO ik = 1, numkpts
@@ -393,6 +429,8 @@ CONTAINS
           ENDDO
        ENDDO
     ENDDO
+    !$OMP END DO NOWAIT
+    !$OMP END PARALLEL
     
   END SUBROUTINE calculate_time_integrand
   
@@ -565,7 +603,62 @@ CONTAINS
     DEALLOCATE(probk2D)
     
   END SUBROUTINE write_polar_amplitude
+
+    !***********************************************************!
+
+  SUBROUTINE get_amplitude(bk, bk_real)
+    IMPLICIT NONE
+
+    COMPLEX(dp), INTENT(IN)    :: bk(:, :, :)
+    REAL(dp), INTENT(OUT)      :: bk_real(:, :, :)
+
+    REAL(dp)                   :: dphi
+    INTEGER                    :: ik, itheta, iphi
+
+    !----------------------------------------------!
+    
+    bk_real = 0.0_dp
+    
+    DO iphi = 1, numphipts
+       DO itheta = 1, numthetapts
+          DO ik = 1, numkpts
+             bk_real(ik,itheta,iphi) = bk_real(ik,itheta,iphi) + &
+                  REAL(CONJG(bk(ik,itheta,iphi)) * bk(ik,itheta,iphi))
+          ENDDO
+       ENDDO
+    ENDDO
+    
+  END SUBROUTINE get_amplitude
   
+  !***********************************************************!
+  
+  SUBROUTINE write_amplitude(bk, filename, groupname)
+    IMPLICIT NONE
+    
+    COMPLEX(dp), INTENT(IN)                :: bk(:, :, :)
+    CHARACTER(LEN=*), INTENT(IN)           :: filename
+    CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: groupname
+    
+    REAL(dp), ALLOCATABLE                  :: probk3D(:, :, :)
+    
+    !--------------------------------------------------!
+
+    ALLOCATE(probk3D(1:numkpts,1:numthetapts,1:numphipts))
+    
+    CALL get_amplitude(bk,probk3D)
+    
+    IF(PRESENT(groupname)) THEN
+       CALL write_wave(RESHAPE(probk3D,(/numkpts*numthetapts*numphipts/)),3,&
+            (/numkpts,numthetapts,numphipts/),filename,groupname,groupname)
+    ELSE
+       CALL write_wave(RESHAPE(probk3D,(/numkpts*numthetapts*numphipts/)),3,&
+            (/numkpts,numthetapts,numphipts/),filename)
+    ENDIF
+    
+    DEALLOCATE(probk3D)
+    
+  END SUBROUTINE write_amplitude
+
   !***********************************************************!
   !***********************************************************!
 

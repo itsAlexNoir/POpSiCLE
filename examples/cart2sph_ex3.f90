@@ -42,6 +42,7 @@ PROGRAM cart2sph_ex2
   
   REAL(dp)                   :: start_time, end_time
   REAL(dp)                   :: comp_time
+  REAL(dp)                   :: efield(3), afield(3)
   
   CHARACTER(LEN = 150)       :: filename
   CHARACTER(LEN = 6)         :: ctime
@@ -209,13 +210,16 @@ PROGRAM cart2sph_ex2
   !-------------------------------------------------!
   ! Get cylindrical surface, and write it to a file
   !-------------------------------------------------!
+  efield = 0.0_dp
+  afield = 0.0_dp
+ 
   WRITE(*,*) 'Get the surface. Write it to a file...'
 
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL cpu_time(start_time)
   
   CALL get_cartesian_surface(filename, psi, fdrule, 0.0_dp , &
-       0.0_dp, 0.0_dp, lmax, .TRUE. )
+       efield, afield, lmax, .TRUE. )
   
   CALL cpu_time(end_time)
   
