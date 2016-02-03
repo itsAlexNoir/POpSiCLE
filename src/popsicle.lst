@@ -5,4 +5,11 @@ scattboundcart cubboundcyl cubboundcart boundary \
 scatt_interp cubic_interp io_pop io_subset io_surface \
 patchwork surface flux popsicle
 
+POPSICLE_MONO_LIST = constants tools bessel gaussleg \
+scatt_interp cubic_interp coords sht flux popsicle
+
+POPSICLE_HYBRID_LIST = scattboundcyl scattboundcart \
+cubboundcyl cubboundcart boundary fourier patchwork \
+io_pop io_subset io_surface surface
+
 FFTW_LIST = fftw

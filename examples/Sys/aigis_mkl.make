@@ -6,6 +6,7 @@
 FC  = ifort
 PFC = mpif90
 LIBTOOL = libtool
+compiler = intel
 
 # Debugging flags
 #OPT         = -check all
@@ -23,16 +24,13 @@ OPT         = -g -traceback -check bounds
 F90FLAGS    =	$(OPT)
 F77FLAGS    =	$(OPT)
 
-
 FFT_LIB	    = mkl
 FFT_PATH    = ${MKLROOT}
 
-#MKLROOT    = ${MKLROOT}
-
 MKLLIBS	   = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -openmp
+OMPLIBS    = -openmp
 
-LIBS	   = ${MKLLIBS}
-OMPLIBS	   = -openmp
+LIBS	   = ${MKLLIBS}	${OMPLIBS}
 
 HDF5ROOT   = /users/adelacalle/my_libraries/hdf5/serial/current/
 SZIPROOT   = /users/adelacalle/my_libraries/szip/current/
@@ -57,10 +55,6 @@ PHDF5LIBS   +=   -L${SZIPROOT}/lib -lsz -lz -ldl -lm
 PHDF5INCLUDE	=	-I${PHDF5ROOT}/include
 PHDF5		= $(PHDF5LIBS) $(PHDF5INCLUDE)
 
-#FFTW3ROOT	=	/opt/fftw/current
-#FFTW3LIBS	=	-L${FFTW3ROOT}/lib
 FFTW3LIBS	+=	-I${FFTW3ROOT}/include -lfftw3 -lm
-
-DIRECTIVES  = -Wp,-D_COM_MPI=1,-D_USE_BLAS=1
 
 POPSICLE_ROOT = /users/adelacalle/Documents/Code/POpSiCLE

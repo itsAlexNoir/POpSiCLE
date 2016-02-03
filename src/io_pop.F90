@@ -107,7 +107,7 @@ CONTAINS
        ENDIF
        CALL h5gopen_f(file_id, name, group_id, error)
     ELSE
-       CALL h5fcreate_f(name, H5F_ACC_EXCL_F, file_id, error)
+       CALL h5fcreate_f(name, H5F_ACC_TRUNC_F, file_id, error)
        file_exists = .TRUE.
        ! Create group in the root group.
        IF(PRESENT(groupname)) THEN

@@ -8,7 +8,7 @@ PROGRAM tsurff_test
   INTEGER                    :: numkpts
   INTEGER                    :: numthetapts
   INTEGER                    :: numphipts 
-  REAL(dp)                   :: k_cutoff
+  REAL(dp)                   :: k_cutoff, deltak
   COMPLEX(dp), ALLOCATABLE   :: b(:, :, :)
   CHARACTER(LEN=100)         :: filename
   
@@ -39,7 +39,7 @@ PROGRAM tsurff_test
   filename = 'data/h2p/surfaces/sphfunc.rb50.000.lmax010'
   
   CALL initialize_tsurff(filename, radius_boundary, lmax, &
-       k_cutoff, numkpts, numthetapts, numphipts, &
+       deltak, k_cutoff, numkpts, numthetapts, numphipts, &
        lmax_total, mmax )
   
   mmin = - mmax
