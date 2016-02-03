@@ -80,22 +80,32 @@ endif
 #####################
 
 ifeq (${FFT_LIB},mkl)
+
 ifndef FFT_PATH
 ${error 'You must provide a path to the FFT routines.'}
 endif
 
 MKL_DFTI_OBJS = ${FFT_PATH}/include/mkl_dfti.o
 MKL_DFTI_LO = ${FFT_PATH}/include/mkl_dfti.lo
-override DIRECTIVES +=-Wp,-D_USE_MKL=1,-D_USE_FFTW=0
+ifeq (${PLIB},serial)
+DIRECTIVES =-Wp,-D_USE_MKL=1,-D_USE_FFTW=0,-D_COM_MPI=0
+else ifeq (${PLIB},parallel)
+DIRECTIVES =-Wp,-D_USE_MKL=1,-D_USE_FFTW=0,-D_COM_MPI=1
+endif
 
 else ifeq (${FFT_LIB},fftw)
+
 ifndef FFT_PATH
 ${error 'You must provide a path to the FFT routines.'}
 endif
 
 INCL += -I${FFT_PATH}/include
 LIBS += -L${FFT_PATH}/lib -lfftw3 -lm
-override DIRECTIVES +=-Wp,-D_USE_MKL=0,-Wp,-D_USE_FFTW=1
+ifeq (${PLIB},serial)
+DIRECTIVES =-Wp,-D_USE_MKL=0,-D_USE_FFTW=1,-D_COM_MPI=0
+else ifeq (${PLIB},parallel)
+DIRECTIVES =-Wp,-D_USE_MKL=0,-D_USE_FFTW=1,-D_COM_MPI=1
+endif
 
 endif
 
@@ -105,29 +115,8 @@ endif
 ##  the communication choosen
 ########################################
 
-ifeq (${PLIB},serial)
-
-ifndef HDF5_PATH
-${error 'You must provide a path to \
-HDF5 serial libraries.'}
-endif
 INCL    = -I${HDF5_PATH}/include
 LIBS    += -L${HDF5_PATH}/lib
-override DIRECTIVES +=-Wp,-D_COM_MPI=0
-
-
-else ifeq (${PLIB},parallel)
-
-ifndef HDF5_PATH
-${error 'You must provide a path to \
-HDF5 parallel libraries.'}
-endif
-
-INCL    += -I${HDF5_PATH}/include
-LIBS    += -L${HDF5_PATH}/lib
-override DIRECTIVES +=-Wp,-D_COM_MPI=1
-
-endif 
 
 LIBS	+= -lsz -lz -ldl -lm ${OMPLIBS}
 
@@ -258,6 +247,10 @@ ifneq (${FFT_LIB},fftw)
 	${error You must choose between mkl or \
 	fftw for a FFT library.}
 endif
+endif
+ifndef HDF5_PATH
+	${error 'You must provide a path to HDF5 libraries. \
+Compilation will fail miserably.'}
 endif
 
 clean: clean_debug

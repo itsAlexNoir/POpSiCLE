@@ -497,7 +497,7 @@ CONTAINS
     
     DO itheta = 1, numthetapts
        DO ir = 1, numrpts
-          IF(i_am_in_local2D(ir,itheta)) THEN
+          IF(i_am_in_local2D(ir,itheta).EQ.1) THEN
              psi_in      = 0.0_dp
              psi_in_drho = 0.0_dp
              psi_in_dz   = 0.0_dp
@@ -650,7 +650,7 @@ CONTAINS
     
     DO itheta = 1, numthetapts
        DO ir = 1, numrpts
-          IF(i_am_in_local2D(ir,itheta)) THEN
+          IF(i_am_in_local2D(ir,itheta).EQ.1) THEN
              psi_in      = ZERO
              psi_in_drho = ZERO
              psi_in_dz   = ZERO
