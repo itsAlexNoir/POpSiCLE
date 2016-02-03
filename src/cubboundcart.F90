@@ -623,7 +623,7 @@ CONTAINS
     DO iphi = 1, numphipts
        DO itheta = 1, numthetapts
           DO ir = 1, numrpts
-             IF(i_am_in_local3D(ir,itheta,iphi)) THEN
+             IF(i_am_in_local3D(ir,itheta,iphi).EQ.1) THEN
                 psi_in       = 0.0_dp
                 psi_in_dx    = 0.0_dp
                 psi_in_dy    = 0.0_dp
@@ -896,7 +896,7 @@ CONTAINS
     DO iphi = 1, numphipts
        DO itheta = 1, numthetapts
           DO ir = 1, numrpts
-             IF(i_am_in_local3D(ir,itheta,iphi)) THEN
+             IF(i_am_in_local3D(ir,itheta,iphi).EQ.1) THEN
                 psi_in       = ZERO
                 psi_in_dx    = ZERO
                 psi_in_dy    = ZERO
