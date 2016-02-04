@@ -355,6 +355,20 @@ CONTAINS
        ENDDO
     ENDDO
     
+    ! Communicate min and max phi values
+    max_angles_local = (/ maxtheta, maxphi /)
+    min_angles_local = (/ mintheta, minphi /)
+    
+    CALL MPI_ALLREDUCE(max_angles_local, max_angles_global, 2, &
+         MPI_DOUBLE_PRECISION, MPI_MAX, comm, ierror )
+    CALL MPI_ALLREDUCE(min_angles_local, min_angles_global, 2, &
+         MPI_DOUBLE_PRECISION, MPI_MIN, comm, ierror )
+    
+    IF(ALL(x_ax.GT.0.0)) THEN
+       minphi = pi - ATAN2(MINVAL(y_ax),-MINVAL(x_ax))
+       maxphi = pi - ATAN2(MAXVAL(y_ax),-MINVAL(x_ax))
+    ENDIF
+    
     numrpts = 2 * fdpts + 1
     numthetapts = 2 * lmax + 1
     numphipts = 2 * lmax + 1

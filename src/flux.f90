@@ -449,6 +449,7 @@ CONTAINS
 
     !---------------------------------------------------------!
 
+    mmin = -mmax
     dPomega = ZERO
 
     DO ik = 1, numkpts
