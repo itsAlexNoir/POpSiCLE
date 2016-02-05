@@ -1131,10 +1131,11 @@ CONTAINS
     dt = t2 - t1
     
     WRITE(*,*)
-    WRITE(*,*)           '--------------------------------------------------------'
+    WRITE(*,*)           '---------------------------------------------------------&
+         &----------------------'
     WRITE(*,'(A,A,A)')   'Path and name of the file:      ',TRIM(filename) // '.h5'
     WRITE(*,'(A,I8)')    'Number of time step in the file: ',ntime
-    WRITE(*,'(A,F9.3)')  'Time step:                       ',dt 
+    WRITE(*,'(A,F9.6)')  'Time step:                       ',dt 
     WRITE(*,'(A,I4)')    'Number of theta points:          ',numthetapts
     WRITE(*,'(A,I4)')    'Number of phi points:            ',numphipts
     WRITE(*,'(A,I4)')    'Maximun angular momenta:         ',lmax

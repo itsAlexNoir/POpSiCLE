@@ -28,14 +28,11 @@ PROGRAM tsurff_test
   WRITE(*,*)
   
   
-  deltak = 0.01_dp
-  
-  k_cutoff = 2.0_dp
+  k_cutoff = 3.0_dp
   
   radius_boundary = 50.0_dp
   lmax = 10
 
-  
   filename = 'data/h2p/surfaces/sphfunc.rb50.000.lmax010'
   
   CALL initialize_tsurff(filename, radius_boundary, lmax, &
@@ -50,8 +47,10 @@ PROGRAM tsurff_test
   
   CALL write_polar_amplitude(b,'results/probkrktheta',&
        'probkrtheta')
-  
-  !CALL write_momentum_amplitude(b,'results/probk')
+
+  CALL write_mes(b,'results/mes')
+
+  CALL write_pes(b,'results/pes')
   
   WRITE(*,*) 'Our spectra is ready!!!'
   DEALLOCATE(b)
