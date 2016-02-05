@@ -374,7 +374,7 @@ CONTAINS
                         psi_lm(im,il)
                    
                    term2 =  - 0.5_dp * (-ZIMAGONE)**il * &
-                        jl(il,ik) * psip_lm(im,il)
+                        jl(il,ik) * psip_lm(im,il) ! * rb
                    
                    term3 = 0.5_dp * ZIMAGONE / SQRT(pi) * afield(3) * rb * &
                         psi_lm(im,il)

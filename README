@@ -1,13 +1,7 @@
-POpSiCLE (PhOtoelectron SpeCtrum library for Laser-matter intEractions)
-
 POpSiCLE (PhOtoelectron SpeCtrum library for Laser-matter intEractions) is a
-library that allows the calculation of photoelctron spectra for various
+library that allows the calculation of photoelectron spectra for various
 grid-based solutions of the time-dependent Schroedinger equation
 (and time-dependent Kohn Sham equations of TDDFT). Methods implemented include
 Fourier transform methods, Hankel transforms, the surface flux method
-(tSURFF) and the sampling point method.
-
-POpSiCLE is a portable library of routines to calculate photoelectron spectra from a variety of highly-parallelised codes. Photoelectron spectra is a powerful observable to extract information of an atom or a molecule. It is particularly interesting for studying phenomena as ultrafast electron dynamics, electron-electron and electron-nuclear correlation when systems are exposed to ultrafast, ultra-intense laser fields.
-However, obtaining photoelectron spectra is a very demanding task, due to the asymptotic nature of the problem. In the most used approach to calculate photoelectron spectra, the wavefunction is evolved long after the interaction has switched off, having to store both the bound and the scattering parts of the wavefunction in order to Fourier-transform it. This will required big simulation boxes as the ionised electrons can gain high momenta, traveling long distances far from the bound states. This difficulty became worse as the number of dimensions of the system increases, making practically unfeasible the calculation. In particular, for the case of our codes, THeREMIN has 2+1 (electronic and nuclear) dimensions, whereas RHYthMIC has 3+1 dimensions.
-Fortunately, there are less demanding approaches to solve the problem. Those consist in record- ing the electronic flux that passes through certain surfaces or detectors. The fact that we only stored the electronic wavepacket at certain regions allows the use of absorbing boundaries at the edge of the boxes, reducing the grid sizes needed. Then, when the calculation is finished, the recorded flux is projected against asymptotic solutions in order to extract scattering amplitudes of the photoelec- trons. We are particularly interested in a method called Time-dependent Surface Flux method (t-surff) [1, 2], that has been recently developed in the last three years with success due to its performance and accuracy.
-The method reads as follows: As the system evolves in time, the outgoing electronic flux at a cer- tain boundary of radius Rc is projected against Volkov solutions (solutions for the free particle in a electromagnetic field). The key of this method is that the volume integral over the boundary Rc is transformed to a time integral, reducing the numerical effort and therefore the computational cost. This method is specially interesting for computing strong-field infrared (IR) photoionisation spectra of atoms and molecules, which requires huge boxes in order to accommodate the quiver amplitude of the outgoing electrons.
+(tSURFF) and the sampling point method. It works from a variety of
+highly-parallelised codes.
