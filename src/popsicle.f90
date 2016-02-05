@@ -21,6 +21,7 @@ MODULE POPSICLE
   USE io_surface
   USE surface
   USE flux
+  USE observables
   
   IMPLICIT NONE
   
