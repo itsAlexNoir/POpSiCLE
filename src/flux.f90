@@ -283,7 +283,11 @@ CONTAINS
        ! His first derivative
        CALL make_sht(psip_sph, lmax, mmax, gauss_weights, &
             psip_lm)
-
+       ! Divide by rb
+       psi_lm = psi_lm * rb
+       psip_lm = psip_lm * rb
+       
+       
        ! Calculate flux
        intflux = ZERO
        CALL calculate_time_integrand(psi_lm, psip_lm, &
@@ -374,7 +378,7 @@ CONTAINS
                         psi_lm(im,il)
                    
                    term2 =  - 0.5_dp * (-ZIMAGONE)**il * &
-                        jl(il,ik) * psip_lm(im,il) ! * rb
+                        rb * jl(il,ik) * psip_lm(im,il)
                    
                    term3 = 0.5_dp * ZIMAGONE / SQRT(pi) * afield(3) * rb * &
                         psi_lm(im,il)
