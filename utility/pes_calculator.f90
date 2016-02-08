@@ -8,52 +8,124 @@ PROGRAM tsurff_test
   INTEGER                    :: numkpts
   INTEGER                    :: numthetapts
   INTEGER                    :: numphipts 
-  REAL(dp)                   :: k_cutoff, deltak
+  REAL(dp)                   :: k_cutoff
   COMPLEX(dp), ALLOCATABLE   :: b(:, :, :)
-  CHARACTER(LEN=100)         :: filename
+  CHARACTER(LEN=100)         :: filename_surf
+  CHARACTER(LEN=100)         :: filename_pes
+  CHARACTER(LEN=100)         :: filename_mes
+  CHARACTER(LEN=100)         :: filename_polar
+  CHARACTER(LEN=100)         :: filename_amplitude
+  CHARACTER(LEN=1)           :: answer
+  
+  LOGICAL                    :: desired_mes
+  LOGICAL                    :: desired_polar
+  LOGICAL                    :: desired_amplitude
+  
   
   !--------------------------------------!
   
   WRITE(*,*) '****************************'
-  WRITE(*,*) '       T-SURFF test         '
+  WRITE(*,*) '     PES calculator app     '
   WRITE(*,*) '****************************'
   WRITE(*,*)
   WRITE(*,*)
-  WRITE(*,*) ' Welcome to the T-SURFF test. This little program'
-  WRITE(*,*) ' will help to understand and use a surface file to'
-  WRITE(*,*) ' extract the photoelectron spectra from it.'
+  WRITE(*,*) ' Welcome to the PES calculator. This little program'
+  WRITE(*,*) ' will help to calculate photoelectron spectra from '
+  WRITE(*,*) ' a surface file (HDF5). '
   WRITE(*,*)
   WRITE(*,*)
   WRITE(*,*) ' Initializing...'
   WRITE(*,*)
-  
-  
-  deltak = 0.01_dp
-  
-  k_cutoff = 2.0_dp
-  
-  radius_boundary = 50.0_dp
-  lmax = 10
 
   
-  filename = 'data/h2p/surfaces/sphfunc.rb50.000.lmax010'
+  WRITE(*, *) 'Path of the surface file:'
+  READ(*, '(1A80)') filename_surf
   
-  CALL initialize_tsurff(filename, radius_boundary, lmax, &
-       deltak, k_cutoff, numkpts, numthetapts, numphipts, &
+  WRITE(*, *) 'Name of the PES file:'
+  READ(*,'(1A80)') filename_pes
+
+  WRITE(*, *) 'Boundary radius:'
+  READ(*, *) radius_boundary
+
+  WRITE(*, *) 'Cut-off frequency k:'
+  READ(*, *) k_cutoff
+
+  WRITE(*, *) 'Maximum angular momentum:'
+  READ(*, *) lmax
+  
+  WRITE(*, *) 'Do you want momentum electron? (y or n)'
+  READ(*, '(1A1)') answer
+
+  desired_mes = .FALSE.
+
+  IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
+     
+     desired_mes = .TRUE.
+
+     WRITE(*, *) 'Name of the MES file:'
+     READ(*,'(1A80)') filename_mes
+     
+  ENDIF
+
+  WRITE(*, *) 'Do you want the 3D spherical scattering amplitude? (y or n)'
+  READ(*, '(1A1)') answer
+  
+  desired_amplitude = .FALSE.
+  
+  IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
+     
+     desired_amplitude = .TRUE.
+
+     WRITE(*, *) 'Name of the spherical amplitude file:'
+     READ(*,'(1A80)') filename_amplitude
+     
+  ENDIF
+  
+  WRITE(*, *) 'Do you want polar scattering amplitude? (y or n)'
+  READ(*, '(1A1)') answer
+  
+  desired_polar = .FALSE.
+  
+  IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
+     
+     desired_polar = .TRUE.
+
+     WRITE(*, *) 'Name of the polar amplitude file:'
+     READ(*,'(1A80)') filename_polar
+     
+  ENDIF
+  
+  
+  CALL initialize_tsurff(filename_surf, radius_boundary, lmax, &
+       k_cutoff, numkpts, numthetapts, numphipts, &
        lmax_total, mmax )
   
   mmin = - mmax
-  
+
+  ! Allocate momentum amplitude array
   ALLOCATE(b(1:numkpts,1:numthetapts,1:numphipts))
+
+  ! The name is self-explanatory
+  CALL get_flux(filename_surf, lmax, mmax, b )
+
+  !-------------------!
+  !    OUTPUT TIME!   !
+  !-------------------!
+
+  CALL write_pes(b,filename_pes)
   
-  CALL get_flux(filename, lmax, mmax, b )
+  IF(desired_polar) &
+       CALL write_polar_amplitude(b, filename_polar)
   
-  CALL write_polar_amplitude(b,'results/probkrktheta',&
-       'probkrtheta')
+  IF(desired_amplitude) &
+       CALL write_amplitude(b, filename_amplitude)
   
-  !CALL write_momentum_amplitude(b,'results/probk')
-  
-  WRITE(*,*) 'Our spectra is ready!!!'
+  IF(desired_mes) &
+       CALL write_mes(b,filename_mes)
+ 
+  ! Deallocate the amplitude
   DEALLOCATE(b)
-  
+
+  WRITE(*,*) 'Our spectra is ready!!!'
+
 END PROGRAM tsurff_test

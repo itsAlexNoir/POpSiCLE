@@ -18,7 +18,7 @@ import graph as graph
 
 # Load all the parameters
 inp_params = {}
-inp.read_input(inp_params,'../input_popview.dat')
+inp.read_input(inp_params,'./input_popview.dat')
 
 params = inp.parameters(inp_params)
 
@@ -35,10 +35,12 @@ if(params.draw_polar_amplitude):
 
 # Get ke prob
 if(params.draw_mes):
+    params.mes_filename+='.dat'
     mes = np.loadtxt(params.mes_filename)
 
 # Get pes
 if(params.draw_pes):
+    params.pes_filename+='.dat'
     pes = np.loadtxt(params.pes_filename)
 
 #if(params.draw_diff_cross):
@@ -57,7 +59,7 @@ print('Plotting selected frames...')
 if(params.draw_polar_amplitude):
     print('Plotting polar amplitude...')
     logplot = 1
-    clamp = [-9,-6]
+    clamp = [-6,-2]
     xticks = None #np.arange(0,25,0.2)
     yticks = None #np.arange(-15.,16.,0.2)
     graph.oneframe_surf(polar_prob,ax.ke_ax,ax.theta_ax,clamp,

@@ -16,6 +16,9 @@
 ##  HDF5_PATH: The path to the HDF5 library. This library must be
 ##  the parallel version if you are building parallel POpSiCLE,
 ##  otherwise you need the serial one.
+##  SZIP_PATH: If you have compiler your HDF5 library with this
+##  compression library in your machine, you must provide the
+##  corresponding path.
 ##  compiler: The compiler you are using. We have used the intel,
 ##  gnu and cray compiler to write and test POpSiCLE.
 ##
@@ -67,11 +70,11 @@ dyplib:
 		"HDF5_PATH=${HDF5_PATH}"
 
 pes_calculator:
-	cd utility; ${MAKE} pes_calculator "FC=${FC}" "PLIB=serial" \
+	cd utility; ${MAKE} pes_calculator "FC=${FC}" \
 		"compiler=${compiler}" "POPSICLE_ROOT=${PWD}" \
 		"FFT_PATH=${FFT_PATH}" "FFT_LIB=${FFT_LIB}" \
 		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
-		"HDF5_PATH=${HDF5_PATH}"
+		"HDF5_PATH=${HDF5_PATH}" "SZIP_PATH=${SZIP_PATH}"
 
 clean:
 	cd src; ${MAKE} clean

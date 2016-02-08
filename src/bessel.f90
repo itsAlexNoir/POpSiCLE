@@ -192,7 +192,7 @@ CONTAINS
        xx=ax-2.356194491_dp
        bessj1_v = SQRT(0.636619772_dp/ax)*(COS(xx) * &
             poly(y,p,.NOT. mask)-z*SIN(xx)*poly(y,q,.NOT. mask)) * &
-            SIGN(1.0_sp,x)
+            SIGN(1.0_dp,x)
     END WHERE
     
   END FUNCTION bessj1_v
