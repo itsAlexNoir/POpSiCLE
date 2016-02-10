@@ -9,6 +9,7 @@ PROGRAM tsurff_test
   INTEGER                    :: numthetapts
   INTEGER                    :: numphipts 
   REAL(dp)                   :: k_cutoff
+  REAL(dp)                   :: coulomb_exp_energy
   COMPLEX(dp), ALLOCATABLE   :: b(:, :, :)
   CHARACTER(LEN=100)         :: filename_surf
   CHARACTER(LEN=100)         :: filename_pes
@@ -21,9 +22,10 @@ PROGRAM tsurff_test
   LOGICAL                    :: desired_polar
   LOGICAL                    :: desired_amplitude
   
-  
   !--------------------------------------!
-  
+
+  WRITE(*,*)
+  WRITE(*,*)
   WRITE(*,*) '****************************'
   WRITE(*,*) '     PES calculator app     '
   WRITE(*,*) '****************************'
@@ -39,22 +41,51 @@ PROGRAM tsurff_test
 
   
   WRITE(*, *) 'Path of the surface file:'
+  WRITE(*, *) '-------------------------'
   READ(*, '(1A80)') filename_surf
+  WRITE(*, *)
   
-  WRITE(*, *) 'Name of the PES file:'
-  READ(*,'(1A80)') filename_pes
-
-  WRITE(*, *) 'Boundary radius:'
+  WRITE(*, *) 'Boundary radius (a.u.):'
+  WRITE(*, *) '-----------------------'
   READ(*, *) radius_boundary
+  WRITE(*, *)
 
   WRITE(*, *) 'Cut-off frequency k:'
+  WRITE(*, *) '--------------------'
   READ(*, *) k_cutoff
+  WRITE(*, *)
 
   WRITE(*, *) 'Maximum angular momentum:'
+  WRITE(*, *) '-------------------------'
   READ(*, *) lmax
+  WRITE(*, *)
+
+  WRITE(*, *) 'Do you want to add the Coulomb explosion energy? (y or n)'
+  WRITE(*, *) '---------------------------------------------------------'
+  READ(*, '(1A1)') answer
+  WRITE(*, *)
+  
+  coulomb_exp_energy = 0.0_dp
+  
+  IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
+     
+     WRITE(*, *) 'Coulomb explosion energy (a.u.):'
+     WRITE(*, *) '--------------------------------'
+     READ(*, *) coulomb_exp_energy
+     WRITE(*, *)
+     
+     
+  ENDIF
+  
+  WRITE(*, *) 'Name of the PES file:'
+  WRITE(*, *) '---------------------'
+  READ(*,'(1A80)') filename_pes
+  WRITE(*, *)
   
   WRITE(*, *) 'Do you want momentum electron? (y or n)'
+  WRITE(*, *) '---------------------------------------'
   READ(*, '(1A1)') answer
+  WRITE(*, *)
 
   desired_mes = .FALSE.
 
@@ -63,13 +94,17 @@ PROGRAM tsurff_test
      desired_mes = .TRUE.
 
      WRITE(*, *) 'Name of the MES file:'
+     WRITE(*, *) '---------------------'
      READ(*,'(1A80)') filename_mes
-     
+     WRITE(*, *)
+  
   ENDIF
 
   WRITE(*, *) 'Do you want the 3D spherical scattering amplitude? (y or n)'
+  WRITE(*, *) '-----------------------------------------------------------'
   READ(*, '(1A1)') answer
-  
+  WRITE(*, *)
+
   desired_amplitude = .FALSE.
   
   IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
@@ -77,13 +112,17 @@ PROGRAM tsurff_test
      desired_amplitude = .TRUE.
 
      WRITE(*, *) 'Name of the spherical amplitude file:'
+     WRITE(*, *) '-------------------------------------'
      READ(*,'(1A80)') filename_amplitude
-     
+     WRITE(*, *)
+   
   ENDIF
   
   WRITE(*, *) 'Do you want polar scattering amplitude? (y or n)'
+  WRITE(*, *) '------------------------------------------------'
   READ(*, '(1A1)') answer
-  
+  WRITE(*, *)
+
   desired_polar = .FALSE.
   
   IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
@@ -91,14 +130,16 @@ PROGRAM tsurff_test
      desired_polar = .TRUE.
 
      WRITE(*, *) 'Name of the polar amplitude file:'
+     WRITE(*, *) '---------------------------------'
      READ(*,'(1A80)') filename_polar
-     
+     WRITE(*, *)
+   
   ENDIF
   
   
   CALL initialize_tsurff(filename_surf, radius_boundary, lmax, &
        k_cutoff, numkpts, numthetapts, numphipts, &
-       lmax_total, mmax )
+       lmax_total, mmax, coulomb_exp_energy )
   
   mmin = - mmax
 

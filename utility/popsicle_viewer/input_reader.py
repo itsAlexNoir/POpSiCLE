@@ -26,22 +26,26 @@ class parameters:
         self.kemax = float(inparams['kemax'])
         self.lmax = int(inparams['lmax'])
         self.mmax = int(inparams['mmax'])
-
+        self.dEe = float(inparams['dEe'])
+        self.Eemax = float(inparams['Eemax'])
+        self.dk  = float(inparams['dk'])
+        self.kmax = float(inparams['kmax'])
+        
         if(int(inparams['fixed_nuclei']) == 1):
             self.fixed_nuclei = True
         else:
             self.fixed_nuclei = False
 
-        if(self.fixed_nuclei):
-            self.dkr = float(inparams['dkr'])
-            self.krmax = float(inparams['krmax'])
-
-        # self.dEe = float(inparams['dEe'])
-        # self.dEn = float(inparams['dEn'])
-        # self.dE = float(inparams['dE'])
-
+        if(self.fixed_nuclei == False):
+            self.dkn = float(inparams['dkn'])
+            self.knmax = float(inparams['knmax'])
+            self.dEn = float(inparams['dEn'])
+            self.dE = float(inparams['dE'])
+            self.Enmax = float(inparams['Enmax'])
+            self.Emax  = float(inparams['Emax'])
+            
         # Mass factors
-        if(self.fixed_nuclei):
+        if(self.fixed_nuclei == False):
             self.muelec = 1.0
         else:
             self.muelec = ( const.M1 + const.M2 ) / \
@@ -76,8 +80,8 @@ class parameters:
         # self.draw_PAD = int(inparams['draw_PAD'])
         # self.draw_ktotal = int(inparams['draw_ktotal'])
         # self.draw_Etotal = int(inparams['draw_Etotal'])
-        # self.draw_diff_cross = int(inparams['draw_diff_cross'])
-        # self.draw_total_cross = int(inparams['draw_total_cross'])
+        self.draw_diff_cross = int(inparams['draw_diff_cross'])
+        self.draw_total_cross = int(inparams['draw_total_cross'])
 
         self.makeframe = int(inparams['makeframe'])
         self.polar_filename = inparams['polar_filename']
