@@ -26,7 +26,9 @@ params = inp.parameters(inp_params)
 print('Creating axis...')
 # For coordinate space
 ax = axes.axes(params.dke, params.kemax,
-params.lmax,params.mmax)
+               params.lmax,params.mmax,
+               params.dk,params.kmax,
+               params.dEe,params.Eemax)
 
 # Load data from disk
 if(params.draw_polar_amplitude):
@@ -42,6 +44,13 @@ if(params.draw_mes):
 if(params.draw_pes):
     params.pes_filename+='.dat'
     pes = np.loadtxt(params.pes_filename)
+
+if(params.draw_total_cross):
+    wki = ax.Ee_ax[np.argmax(mes)]
+    total_cross = cross.get_total_cross(mes,ax.ke_ax,ax.Ee_ax,
+                                        wki,params.pulse_duration,
+                                        params.pulse_bandwidth,
+                                        params.A0)
 
 #if(params.draw_diff_cross):
     # w = kax.ke_ax[np.argmax(probke)]**2*const.mufac
@@ -59,7 +68,7 @@ print('Plotting selected frames...')
 if(params.draw_polar_amplitude):
     print('Plotting polar amplitude...')
     logplot = 1
-    clamp = [-6,-2]
+    clamp = [-5,-3]
     xticks = None #np.arange(0,25,0.2)
     yticks = None #np.arange(-15.,16.,0.2)
     graph.oneframe_surf(polar_prob,ax.ke_ax,ax.theta_ax,clamp,
@@ -71,11 +80,12 @@ if(params.draw_polar_amplitude):
 
 if(params.draw_mes):
     print('Plotting photoelectron momentum...')
+    probk = coords.func_smoother(ax.ke_ax,mes,ax.k_ax)
     xticks = np.arange(0,3.0,0.4)
     yticks = None
     ylim = None #[0.0,max(probke)]
     logplot = 0
-    graph.plotprob1d(pes,ax.ke_ax,
+    graph.plotprob1d(probk,ax.k_ax,
                      [0.0,2.8],ylim,
                      xticks,yticks,
                      'Momentum (au)',r'$P(k)$',logplot,
@@ -83,11 +93,12 @@ if(params.draw_mes):
 
 if(params.draw_pes):
     print('Plotting photoelectron energy spectra...')
+    probE = coords.func_smoother(ax.ke_ax**2*params.mufac,pes,ax.Ee_ax)
     xticks = np.arange(0,3.0,0.4)
     yticks = None
     ylim = None #[0.0,max(probke)]
     logplot = 0
-    graph.plotprob1d(pes,ax.Ee_ax,
+    graph.plotprob1d(probE,ax.Ee_ax,
                      [0.0,2.8],ylim,
                      xticks,yticks,
                      'Energy (au)',r'$P(E)$',logplot,

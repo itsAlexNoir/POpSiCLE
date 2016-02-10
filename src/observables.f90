@@ -16,6 +16,7 @@
 MODULE observables
   
   USE constants
+  USE gaussleg
   USE sht
   USE flux
   USE io_pop
@@ -98,6 +99,7 @@ CONTAINS
     COMPLEX(dp), INTENT(IN)    :: bk(:, :, :)
     REAL(dp), INTENT(OUT)      :: bk_rad(:)
 
+    REAL(dp), ALLOCATABLE      :: axis(:), weights(:)
     REAL(dp)                   :: dphi
     INTEGER                    :: numkpts, numthetapts
     INTEGER                    :: numphipts, dims(3)
@@ -110,43 +112,54 @@ CONTAINS
     numthetapts = dims(2)
     numphipts   = dims(3)
 
+    ! Get weights for integration over theta
+    ALLOCATE(axis(1:numthetapts),weights(1:numthetapts))
+    CALL get_gauss_stuff(0.0_dp,pi,axis,weights)
+    
     IF(numphipts.EQ.1) THEN
        dphi = 1.0_dp
     ELSE
        dphi = phi_ax(2) - phi_ax(1)
     ENDIF
-
+    
+    bk_rad = 0.0_dp
+    
     DO iphi = 1, numphipts
        DO itheta = 1, numthetapts
           DO ik = 1, numkpts
              bk_rad(ik) = bk_rad(ik) + &
                   REAL(CONJG(bk(ik,itheta,iphi)) * bk(ik,itheta,iphi)) * &
-                  gauss_weights(itheta) * &
-                  k_ax(ik) * k_ax(ik) * SIN(theta_ax(itheta))
+                  weights(itheta)
           ENDDO
        ENDDO
     ENDDO
-
-    bk_rad = bk_rad * dphi
-
+    
+    IF(numphipts.EQ.1) THEN
+       bk_rad = bk_rad * twopi
+    ELSE
+       bk_rad = bk_rad * dphi
+    ENDIF
+    
+    DEALLOCATE(axis,weights)
+    
   END SUBROUTINE get_mes
-
+  
   !***********************************************************!
-
+  
   SUBROUTINE write_mes(bk, filename, groupname)
     IMPLICIT NONE
-
+    
     COMPLEX(dp), INTENT(IN)        :: bk(:, :, :)
     CHARACTER(LEN=*), INTENT(IN)   :: filename
     CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: groupname
-
+    
     REAL(dp), ALLOCATABLE          :: probk1D(:)
     INTEGER                        :: numkpts, numthetapts
     INTEGER                        :: numphipts, dims(3)
     CHARACTER(LEN=100)             :: name
     INTEGER                        :: ik, itheta, iphi
     !--------------------------------------------------!
-
+    
     dims = SHAPE(bk)
     numkpts     = dims(1)
     numthetapts = dims(2)
@@ -162,10 +175,10 @@ CONTAINS
     ! ELSE
     !    CALL write_wave(probk1D,1,(/numkpts/),filename)
     ! ENDIF
-
-    name = filename // '.dat'
+    
+    name = TRIM(filename) // '.dat'
     OPEN(UNIT=55,FORM='formatted',FILE=name)
-
+    
     DO ik = 1, numkpts
       WRITE(55,*) probk1D(ik)
     ENDDO
@@ -232,7 +245,7 @@ CONTAINS
     !    CALL write_wave(probk1D,1,(/numkpts/),filename)
     ! ENDIF
 
-    name = filename // '.dat'
+    name = TRIM(filename) // '.dat'
     OPEN(UNIT=55,FORM='formatted',FILE=name)
 
     DO ik = 1, numkpts
@@ -279,10 +292,15 @@ CONTAINS
        ENDDO
     ENDDO
 
-    bk_polar = bk_polar * dphi
-
+    
+    IF(numphipts.EQ.1) THEN
+       bk_polar = bk_polar * twopi
+    ELSE
+       bk_polar = bk_polar * dphi
+    ENDIF
+    
   END SUBROUTINE get_polar_amplitude
-
+  
   !***********************************************************!
 
   SUBROUTINE write_polar_amplitude(bk, filename, groupname)
@@ -353,31 +371,31 @@ CONTAINS
   END SUBROUTINE get_amplitude
 
   !***********************************************************!
-
+  
   SUBROUTINE write_amplitude(bk, filename, groupname)
     IMPLICIT NONE
-
+    
     COMPLEX(dp), INTENT(IN)                :: bk(:, :, :)
     CHARACTER(LEN=*), INTENT(IN)           :: filename
     CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: groupname
-
+    
     INTEGER                                :: numkpts
     INTEGER                                :: numthetapts
     INTEGER                                :: numphipts
     INTEGER                                :: dims(3)
     REAL(dp), ALLOCATABLE                  :: probk3D(:, :, :)
-
+    
     !--------------------------------------------------!
-
+    
     dims = SHAPE(bk)
     numkpts     = dims(1)
     numthetapts = dims(2)
     numphipts   = dims(3)
-
+    
     ALLOCATE(probk3D(1:numkpts,1:numthetapts,1:numphipts))
-
+    
     CALL get_amplitude(bk,probk3D)
-
+    
     IF(PRESENT(groupname)) THEN
        CALL write_wave(RESHAPE(probk3D,(/numkpts*numthetapts*numphipts/)),3,&
             (/numkpts,numthetapts,numphipts/),filename,groupname,groupname)
@@ -385,9 +403,9 @@ CONTAINS
        CALL write_wave(RESHAPE(probk3D,(/numkpts*numthetapts*numphipts/)),3,&
             (/numkpts,numthetapts,numphipts/),filename)
     ENDIF
-
+    
     DEALLOCATE(probk3D)
-
+    
   END SUBROUTINE write_amplitude
   
   !***********************************************************!

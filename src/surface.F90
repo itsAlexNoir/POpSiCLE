@@ -186,16 +186,16 @@ CONTAINS
     
     ! Initialize spherical grid
     ! For scattered interpolation
-    CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
-         radius_tolerance, fd_rule, dr, lmax, rank, size, comm, &
-         numpts, numrpts, numthetapts, surfacerank, numsurfaceprocs, &
-         surfacecomm, numthetaptsperproc )
+    !CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
+    !     radius_tolerance, fd_rule, dr, lmax, rank, size, comm, &
+    !     numpts, numrpts, numthetapts, surfacerank, numsurfaceprocs, &
+    !     surfacecomm, numthetaptsperproc )
     
     ! For bicubic interpolation
-!!$    CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
-!!$         fd_rule, dr, lmax, rank, size, comm, &
-!!$         numrpts, numthetapts, surfacerank, numsurfaceprocs, &
-!!$         surfacecomm, numthetaptsperproc )
+    CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
+         fd_rule, dr, lmax, rank, size, comm, &
+         numrpts, numthetapts, surfacerank, numsurfaceprocs, &
+         surfacecomm, numthetaptsperproc )
     
     IF(i_am_surface(rank).EQ.1) THEN
        ALLOCATE(spherical_wave2D_local(1:numrpts,1:numthetapts))
@@ -245,8 +245,14 @@ CONTAINS
     CALL initialize_fd_coeffs(fd_rule)
     
     ! Initialize spherical grid
+    ! For scattered interpolation
+    !CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
+    !     Rboundary, radius_tolerance, fd_rule, dr, lmax, numpts, &
+    !     numrpts, numthetapts, numphipts )
+
+    ! Tricubic interpolation
     CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
-         Rboundary, radius_tolerance, fd_rule, dr, lmax, numpts, &
+         Rboundary, fd_rule, dr, lmax, &
          numrpts, numthetapts, numphipts )
     
     ALLOCATE(spherical_wave3D(1:numrpts,1:numthetapts,1:numphipts))
@@ -295,9 +301,16 @@ CONTAINS
     CALL initialize_fd_coeffs(fd_rule)
     
     ! Initialize spherical grid
+    ! For scattered interpolation
+    !CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
+    !     Rboundary, radius_tolerance, fd_rule, dr, lmax, &
+    !     rank, size, comm, numpts, numrpts, numthetapts, numphipts, &
+    !     surfacerank, numsurfaceprocs, surfacecomm, &
+    !     numthetaptsperproc, numphiptsperproc )
+    
     CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
-         Rboundary, radius_tolerance, fd_rule, dr, lmax, &
-         rank, size, comm, numpts, numrpts, numthetapts, numphipts, &
+         Rboundary, fd_rule, dr, lmax, &
+         rank, size, comm, numrpts, numthetapts, numphipts, &
          surfacerank, numsurfaceprocs, surfacecomm, &
          numthetaptsperproc, numphiptsperproc )
     
@@ -352,14 +365,14 @@ CONTAINS
     !----------------------------------------------------------!
     
     ! For scattered interpolation
-    CALL get_cylindrical_boundary( wavefunc, spherical_wave2D, &
-         spherical_wave2D_dr, spherical_wave2D_dtheta, &
-         'quadratic')
+    !CALL get_cylindrical_boundary( wavefunc, spherical_wave2D, &
+    !     spherical_wave2D_dr, spherical_wave2D_dtheta, &
+    !     'quadratic')
     
-!!$    ! For bicubic interpolation
-!!$    CALL get_cylindrical_boundary( rho_ax, z_ax, dims, &
-!!$         wavefunc, fd_rule, spherical_wave2D, &
-!!$         spherical_wave2D_dr, spherical_wave2D_dtheta)
+    ! For bicubic interpolation
+    CALL get_cylindrical_boundary( rho_ax, z_ax, dims, &
+         wavefunc, fd_rule, spherical_wave2D, &
+         spherical_wave2D_dr, spherical_wave2D_dtheta)
     
     middle_pt = fd_rule + 1
     CALL make_wave_boundary_derivative(spherical_wave2D,&
@@ -400,13 +413,13 @@ CONTAINS
     
     IF(i_am_surface(rank) .EQ. 1) THEN
        !! For scattered interpolation
-       CALL get_cylindrical_boundary( wavefunc, spherical_wave2D_local, &
-            spherical_wave2D_dr, spherical_wave2D_dtheta, &
-            'quadratic', rank)
+       !CALL get_cylindrical_boundary( wavefunc, spherical_wave2D_local, &
+       !     spherical_wave2D_dr, spherical_wave2D_dtheta, &
+       !     'quadratic', rank)
        
-       !CALL get_cylindrical_boundary( rho_ax, z_ax, dims, &
-       !     wavefunc, fd_rule, spherical_wave2D_local, &
-       !     spherical_wave2D_dr, spherical_wave2D_dtheta, rank)
+       CALL get_cylindrical_boundary( rho_ax, z_ax, dims, &
+            wavefunc, fd_rule, spherical_wave2D_local, &
+            spherical_wave2D_dr, spherical_wave2D_dtheta, rank)
        
        ! Communicate the spherical wavefunction
        numtotalpts = numrpts * numthetapts
@@ -417,7 +430,7 @@ CONTAINS
        middle_pt = fd_rule + 1
        numthetaoffset = INT(numthetapts / numsurfaceprocs)
        offset = numthetaoffset * surfacerank       
-       
+
        DO itheta = 1, numthetaptsperproc
           DO ir = 1, numrpts
              spherical_wave2D(ir,itheta) = &
@@ -441,12 +454,15 @@ CONTAINS
   !*****************************************************************!
   
   SUBROUTINE get_cartesian3D_surface_serial(filename, wavefunc, &
-       fd_rule, time, efield, afield, lmax, write_to_file)
+       x_ax, y_ax, z_ax, dims, fd_rule, time, efield, afield, &
+       lmax, write_to_file)
     
     IMPLICIT NONE
-
+    
     CHARACTER(LEN=*), INTENT(IN) :: filename
     COMPLEX(dp), INTENT(IN)      :: wavefunc(:, :, :)
+    REAL(dp), INTENT(IN)         :: x_ax(:), y_ax(:), z_ax(:)
+    INTEGER, INTENT(IN)          :: dims(:)
     INTEGER, INTENT(IN)          :: fd_rule
     REAL(dp), INTENT(IN)         :: time
     REAL(dp), INTENT(IN)         :: efield(:), afield(:)
@@ -456,9 +472,16 @@ CONTAINS
     INTEGER                      :: middle_pt
     !----------------------------------------------------------!
     
-    CALL get_cartesian_boundary( wavefunc, spherical_wave3D, &
+    ! For scattered interpolation
+    !CALL get_cartesian_boundary( wavefunc, spherical_wave3D, &
+    !     spherical_wave3D_dr, spherical_wave3D_dtheta, &
+    !     spherical_wave3D_dphi, 'quadratic')
+    
+    ! For tricubic interpolation
+    CALL get_cartesian_boundary( x_ax, y_ax, z_ax, dims, &
+         wavefunc, fd_rule, spherical_wave3D, &
          spherical_wave3D_dr, spherical_wave3D_dtheta, &
-         spherical_wave3D_dphi, 'quadratic')
+         spherical_wave3D_dphi)
     
     middle_pt = fd_rule + 1
     CALL make_wave_boundary_derivative(spherical_wave3D,&
@@ -475,12 +498,15 @@ CONTAINS
   !**********************************************************************!
 #if _COM_MPI
   SUBROUTINE get_cartesian3D_surface_parallel(filename, wavefunc, &
-       fd_rule, time, efield, afield, lmax, rank, write_to_file)
+       x_ax, y_ax, z_ax, dims, fd_rule, time, efield, afield, &
+       lmax, rank, write_to_file)
     
     IMPLICIT NONE
 
     CHARACTER(LEN=*), INTENT(IN) :: filename
     COMPLEX(dp), INTENT(IN)      :: wavefunc(:, :, :)
+    REAL(dp), INTENT(IN)         :: x_ax(:), y_ax(:), z_ax(:)
+    INTEGER, INTENT(IN)          :: dims(:)
     INTEGER, INTENT(IN)          :: fd_rule
     REAL(dp), INTENT(IN)         :: time
     REAL(dp), INTENT(IN)         :: efield(:), afield(:)
@@ -495,9 +521,16 @@ CONTAINS
     !----------------------------------------------------------!
     
     IF(i_am_surface(rank) .EQ. 1) THEN
-       CALL get_cartesian_boundary( wavefunc, spherical_wave3D_local, &
+       ! For scattered interpolation
+       !CALL get_cartesian_boundary( wavefunc, spherical_wave3D_local, &
+       !     spherical_wave3D_dr, spherical_wave3D_dtheta, &
+       !     spherical_wave3D_dphi, 'quadratic',rank)
+
+       ! For tricubic interpolation
+       CALL get_cartesian_boundary( x_ax, y_ax, z_ax, dims, &
+            wavefunc, fd_rule, spherical_wave3D_local, &
             spherical_wave3D_dr, spherical_wave3D_dtheta, &
-            spherical_wave3D_dphi, 'quadratic',rank)
+            spherical_wave3D_dphi, rank)
        
        ! Communicate the spherical wavefunction
        numtotalpts = numrpts * numthetapts * numphipts
@@ -575,7 +608,10 @@ CONTAINS
   SUBROUTINE delete_surface3D_serial()
     
     IMPLICIT NONE
-      
+
+    ! Deallocate fd coeffs
+    CALL delete_fd_coeffs()
+    
     DEALLOCATE(spherical_wave3D,spherical_wave3D_deriv)
     DEALLOCATE(spherical_wave3D_dr)
     DEALLOCATE(spherical_wave3D_dtheta)
@@ -590,6 +626,9 @@ CONTAINS
     IMPLICIT NONE
     
     INTEGER, INTENT(IN)         :: rank
+    
+    ! Deallocate fd coeffs
+    CALL delete_fd_coeffs()
     
     IF(i_am_surface(rank) .EQ. 1) THEN
        DEALLOCATE(spherical_wave3D_local,spherical_wave3D_global)

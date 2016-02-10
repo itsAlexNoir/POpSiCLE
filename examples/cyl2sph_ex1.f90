@@ -174,7 +174,7 @@ PROGRAM cyl2sph_ex1
   !     sphfunc_dth, 'quadratic')
   
   CALL get_cylindrical_boundary(rho_ax, z_ax, dims, cylfunc, &
-       2, sphfunc, sphfunc_dr, sphfunc_dth)
+       6, sphfunc, sphfunc_dr, sphfunc_dth)
   
   CALL cpu_time(end_time)
   

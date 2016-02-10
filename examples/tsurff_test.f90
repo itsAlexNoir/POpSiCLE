@@ -9,6 +9,7 @@ PROGRAM tsurff_test
   INTEGER                    :: numthetapts
   INTEGER                    :: numphipts 
   REAL(dp)                   :: k_cutoff
+  REAL(dp)                   :: coulomb_exp
   COMPLEX(dp), ALLOCATABLE   :: b(:, :, :)
   CHARACTER(LEN=100)         :: filename
   
@@ -32,12 +33,13 @@ PROGRAM tsurff_test
   
   radius_boundary = 50.0_dp
   lmax = 10
-
+  coulomb_exp = 0.5_dp
+  
   filename = 'data/h2p/surfaces/sphfunc.rb50.000.lmax010'
   
   CALL initialize_tsurff(filename, radius_boundary, lmax, &
        k_cutoff, numkpts, numthetapts, numphipts, &
-       lmax_total, mmax )
+       lmax_total, mmax ,coulomb_exp )
   
   mmin = - mmax
   

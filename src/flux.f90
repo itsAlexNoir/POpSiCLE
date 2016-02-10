@@ -44,6 +44,7 @@ MODULE flux
   ! Private variables
   INTEGER                       :: numkpts
   REAL(dp)                      :: dt, dk, kmax, kmax_th
+  REAL(dp)                      :: coulomb_exp_ener
   INTEGER                       :: ntime
   INTEGER                       :: maxfactlog
   COMPLEX(dp), ALLOCATABLE      :: psi_sph(:, :), psip_sph(:, :)
@@ -57,6 +58,8 @@ MODULE flux
   INTEGER                       :: numpts, numrpts
   INTEGER                       :: numthetapts, numphipts
 
+
+  REAL(dp), allocatable                     :: ax(:), weights(:)
   !-------------------------------------------------------------!
   !-------------------------------------------------------------!
 
@@ -64,7 +67,7 @@ CONTAINS
 
   SUBROUTINE initialize_tsurff(filename, radb, lmax_desired, &
        kmax_input, maxkpts, maxthetapts, maxphipts, &
-       lmax_total, mmax)
+       lmax_total, mmax, coulomb_exp )
 
     IMPLICIT NONE
 
@@ -77,7 +80,8 @@ CONTAINS
     INTEGER, INTENT(OUT)             :: maxphipts
     INTEGER, INTENT(OUT)             :: lmax_total
     INTEGER, INTENT(OUT)             :: mmax
-
+    REAL(dp), INTENT(IN), OPTIONAL   :: coulomb_exp
+    
     INTEGER                          :: lmax, mmin
     INTEGER                          :: iphi, ik, il
 
@@ -94,29 +98,37 @@ CONTAINS
     kmax_th = twopi / dt
     dk = twopi / ntime / dt
 
+    ! This factor shift the energy if we
+    ! are dealing with fixed nuclei molecules
+    coulomb_exp_ener = 0.0_dp
+    IF(PRESENT(coulomb_exp)) &
+         coulomb_exp_ener = coulomb_exp
+    
     kmax = kmax_input
     if(kmax.GT.kmax_th) THEN
        WRITE(*,*) 'Kmax desired large than the theoretical.'
        STOP
     ENDIF
-
+    
     WRITE(*,'(A,F10.6)')  'Theoretical kmax:                ',kmax_th
     WRITE(*,'(A,F9.6)')  'Desired kmax:                    ',kmax
     WRITE(*,'(A,F9.6)')  'dk:                              ',dk
+    IF(PRESENT(coulomb_exp)) &
+         WRITE(*,'(A,F9.6)')  'Coulomb explosion energy (a.u.): ', coulomb_exp_ener
     WRITE(*,*)           '---------------------------------------------------------&
          &---------------------'
     WRITE(*,*)
-
+    
     numkpts = INT( kmax / dk)
     maxkpts = numkpts
-
+    
     ALLOCATE(k_ax(1:numkpts))
-
+    
     DO ik = 1, numkpts
        k_ax(ik) = REAL(ik,dp) * dk
     ENDDO
-
-
+    
+    
     ! Assign  surface radius
     rb = radb
     ! Assign angular momenta
@@ -134,7 +146,7 @@ CONTAINS
           mmin = -lmax
        ENDIF
     ENDIF
-
+    
     ! Allocate wavefunction arrays
     ALLOCATE(psi_sph(1:numthetapts,1:numphipts))
     ALLOCATE(psip_sph(1:numthetapts,1:numphipts))
@@ -150,6 +162,11 @@ CONTAINS
     CALL get_gauss_stuff(-1.0_dp, 1.0_dp, costheta_ax, gauss_weights)
     theta_ax = ACOS(costheta_ax)
 
+    
+    allocate(ax(1:numthetapts),weights(1:numthetapts))
+    CALL get_gauss_stuff(0.0_dp, pi, ax, weights)
+    
+    
     DO iphi = 1, numphipts
        phi_ax(iphi) = REAL(iphi,dp) * twopi / REAL(numphipts,dp)
     ENDDO
@@ -182,52 +199,58 @@ CONTAINS
   END SUBROUTINE initialize_tsurff
 
   !**************************************!
-
-  SUBROUTINE get_volkov_phase(phase, afield, deltat)
-
+  
+  SUBROUTINE get_volkov_phase(phase, afield, deltat, &
+       coulomb_exp_ener)
+    
     IMPLICIT NONE
 
-    COMPLEX(dp), INTENT(INOUT) :: phase(:, :, :)
-    REAL(dp), INTENT(IN)       :: afield(:)
-    REAL(dp), INTENT(IN)       :: deltat
-
-    REAL(dp), ALLOCATABLE      :: newterm(:, :, :)
-    REAL(dp)                   :: term1, term2
-    REAL(dp)                   :: term3, term4
-    REAL(dp)                   :: afieldsq
-    INTEGER                    :: ik, itheta, iphi
+    COMPLEX(dp), INTENT(INOUT)     :: phase(:, :, :)
+    REAL(dp), INTENT(IN)           :: afield(:)
+    REAL(dp), INTENT(IN)           :: deltat
+    REAL(dp), INTENT(IN), OPTIONAL :: coulomb_exp_ener
+    
+    REAL(dp), ALLOCATABLE          :: newterm(:, :, :)
+    REAL(dp)                       :: term1, term2
+    REAL(dp)                       :: term3, term4
+    REAL(dp)                       :: cou_ener
+    INTEGER                        :: ik, itheta, iphi
 
     !-------------------------------------------------!
 
     ALLOCATE(newterm(1:numkpts, 1:numthetapts, 1:numphipts))
-
-    afieldsq = afield(1)**2 + afield(2)**2 + &
-         afield(3)**2
-
+    
+    IF(PRESENT(coulomb_exp_ener)) THEN
+       cou_ener = coulomb_exp_ener
+    ELSE
+       cou_ener = 0.0_dp
+    ENDIF
+    
     !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
     !$OMP& PRIVATE(term1,term2,term3,term4)
-
+    
     !$OMP DO COLLAPSE(3)
     DO ik = 1, numkpts
        DO iphi = 1, numphipts
           DO itheta = 1, numthetapts
              term1 =  k_ax(ik) * k_ax(ik)
-
+             
              term2 = k_ax(ik) * afield(1) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
              term3 = k_ax(ik) * afield(2) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
              term4 = k_ax(ik) * afield(3) * COS(theta_ax(itheta))
-             newterm(ik,itheta,iphi) = term1 + afieldsq - 2.0_dp * (term2 + term3 + term4)
-
+             newterm(ik,itheta,iphi) = term1 - 2.0_dp * (term2 + term3 + term4)
+             
              phase(ik,itheta,iphi) = phase(ik,itheta,iphi) * &
-                  EXP(-ZIMAGONE * 0.5_dp * newterm(ik,itheta,iphi) * deltat)
+                  EXP( ZIMAGONE * (0.5_dp * newterm(ik,itheta,iphi) + &
+                  cou_ener) * deltat )
           ENDDO
        ENDDO
     ENDDO
     !$OMP END DO NOWAIT
     !$OMP END PARALLEL
-
+    
     DEALLOCATE(newterm)
-
+    
   END SUBROUTINE get_volkov_phase
 
   !****************************************************************!
@@ -249,6 +272,7 @@ CONTAINS
     INTEGER                      :: itime, il, im
     INTEGER                      :: ik, itheta, iphi
 
+    real(dp)                   :: sum
     !----------------------------------------------------!
 
     mmin = -mmax
@@ -264,7 +288,7 @@ CONTAINS
 
     WRITE(*,*)
     WRITE(*,*)
-    WRITE(*,*) '----------------------'
+    WRITE(*,*) '------------------------'
     WRITE(*,*) 'Begin time integral...'
 
     ! We begin the time loop!!
@@ -292,20 +316,21 @@ CONTAINS
        intflux = ZERO
        CALL calculate_time_integrand(psi_lm, psip_lm, &
             lmax, mmax, afield(:,itime), intflux)
-       
+
        ! Get the Volkov phase (one per time step)
-       CALL get_volkov_phase(volkov_phase, afield(:,itime), dt)
+       CALL get_volkov_phase(volkov_phase, afield(:,itime), dt, &
+            coulomb_exp_ener )
        
        !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi)
-
+       
        !$OMP DO COLLAPSE(3)
        DO iphi = 1, numphipts
           DO itheta = 1, numthetapts
              DO ik = 1, numkpts
-
+                
                 intflux(ik,itheta,iphi) = intflux(ik,itheta,iphi) * &
                      volkov_phase(ik,itheta,iphi)
-
+                
                 IF((itime.EQ.1) .OR. (itime.EQ.ntime)) THEN
                    bk(ik,itheta,iphi) = bk(ik,itheta,iphi) + &
                         intflux(ik,itheta,iphi) * 0.5_dp
@@ -327,9 +352,24 @@ CONTAINS
     WRITE(*,*) 'Time integral finished!'
     WRITE(*,*) '------------------------'
     WRITE(*,*)
+    
+    bk = bk * SQRT(2.0_dp / pi) * ZIMAGONE * dt
+    
+    sum = 0.0
+    do itheta =1, numthetapts
+       sum = sum + costheta_ax(itheta)**2 * gauss_weights(itheta)
+    ENDdo
+    
+    write(*,*) 'suma',sum
 
-    bk = bk * ZIMAGONE * dt
+    sum = 0.0
+    do itheta =1, numthetapts
+       sum = sum + cos(ax(itheta))**2* sin(ax(itheta))* weights(itheta)
+    ENDdo
+    
+    write(*,*) 'suma',sum
 
+   
   END SUBROUTINE get_flux
 
   !***************************************!
@@ -380,7 +420,7 @@ CONTAINS
                    term2 =  - 0.5_dp * (-ZIMAGONE)**il * &
                         rb * jl(il,ik) * psip_lm(im,il)
                    
-                   term3 = 0.5_dp * ZIMAGONE / SQRT(pi) * afield(3) * rb * &
+                   term3 =  - 0.5_dp * ZIMAGONE / SQRT(pi) * afield(3) * rb * &
                         psi_lm(im,il)
                    
                    DO ill = 0, lmax
@@ -425,6 +465,7 @@ CONTAINS
     ENDDO
     !$OMP END DO NOWAIT
     !$OMP END PARALLEL
+    
     
   END SUBROUTINE calculate_time_integrand
   

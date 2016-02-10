@@ -44,9 +44,9 @@ PROGRAM cart2sph_ex1
   WRITE(*,*)
 
   ! Set number of points
-  numxpts = 80
-  numypts = 80
-  numzpts = 80
+  numxpts = 120
+  numypts = 120
+  numzpts = 120
   
   ! Set grid spacing
   dx   = 0.1_dp
@@ -89,7 +89,7 @@ PROGRAM cart2sph_ex1
               thetapt = ACOS( z_ax(iz) / rpt )
            ENDIF
            
-           phipt = ATAN2( y_ax(iy) , x_ax(ix) )
+           phipt = pi - ATAN2( y_ax(iy) , -x_ax(ix) )
            
            Y_lm(ix,iy,iz) = 0.25_dp * SQRT(5.0_dp / pi) * &
                 ( 3.0_dp * COS(thetapt)**2 - 1.0_dp) !* COS(phipt) !EXP(ZIMAGONE*phipt)
@@ -106,7 +106,7 @@ PROGRAM cart2sph_ex1
   
   
   ! Initialize the boundary
-  Rboundary = 2.0_dp
+  Rboundary = 3.0_dp
   tolerance = 0.15_dp
   dr = 0.1_dp
   lmax = 10
@@ -133,12 +133,12 @@ PROGRAM cart2sph_ex1
   CALL cpu_time(start_time)
 
   !! For scattered interpolation uncomment the subroutine below
-  CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
-       Rboundary, tolerance, 2, dr, lmax, &
-       numpts, numrpts, numthetapts, numphipts )
-  
   !CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
-  !     Rboundary, 2, dr, lmax, numrpts, numthetapts, numphipts)
+  !     Rboundary, tolerance, 2, dr, lmax, &
+  !     numpts, numrpts, numthetapts, numphipts )
+  
+  CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
+       Rboundary, 2, dr, lmax, numrpts, numthetapts, numphipts)
   
   CALL cpu_time(end_time)
   
@@ -170,11 +170,11 @@ PROGRAM cart2sph_ex1
   CALL cpu_time(start_time)
 
   !! For scattered interpolation uncomment the subroutine below
-  CALL get_cartesian_boundary(cartfunc, sphfunc, sphfunc_dr, &
-       sphfunc_dth, sphfunc_dphi, 'quadratic')
+  !CALL get_cartesian_boundary(cartfunc, sphfunc, sphfunc_dr, &
+  !     sphfunc_dth, sphfunc_dphi, 'quadratic')
   
-  !CALL get_cartesian_boundary(x_ax, y_ax, z_ax, dims, cartfunc, &
-  !, sphfunc, sphfunc_dr, sphfunc_dth, sphfunc_dphi)
+  CALL get_cartesian_boundary(x_ax, y_ax, z_ax, dims, cartfunc, &
+       6, sphfunc, sphfunc_dr, sphfunc_dth, sphfunc_dphi)
   
   CALL cpu_time(end_time)
   
@@ -189,7 +189,7 @@ PROGRAM cart2sph_ex1
                 0.25_dp * SQRT(5.0_dp / pi) * &
                 ( 3.0_dp * COS(theta_boundary(itheta))**2 - 1.0_dp)
                 !0.5_dp * SQRT(3.0_dp / pi) * COS(theta_boundary(itheta))
-
+           
            maxerror = MAX(maxerror, ABS(sphfunc(ir,itheta, iphi) -&
                 ref_value))
            minerror = MIN(minerror, ABS(sphfunc(ir,itheta, iphi) -&

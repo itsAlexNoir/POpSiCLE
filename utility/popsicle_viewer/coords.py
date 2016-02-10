@@ -140,3 +140,10 @@ def extract_subset(bigmatrix,xaxis,yaxis,zaxis,limits):
 	submatrix = bigmatrix[indxmin:indxmax,indymin:indymax,indzmin:indzmax]
 	
 	return subxaxis,subyaxis,subzaxis,submatrix
+
+def func_smoother(ax1,func,ax2):
+    interpolant = interp.interp1d(ax1,func,kind='cubic')
+    interpfunc = interpolant(ax2)
+    return interpfunc
+
+    
