@@ -18,12 +18,17 @@ MODULE fourier
   PUBLIC                         :: FFT
   PUBLIC                         :: HankelTransform
   PUBLIC                         :: create_mask
+  PUBLIC                         :: create_correlated_mask
   
   INTERFACE create_mask
      MODULE PROCEDURE create_mask4D
      MODULE PROCEDURE create_mask3D
      MODULE PROCEDURE create_mask2D
   END INTERFACE create_mask
+
+  INTERFACE create_correlated_mask
+     MODULE PROCEDURE create_correlated_mask3D1D
+  END INTERFACE create_correlated_mask
   
   INTERFACE FourierTransform
      MODULE PROCEDURE FourierTransform_serial
@@ -1026,5 +1031,80 @@ CONTAINS
   
   !----------------------------------------!
   
+  SUBROUTINE create_correlated_mask3D1D(mask, x_ax, y_ax, &
+       z_ax, r_ax, inner_erad, outer_erad, inner_nrad, outer_nrad)
+    
+    IMPLICIT NONE
+    
+    !--Program variables-----------------------------------------------------!
+    
+    REAL(dp), INTENT(INOUT)             :: mask(:, :)
+    REAL(dp), INTENT(IN)                :: inner_erad
+    REAL(dp), INTENT(IN)                :: outer_erad
+    REAL(dp), INTENT(IN)                :: inner_nrad
+    REAL(dp), INTENT(IN)                :: outer_nrad
+    REAL(dp), INTENT(IN)                :: x_ax(:)
+    REAL(dp), INTENT(IN)                :: y_ax(:)
+    REAL(dp), INTENT(IN)                :: z_ax(:)
+    REAL(dp), INTENT(IN)                :: r_ax(:) 
+    
+    INTEGER, ALLOCATABLE                :: dims(:)
+    REAL(dp)                            :: sigma
+    REAL(dp)                            :: erad, nrad
+    INTEGER                             :: ix, iy, iz, ir
+    
+    !------------------------------------------------------------------------!
+    
+    ALLOCATE(dims(1:4))
+    
+    dims = SHAPE(mask)
+    
+    IF (SIZE(x_ax).NE.dims(1) &
+         .OR. SIZE(y_ax).NE.dims(2) &
+         .OR. SIZE(z_ax).NE.dims(3) &
+         .OR. SIZE(r_ax).NE.dims(4) ) THEN
+       WRITE(*,*) 'Dimensions of the input arrays do not match.'
+       STOP
+    ENDIF
+    
+    ! Calculate the sigma
+    sigma = ( (outer_erad / inner_erad)**2 + (outer_nrad/inner_nrad)**2 &
+         - 1.0_dp ) / SQRT( - LOG( 1E-50 ) )
+    
+    ! Create the mask
+    DO ir = 1, dims(4)
+       DO iz = 1, dims(3)
+          DO iy = 1, dims(2)
+             DO ix = 1, dims(1)
+                
+                erad = SQRT(x_ax(ix) * x_ax(ix) + &
+                     y_ax(iy) * y_ax(iy) + &
+                     z_ax(iz) * z_ax(iz)  )
+                
+                nrad = r_ax(ir)
+                
+                IF( (erad/inner_erad)**2 + (nrad/inner_nrad)**2 .LT. 1.0_dp ) THEN
+                   mask(ix,iy,iz,ir) = 0.0E-15_dp
+                   
+                ELSEIF( ( (erad/inner_erad)**2 + (nrad/inner_nrad)**2 .GT. 1.0_dp ) &
+                     .AND. &
+                     ( (erad/outer_erad)**2 + (nrad/outer_nrad)**2 .LT. 1.0_dp ) ) THEN
+                   mask(ix,iy,iz,ir) = 
+                   
+                ELSE
+                   mask(ix,iy,iz,ir) = 1.0_dp
+                ENDIF
+                
+             ENDDO
+          ENDDO
+       ENDDO
+    ENDDO
+    
+    DEALLOCATE(dims)
+    
+    
+  END SUBROUTINE create_correlated_mask3D1D
+  
+  !----------------------------------------!
   
 END MODULE fourier
