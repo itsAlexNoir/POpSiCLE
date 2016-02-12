@@ -1038,7 +1038,7 @@ CONTAINS
     
     !--Program variables-----------------------------------------------------!
     
-    REAL(dp), INTENT(INOUT)             :: mask(:, :)
+    REAL(dp), INTENT(INOUT)             :: mask(:, :, :, :)
     REAL(dp), INTENT(IN)                :: inner_erad
     REAL(dp), INTENT(IN)                :: outer_erad
     REAL(dp), INTENT(IN)                :: inner_nrad
@@ -1069,7 +1069,7 @@ CONTAINS
     
     ! Calculate the sigma
     sigma = ( (outer_erad / inner_erad)**2 + (outer_nrad/inner_nrad)**2 &
-         - 1.0_dp ) / SQRT( - LOG( 1E-50 ) )
+         - 1.0_dp ) / SQRT( - LOG( 1.0E-50_dp ) )
     
     ! Create the mask
     DO ir = 1, dims(4)
@@ -1089,7 +1089,7 @@ CONTAINS
                 ELSEIF( ( (erad/inner_erad)**2 + (nrad/inner_nrad)**2 .GT. 1.0_dp ) &
                      .AND. &
                      ( (erad/outer_erad)**2 + (nrad/outer_nrad)**2 .LT. 1.0_dp ) ) THEN
-                   mask(ix,iy,iz,ir) = 
+                   mask(ix,iy,iz,ir) = 1.0_dp - EXP( - ( ( (erad/inner_erad)**2 + (nrad/inner_nrad)**2 -1.0_dp )/sigma )**2 )
                    
                 ELSE
                    mask(ix,iy,iz,ir) = 1.0_dp
