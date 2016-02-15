@@ -272,7 +272,7 @@ CONTAINS
 !!$       !write(*,*) 'name: ',name
 !!$       CALL h5gopen_f(file_id, name, group_id, error)
 !!$    ELSE
-    CALL h5fcreate_f(name, H5F_ACC_EXCL_F, file_id, error, access_prp = plist_id)
+    CALL h5fcreate_f(name, H5F_ACC_TRUNC_F, file_id, error, access_prp = plist_id)
     CALL h5pclose_f(plist_id, error)
     !file_exists = .TRUE.
 
