@@ -131,7 +131,9 @@ bessel.o: constants.o
 gaussleg.o: constants.o
 scatt_interp.o: constants.o ${SHEPPACK_OBJS}
 cubic_interp.o: constants.o
-coords.o: constants.o scatt_interp.o
+scattcoords.o: constants.o scatt_interp.o
+cubcoords.o: constants.o tools.o cubic_interp.o
+coords.o: scattcoords.o cubcoords.o
 scattboundcyl.o: constants.o gaussleg.o scatt_interp.o
 scattboundcart.o: constants.o gaussleg.o scatt_interp.o
 cubboundcyl.o: constants.o tools.o gaussleg.o \
@@ -160,17 +162,20 @@ observables.o: constants.o sht.o flux.o io_pop.o
 popsicle.o : constants.o fourier.o \
 	scattboundcyl.o scattboundcart.o \
 	cubboundcyl.o  cubboundcart.o \
-	coords.o io_pop.o io_subset.o \
-	io_surface.o sht.o bessel.o gaussleg.o \
+	scattcoords.o cubcoords.o coords.o \
+	io_pop.o io_subset.o io_surface.o \
+	sht.o bessel.o gaussleg.o \
 	patchwork.o surface.o observables.o
 
 
 ########################################################
 
 tools.lo: constants.lo
-coords.lo: constants.lo scatt_interp.lo
 scatt_interp.lo: constants.lo ${SHEPPACK_LO}
 cubic_interp.lo: constants.lo
+scattcoords.lo: constants.lo scatt_interp.lo
+cubcoords.lo: constants.lo tools.o cubic_interp.lo
+coords.lo: scattcoords.lo cubcoords.lo
 scattboundcyl.lo: constants.lo gaussleg.lo scatt_interp.lo
 scattboundcart.lo: constants.lo gaussleg.lo scatt_interp.lo
 cubboundcyl.lo: constants.lo tools.lo gaussleg.lo \
@@ -201,8 +206,9 @@ observables.lo: constants.lo sht.lo flux.lo io_pop.lo
 popsicle.lo : constants.lo fourier.lo \
 	scattboundcyl.lo scattboundcart.lo \
 	cubboundcyl.lo  cubboundcart.lo \
-	coords.lo io_pop.lo io_subset.lo \
-	io_surface.lo sht.lo bessel.lo gaussleg.lo \
+	scattcoords.lo cubcoords.lo coords.lo \
+	io_pop.lo io_subset.lo io_surface.lo \
+	sht.lo bessel.lo gaussleg.lo \
 	patchwork.lo observables.lo
 
 #################################################################
