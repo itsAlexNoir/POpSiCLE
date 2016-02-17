@@ -272,7 +272,6 @@ CONTAINS
     INTEGER                      :: itime, il, im
     INTEGER                      :: ik, itheta, iphi
 
-    real(dp)                   :: sum
     !----------------------------------------------------!
 
     mmin = -mmax
@@ -354,21 +353,6 @@ CONTAINS
     WRITE(*,*)
     
     bk = bk * SQRT(2.0_dp / pi) * ZIMAGONE * dt
-    
-    sum = 0.0
-    do itheta =1, numthetapts
-       sum = sum + costheta_ax(itheta)**2 * gauss_weights(itheta)
-    ENDdo
-    
-    write(*,*) 'suma',sum
-
-    sum = 0.0
-    do itheta =1, numthetapts
-       sum = sum + cos(ax(itheta))**2* sin(ax(itheta))* weights(itheta)
-    ENDdo
-    
-    write(*,*) 'suma',sum
-
    
   END SUBROUTINE get_flux
 
