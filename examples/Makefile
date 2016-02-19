@@ -8,7 +8,7 @@
 ##    POpSiCLE examples
 ##************************************************
 
-include Sys/intel15_mkl.make
+include Sys/aigis_mkl.make
 
 default: example_serial
 
@@ -65,6 +65,9 @@ endif
 
 ifndef RES_DIR
 RES_DIR = results
+ifeq (,${RES_DIR})
+mkdir -p results
+endif
 endif
 
 ifndef function_serial

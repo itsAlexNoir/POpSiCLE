@@ -424,7 +424,7 @@ CONTAINS
                 i_am_in_local3D(ir,itheta,iphi) = 1
                 
                 ! Look for cell indexes
-                CALL interv(x_ax,SIZE(x_ax),ypt,left,mflag)
+                CALL interv(x_ax,SIZE(x_ax),xpt,left,mflag)
                 cellindex3D(ir,itheta,iphi,1) = left
                 CALL interv(y_ax,SIZE(y_ax),ypt,left,mflag)
                 cellindex3D(ir,itheta,iphi,2) = left
@@ -687,7 +687,7 @@ CONTAINS
                    upper_y = left_y + rulepts
                 ELSEIF(left_y+fdrule+1.GT.UBOUND(y_ax,DIM=1)) THEN
                    lower_y = left_y - rulepts
-                   upper_y = left_x
+                   upper_y = left_y
                 ELSE
                    lower_y = left_y - fdrule
                    upper_y = left_y + fdrule
@@ -960,7 +960,7 @@ CONTAINS
                    upper_y = left_y + rulepts
                 ELSEIF(left_y+fdrule+1.GT.UBOUND(y_ax,DIM=1)) THEN
                    lower_y = left_y - rulepts
-                   upper_y = left_x
+                   upper_y = left_y
                 ELSE
                    lower_y = left_y - fdrule
                    upper_y = left_y + fdrule

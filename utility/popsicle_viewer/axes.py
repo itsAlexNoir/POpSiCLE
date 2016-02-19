@@ -11,7 +11,6 @@
 # Modules a go-go!!
 import numpy as np
 import numba as nb
-#import numbapro as nb
 
 class axes():
     def __init__(self,dke,kemax,lmax,mmax,dk,kmax,
