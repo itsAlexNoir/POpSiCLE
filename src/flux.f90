@@ -238,7 +238,7 @@ CONTAINS
              term2 = k_ax(ik) * afield(1) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
              term3 = k_ax(ik) * afield(2) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
              term4 = k_ax(ik) * afield(3) * COS(theta_ax(itheta))
-             newterm(ik,itheta,iphi) = term1 - 2.0_dp * (term2 + term3 + term4)
+             newterm(ik,itheta,iphi) = term1 + 2.0_dp * (term2 + term3 + term4)
              
              phase(ik,itheta,iphi) = phase(ik,itheta,iphi) * &
                   EXP( ZIMAGONE * (0.5_dp * newterm(ik,itheta,iphi) + &
@@ -308,7 +308,7 @@ CONTAINS
             psip_lm)
        ! Divide by rb
        psi_lm = psi_lm * rb
-       psip_lm = psip_lm * rb
+       psip_lm = psip_lm * rb + psi_lm / rb
        
        
        ! Calculate flux
@@ -372,14 +372,15 @@ CONTAINS
     COMPLEX(dp)                   :: term1, term2
     COMPLEX(dp)                   :: term3, term4
     INTEGER                       :: mmin
-    REAL(dp)                      :: sqrtcoeff, sph_harm
+    REAL(dp)                      :: sqrtcoeff
+    COMPLEX(dp)                   :: sph_harm
     INTEGER                       :: il, ill, im
     INTEGER                       :: ik, itheta, iphi
 
     !---------------------------------------------------!
 
     mmin = -mmax
-    sph_harm = 0.0_dp
+    sph_harm = ZERO
 
     !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
     !$OMP& PRIVATE(term1,term2,term3,term4) &
@@ -395,21 +396,21 @@ CONTAINS
                    term2 = ZERO
                    term3 = ZERO
                    term4 = ZERO
-                   sph_harm = 0.0_dp
+                   sph_harm = ZERO
                    
                    term1 = 0.5_dp * (-ZIMAGONE)**il * &
                         (krb_ax(ik) * jlp(il,ik) - jl(il,ik)) * &
-                        psi_lm(im,il)
+                        func_lm(im,il)
                    
                    term2 =  - 0.5_dp * (-ZIMAGONE)**il * &
-                        rb * jl(il,ik) * psip_lm(im,il)
+                        rb * jl(il,ik) * funcp_lm(im,il)
                    
                    term3 =  - 0.5_dp * ZIMAGONE / SQRT(pi) * afield(3) * rb * &
-                        psi_lm(im,il)
+                        func_lm(im,il)
                    
                    DO ill = 0, lmax
                       sqrtcoeff = SQRT(REAL(2 * il + 1,dp)) / REAL(2 * ill + 1,dp)
-                      sph_harm = 0.0_dp
+                      sph_harm = ZERO
                       IF(im.LT.0) THEN
                          sph_harm = (-1.0_dp)**ABS(im) * normfact(ABS(im),ill) * &
                               legenpl(itheta-1,ABS(im),ill) * &
@@ -419,16 +420,16 @@ CONTAINS
                               legenpl(itheta-1,im,ill) * &
                               EXP(ZIMAGONE * im * phi_ax(iphi))
                       ENDIF
-
+                      
                       term4 = term4 + (-ZIMAGONE)**ill * &
                            sqrtcoeff * jl(ill,ik) * &
                            clebsch(il, 1, ill, im, 0, im, factlog, maxfactlog) * &
                            clebsch(il, 1, ill, 0, 0, 0, factlog, maxfactlog) * &
                            sph_harm
                    ENDDO
-
+                   
                    term3 = term3 * term4
-
+                   
                    IF(im.LT.0) THEN
                       sph_harm = (-1.0_dp)**ABS(im) * &
                            normfact(ABS(im),il) * legenpl(itheta-1,ABS(im),il) * &

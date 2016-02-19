@@ -398,10 +398,10 @@ CONTAINS
     REAL(dp), INTENT(OUT)             :: psi_in(:, :, :)
     INTEGER, INTENT(IN)               :: rank
     INTEGER, INTENT(IN)               :: dims(:)
-    INTEGER, INTENT(IN)               :: offset(:)
+    INTEGER, INTENT(IN), OPTIONAL     :: offset(:)
 
     ! File identifier
-    INTEGER(HID_T)                 :: file_id
+    INTEGER(HID_T)                    :: file_id
     ! Group identifier
     INTEGER(HID_T)                    :: grp_id
     ! Dataset identifier
@@ -437,7 +437,11 @@ CONTAINS
     CALL h5dopen_f(file_id, dsetname, dset_id, error)
     
     ! Get dataset's dataspace identifier and select subset.
-    subset_offset = offset
+    IF(PRESENT(offset)) THEN
+       subset_offset = offset
+    ELSE
+       subset_offset = 0
+    ENDIF
     subset_size = dims
     CALL h5dget_space_f(dset_id, dataspace, error)
     CALL h5sselect_hyperslab_f(dataspace, H5S_SELECT_SET_F, &
@@ -455,7 +459,6 @@ CONTAINS
     CALL h5sclose_f(memspace, error)
     CALL h5dclose_f(dset_id, error)
     CALL h5gclose_f(grp_id, error)
-    CALL h5fclose_f(file_id, error)
     CALL h5fclose_f(file_id, error)
     
     
@@ -478,11 +481,11 @@ CONTAINS
     INTEGER, INTENT(IN)               :: rank
     INTEGER, INTENT(IN)               :: dims(:)
     INTEGER, INTENT(IN)               :: dims_proc(:)
-    INTEGER, INTENT(IN)               :: offset(:)
+    INTEGER, INTENT(IN), OPTIONAL     :: offset(:)
     INTEGER, INTENT(IN)               :: comm
 
     ! File identifier
-    INTEGER(HID_T)                 :: file_id
+    INTEGER(HID_T)                   :: file_id
     ! Property list identifier 
     INTEGER(HID_T)                    :: plist_id
     ! Group identifier
@@ -526,7 +529,11 @@ CONTAINS
     CALL h5gopen_f(file_id, groupname, grp_id, error)
     
     ! Set dims
-    subset_offset = offset
+    IF(PRESENT(offset)) THEN
+       subset_offset = offset
+    ELSE
+       subset_offset = 0
+    ENDIF
     subset_size_proc = dims_proc
     subset_size = dims
     
