@@ -155,17 +155,22 @@ CONTAINS
     ! End access to the dataset and release 
     ! resources used by it.
     CALL h5dclose_f(dset_id, error)
-    
     ! Terminate access to the data space.
     CALL h5sclose_f(dspace_id, error)
-    
-    DEALLOCATE(file_dims)
-    
     ! Close the file.
     CALL h5fclose_f(file_id, error)
-    
     ! Close HDF5 fortran interface
     CALL h5close_f(error)
+    
+    IF(rank.EQ.2) THEN
+       DEALLOCATE(wave2D)
+    ELSEIF(rank.EQ.3) THEN
+       DEALLOCATE(wave3D)
+    ELSEIF(rank.EQ.4) THEN
+       DEALLOCATE(wave4D)
+    ENDIF
+    DEALLOCATE(file_dims)
+
     
   END SUBROUTINE write_wave_serial
  
@@ -385,6 +390,7 @@ CONTAINS
     CALL h5close_f(error)
     
     ! Free arrays
+    DEALLOCATE(file_dims,proc_dims)
     DEALLOCATE(stride,cont,blck,offset)
     IF(rank.EQ.2) THEN
        DEALLOCATE(wave2D)

@@ -383,7 +383,7 @@ CONTAINS
     IMPLICIT NONE
     
     INTEGER, INTENT(IN)            :: fd_rule    
-    REAL(dp), INTENT(IN)           :: func(-fd_rule:fd_rule)
+    REAL(dp), INTENT(IN)           :: func(-fd_rule:)
     REAL(dp), INTENT(OUT)          :: func_dx
     REAL(dp), INTENT(IN)           :: dx
     REAL(dp), INTENT(IN), OPTIONAL :: fdcoeffs(-fd_rule:fd_rule)
@@ -415,7 +415,7 @@ CONTAINS
     IMPLICIT NONE
     
     INTEGER, INTENT(IN)            :: fd_rule  
-    COMPLEX(dp), INTENT(IN)        :: func(-fd_rule:fd_rule)
+    COMPLEX(dp), INTENT(IN)        :: func(-fd_rule:)
     COMPLEX(dp), INTENT(OUT)       :: func_dx
     REAL(dp), INTENT(IN)           :: dx
     REAL(dp), INTENT(IN), OPTIONAL :: fdcoeffs(-fd_rule:fd_rule)
@@ -448,8 +448,8 @@ CONTAINS
     IMPLICIT NONE
     
     INTEGER, INTENT(IN)            :: fd_rule
-    REAL(dp), INTENT(IN)           :: func(-fd_rule:fd_rule,&
-         -fd_rule:fd_rule)
+    REAL(dp), INTENT(IN)           :: func(-fd_rule:,&
+         -fd_rule:)
     REAL(dp), INTENT(OUT)          :: func_dxdy
     REAL(dp), INTENT(IN)           :: dx, dy
     REAL(dp), INTENT(IN), OPTIONAL :: xcoeffs(-fd_rule:fd_rule)
@@ -500,8 +500,8 @@ CONTAINS
     IMPLICIT NONE
     
     INTEGER, INTENT(IN)            :: fd_rule
-    COMPLEX(dp), INTENT(IN)        :: func(-fd_rule:fd_rule,&
-         -fd_rule:fd_rule)
+    COMPLEX(dp), INTENT(IN)        :: func(-fd_rule:,&
+         -fd_rule:)
     COMPLEX(dp), INTENT(OUT)       :: func_dxdy
     REAL(dp), INTENT(IN)           :: dx, dy
     REAL(dp), INTENT(IN), OPTIONAL :: xcoeffs(-fd_rule:fd_rule)
@@ -552,8 +552,8 @@ CONTAINS
     IMPLICIT NONE
     
     INTEGER, INTENT(IN)            :: fd_rule
-    REAL(dp), INTENT(IN)           :: func(-fd_rule:fd_rule,&
-         -fd_rule:fd_rule,-fd_rule:fd_rule)
+    REAL(dp), INTENT(IN)           :: func(-fd_rule:,&
+         -fd_rule:,-fd_rule:)
     REAL(dp), INTENT(OUT)          :: func_dxdydz
     REAL(dp), INTENT(IN)           :: dx, dy, dz
     REAL(dp), INTENT(IN), OPTIONAL :: xcoeffs(-fd_rule:fd_rule)
@@ -628,8 +628,8 @@ CONTAINS
     IMPLICIT NONE
     
     INTEGER, INTENT(IN)            :: fd_rule
-    COMPLEX(dp), INTENT(IN)        :: func(-fd_rule:fd_rule,&
-         -fd_rule:fd_rule,-fd_rule:fd_rule)
+    COMPLEX(dp), INTENT(IN)        :: func(-fd_rule:,&
+         -fd_rule:,-fd_rule:)
     COMPLEX(dp), INTENT(OUT)       :: func_dxdydz
     REAL(dp), INTENT(IN)           :: dx, dy, dz
     REAL(dp), INTENT(IN), OPTIONAL :: xcoeffs(-fd_rule:fd_rule)

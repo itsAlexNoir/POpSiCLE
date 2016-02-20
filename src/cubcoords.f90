@@ -30,10 +30,7 @@ MODULE cubcoords
   PUBLIC           zcubic_cartesian2spherical3D
   PUBLIC           dcubic_cylindrical2spherical2D
   PUBLIC           zcubic_cylindrical2spherical2D
-  
-  INTEGER          :: numpts, numrpts
-  INTEGER          :: numthetapts, numphipts
-  
+    
 CONTAINS
   
   !----------------------------------------------------------------!
@@ -363,12 +360,6 @@ CONTAINS
                         psi_sph(ir,itheta,iphi),psi3D_sph_dr,&
                         psi3D_sph_dth,psi3D_sph_dphi)
                    
-                   if(ir.eq.1 .and. itheta.eq.1 .and. iphi.eq.1) then
-                      write(*,*) 'psi_in',psi_in
-                      write(*,*) 'xpts',xpt
-                      write(*,*) x_ax(left_x), x_ax(left_x+1)
-                   endif
-                   
                 ELSE
                    WRITE(*,*) 'You must input an array for getting the derivatives!'
                    RETURN
@@ -535,9 +526,9 @@ CONTAINS
     ALLOCATE(psi_in_vol_xyz(-fdrule:fdrule,-fdrule:fdrule,&
          -fdrule:fdrule,8))
     
-    DO iphi = 1, numphipts
-       DO itheta = 1, numthetapts
-          DO ir = 1, numrpts
+    DO iphi = 1, dims_out(3)
+       DO itheta = 1, dims_out(2)
+          DO ir = 1, dims_out(1)
              IF(i_am_in3D(ir,itheta,iphi).EQ.1) THEN
                 psi_in       = 0.0_dp
                 psi_in_dx    = 0.0_dp
