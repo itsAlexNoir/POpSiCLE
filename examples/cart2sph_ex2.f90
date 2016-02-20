@@ -185,8 +185,8 @@ PROGRAM cart2sph_ex2
   CALL cpu_time(start_time)
   
   CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, local_dims, &
-       Rboundary, tolerance, 2, dr, lmax, rank, size, MPI_COMM_WORLD,  &
-       numpts, numrpts, numthetapts, numphipts, surfacerank, maxsurfprocs, &
+       Rboundary, 2, dr, lmax, rank, size, MPI_COMM_WORLD,  &
+       numrpts, numthetapts, numphipts, surfacerank, maxsurfprocs, &
        newcomm, numthetaptsperproc, numphiptsperproc )
   
   CALL cpu_time(end_time)
@@ -225,8 +225,9 @@ PROGRAM cart2sph_ex2
   IF(i_am_surface_local(rank)) THEN
      CALL cpu_time(start_time)
      
-     CALL get_cartesian_boundary(cartfunc, sphfunc, sphfunc_dr, &
-          sphfunc_dth, sphfunc_dphi, 'quadratic')
+     CALL get_cartesian_boundary(x_ax, y_ax, z_ax, local_dims, &
+          cartfunc, 2, sphfunc, sphfunc_dr, &
+          sphfunc_dth, sphfunc_dphi)
      
      CALL cpu_time(end_time)
      

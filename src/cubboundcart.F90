@@ -469,7 +469,7 @@ CONTAINS
     ALLOCATE(i_am_surface(0:mpi_size-1))
     i_am_surface_local = 0
     i_am_surface = 0
-    
+
     IF(SUM(i_am_in_local3D).NE.0) &
          i_am_surface_local(mpi_rank) = 1
     
@@ -477,7 +477,7 @@ CONTAINS
     ! at the surface
     CALL MPI_ALLREDUCE(i_am_surface_local, i_am_surface, mpi_size, &
          MPI_INTEGER, MPI_SUM, comm, ierror )
-    
+
     numsurfaceprocs = SUM(i_am_surface)
     
     ALLOCATE(surface_members(0:numsurfaceprocs-1))
