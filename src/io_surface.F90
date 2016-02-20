@@ -987,6 +987,7 @@ CONTAINS
     CALL h5gclose_f(wave_group, error)
     CALL h5gclose_f(wavederiv_group, error)
     CALL h5gclose_f(field_group, error)
+    CALL h5gclose_f(time_group, error)
     CALL h5fclose_f(file_id, error)
     CALL h5close_f(error)
     

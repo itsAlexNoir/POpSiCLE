@@ -31,31 +31,31 @@ class axes():
         self.Enmax = Enmax
         self.dE   = dE
         self.Emax  = Emax
-        
-        self.maxkepts = int(kemax / dke)
+
+        self.kemaxpts = int(kemax / dke)
         self.maxthetapts = 2 * self.lmax + 1
         self.maxphipts = 2 * self.mmax + 1
         self.dphi = 2.0 * np.pi / float(self.maxphipts)
-        self.maxptsEe = self.Eemax / self.dEe
-        self.maxkpts  = self.kmax / self.dk
-        
+        self.Eemaxpts = self.Eemax / self.dEe
+        self.kmaxpts  = self.kmax / self.dk
+
         if(fixed_nuclei == False):
             self.dkn = dkn
             self.knmax = knmax
-            self.maxknpts = int(self.knmax / self.dkn)
-            self.maxptsEn = self.Enmax / self.dEn
-            self.maxptsEtotal = self.Emax / self.dE
+            self.knmaxpts = int(self.knmax / self.dkn)
+            self.Enmaxpts = self.Enmax / self.dEn
+            self.Emaxtotalpts = self.Emax / self.dE
 
         #######################################################
         ########################################################
 
         if(fixed_nuclei):
-            self.kn_ax = np.arange(self.dkn,self.knmax,self.dkn)
+            self.kn_ax = np.linspace(self.dkn,self.knmax,self.knmaxpts)
 
         ######################################################
 
-        self.ke_ax = np.arange(self.dke,self.kemax,self.dke)
-        self.k_ax = np.arange(self.dke,self.kmax,self.dk)
+        self.ke_ax = np.linspace(self.dke,self.kemax,self.kemaxpts)
+        self.k_ax = np.linspace(self.dke,self.kmax,self.kmaxpts)
 
         ######################################################
 
@@ -66,15 +66,15 @@ class axes():
 
         ######################################################
 
-        self.phi_ax = np.arange(self.dphi,2.0*np.pi,self.dphi)
+        self.phi_ax = np.linspace(self.dphi,2.0*np.pi,self.maxphipts)
 
         ######################################################
 
-        self.Ee_ax = np.arange(self.dke,self.Eemax,self.dEe)
+        self.Ee_ax = np.linspace(self.dke,self.Eemax,self.Eemaxpts)
 
         if(fixed_nuclei == False):
-            self.En_ax = np.arange(self.dkn,self.Enmax,self.dEn)
-            self.E_ax = np.arange(self.dE,self.Eemax,self.dE)
+            self.En_ax = np.linspace(self.dkn,self.Enmax,self.dEn)
+            self.E_ax = np.linspace(self.dE,self.Eemax,self.dE)
 
         ########################################################
         ########################################################
