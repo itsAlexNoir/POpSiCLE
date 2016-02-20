@@ -23,9 +23,9 @@ MODULE io_subset
   END INTERFACE write_subset
   
   INTERFACE read_subset
-     MODULE PROCEDURE read_subset_3Dserial
+     MODULE PROCEDURE dread_subset_serial
 #if _COM_MPI
-     MODULE PROCEDURE read_subset_3Dparallel
+     MODULE PROCEDURE dread_subset_parallel
 #endif
   END INTERFACE read_subset
   
@@ -390,16 +390,19 @@ CONTAINS
 #endif
   !-------------------------------------------------------------------!
 
-  SUBROUTINE read_subset_3Dserial(filename_in, psi_in, rank, dims, offset)
+  SUBROUTINE dread_subset_serial(filename_in, psi, rank, dims, offset)
     
     IMPLICIT NONE
     
     CHARACTER(LEN=*), INTENT(IN)      :: filename_in
-    REAL(dp), INTENT(OUT)             :: psi_in(:, :, :)
+    REAL(dp), INTENT(OUT)             :: psi(:)
     INTEGER, INTENT(IN)               :: rank
     INTEGER, INTENT(IN)               :: dims(:)
     INTEGER, INTENT(IN), OPTIONAL     :: offset(:)
 
+    REAL(dp), ALLOCATABLE             :: psi2D(:, :)
+    REAL(dp), ALLOCATABLE             :: psi3D(:, :, :)
+    REAL(dp), ALLOCATABLE             :: psi4D(:, :, :, :)  
     ! File identifier
     INTEGER(HID_T)                    :: file_id
     ! Group identifier
@@ -409,11 +412,11 @@ CONTAINS
     ! Dataspace identifier
     INTEGER(HID_T)                    :: dataspace 
     ! dset size
-    INTEGER(HSIZE_T)                  :: subset_size(3)
+    INTEGER(HSIZE_T)                  :: subset_size(rank)
     ! Memspace identifier
     INTEGER(HID_T)                    :: memspace
     ! Hyperslab offset
-    INTEGER(HSIZE_T)                  :: subset_offset(3)
+    INTEGER(HSIZE_T)                  :: subset_offset(rank)
     ! Error flag
     INTEGER                           :: error
     CHARACTER(LEN=100)                :: filename
@@ -423,7 +426,22 @@ CONTAINS
     
     ! Initialize FORTRAN interface. 
     CALL h5open_f(error) 
-    
+
+    IF(rank.EQ.2) THEN
+       ALLOCATE(psi2D(1:dims(1),1:dims(2)))
+       psi2D = RESHAPE(psi,SHAPE(psi2D))
+    ELSEIF(rank.EQ.3) THEN
+       ALLOCATE(psi3D(1:dims(1),1:dims(2),1:dims(3)))
+       psi3D = RESHAPE(psi,SHAPE(psi3D))
+    ELSEIF(rank.EQ.4) THEN
+       ALLOCATE(psi4D(1:dims(1),1:dims(2),1:dims(3), &
+            1:dims(4)))
+       psi4D = RESHAPE(psi,SHAPE(psi4D))
+    ELSE
+       WRITE(*,*) 'No routine for your rank!!'
+       STOP
+    ENDIF
+     
     ! Open the file.
     filename = TRIM(filename_in) // '.h5'
     CALL h5fopen_f(filename, H5F_ACC_RDWR_F, file_id, error)
@@ -448,11 +466,25 @@ CONTAINS
          subset_offset, subset_size, error) 
     
     ! Create memspace
-    CALL h5screate_simple_f(3,subset_size,memspace,error)
+    CALL h5screate_simple_f(rank,subset_size,memspace,error)
     
     ! Read the dataset
-    CALL h5dread_f(dset_id, H5T_NATIVE_DOUBLE, psi_in, subset_size, error, &
-         memspace, dataspace)
+    IF(rank.EQ.2) THEN
+       CALL h5dread_f(dset_id, H5T_NATIVE_DOUBLE, psi2D, subset_size, error, &
+            memspace, dataspace)
+       psi = RESHAPE(psi2D,(/PRODUCT(dims)/))
+       DEALLOCATE(psi2D)
+    ELSEIF(rank.EQ.3) THEN
+       CALL h5dread_f(dset_id, H5T_NATIVE_DOUBLE, psi3D, subset_size, error, &
+            memspace, dataspace)
+       psi = RESHAPE(psi3D,(/PRODUCT(dims)/))
+       DEALLOCATE(psi3D)
+    ELSEIF(rank.EQ.4) THEN
+       CALL h5dread_f(dset_id, H5T_NATIVE_DOUBLE, psi4D, subset_size, error, &
+            memspace, dataspace)
+       psi = RESHAPE(psi4D,(/PRODUCT(dims)/))
+       DEALLOCATE(psi4D)
+    ENDIF
     
     ! Close everything opened.
     CALL h5sclose_f(dataspace, error)
@@ -461,29 +493,31 @@ CONTAINS
     CALL h5gclose_f(grp_id, error)
     CALL h5fclose_f(file_id, error)
     
-    
     ! Close FORTRAN interface.
     CALL h5close_f(error)
     
-  END SUBROUTINE read_subset_3Dserial
+  END SUBROUTINE dread_subset_serial
   
   !-------------------------------------------------------------------!
   
   !-------------------------------------------------------------------!
 #if _COM_MPI
-  SUBROUTINE read_subset_3Dparallel(filename_in, psi_in, rank, dims, &
+  SUBROUTINE dread_subset_parallel(filename_in, psi, rank, dims, &
        dims_proc, offset, comm)
     
     IMPLICIT NONE
     
     CHARACTER(LEN=*), INTENT(IN)      :: filename_in
-    REAL(dp), INTENT(OUT)             :: psi_in(:, :, :)
+    REAL(dp), INTENT(OUT)             :: psi(:)
     INTEGER, INTENT(IN)               :: rank
     INTEGER, INTENT(IN)               :: dims(:)
     INTEGER, INTENT(IN)               :: dims_proc(:)
     INTEGER, INTENT(IN), OPTIONAL     :: offset(:)
     INTEGER, INTENT(IN)               :: comm
 
+    REAL(dp), ALLOCATABLE             :: psi2D(:, :)
+    REAL(dp), ALLOCATABLE             :: psi3D(:, :, :)
+    REAL(dp), ALLOCATABLE             :: psi4D(:, :, :, :)
     ! File identifier
     INTEGER(HID_T)                   :: file_id
     ! Property list identifier 
@@ -495,20 +529,35 @@ CONTAINS
     ! Dataspace identifier
     INTEGER(HID_T)                    :: dataspace 
     ! dset size
-    INTEGER(HSIZE_T)                  :: subset_size(3)
-    INTEGER(HSIZE_T)                  :: subset_size_proc(3)
+    INTEGER(HSIZE_T)                  :: subset_size(rank)
+    INTEGER(HSIZE_T)                  :: subset_size_proc(rank)
     ! Dataspace identifier in file 
     INTEGER(HID_T)                    :: filespace
     ! Memspace identifier
     INTEGER(HID_T)                    :: memspace
     ! Hyperslab offset
-    INTEGER(HSIZE_T)                  :: subset_offset(3)
+    INTEGER(HSIZE_T)                  :: subset_offset(rank)
     ! Error flag
     INTEGER                           :: error
     CHARACTER(LEN=100)                :: filename
     CHARACTER(LEN=100)                :: dsetname, groupname
     
     !----------------------------------------------!
+    
+    IF(rank.EQ.2) THEN
+       ALLOCATE(psi2D(1:dims_proc(1),1:dims_proc(2)))
+       psi2D = RESHAPE(psi,SHAPE(psi2D))
+    ELSEIF(rank.EQ.3) THEN
+       ALLOCATE(psi3D(1:dims_proc(1),1:dims_proc(2),1:dims_proc(3)))
+       psi3D = RESHAPE(psi,SHAPE(psi3D))
+    ELSEIF(rank.EQ.4) THEN
+       ALLOCATE(psi4D(1:dims_proc(1),1:dims_proc(2),1:dims_proc(3), &
+            1:dims_proc(4)))
+       psi4D = RESHAPE(psi,SHAPE(psi4D))
+    ELSE
+       WRITE(*,*) 'No routine for your rank!!'
+       STOP
+    ENDIF
     
     ! Initialize FORTRAN interface. 
     CALL h5open_f(error) 
@@ -538,8 +587,8 @@ CONTAINS
     subset_size = dims
     
     ! Create filespace and memspace
-    CALL h5screate_simple_f(3,subset_size,filespace, error)
-    CALL h5screate_simple_f(3,subset_size_proc,memspace,error)
+    CALL h5screate_simple_f(rank,subset_size,filespace, error)
+    CALL h5screate_simple_f(rank,subset_size_proc,memspace,error)
     
     ! Open the dataset.
     dsetname = '/' // TRIM(filename_in) // '/' // TRIM(filename_in)
@@ -555,10 +604,26 @@ CONTAINS
     CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
     
     ! Read the dataset
-    CALL h5dread_f(dset_id, H5T_NATIVE_DOUBLE, psi_in, subset_size, &
-         error, file_space_id = filespace, mem_space_id = memspace, &
-         xfer_prp = plist_id)
-    
+    IF(rank.EQ.2) THEN
+       CALL h5dread_f(dset_id, H5T_NATIVE_DOUBLE, psi2D, subset_size, &
+            error, file_space_id = filespace, mem_space_id = memspace, &
+            xfer_prp = plist_id)
+       psi = RESHAPE(psi2D,(/PRODUCT(dims_proc)/))
+       DEALLOCATE(psi2D)
+    ELSEIF(rank.EQ.3) THEN
+       CALL h5dread_f(dset_id, H5T_NATIVE_DOUBLE, psi3D, subset_size, &
+            error, file_space_id = filespace, mem_space_id = memspace, &
+            xfer_prp = plist_id)
+       psi = RESHAPE(psi3D,(/PRODUCT(dims_proc)/))
+       DEALLOCATE(psi3D)
+    ELSEIF(rank.EQ.4) THEN
+       CALL h5dread_f(dset_id, H5T_NATIVE_DOUBLE, psi4D, subset_size, &
+            error, file_space_id = filespace, mem_space_id = memspace, &
+            xfer_prp = plist_id)
+       psi = RESHAPE(psi4D,(/PRODUCT(dims_proc)/))
+       DEALLOCATE(psi4D)
+    ENDIF
+
     ! Close everything opened.
     CALL h5sclose_f(filespace, error)
     CALL h5sclose_f(memspace, error)
@@ -571,7 +636,7 @@ CONTAINS
     ! Close FORTRAN interface.
     CALL h5close_f(error)
     
-  END SUBROUTINE read_subset_3Dparallel
+  END SUBROUTINE dread_subset_parallel
   
   !-------------------------------------------------------------------!
   
