@@ -77,11 +77,11 @@ CONTAINS
     INTEGER, ALLOCATABLE                :: cellindex3D(: ,: ,:, :)
     REAL(dp)                            :: psi3D_sph_dr, psi3D_sph_dth
     REAL(dp)                            :: psi3D_sph_dphi
-    INTEGER                             :: ix, iy, iz, ii
+    INTEGER                             :: ix, iy, iz, ii, ipt
     INTEGER                             :: ir, itheta, iphi, inum
     INTEGER, DIMENSION(3)               :: dims_in, dims_out
     INTEGER                             :: numpts_in, numpts_out
-    REAL(dp)                            :: rpt, ipt
+    REAL(dp)                            :: rpt
     REAL(dp)                            :: xpt, ypt, zpt
     REAL(dp)                            :: minr, maxr
     REAL(dp)                            :: mintheta, maxtheta
@@ -409,11 +409,11 @@ CONTAINS
     INTEGER, ALLOCATABLE                :: cellindex3D(: ,: ,:, :)
     COMPLEX(dp)                         :: psi3D_sph_dr, psi3D_sph_dth
     COMPLEX(dp)                         :: psi3D_sph_dphi
-    INTEGER                             :: ix, iy, iz, ii
+    INTEGER                             :: ix, iy, iz, ii, ipt
     INTEGER                             :: ir, itheta, iphi, inum
     INTEGER, DIMENSION(3)               :: dims_in, dims_out
     INTEGER                             :: numpts_in, numpts_out
-    REAL(dp)                            :: rpt, ipt
+    REAL(dp)                            :: rpt
     REAL(dp)                            :: xpt, ypt, zpt
     REAL(dp)                            :: minr, maxr
     REAL(dp)                            :: mintheta, maxtheta
@@ -797,10 +797,10 @@ CONTAINS
     INTEGER, ALLOCATABLE                :: i_am_in2D(: ,:)
     INTEGER, ALLOCATABLE                :: cellindex2D(:, :, :)
     REAL(dp)                            :: psi2D_sph_dx, psi2D_sph_dy
-    INTEGER                             :: irho, iz
+    INTEGER                             :: irho, iz, ipt
     INTEGER                             :: ir, itheta
     INTEGER                             :: numpts_in, numpts_out
-    REAL(dp)                            :: rhopt, zpt, rpt, ipt
+    REAL(dp)                            :: rhopt, zpt, rpt
     INTEGER, DIMENSION(2)               :: dims_in, dims_out
     REAL(dp)                            :: psi_in(4), psi_in_drhodz(4)
     REAL(dp)                            :: psi_in_drho(4), psi_in_dz(4)
@@ -999,10 +999,10 @@ CONTAINS
     INTEGER, ALLOCATABLE                :: i_am_in2D(: ,:)
     INTEGER, ALLOCATABLE                :: cellindex2D(:, :, :)
     COMPLEX(dp)                         :: psi2D_sph_dx, psi2D_sph_dy
-    INTEGER                             :: irho, iz
+    INTEGER                             :: irho, iz, ipt
     INTEGER                             :: ir, itheta
     INTEGER                             :: numpts_in, numpts_out
-    REAL(dp)                            :: rhopt, zpt, rpt, ipt
+    REAL(dp)                            :: rhopt, zpt, rpt
     INTEGER, DIMENSION(2)               :: dims_in, dims_out
     COMPLEX(dp)                         :: psi_in(4), psi_in_drhodz(4)
     COMPLEX(dp)                         :: psi_in_drho(4), psi_in_dz(4)
