@@ -429,26 +429,39 @@ CONTAINS
        
        middle_pt = fd_rule + 1
        numthetaoffset = INT(numthetapts / numsurfaceprocs)
-       offset = numthetaoffset * surfacerank       
 
-       DO itheta = 1, numthetaptsperproc
-          DO ir = 1, numrpts
-             spherical_wave2D(ir,itheta) = &
-                  spherical_wave2D_global(ir,offset+itheta)
+       IF(numthetaoffset.EQ.0) THEN
+          CALL make_wave_boundary_derivative(spherical_wave2D,&
+               spherical_wave2D_deriv,fd_rule,deltar,&
+               numrpts,numthetapts)
+          
+          ! Write boundary points to a HDF5 file
+          IF (write_to_file .AND. (surfacerank.EQ.0)) &
+               CALL write_surface_file(filename, spherical_wave2D(middle_pt,:), &
+               spherical_wave2D_deriv, time, efield, afield, lmax)
+          
+       ELSE
+          offset = numthetaoffset * surfacerank       
+          
+          DO itheta = 1, numthetaptsperproc
+             DO ir = 1, numrpts
+                spherical_wave2D(ir,itheta) = &
+                     spherical_wave2D_global(ir,offset+itheta)
+             ENDDO
           ENDDO
-       ENDDO
+          
+          CALL make_wave_boundary_derivative(spherical_wave2D,&
+               spherical_wave2D_deriv,fd_rule,deltar,&
+               numrpts,numthetaptsperproc)
        
-       CALL make_wave_boundary_derivative(spherical_wave2D,&
-            spherical_wave2D_deriv,fd_rule,deltar,&
-            numrpts,numthetaptsperproc)
-       
-       ! Write boundary points to a HDF5 file
-       IF (write_to_file) &
-            CALL write_surface_file(filename, spherical_wave2D(middle_pt,:), &
-            spherical_wave2D_deriv, time, efield, afield, lmax, &
-            surfacerank, numsurfaceprocs, surfacecomm, numthetaptsperproc)
+          ! Write boundary points to a HDF5 file
+          IF (write_to_file) &
+               CALL write_surface_file(filename, spherical_wave2D(middle_pt,:), &
+               spherical_wave2D_deriv, time, efield, afield, lmax, &
+               surfacerank, numsurfaceprocs, surfacecomm, numthetaptsperproc)
+       ENDIF
     ENDIF
-    
+ 
   END SUBROUTINE get_cylindrical_surface_parallel
 #endif
   !*****************************************************************!
@@ -542,28 +555,41 @@ CONTAINS
        numthetaoffset = INT(numthetapts / numsurfaceprocs)
        numphioffset = INT(numphipts / numsurfaceprocs)
        
-       thetaoffset = numthetaoffset * surfacerank       
-       phioffset = numphioffset * surfacerank       
-       
-       DO iphi = 1, numphiptsperproc
-          DO itheta = 1, numthetaptsperproc
-             DO ir = 1, numrpts
-                spherical_wave3D(ir,itheta, iphi) = &
-                     spherical_wave3D_global(ir,thetaoffset+itheta, phioffset+iphi)
+       IF((numthetaoffset.EQ.0) .OR. (numphioffset.EQ.0)) THEN
+          
+          CALL make_wave_boundary_derivative(spherical_wave3D,&
+               spherical_wave3D_deriv,fd_rule,deltar,&
+               numrpts,numthetapts,numphipts)
+          
+          ! Write boundary points to a HDF5 file
+          IF (write_to_file .AND. (surfacerank.EQ.0)) &
+               CALL write_surface_file(filename, spherical_wave3D(middle_pt,:, :), &
+               spherical_wave3D_deriv, time, efield, afield, lmax)
+          
+       ELSE
+          thetaoffset = numthetaoffset * surfacerank       
+          phioffset = numphioffset * surfacerank       
+          
+          DO iphi = 1, numphiptsperproc
+             DO itheta = 1, numthetaptsperproc
+                DO ir = 1, numrpts
+                   spherical_wave3D(ir,itheta, iphi) = &
+                        spherical_wave3D_global(ir,thetaoffset+itheta, phioffset+iphi)
+                ENDDO
              ENDDO
           ENDDO
-       ENDDO
-       
-       CALL make_wave_boundary_derivative(spherical_wave3D,&
-            spherical_wave3D_deriv,fd_rule,deltar,&
-            numrpts,numthetaptsperproc,numphiptsperproc)
-       
-       ! Write boundary points to a HDF5 file
-       IF (write_to_file) &
-            CALL write_surface_file(filename, spherical_wave3D(middle_pt,:, :), &
-            spherical_wave3D_deriv, time, efield, afield, lmax, &
-            surfacerank, numsurfaceprocs, surfacecomm, &
-            numthetaptsperproc, numphiptsperproc )
+          
+          CALL make_wave_boundary_derivative(spherical_wave3D,&
+               spherical_wave3D_deriv,fd_rule,deltar,&
+               numrpts,numthetaptsperproc,numphiptsperproc)
+          
+          ! Write boundary points to a HDF5 file
+          IF (write_to_file) &
+               CALL write_surface_file(filename, spherical_wave3D(middle_pt,:, :), &
+               spherical_wave3D_deriv, time, efield, afield, lmax, &
+               surfacerank, numsurfaceprocs, surfacecomm, &
+               numthetaptsperproc, numphiptsperproc )
+       ENDIF
     ENDIF
     
   END SUBROUTINE get_cartesian3D_surface_parallel

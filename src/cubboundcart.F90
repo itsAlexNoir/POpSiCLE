@@ -510,21 +510,29 @@ CONTAINS
     ! Set number of points per proc
     ! Take into account if the number of points is not
     ! a multiplier of the number of processors
-    maxthetaptsperproc = INT(numthetapts / numsurfaceprocs)
-    
-    IF(MOD(numthetapts,numsurfaceprocs).NE.0) THEN
-       IF((surfacerank-1).EQ.numsurfaceprocs) THEN
-          maxthetaptsperproc = numthetapts / numsurfaceprocs + &
-               MOD(numthetapts,numsurfaceprocs)
+    IF(numsurfaceprocs.GT.numthetapts) THEN
+       maxthetaptsperproc = 1
+    ELSE
+       maxthetaptsperproc = INT(numthetapts / numsurfaceprocs)
+       
+       IF(MOD(numthetapts,numsurfaceprocs).NE.0) THEN
+          IF((surfacerank-1).EQ.numsurfaceprocs) THEN
+             maxthetaptsperproc = numthetapts / numsurfaceprocs + &
+                  MOD(numthetapts,numsurfaceprocs)
+          ENDIF
        ENDIF
     ENDIF
-
-    maxphiptsperproc = INT(numphipts / numsurfaceprocs)
     
-    IF(MOD(numphipts,numsurfaceprocs).NE.0) THEN
-       IF((surfacerank-1).EQ.numsurfaceprocs) THEN
-          maxphiptsperproc = numthetapts / numsurfaceprocs + &
-               MOD(numphipts,numsurfaceprocs)
+    IF(numsurfaceprocs.GT.numphipts) THEN
+       maxphiptsperproc = 1
+    ELSE
+       maxphiptsperproc = INT(numphipts / numsurfaceprocs)
+       
+       IF(MOD(numphipts,numsurfaceprocs).NE.0) THEN
+          IF((surfacerank-1).EQ.numsurfaceprocs) THEN
+             maxphiptsperproc = numthetapts / numsurfaceprocs + &
+                  MOD(numphipts,numsurfaceprocs)
+          ENDIF
        ENDIF
     ENDIF
     
