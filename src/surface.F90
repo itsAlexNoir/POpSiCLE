@@ -338,7 +338,7 @@ CONTAINS
           ALLOCATE(spherical_wave3D(1:numrpts,1:numthetapts,&
                1:numphipts))
           ALLOCATE(spherical_wave3D_deriv(1:numthetapts,&
-            1:numphipts))
+               1:numphipts))
        ELSE
           ALLOCATE(spherical_wave3D(1:numrpts,1:numthetaptsperproc,&
                1:numphiptsperproc))
@@ -358,6 +358,7 @@ CONTAINS
        
        IF(write_to_file) &
             CALL create_surface_file(filename, surfacecomm)
+       
     ENDIF
     
   END SUBROUTINE initialize_cartesian3D_surface_parallel
@@ -449,8 +450,11 @@ CONTAINS
        
        middle_pt = fd_rule + 1
        numthetaoffset = INT(numthetapts / numsurfaceprocs)
-
+       
        IF(numthetaoffset.EQ.0) THEN
+          
+          spherical_wave2D = spherical_wave2D_global
+          
           CALL make_wave_boundary_derivative(spherical_wave2D,&
                spherical_wave2D_deriv,fd_rule,deltar,&
                numrpts,numthetapts)
@@ -473,7 +477,7 @@ CONTAINS
           CALL make_wave_boundary_derivative(spherical_wave2D,&
                spherical_wave2D_deriv,fd_rule,deltar,&
                numrpts,numthetaptsperproc)
-       
+          
           ! Write boundary points to a HDF5 file
           IF (write_to_file) &
                CALL write_surface_file(filename, spherical_wave2D(middle_pt,:), &
@@ -577,6 +581,7 @@ CONTAINS
        
        IF((numthetaoffset.EQ.0) .OR. (numphioffset.EQ.0)) THEN
           
+          spherical_wave3D =  spherical_wave3D_global
           CALL make_wave_boundary_derivative(spherical_wave3D,&
                spherical_wave3D_deriv,fd_rule,deltar,&
                numrpts,numthetapts,numphipts)
