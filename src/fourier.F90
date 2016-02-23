@@ -331,7 +331,8 @@ CONTAINS
           ! Work out in which group we are
           ipro = ipx + numprocx * ipz + &
                numprocx * numprocz * ipr
-          
+          dims_phony(1) = Nygl
+                 
           ALLOCATE(psi_sd(1:Nygl))
           ALLOCATE(psi_rc(1:Nygl))
           
@@ -352,7 +353,6 @@ CONTAINS
                    CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nygl, MPI_COMPLEX16,&
                         MPI_SUM, fftcomm(ipro), ierror)
                    
-                   dims_phony(1) = Nygl
                    CALL FFT(psi_rc, 1, dims_phony)
                    
                    ! fftshift the array
@@ -460,6 +460,7 @@ CONTAINS
           ! Work out in which group we are
           ipro = ipx + numprocx * ipy + &
                numprocx * numprocy * ipr
+          dims_phony(1) = Nzgl
           
           ALLOCATE(psi_sd(1:Nzgl))
           ALLOCATE(psi_rc(1:Nzgl))
@@ -480,8 +481,7 @@ CONTAINS
                    ! Send all the elements to all the processors
                    CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nzgl, MPI_COMPLEX16,&
                         MPI_SUM, fftcomm(ipro), ierror)
-                   
-                   dims_phony(1) = Nzgl
+               
                    CALL FFT(psi_rc, 1, dims_phony)
                    
                    ! fftshift the array
