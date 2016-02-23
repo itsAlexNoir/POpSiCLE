@@ -178,6 +178,8 @@ CONTAINS
     INTEGER, INTENT(IN)        :: comm
     LOGICAL, INTENT(IN)        :: write_to_file
     CHARACTER(LEN=*), INTENT(IN) :: filename
+
+    INTEGER                    :: numthetaoffset
     
     !------------------------------------------------------------!
     
@@ -196,14 +198,21 @@ CONTAINS
          fd_rule, dr, lmax, rank, size, comm, &
          numrpts, numthetapts, surfacerank, numsurfaceprocs, &
          surfacecomm, numthetaptsperproc )
+
+    numthetaoffset = INT(numthetapts / numsurfaceprocs)
     
     IF(i_am_surface(rank).EQ.1) THEN
        ALLOCATE(spherical_wave2D_local(1:numrpts,1:numthetapts))
        ALLOCATE(spherical_wave2D_global(1:numrpts,1:numthetapts))
        ALLOCATE(spherical_wave2D_dr(1:numrpts,1:numthetapts))
        ALLOCATE(spherical_wave2D_dtheta(1:numrpts,1:numthetapts))
-       ALLOCATE(spherical_wave2D(1:numrpts,1:numthetaptsperproc))
-       ALLOCATE(spherical_wave2D_deriv(1:numthetaptsperproc))
+       IF(numthetaoffset .EQ. 0) THEN
+          ALLOCATE(spherical_wave2D(1:numrpts,1:numthetapts))
+          ALLOCATE(spherical_wave2D_deriv(1:numthetapts))
+       ELSE
+          ALLOCATE(spherical_wave2D(1:numrpts,1:numthetaptsperproc))
+          ALLOCATE(spherical_wave2D_deriv(1:numthetaptsperproc))
+       ENDIF
        
        spherical_wave2D_local  = ZERO
        spherical_wave2D_global = ZERO
@@ -295,6 +304,8 @@ CONTAINS
     LOGICAL, INTENT(IN)        :: write_to_file
     CHARACTER(LEN=*), INTENT(IN) :: filename
     
+    INTEGER                    :: numthetaoffset, numphioffset
+    
     !------------------------------------------------------------!
     
     ! Initilize finite-difference coefficients
@@ -314,17 +325,26 @@ CONTAINS
          surfacerank, numsurfaceprocs, surfacecomm, &
          numthetaptsperproc, numphiptsperproc )
     
+    numthetaoffset = INT(numthetapts / numsurfaceprocs)
+    numphioffset = INT(numphipts / numsurfaceprocs) 
+    
     IF(i_am_surface(rank) .EQ. 1) THEN
        ALLOCATE(spherical_wave3D_local(1:numrpts,1:numthetapts,1:numphipts))
        ALLOCATE(spherical_wave3D_global(1:numrpts,1:numthetapts,1:numphipts))
        ALLOCATE(spherical_wave3D_dr(1:numrpts,1:numthetapts,1:numphipts))
        ALLOCATE(spherical_wave3D_dtheta(1:numrpts,1:numthetapts,1:numphipts))
        ALLOCATE(spherical_wave3D_dphi(1:numrpts,1:numthetapts,1:numphipts))
-       ALLOCATE(spherical_wave3D(1:numrpts,1:numthetaptsperproc,&
-            1:numphiptsperproc))
-       ALLOCATE(spherical_wave3D_deriv(1:numthetaptsperproc,&
-            1:numphiptsperproc))
-       
+       IF((numthetaoffset.EQ.0) .OR. (numphioffset.EQ.0)) THEN
+          ALLOCATE(spherical_wave3D(1:numrpts,1:numthetapts,&
+               1:numphipts))
+          ALLOCATE(spherical_wave3D_deriv(1:numthetapts,&
+            1:numphipts))
+       ELSE
+          ALLOCATE(spherical_wave3D(1:numrpts,1:numthetaptsperproc,&
+               1:numphiptsperproc))
+          ALLOCATE(spherical_wave3D_deriv(1:numthetaptsperproc,&
+               1:numphiptsperproc))
+       ENDIF
        spherical_wave3D_local  = ZERO
        spherical_wave3D_global = ZERO
        spherical_wave3D_dr     = ZERO

@@ -645,6 +645,7 @@ CONTAINS
     !Define rank, in this case 2.
     wave_rank = 3
     field_rank = 2
+    time_rank = 1
     wave_dims = (/numthetapts, numphipts, 2/)
     field_dims = (/3,2/)
     time_dim = 1
