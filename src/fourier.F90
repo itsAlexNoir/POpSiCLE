@@ -133,7 +133,7 @@ CONTAINS
        ALLOCATE(psi_sd(1:Nxgl))
        ALLOCATE(psi_rc(1:Nxgl))
        dims_phony(1) = Nxgl
-       
+
        DO ir = 1, Nr
           DO iz = 1, Nz
              DO iy = 1, Ny
@@ -420,7 +420,7 @@ CONTAINS
                    
                    ! Copy the result back to the local psik                   
                    DO iz = 1, Nz
-                      psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_rc(iz)
+                      psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_sd(iz)
                    ENDDO
                    
                 ENDDO
