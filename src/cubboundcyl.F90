@@ -490,7 +490,7 @@ CONTAINS
     
     !---------------------------------------------------------------!
     
-    rulepts = 2 * fdrule + 1
+    rulepts = 2 * fdrule
     ALLOCATE(rhofdcoeffs(-fdrule:fdrule,2))
     ALLOCATE(zfdcoeffs(-fdrule:fdrule,2))
     
@@ -643,7 +643,7 @@ CONTAINS
     
     !---------------------------------------------------------------!
     
-    rulepts = 2 * fdrule + 1
+    rulepts = 2 * fdrule
     ALLOCATE(rhofdcoeffs(-fdrule:fdrule,2))
     ALLOCATE(zfdcoeffs(-fdrule:fdrule,2))
     
