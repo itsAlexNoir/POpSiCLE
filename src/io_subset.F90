@@ -429,19 +429,16 @@ CONTAINS
 
     IF(rank.EQ.2) THEN
        ALLOCATE(psi2D(1:dims(1),1:dims(2)))
-       psi2D = RESHAPE(psi,SHAPE(psi2D))
     ELSEIF(rank.EQ.3) THEN
        ALLOCATE(psi3D(1:dims(1),1:dims(2),1:dims(3)))
-       psi3D = RESHAPE(psi,SHAPE(psi3D))
     ELSEIF(rank.EQ.4) THEN
        ALLOCATE(psi4D(1:dims(1),1:dims(2),1:dims(3), &
             1:dims(4)))
-       psi4D = RESHAPE(psi,SHAPE(psi4D))
     ELSE
        WRITE(*,*) 'No routine for your rank!!'
        STOP
     ENDIF
-     
+    
     ! Open the file.
     filename = TRIM(filename_in) // '.h5'
     CALL h5fopen_f(filename, H5F_ACC_RDWR_F, file_id, error)
@@ -546,14 +543,11 @@ CONTAINS
     
     IF(rank.EQ.2) THEN
        ALLOCATE(psi2D(1:dims_proc(1),1:dims_proc(2)))
-       psi2D = RESHAPE(psi,SHAPE(psi2D))
     ELSEIF(rank.EQ.3) THEN
        ALLOCATE(psi3D(1:dims_proc(1),1:dims_proc(2),1:dims_proc(3)))
-       psi3D = RESHAPE(psi,SHAPE(psi3D))
     ELSEIF(rank.EQ.4) THEN
        ALLOCATE(psi4D(1:dims_proc(1),1:dims_proc(2),1:dims_proc(3), &
             1:dims_proc(4)))
-       psi4D = RESHAPE(psi,SHAPE(psi4D))
     ELSE
        WRITE(*,*) 'No routine for your rank!!'
        STOP
