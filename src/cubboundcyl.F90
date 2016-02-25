@@ -516,8 +516,7 @@ CONTAINS
              dz   = z_ax(left_z+1) - z_ax(left_z)
              
              psi_in = (/psi_cyl(left_rho,left_z), psi_cyl(left_rho+1,left_z), &
-                  psi_cyl(left_rho+1,left_z+1), psi_cyl(left_rho,left_z+1)/)
-             
+                  psi_cyl(left_rho+1,left_z+1), psi_cyl(left_rho,left_z+1)/)             
              
              IF(left_rho-fdrule.LT.LBOUND(rho_ax,DIM=1)) THEN
                 lower_rho = left_rho
@@ -531,7 +530,7 @@ CONTAINS
              ENDIF
              ! Calculate fd weights for differentiation in rho case
              CALL fdweights(rho_ax(left_rho),rho_ax(lower_rho:upper_rho),&
-                  rulepts,2,rhofdcoeffs)
+                  rulepts+1,2,rhofdcoeffs)
              
              IF(left_z-fdrule.LT.LBOUND(z_ax,DIM=1)) THEN
                 lower_z = left_z
@@ -545,7 +544,7 @@ CONTAINS
              ENDIF
              ! Calculate fd weights for differentiation in z case             
              CALL fdweights(z_ax(left_z),z_ax(lower_z:upper_z),&
-                  rulepts,2,zfdcoeffs)
+                  rulepts+1,2,zfdcoeffs)
           
              psi_in_vol_rho(:,1) = psi_cyl(lower_rho:upper_rho,left_z)
              psi_in_vol_rho(:,2) = psi_cyl(lower_rho+1:upper_rho+1,left_z)
@@ -684,7 +683,7 @@ CONTAINS
              ENDIF
              ! Calculate fd weights for differentiation in rho case
              CALL fdweights(rho_ax(left_rho),rho_ax(lower_rho:upper_rho),&
-                  rulepts,2,rhofdcoeffs)
+                  rulepts+1,2,rhofdcoeffs)
              
              IF(left_z-fdrule.LT.LBOUND(z_ax,DIM=1)) THEN
                 lower_z = left_z
@@ -698,7 +697,7 @@ CONTAINS
              ENDIF
              ! Calculate fd weights for differentiation in z case             
              CALL fdweights(z_ax(left_z),z_ax(lower_z:upper_z),&
-                  rulepts,2,zfdcoeffs)
+                  rulepts+1,2,zfdcoeffs)
 
              psi_in_vol_rho(:,1) = psi_cyl(lower_rho:upper_rho,left_z)
              psi_in_vol_rho(:,2) = psi_cyl(lower_rho+1:upper_rho+1,left_z)
