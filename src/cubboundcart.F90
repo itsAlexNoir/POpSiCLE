@@ -664,7 +664,7 @@ CONTAINS
                 left_z = cellindex3D(ir,itheta,iphi,3)
                 
                 dx = x_ax(left_x+1) - x_ax(left_x)
-                dx = y_ax(left_y+1) - y_ax(left_y)
+                dy = y_ax(left_y+1) - y_ax(left_y)
                 dz = z_ax(left_z+1) - z_ax(left_z)
                 
                 psi_in(1) = psi_cart(left_x,left_y,left_z)
@@ -688,7 +688,7 @@ CONTAINS
                 ENDIF
                 ! Calculate fd weights for differentiation in x case
                 CALL fdweights(x_ax(left_x),x_ax(lower_x:upper_x),&
-                     rulepts,2,xfdcoeffs)
+                     rulepts+1,2,xfdcoeffs)
                 
                 IF(left_y-fdrule.LT.LBOUND(y_ax,DIM=1)) THEN
                    lower_y = left_y
@@ -702,7 +702,7 @@ CONTAINS
                 ENDIF
                 ! Calculate fd weights for differentiation in x case
                 CALL fdweights(y_ax(left_y),y_ax(lower_y:upper_y),&
-                     rulepts,2,yfdcoeffs)
+                     rulepts+1,2,yfdcoeffs)
                 
                 IF(left_z-fdrule.LT.LBOUND(z_ax,DIM=1)) THEN
                    lower_z = left_z
@@ -716,7 +716,7 @@ CONTAINS
                 ENDIF
                 ! Calculate fd weights for differentiation in z case             
                 CALL fdweights(z_ax(left_z),z_ax(lower_z:upper_z),&
-                     rulepts,2,zfdcoeffs)
+                     rulepts+1,2,zfdcoeffs)
                 
                 psi_in_vol_x(:,1) = psi_cart(lower_x:upper_x,left_y,left_z)
                 psi_in_vol_x(:,2) = psi_cart(lower_x+1:upper_x+1,left_y,left_z)
@@ -937,7 +937,7 @@ CONTAINS
                 left_z = cellindex3D(ir,itheta,iphi,3)
                 
                 dx = x_ax(left_x+1) - x_ax(left_x)
-                dx = y_ax(left_y+1) - y_ax(left_y)
+                dy = y_ax(left_y+1) - y_ax(left_y)
                 dz = z_ax(left_z+1) - z_ax(left_z)
                 
                 psi_in(1) = psi_cart(left_x,left_y,left_z)
@@ -961,7 +961,7 @@ CONTAINS
                 ENDIF
                 ! Calculate fd weights for differentiation in x case
                 CALL fdweights(x_ax(left_x),x_ax(lower_x:upper_x),&
-                     rulepts,2,xfdcoeffs)
+                     rulepts+1,2,xfdcoeffs)
                 
                 IF(left_y-fdrule.LT.LBOUND(y_ax,DIM=1)) THEN
                    lower_y = left_y
@@ -975,7 +975,7 @@ CONTAINS
                 ENDIF
                 ! Calculate fd weights for differentiation in x case
                 CALL fdweights(y_ax(left_y),y_ax(lower_y:upper_y),&
-                     rulepts,2,yfdcoeffs)
+                     rulepts+1,2,yfdcoeffs)
                 
                 IF(left_z-fdrule.LT.LBOUND(z_ax,DIM=1)) THEN
                    lower_z = left_z
@@ -989,7 +989,7 @@ CONTAINS
                 ENDIF
                 ! Calculate fd weights for differentiation in z case             
                 CALL fdweights(z_ax(left_z),z_ax(lower_z:upper_z),&
-                     rulepts,2,zfdcoeffs)
+                     rulepts+1,2,zfdcoeffs)
                 
                 psi_in_vol_x(:,1) = psi_cart(lower_x:upper_x,left_y,left_z)
                 psi_in_vol_x(:,2) = psi_cart(lower_x+1:upper_x+1,left_y,left_z)
