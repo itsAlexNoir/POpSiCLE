@@ -17,8 +17,10 @@ MODULE fourier
   PUBLIC                         :: FourierTransform
   PUBLIC                         :: FFT
   PUBLIC                         :: HankelTransform
+  PUBLIC                         :: fftshift
   PUBLIC                         :: create_mask
   PUBLIC                         :: create_correlated_mask
+
   
   INTERFACE create_mask
      MODULE PROCEDURE create_mask4D
@@ -111,7 +113,6 @@ CONTAINS
     ! Copy the original array
     psik = psi
     
-    
     ! Assign dimensions
     CALL get_simulation_parameters( rank, &
          dims_local, dims_global, grid_rank, &
@@ -149,15 +150,7 @@ CONTAINS
                 CALL FFT(psi_rc, 1, dims_phony)
                 
                 ! fftshift the array
-                psi_sd = ZERO
-                shift = Nxgl - (Nxgl+1)/2
-                DO ix = 1, shift
-                   psi_sd(ix) = psi_rc(ix+shift)
-                ENDDO
-                
-                DO ix = shift+1, Nxgl
-                   psi_sd(ix) = psi_rc(ix-shift)
-                ENDDO
+                CALL fftshift(psi_rc,psi_sd)
                 
                 ! Copy the result back to the local psik
                 DO ix = 1, Nx
@@ -227,16 +220,7 @@ CONTAINS
                 CALL FFT(psi_rc, 1, dims_phony)
                 
                 ! fftshift the array
-                psi_sd = ZERO
-                shift = Nxgl - (Nxgl+1)/2
-                DO ix = 1, shift
-                   psi_sd(ix) = psi_rc(ix+shift)
-                ENDDO
-                
-                DO ix = shift+1, Nxgl
-                   psi_sd(ix) = psi_rc(ix-shift)
-                ENDDO
-                
+                CALL fftshift(psi_rc, psi_sd)
                 
                 DO ix = 1, Nx
                    igl = ix + ipx * Nx
@@ -278,15 +262,7 @@ CONTAINS
                    CALL FFT(psi_rc, 1, dims_phony)
                    
                    ! fftshift the array
-                   psi_sd = ZERO
-                   shift = Nygl - (Nygl+1)/2
-                   DO iy = 1, shift
-                      psi_sd(iy) = psi_rc(iy+shift)
-                   ENDDO
-                   
-                   DO iy = shift+1, Nygl
-                      psi_sd(iy) = psi_rc(iy-shift)
-                   ENDDO
+                   CALL fftshift(psi_rc,psi_sd)
                    
                    ! Copy the result back to the local psik
                    DO iy = 1, Ny
@@ -356,15 +332,7 @@ CONTAINS
                    CALL FFT(psi_rc, 1, dims_phony)
                    
                    ! fftshift the array
-                   psi_sd = ZERO
-                   shift = Nygl - (Nygl+1)/2
-                   DO iy = 1, shift
-                      psi_sd(iy) = psi_rc(iy+shift)
-                   ENDDO
-                   
-                   DO iy = shift+1, Nygl
-                      psi_sd(iy) = psi_rc(iy-shift)
-                   ENDDO
+                   CALL fftshift(psi_rc,psi_sd)
                    
                    ! Copy the result back to the local psik
                    DO iy = 1, Ny
@@ -408,15 +376,7 @@ CONTAINS
                    CALL FFT(psi_rc, 1, dims_phony)
                    
                    ! fftshift the array
-                   psi_sd = ZERO
-                   shift = Nzgl - (Nzgl+1)/2
-                   DO iz = 1, shift
-                      psi_sd(iz) = psi_rc(iz+shift+1)
-                   ENDDO
-                   
-                   DO iz = shift+1, Nzgl
-                      psi_sd(iz) = psi_rc(iz-shift)
-                   ENDDO
+                   CALL fftshift(psi_rc,psi_sd)
                    
                    ! Copy the result back to the local psik                   
                    DO iz = 1, Nz
@@ -485,17 +445,9 @@ CONTAINS
                    CALL FFT(psi_rc, 1, dims_phony)
                    
                    ! fftshift the array
-                   psi_sd = ZERO
-                   shift = Nzgl - (Nzgl+1)/2
-                   DO iz = 1, shift
-                      psi_sd(iz) = psi_rc(iz+shift)
-                   ENDDO
-                   
-                   DO iz = shift+1, Nzgl
-                      psi_sd(iz) = psi_rc(iz-shift)
-                   ENDDO
-                   
-                   ! Copy the result back to the local psik                   
+                   CALL fftshift(psi_rc,psi_sd)
+          
+                   ! Copy the result back to the local psik
                    DO iz = 1, Nz
                       igl = iz + ipz * Nz
                       psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_sd(igl)
@@ -526,6 +478,7 @@ CONTAINS
              DO iy = 1, Ny
                 DO ix = 1, Nx
                    
+                   psi_rc = ZERO
                    DO ir =1, Nr
                       psi_rc(ir) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
                    ENDDO
@@ -533,16 +486,8 @@ CONTAINS
                    CALL FFT(psi_rc, 1, dims_phony)
                    
                    !! fftshift the array
-                   !psi_sd = ZERO
-                   !shift = Nrgl - (Nrgl+1)/2
-                   !DO ir = 1, shift
-                   !   psi_sd(ir) = psi_rc(ir+shift+1)
-                   !ENDDO
-                   !
-                   !DO ir = shift+1, Nrgl
-                   !   psi_sd(ir) = psi_rc(ir-shift)
-                   !ENDDO
-                   
+                   !CALL fftshift(psi_rc,psi_sd)
+                             
                    ! Copy the result back to the local psik
                    DO ir = 1, Nr
                       psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr)) = psi_rc(ir)
@@ -593,6 +538,9 @@ CONTAINS
           DO iz = 1, Nz
              DO iy = 1, Ny
                 DO ix = 1, Nx
+
+                   psi_sd = ZERO
+                   psi_rc = ZERO
                    
                    DO ir = 1, Nr
                       igl = ir + ipr * Nr
@@ -607,15 +555,7 @@ CONTAINS
                    CALL FFT(psi_rc, 1, dims_phony)
                    
                    !! fftshift the array
-                   !psi_sd = ZERO
-                   !shift = Nrgl - (Nrgl+1)/2
-                   !DO ir = 1, shift
-                   !   psi_sd(ir) = psi_rc(ir+shift+1)
-                   !ENDDO
-                   !
-                   !DO ir = shift+1, Nrgl
-                   !   psi_sd(ir) = psi_rc(ir-shift)
-                   !ENDDO
+                   CALL fftshift(psi_rc,psi_sd)
                    
                    ! Copy the result back to the local psik                   
                    DO ir = 1, Nr
@@ -842,6 +782,37 @@ CONTAINS
   
   !----------------------------------------------!
   
+  SUBROUTINE fftshift(x, y)
+    IMPLICIT NONE
+    
+    COMPLEX(dp), INTENT(IN)   :: x(:)
+    COMPLEX(dp), INTENT(OUT)  :: y(:)
+    
+    INTEGER                   :: ndim, i
+    INTEGER                   :: p2, pn
+    !------------------------------------------!
+    
+    ! Set size of the input and half-point.
+    ndim  = SIZE(x)
+    p2 = INT((ndim+1)/2)
+    
+    ! Distinguish if ndim is even or odd.
+    IF(MOD(ndim,2).EQ.0) THEN
+       pn = p2
+    ELSE
+       pn = p2-1
+    ENDIF
+    
+    ! Swap the halves of the array.
+    DO i = 1, pn
+       y(i) = x(p2+i)
+    ENDDO
+    
+    DO i = 1, p2
+       y(pn+i) = x(i)
+    ENDDO
+    
+  END SUBROUTINE fftshift
   
   !----------------------------------------------!
   
