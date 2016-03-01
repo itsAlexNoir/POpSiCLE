@@ -36,7 +36,7 @@ if(params.draw_polar_amplitude):
 
 
 # Get ke prob
-if(params.draw_mes):
+if(params.draw_mes or params.draw_total_cross):
     params.mes_filename+='.dat'
     mes = np.loadtxt(params.mes_filename)
 
@@ -46,9 +46,11 @@ if(params.draw_pes):
     pes = np.loadtxt(params.pes_filename)
 
 if(params.draw_total_cross):
-    wki = ax.Ee_ax[np.argmax(mes)]
-    total_cross = cross.get_total_cross(mes,ax.ke_ax,ax.Ee_ax,
-                                        wki,params.pulse_duration,
+    probk = coords.func_smoother(ax.ke_ax,mes,ax.k_ax)
+    wki = ax.k_ax[np.argmax(probk)]**2*0.5
+    #wki = params.w0 - 0.602634444682201 - 0.5
+    total_cross = cross.get_total_cross(probk,ax.k_ax,ax.k_ax**2*0.5,
+                                        wki,params.pulse_duration-0.6,
                                         params.pulse_bandwidth,
                                         params.A0)
 
@@ -112,7 +114,22 @@ if(params.draw_pes):
 #                      xticks,yticks,
 #                      'Energy (au)',r'$P(E) (10^{-4} au)$',
 #                      logplot,params.makeframe,'probE')
-#
+
+if(params.draw_total_cross):
+    print('Plotting photoelectron momentum...')
+    probk = coords.func_smoother(ax.ke_ax,mes,ax.k_ax)
+    xticks = np.arange(0,3.0,0.4)
+    yticks = None
+    ylim = None #[0.0,max(probke)]
+    logplot = 0
+    graph.plotprob1d(total_cross,ax.k_ax**2*0.5,
+                     [0.0,2.8],ylim,
+                     xticks,yticks,
+                     'Ejected electron energy (au)',
+                     r'Total cross section (au)',logplot,
+                     params.makeframe,'total_cross')
+
+
 # if(params.draw_diff_cross):
 #     print('Plotting differential cross section...')
 #     xticks = None #np.arange(kax.dke,1.0,0.2)
