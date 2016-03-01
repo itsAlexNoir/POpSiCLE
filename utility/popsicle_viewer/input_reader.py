@@ -45,15 +45,15 @@ class parameters:
             self.Emax  = float(inparams['Emax'])
             
         # Mass factors
-        if(self.fixed_nuclei == False):
+        if(self.fixed_nuclei):
             self.muelec = 1.0
         else:
             self.muelec = ( const.M1 + const.M2 ) / \
                   (const.M1 + const.M2 + 1.0)
 
         self.munuc = const.M1 * const.M2 / (const.M1 + const.M2)
-        self.mufac = 0.5 * self.muelec
-        self.Mfac = 0.5 * self.munuc
+        self.mufac = 0.5 / self.muelec
+        self.Mfac = 0.5 / self.munuc
 
          # Let's convert the frequency to atomic units
         self.intensity = float(inparams['intensity'])
