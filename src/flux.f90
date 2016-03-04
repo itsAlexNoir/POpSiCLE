@@ -38,8 +38,8 @@ MODULE flux
   REAL(dp), PUBLIC, ALLOCATABLE :: k_ax(:)
   REAL(dp), PUBLIC, ALLOCATABLE :: theta_ax(:), costheta_ax(:)
   REAL(dp), PUBLIC, ALLOCATABLE :: phi_ax(:)
-  REAL(dp), PUBLIC, ALLOCATABLE :: gauss_weights(:)
-
+  REAL(dp), PUBLIC, ALLOCATABLE :: gauss_th_weights(:)
+  
 
   ! Private variables
   INTEGER                       :: numkpts
@@ -58,8 +58,6 @@ MODULE flux
   INTEGER                       :: numpts, numrpts
   INTEGER                       :: numthetapts, numphipts
 
-
-  REAL(dp), allocatable                     :: ax(:), weights(:)
   !-------------------------------------------------------------!
   !-------------------------------------------------------------!
 
@@ -156,16 +154,11 @@ CONTAINS
 
     ! Create spherical coordinates
     ALLOCATE(theta_ax(1:numthetapts),costheta_ax(1:numthetapts))
-    ALLOCATE(gauss_weights(1:numthetapts))
+    ALLOCATE(gauss_th_weights(1:numthetapts))
     ALLOCATE(phi_ax(1:numphipts))
-
-    CALL get_gauss_stuff(-1.0_dp, 1.0_dp, costheta_ax, gauss_weights)
+    
+    CALL get_gauss_stuff(-1.0_dp, 1.0_dp, costheta_ax, gauss_th_weights)
     theta_ax = ACOS(costheta_ax)
-
-    
-    allocate(ax(1:numthetapts),weights(1:numthetapts))
-    CALL get_gauss_stuff(0.0_dp, pi, ax, weights)
-    
     
     DO iphi = 1, numphipts
        phi_ax(iphi) = REAL(iphi,dp) * twopi / REAL(numphipts,dp)
@@ -237,7 +230,7 @@ CONTAINS
              
              term2 = k_ax(ik) * afield(1) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
              term3 = k_ax(ik) * afield(2) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
-             term4 = k_ax(ik) * afield(3) * COS(theta_ax(itheta))
+             term4 = k_ax(ik) * afield(3) * costheta_ax(itheta)
              newterm(ik,itheta,iphi) = term1 + 2.0_dp * (term2 + term3 + term4)
              
              phase(ik,itheta,iphi) = phase(ik,itheta,iphi) * &
@@ -301,10 +294,10 @@ CONTAINS
        
        ! Decompose into spherical harmonics:
        ! The wavefunction
-       CALL make_sht(psi_sph, lmax, mmax, gauss_weights, &
+       CALL make_sht(psi_sph, lmax, mmax, gauss_th_weights, &
             psi_lm)
        ! His first derivative
-       CALL make_sht(psip_sph, lmax, mmax, gauss_weights, &
+       CALL make_sht(psip_sph, lmax, mmax, gauss_th_weights, &
             psip_lm)
        ! Divide by rb
        psi_lm = psi_lm * rb

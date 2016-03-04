@@ -19,7 +19,7 @@ MODULE sht
   
   USE constants
   USE gaussleg
-  !USE fourier
+  USE fourier
   
   IMPLICIT NONE
   
@@ -89,7 +89,7 @@ CONTAINS
     CALL make_factlog(factlog, maxfactlog)
     
     ! Calculate the Normalization factor
-    CALL make_rnormal(normfact, factlog, lmax, maxthetapts)
+    CALL make_rnormal(normfact, factlog, lmax, maxfactlog)
     
     ! Deallocate
     DEALLOCATE(factlog)
@@ -120,17 +120,18 @@ CONTAINS
     
     IMPLICIT NONE
     
-    COMPLEX(dp), INTENT(IN)    :: func(:, :)
-    INTEGER, INTENT(IN)        :: lmax, mmax
-    REAL(dp), INTENT(IN)       :: weights(:)
-    COMPLEX(dp), INTENT(OUT)   :: func_lm(-mmax:, 0:)
+    COMPLEX(dp), INTENT(IN)        :: func(:, :)
+    INTEGER, INTENT(IN)            :: lmax, mmax
+    REAL(dp), INTENT(IN)           :: weights(:)
+    COMPLEX(dp), INTENT(OUT)       :: func_lm(-mmax:, 0:)
     
-    INTEGER                    :: dims(2)
-    COMPLEX(dp), ALLOCATABLE   :: coeffm(:), gm(:, :)
-    INTEGER                    :: numthetapts, numphipts
-    INTEGER                    :: mmin
-    REAL(dp)                   :: sum
-    INTEGER                    :: il, im, itheta
+    INTEGER                        :: dims(2)
+    COMPLEX(dp), ALLOCATABLE       :: coeffm(:), gm(:, :)
+    COMPLEX(dp)                    :: sum
+    REAL(dp)                       :: dphi
+    INTEGER                        :: numthetapts, numphipts
+    INTEGER                        :: mmin
+    INTEGER                        :: il, im, itheta
     
     !----------------------------------------------------!
     
@@ -142,8 +143,10 @@ CONTAINS
     
     mmin = -mmax
     ! Allocate auxiliary arrays
-    IF(mmax.NE.0) &
-         ALLOCATE(coeffm(mmin:mmax))
+    IF(mmax.NE.0) THEN
+       ALLOCATE(coeffm(mmin:mmax))
+       dphi = twopi / REAL(numphipts,dp)
+    ENDIF
     
     ALLOCATE(gm(1:numthetapts,mmin:mmax))
     
@@ -157,26 +160,21 @@ CONTAINS
           gm(itheta,0) = func(itheta,1)
        ENDDO
     ELSE
-!!$       DO itheta = 1, numthetapts
-!!$          coeffm = ZERO
-!!$          CALL FourierTransform(func(itheta,:),coeffm,1,(/numphipts/))
-!!$          
-!!$          ! Reorder coeffm array after fourier transform
-!!$          shift = numphipts - (numphipts+1)/2
-!!$          DO im = 1, shift
-!!$             gm(itheta,im) = coeffm(im+shift)
-!!$          ENDDO
-!!$          
-!!$          DO im = shift+1, numphipts
-!!$             gm(itheta,im) = coeffm(im-shift)
-!!$          ENDDO
-!!$       ENDDO
+       DO itheta = 1, numthetapts
+          coeffm = ZERO
+          CALL FourierTransform(func(itheta,:),coeffm,1,(/numphipts/))
+          
+          ! Reorder coeffm array after fourier transform
+          CALL fftshift(coeffm(mmin:mmax),gm(itheta,mmin:mmax))
+          
+       ENDDO
+       gm = gm * dphi
     ENDIF
     
     ! Now, the Gauss-Legendre quadrature
     DO il = 0, lmax
        DO im = mmin, mmax
-          sum = 0.0_dp
+          sum = ZERO
           IF(im.LT.0) THEN
              DO itheta = 1, numthetapts
                 sum = sum + gm(itheta, im) * &
@@ -193,6 +191,9 @@ CONTAINS
           func_lm(im,il) = sum
        ENDDO
     ENDDO
+    
+    IF(mmax.EQ.0) &
+         func_lm = func_lm * twopi
     
     ! Deallocate stuff
     DEALLOCATE(gm)

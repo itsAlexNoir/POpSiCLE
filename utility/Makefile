@@ -27,9 +27,9 @@ else ifeq (${compiler},gnu)
 OMPLIBS = -fopenmp
 endif
 
-HDF5_INCLUDE = ${HDF5_PATH}/include
+HDF5_INCLUDE = -I${HDF5_PATH}/include
 
-HDF5_LIB = ${HDF5_PATH}/lib/ \
+HDF5_LIB = -L${HDF5_PATH}/lib/ \
 		${HDF5_PATH}/lib/libhdf5hl_fortran.a \
                 ${HDF5_PATH}/lib/libhdf5_hl.a \
                 ${HDF5_PATH}/lib/libhdf5_fortran.a \
@@ -39,6 +39,9 @@ ifdef SZIP_PATH
 HDF5_LIB += -L${SZIP_PATH}/lib -lsz
 endif
 
+ifdef ZLIB_PATH
+HDF5_LIB += -L${ZLIB_PATH}/lib -lz
+endif
 
 HDF5_LIB += -lz -ldl -lm
 
@@ -52,21 +55,23 @@ POPSICLE_LIB_PAR = ${POPSICLE_LIB}/libpopsicle_parallel.a
 
 pes_calculator: ${POPSICLE_LIB_SER}
 	${FC} ${F90FLAGS} pes_calculator.f90 -o ../bin/pes_calculator.exec \
-	-I${POPSICLE_INCL} -I${HDF5_INCLUDE} ${FFT_INCLUDE} \
-	${POPSICLE_LIB}/libpopsicle_serial.a -L${HDF5_LIB} \
+	-I${POPSICLE_INCL} ${HDF5_INCLUDE} ${FFT_INCLUDE} \
+	${POPSICLE_LIB}/libpopsicle_serial.a ${HDF5_LIB} \
 	${FFT_LIBS} ${OMPLIBS}
 
 ${POPSICLE_LIB_SER}:
 	cd ${POPSICLE_ROOT}; ${MAKE} lib "FC=${FC}" "compiler=${compiler}" \
 	"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 	"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
-	"HDF5_PATH=${HDF5ROOT}"
+	"HDF5_PATH=${HDF5ROOT}" "SZIP_PATH=${SZIP_PATH}" \
+	"ZLIB_PATH=${ZLIB_PATH}"
 
 ${POPSICLE_LIB_PAR}:
 	cd ${POPSICLE_ROOT}; ${MAKE} plib "FC=${PFC}" "compiler=${compiler}" \
 	"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 	"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
-	"HDF5_PATH=${PHDF5ROOT}"
+	"HDF5_PATH=${PHDF5ROOT}" "SZIP_PATH=${SZIP_PATH}" \
+	"ZLIB_PATH=${ZLIB_PATH}"
 
 clean: clean_app
 

@@ -59,6 +59,11 @@ POPSICLE_SRC=${POPSICLE_ROOT}/src
 POPSICLE_LIB=${POPSICLE_ROOT}/lib
 POPSICLE_INCL=${POPSICLE_ROOT}/include
 
+ifeq (${FFT_LIB},fftw)
+FFT_INCL = ${FFTW_INCL}
+FFT_LIBS = ${FFTW_LIBS}
+endif
+
 ifndef INSTALL_DIR
 INSTALL_DIR = .
 endif
@@ -80,7 +85,7 @@ endif
 
 DATA_DIR=$(shell ls -A data)
 
-FLAGS = -O3
+FLAGS = -g -traceback -check bounds #-O3
 
 RES_SER = $(addsuffix .res ,$(function_serial))
 RES_PAR = $(addsuffix .res ,$(function_parallel))
@@ -98,23 +103,27 @@ ${POPSICLE_LIB_SER}:
 	cd ${POPSICLE_ROOT}; ${MAKE} lib "FC=${FC}" "compiler=${compiler}" \
 	"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 	"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
-	"HDF5_PATH=${HDF5ROOT}"
+	"HDF5_PATH=${HDF5_ROOT}" "SZIP_PATH=${SZIP_PATH}" \
+	"ZLIB_PATH=${ZLIB_PATH}"
 
 ${POPSICLE_LIB_PAR}:
 	cd ${POPSICLE_ROOT}; ${MAKE} plib "FC=${PFC}" "compiler=${compiler}" \
 	"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 	"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
-	"HDF5_PATH=${PHDF5ROOT}"
+	"HDF5_PATH=${PHDF5_ROOT}" "SZIP_PATH=${SZIP_PATH}" \
+	"ZLIB_PATH=${ZLIB_PATH}"
 
 ${RES_SER}: %.res: %.f90
 	mkdir -p ./${RES_DIR}
 	${FC}  $< -o ${RES_DIR}/$*.exec ${FLAGS} \
-	-I${POPSICLE_INCL} ${POPSICLE_LIB_SER} ${HDF5} ${OMPLIBS}
+	-I${POPSICLE_INCL} ${HDF5_INCL} ${FFT_INCL} \
+	${POPSICLE_LIB_SER} ${HDF5_LIBS} ${FFT_LIBS} ${LIBS}
 
 ${RES_PAR}: %.res: %.f90
 	mkdir -p ./${RES_DIR}
 	${PFC}  $< -o ${RES_DIR}/$*.exec ${FLAGS} \
-	-I${POPSICLE_INCL} ${POPSICLE_LIB_PAR} ${PHDF5} ${OMPLIBS}
+	-I${POPSICLE_INCL} ${HDF5_INCL} ${FFT_INCL} \
+	${POPSICLE_LIB_PAR} ${PHDF5_LIBS} ${FFT_LIBS} ${LIBS}
 
 data_checker:
 ifeq (,${DATA_DIR})
