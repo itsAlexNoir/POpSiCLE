@@ -29,6 +29,7 @@ MODULE fourier
   END INTERFACE create_mask
 
   INTERFACE create_correlated_mask
+     MODULE PROCEDURE create_correlated_mask2D1D
      MODULE PROCEDURE create_correlated_mask3D1D
   END INTERFACE create_correlated_mask
   
@@ -997,6 +998,78 @@ CONTAINS
     
     
   END SUBROUTINE create_mask2D
+  
+  !----------------------------------------!
+  
+  SUBROUTINE create_correlated_mask2D1D(mask, rho_ax, &
+       z_ax, r_ax, inner_erad, outer_erad, inner_nrad, outer_nrad)
+    
+    IMPLICIT NONE
+    
+    !--Program variables-----------------------------------------------------!
+    
+    REAL(dp), INTENT(INOUT)             :: mask(:, :, :)
+    REAL(dp), INTENT(IN)                :: inner_erad
+    REAL(dp), INTENT(IN)                :: outer_erad
+    REAL(dp), INTENT(IN)                :: inner_nrad
+    REAL(dp), INTENT(IN)                :: outer_nrad
+    REAL(dp), INTENT(IN)                :: rho_ax(:)
+    REAL(dp), INTENT(IN)                :: z_ax(:)
+    REAL(dp), INTENT(IN)                :: r_ax(:) 
+    
+    INTEGER, ALLOCATABLE                :: dims(:)
+    REAL(dp)                            :: sigma
+    REAL(dp)                            :: erad, nrad
+    INTEGER                             :: irho, iz, ir
+    
+    !------------------------------------------------------------------------!
+    
+    ALLOCATE(dims(1:3))
+    
+    dims = SHAPE(mask)
+    
+    IF (SIZE(r_ax).NE.dims(1) &
+         .OR. SIZE(rho_ax).NE.dims(2) &
+         .OR. SIZE(z_ax).NE.dims(3) ) THEN
+       WRITE(*,*) 'Dimensions of the input arrays do not match.'
+       STOP
+    ENDIF
+    
+    ! Calculate the sigma
+    sigma = ( (outer_erad / inner_erad)**2 + (outer_nrad/inner_nrad)**2 &
+         - 1.0_dp ) / SQRT( - LOG( 1.0E-50_dp ) )
+    
+    ! Create the mask
+    DO iz = 1, dims(3)
+       DO irho = 1, dims(2)
+          DO ir = 1, dims(1)
+             
+             erad = SQRT(rho_ax(irho) * rho_ax(irho) + &
+                  z_ax(iz) * z_ax(iz)  )
+             
+             nrad = r_ax(ir)
+             
+             IF( (erad/inner_erad)**2 + (nrad/inner_nrad)**2 .LT. 1.0_dp ) THEN
+                mask(ir,irho,iz) = 0.0E-15_dp
+                
+             ELSEIF( ( (erad/inner_erad)**2 + (nrad/inner_nrad)**2 .GT. 1.0_dp ) &
+                  .AND. &
+                  ( (erad/outer_erad)**2 + (nrad/outer_nrad)**2 .LT. 1.0_dp ) ) THEN
+                mask(ir,irho,iz) = 1.0_dp - EXP( - ( ( (erad/inner_erad)**2 + &
+                     (nrad/inner_nrad)**2 -1.0_dp )/sigma )**2 )
+                
+             ELSE
+                mask(ir,irho,iz) = 1.0_dp
+             ENDIF
+             
+          ENDDO
+       ENDDO
+    ENDDO
+    
+    DEALLOCATE(dims)
+    
+    
+  END SUBROUTINE create_correlated_mask2D1D
   
   !----------------------------------------!
   
