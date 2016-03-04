@@ -99,7 +99,6 @@ CONTAINS
     COMPLEX(dp), INTENT(IN)    :: bk(:, :, :)
     REAL(dp), INTENT(OUT)      :: bk_rad(:)
 
-    REAL(dp), ALLOCATABLE      :: axis(:), weights(:)
     REAL(dp)                   :: dphi
     INTEGER                    :: numkpts, numthetapts
     INTEGER                    :: numphipts, dims(3)
@@ -111,10 +110,6 @@ CONTAINS
     numkpts     = dims(1)
     numthetapts = dims(2)
     numphipts   = dims(3)
-
-    ! Get weights for integration over theta
-    ALLOCATE(axis(1:numthetapts),weights(1:numthetapts))
-    CALL get_gauss_stuff(0.0_dp,pi,axis,weights)
     
     IF(numphipts.EQ.1) THEN
        dphi = 1.0_dp
@@ -129,18 +124,17 @@ CONTAINS
           DO ik = 1, numkpts
              bk_rad(ik) = bk_rad(ik) + &
                   REAL(CONJG(bk(ik,itheta,iphi)) * bk(ik,itheta,iphi)) * &
-                  weights(itheta)
+                  gauss_th_weights(itheta)
           ENDDO
        ENDDO
     ENDDO
-    
+
+
     IF(numphipts.EQ.1) THEN
        bk_rad = bk_rad * twopi
     ELSE
        bk_rad = bk_rad * dphi
     ENDIF
-    
-    DEALLOCATE(axis,weights)
     
   END SUBROUTINE get_mes
   

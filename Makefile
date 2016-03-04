@@ -44,35 +44,35 @@ default: lib
 lib:
 	cd src; ${MAKE} lib "FC=${FC}" "PLIB=serial" \
 		"compiler=${compiler}" "POPSICLE_ROOT=${PWD}" \
-		"FFT_PATH=${FFT_PATH}" "FFT_LIB=${FFT_LIB}" \
+		"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
 		"HDF5_PATH=${HDF5_PATH}"
 
 plib:
 	cd src; ${MAKE} lib "FC=${FC}" "PLIB=parallel" \
 		"compiler=${compiler}" "POPSICLE_ROOT=${PWD}" \
-		"FFT_PATH=${FFT_PATH}" "FFT_LIB=${FFT_LIB}" \
+		"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
 		"HDF5_PATH=${HDF5_PATH}"
 
 dylib:
 	cd src; ${MAKE} dylib "FC=${FC}" "PLIB=serial" \
 		"compiler=${compiler}" "POPSICLE_ROOT=${PWD}" \
-		"FFT_PATH=${FFT_PATH}" "FFT_LIB=${FFT_LIB}" \
+		"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
 		"HDF5_PATH=${HDF5_PATH}"
 
 dyplib:
 	cd src; ${MAKE} dylib "FC=${FC}" "PLIB=parallel" \
 		"compiler=${compiler}" "POPSICLE_ROOT=${PWD}" \
-		"FFT_PATH=${FFT_PATH}" "FFT_LIB=${FFT_LIB}" \
+		"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
 		"HDF5_PATH=${HDF5_PATH}"
 
 pes_calculator:
 	cd utility; ${MAKE} pes_calculator "FC=${FC}" \
 		"compiler=${compiler}" "POPSICLE_ROOT=${PWD}" \
-		"FFT_PATH=${FFT_PATH}" "FFT_LIB=${FFT_LIB}" \
+		"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
 		"HDF5_PATH=${HDF5_PATH}" "SZIP_PATH=${SZIP_PATH}"
 

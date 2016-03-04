@@ -61,8 +61,6 @@ CONTAINS
     ! Transform the wavefunction into momentum space. !
     !-------------------------------------------------!
     
-    WRITE(*,*) 'Transforming to momentum space...'
-    
     ! Compute forward transform
     CALL FFT(psik,rank,dims_local)
     
@@ -717,7 +715,7 @@ CONTAINS
     CALL c_f_pointer(p_dims,dims_for_fftw,[4])
     
     in4d  = RESHAPE(in,(/ Nx, Ny, Nz, Nr /))
-    dims_for_fftw = dims(4:1:-1)
+    dims_for_fftw = (/ Nr,Nz,Ny,Nx /)
     
     plan = fftw_plan_dft(4,dims_for_fftw,in4d,out,FFTW_FORWARD,FFTW_ESTIMATE)
     
@@ -791,7 +789,7 @@ CONTAINS
     INTEGER                   :: ndim, i
     INTEGER                   :: p2, pn
     !------------------------------------------!
-    
+
     ! Set size of the input and half-point.
     ndim  = SIZE(x)
     p2 = INT((ndim+1)/2)
@@ -802,7 +800,7 @@ CONTAINS
     ELSE
        pn = p2-1
     ENDIF
-    
+
     ! Swap the halves of the array.
     DO i = 1, pn
        y(i) = x(p2+i)

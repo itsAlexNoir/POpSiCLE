@@ -115,7 +115,7 @@ endif
 ##  the communication choosen
 ########################################
 
-INCL    = -I${HDF5_PATH}/include
+INCL    += -I${HDF5_PATH}/include
 LIBS    += -L${HDF5_PATH}/lib
 
 LIBS	+= -lsz -lz -ldl -lm ${OMPLIBS}

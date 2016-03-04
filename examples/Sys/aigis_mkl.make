@@ -24,37 +24,43 @@ OPT         = -g -traceback -check bounds
 F90FLAGS    =	$(OPT)
 F77FLAGS    =	$(OPT)
 
+# For MKL libraries
 FFT_LIB	    = mkl
 FFT_PATH    = ${MKLROOT}
 
-MKLLIBS	   = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -openmp
+# For FFTW libraries
+FFT_LIB	    = fftw
+FFT_PATH    = /users/adelacalle/my_libraries/fftw/current
+FFTW_ROOT  = /users/adelacalle/my_libraries/fftw/current
+FFTW_INCL  = -I${FFTW_ROOT}/include
+FFTW_LIBS  = -L${FFTW_ROOT}/lib -lfftw3 -lm
+
+MKL_LIBS  = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -openmp
+
+LIBS	   = ${MKL_LIBS}
 OMPLIBS    = -openmp
 
-LIBS	   = ${MKLLIBS}	${OMPLIBS}
+HDF5_ROOT   = /users/adelacalle/my_libraries/hdf5/serial/current
+SZIP_ROOT   = /users/adelacalle/my_libraries/szip/current
+ZLIB_ROOT   = /users/adelacalle/my_libraries/zlib/current
 
-HDF5ROOT   = /users/adelacalle/my_libraries/hdf5/serial/current/
-SZIPROOT   = /users/adelacalle/my_libraries/szip/current/
+HDF5_LIBS   = -L${HDF5_ROOT}/lib/ \
+                ${HDF5_ROOT}/lib/libhdf5hl_fortran.a \
+                ${HDF5_ROOT}/lib/libhdf5_hl.a \
+                ${HDF5_ROOT}/lib/libhdf5_fortran.a \
+                ${HDF5_ROOT}/lib/libhdf5.a
+HDF5_LIBS	+=   -L${SZIP_ROOT}/lib -lsz -lz -ldl -lm
+HDF5_INC	=	-I${HDF_5ROOT}/include
 
-HDF5LIBS   = -L${HDF5ROOT}/lib/ \
-                ${HDF5ROOT}/lib/libhdf5hl_fortran.a \
-                ${HDF5ROOT}/lib/libhdf5_hl.a \
-                ${HDF5ROOT}/lib/libhdf5_fortran.a \
-                ${HDF5ROOT}/lib/libhdf5.a
-HDF5LIBS	+=   -L${SZIPROOT}/lib -lsz -lz -ldl -lm
-HDF5INCLUDE	=	-I${HDF5ROOT}/include
-HDF5		= $(HDF5LIBS) $(HDF5INCLUDE)
+PHDF5_ROOT  = /users/adelacalle/my_libraries/hdf5/parallel/current
 
-PHDF5ROOT	=	/users/adelacalle/my_libraries/hdf5/parallel/current/
+PHDF5_LIBS    =   -L${PHDF5_ROOT}/lib/ \
+                ${PHDF5_ROOT}/lib/libhdf5hl_fortran.a \
+                ${PHDF5_ROOT}/lib/libhdf5_hl.a \
+                ${PHDF5_ROOT}/lib/libhdf5_fortran.a \
+                ${PHDF5_ROOT}/lib/libhdf5.a          
+PHDF5_LIBS   +=   -L${SZIP_ROOT}/lib -lsz -lz -ldl -lm
+PHDF5_INCL	= -I${PHDF5_ROOT}/include
 
-PHDF5LIBS    =   -L${PHDF5ROOT}/lib/ \
-                ${PHDF5ROOT}/lib/libhdf5hl_fortran.a \
-                ${PHDF5ROOT}/lib/libhdf5_hl.a \
-                ${PHDF5ROOT}/lib/libhdf5_fortran.a \
-                ${PHDF5ROOT}/lib/libhdf5.a          
-PHDF5LIBS   +=   -L${SZIPROOT}/lib -lsz -lz -ldl -lm
-PHDF5INCLUDE	=	-I${PHDF5ROOT}/include
-PHDF5		= $(PHDF5LIBS) $(PHDF5INCLUDE)
-
-FFTW3LIBS	+=	-I${FFTW3ROOT}/include -lfftw3 -lm
 
 POPSICLE_ROOT = /users/adelacalle/Documents/Code/POpSiCLE
