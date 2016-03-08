@@ -74,7 +74,8 @@ pes_calculator:
 		"compiler=${compiler}" "POPSICLE_ROOT=${PWD}" \
 		"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
-		"HDF5_PATH=${HDF5_PATH}" "SZIP_PATH=${SZIP_PATH}"
+		"HDF5_PATH=${HDF5_PATH}" "SZIP_PATH=${SZIP_PATH}" \
+		"ZLIB_PATH=${ZLIB_PATH}"
 
 clean:
 	cd src; ${MAKE} clean

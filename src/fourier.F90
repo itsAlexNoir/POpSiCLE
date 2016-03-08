@@ -1,9 +1,7 @@
 MODULE fourier
   
 #if _COM_MPI
-  
   USE MPI
-  
 #endif
   
   USE omp_lib
@@ -15,6 +13,7 @@ MODULE fourier
   PRIVATE
   
   PUBLIC                         :: FourierTransform
+  PUBLIC                         :: FourierBesselTransform
   PUBLIC                         :: FFT
   PUBLIC                         :: HankelTransform
   PUBLIC                         :: fftshift
@@ -29,6 +28,7 @@ MODULE fourier
   END INTERFACE create_mask
 
   INTERFACE create_correlated_mask
+     MODULE PROCEDURE create_correlated_mask2D1D
      MODULE PROCEDURE create_correlated_mask3D1D
   END INTERFACE create_correlated_mask
   
@@ -577,6 +577,180 @@ CONTAINS
   
   !----------------------------------------------------!
   
+  SUBROUTINE FourierBesselTransform(psi, psik, rho_ax, krho_ax, &
+       jacobrho, fftshift_on)
+    
+    IMPLICIT NONE
+    
+    COMPLEX(dp), INTENT(IN)        :: psi(:, :, :)
+    COMPLEX(dp), INTENT(OUT)       :: psik(:, :, :)
+    REAL(dp), INTENT(IN)           :: rho_ax(:)
+    REAL(dp), INTENT(IN)           :: krho_ax(:)   
+    REAL(dp), INTENT(IN), OPTIONAL :: jacobrho(:)
+    LOGICAL, INTENT(IN), OPTIONAL  :: fftshift_on
+    
+    COMPLEX(dp), ALLOCATABLE       :: psik_shift(:, :, :)
+    INTEGER                        :: dims_in(3), dims_out(3)
+    REAL(dp), ALLOCATABLE          :: jacobian(:)
+    COMPLEX(dp), ALLOCATABLE       :: inz(:), inr(:)
+    COMPLEX(dp), ALLOCATABLE       :: inrho(:), outrho(:)
+    COMPLEX(dp), ALLOCATABLE       :: inrz(:), outrz(:)
+    INTEGER                        :: ir, irho, iz, ii
+    INTEGER                        :: ikr, ikrho, ikz
+    
+    !-----------------------------------!
+
+    psik = ZERO
+    dims_in = SHAPE(psi)
+    dims_out = SHAPE(psik)
+    
+    ALLOCATE(psik_shift(1:dims_out(1),1:dims_out(2),dims_out(3)))
+    ALLOCATE(jacobian(1:dims_in(2)))
+    
+    IF(PRESENT(jacobrho)) THEN
+       jacobian = jacobrho
+    ELSE
+       jacobian = rho_ax
+    ENDIF
+
+    !-------------------------------------------------!
+    ! Transform the wavefunction into momentum space. !
+    !-------------------------------------------------!
+    
+    !-----------------!
+    ! RHO coordinate  !
+    !-----------------!
+    
+    IF (dims_in(2).NE.1) THEN
+       
+       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ir,irho,iz,ikrho,inrho,outrho)  COPYIN(inrho,outrho)
+       ALLOCATE(inrho(1:dims_in(2)))
+       ALLOCATE(outrho(1:dims_out(2)))
+       
+       !$OMP DO COLLAPSE(2)
+       DO iz = 1, dims_in(3)
+          DO ir = 1, dims_in(1)
+             
+             DO irho = 1, dims_in(2)
+                inrho(irho) = psi(ir,irho,iz)
+             ENDDO
+             
+             DO ikrho = 1, dims_out(2)
+                outrho(ikrho) = HankelTransform(inrho, dims_in(2), &
+                     rho_ax, krho_ax(ikrho), jacobian)
+             ENDDO
+             
+             DO irho = 1, dims_out(2)
+                psik(ir,irho,iz) = outrho(irho)
+             ENDDO
+             
+          ENDDO
+       ENDDO
+       
+       !$OMP END DO NOWAIT
+       
+       DEALLOCATE(inrho)
+       DEALLOCATE(outrho)
+       
+       !$OMP END PARALLEL
+    ENDIF
+    
+    
+    !---------------------!
+    ! R and Z coordinates !
+    !---------------------!
+    
+    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ir,irho,iz) COPYIN(inrz,outrz)
+    ALLOCATE(inrz(dims_in(1) * dims_in(3)))
+    ALLOCATE(outrz(dims_in(1) * dims_in(3)))
+    
+    !$OMP DO
+    DO irho = 1, dims_out(2)
+
+       ii = 0
+       DO iz = 1, dims_in(3)
+          DO ir = 1, dims_in(1)
+             ii = ii + 1
+             inrz(ii) = psik(ir,irho,iz)
+          ENDDO
+       ENDDO
+       
+       ! Compute forward transform
+       CALL FourierTransform(inrz,outrz, 2, (/ dims_in(1), dims_in(3) /) )
+
+       ii = 0
+       DO iz = 1, dims_out(3)
+          DO ir = 1, dims_out(1)
+             ii = ii + 1
+             psik(ir,irho,iz) = outrz(ii)
+          ENDDO
+       ENDDO
+       
+    ENDDO
+    !$OMP END DO NOWAIT
+    
+    DEALLOCATE(inrz, outrz)
+    
+    !$OMP END PARALLEL
+
+    !
+    ! FFTshift the arrays
+    !
+
+    IF(PRESENT(fftshift_on) .AND. fftshift_on.EQ..TRUE.) THEN
+       
+       IF(dims_out(1).NE.1) THEN
+
+          ALLOCATE(inr(1:dims_out(1)))
+          inr = ZERO
+          
+          !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ir,iz,irho) &
+          !$OMP DO COLLAPSE(2)
+          DO iz = 1, dims_out(3)
+             DO irho = 1, dims_out(2)
+
+                inr = ZERO
+                DO ir = 1, dims_out(1)
+                   inr(ir) = psik(ir,irho,iz)
+                ENDDO
+                
+                CALL fftshift(inr, psik(:,irho,iz))
+             ENDDO
+          ENDDO
+          !$OMP END DO NOWAIT
+          !$OMP END PARALLEL
+          DEALLOCATE(inr)
+       ENDIF
+
+       
+       ALLOCATE(inz(1:dims_out(3)))
+       inz = ZERO
+       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ir,irho,iz) &
+       !$OMP DO COLLAPSE(2)    
+       DO irho = 1, dims_out(2)
+          DO ir = 1, dims_out(1)
+             
+             inz = ZERO
+             DO iz = 1, dims_out(3)
+                inz(iz) = psik(ir,irho,iz)
+             ENDDO
+             
+             CALL fftshift(inz, psik(ir,irho,:))
+             
+             
+          ENDDO
+       ENDDO
+       !$OMP END DO NOWAIT
+       !$OMP END PARALLEL
+       DEALLOCATE(inz)
+
+    ENDIF
+    DEALLOCATE(jacobian)
+    
+  END SUBROUTINE FourierBesselTransform
+  
+  !----------------------------------------------------!
+  
 #if _USE_MKL
   
   SUBROUTINE FFT(in, rank, dims)
@@ -715,7 +889,7 @@ CONTAINS
     CALL c_f_pointer(p_dims,dims_for_fftw,[4])
     
     in4d  = RESHAPE(in,(/ Nx, Ny, Nz, Nr /))
-    dims_for_fftw = (/ Nr,Nz,Ny,Nx /)
+    dims_for_fftw = dims(4:1:-1)
     
     plan = fftw_plan_dft(4,dims_for_fftw,in4d,out,FFTW_FORWARD,FFTW_ESTIMATE)
     
@@ -769,8 +943,8 @@ CONTAINS
     
     !------------------------------------------------------------------------!
     
-    HankelTransform = 0.0_dp
-    
+    HankelTransform = ZERO
+
     DO irho = 1, Nrho
        HankelTransform  = HankelTransform + jacobian(irho) * &
             in(irho) * BESSEL_J0(krpts * rpts(irho))
@@ -789,7 +963,7 @@ CONTAINS
     INTEGER                   :: ndim, i
     INTEGER                   :: p2, pn
     !------------------------------------------!
-
+    
     ! Set size of the input and half-point.
     ndim  = SIZE(x)
     p2 = INT((ndim+1)/2)
@@ -800,7 +974,7 @@ CONTAINS
     ELSE
        pn = p2-1
     ENDIF
-
+    
     ! Swap the halves of the array.
     DO i = 1, pn
        y(i) = x(p2+i)
@@ -1000,6 +1174,78 @@ CONTAINS
   
   !----------------------------------------!
   
+  SUBROUTINE create_correlated_mask2D1D(mask, rho_ax, &
+       z_ax, r_ax, inner_erad, outer_erad, inner_nrad, outer_nrad)
+    
+    IMPLICIT NONE
+    
+    !--Program variables-----------------------------------------------------!
+    
+    REAL(dp), INTENT(INOUT)             :: mask(:, :, :)
+    REAL(dp), INTENT(IN)                :: inner_erad
+    REAL(dp), INTENT(IN)                :: outer_erad
+    REAL(dp), INTENT(IN)                :: inner_nrad
+    REAL(dp), INTENT(IN)                :: outer_nrad
+    REAL(dp), INTENT(IN)                :: rho_ax(:)
+    REAL(dp), INTENT(IN)                :: z_ax(:)
+    REAL(dp), INTENT(IN)                :: r_ax(:) 
+    
+    INTEGER, ALLOCATABLE                :: dims(:)
+    REAL(dp)                            :: sigma
+    REAL(dp)                            :: erad, nrad
+    INTEGER                             :: irho, iz, ir
+    
+    !------------------------------------------------------------------------!
+    
+    ALLOCATE(dims(1:3))
+    
+    dims = SHAPE(mask)
+    
+    IF (SIZE(r_ax).NE.dims(1) &
+         .OR. SIZE(rho_ax).NE.dims(2) &
+         .OR. SIZE(z_ax).NE.dims(3) ) THEN
+       WRITE(*,*) 'Dimensions of the input arrays do not match.'
+       STOP
+    ENDIF
+    
+    ! Calculate the sigma
+    sigma = ( (outer_erad / inner_erad)**2 + (outer_nrad/inner_nrad)**2 &
+         - 1.0_dp ) / SQRT( - LOG( 1.0E-50_dp ) )
+    
+    ! Create the mask
+    DO iz = 1, dims(3)
+       DO irho = 1, dims(2)
+          DO ir = 1, dims(1)
+             
+             erad = SQRT(rho_ax(irho) * rho_ax(irho) + &
+                  z_ax(iz) * z_ax(iz)  )
+             
+             nrad = r_ax(ir)
+             
+             IF( (erad/inner_erad)**2 + (nrad/inner_nrad)**2 .LT. 1.0_dp ) THEN
+                mask(ir,irho,iz) = 0.0E-15_dp
+                
+             ELSEIF( ( (erad/inner_erad)**2 + (nrad/inner_nrad)**2 .GT. 1.0_dp ) &
+                  .AND. &
+                  ( (erad/outer_erad)**2 + (nrad/outer_nrad)**2 .LT. 1.0_dp ) ) THEN
+                mask(ir,irho,iz) = 1.0_dp - EXP( - ( ( (erad/inner_erad)**2 + &
+                     (nrad/inner_nrad)**2 -1.0_dp )/sigma )**2 )
+                
+             ELSE
+                mask(ir,irho,iz) = 1.0_dp
+             ENDIF
+             
+          ENDDO
+       ENDDO
+    ENDDO
+    
+    DEALLOCATE(dims)
+    
+    
+  END SUBROUTINE create_correlated_mask2D1D
+  
+  !----------------------------------------!
+  
   SUBROUTINE create_correlated_mask3D1D(mask, x_ax, y_ax, &
        z_ax, r_ax, inner_erad, outer_erad, inner_nrad, outer_nrad)
     
@@ -1058,7 +1304,8 @@ CONTAINS
                 ELSEIF( ( (erad/inner_erad)**2 + (nrad/inner_nrad)**2 .GT. 1.0_dp ) &
                      .AND. &
                      ( (erad/outer_erad)**2 + (nrad/outer_nrad)**2 .LT. 1.0_dp ) ) THEN
-                   mask(ix,iy,iz,ir) = 1.0_dp - EXP( - ( ( (erad/inner_erad)**2 + (nrad/inner_nrad)**2 -1.0_dp )/sigma )**2 )
+                   mask(ix,iy,iz,ir) = 1.0_dp - EXP( - ( ( (erad/inner_erad)**2 + &
+                        (nrad/inner_nrad)**2 -1.0_dp )/sigma )**2 )
                    
                 ELSE
                    mask(ix,iy,iz,ir) = 1.0_dp
