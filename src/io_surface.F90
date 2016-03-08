@@ -90,9 +90,9 @@ CONTAINS
     CALL h5fclose_f(file_id, error)
     CALL h5close_f(error)
     
-    ! Set the count of datasets to zero. Start 
-    dataset_count = 0
-
+    ! Set the count of datasets to -1. It will start at 0. 
+    dataset_count = -1
+    
   END SUBROUTINE create_surface_file_serial
   
   !******************************************************!
@@ -149,8 +149,8 @@ CONTAINS
     CALL h5fclose_f(file_id, error)
     CALL h5close_f(error)
     
-    ! Set the count of datasets to zero. Start 
-    dataset_count = 0
+    ! Set the count of datasets to -1. It will start at 0. 
+    dataset_count = -1
     
   END SUBROUTINE create_surface_file_parallel
 #endif

@@ -398,7 +398,7 @@ CONTAINS
                    term2 =  - 0.5_dp * (-ZIMAGONE)**il * &
                         rb * jl(il,ik) * funcp_lm(im,il)
                    
-                   term3 =  - 0.5_dp * ZIMAGONE / SQRT(pi) * afield(3) * rb * &
+                   term3 = - 0.5_dp * ZIMAGONE / SQRT(pi) * afield(3) * rb * &
                         func_lm(im,il)
                    
                    DO ill = 0, lmax
