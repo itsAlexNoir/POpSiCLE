@@ -25,15 +25,15 @@ F90FLAGS    =	$(OPT)
 F77FLAGS    =	$(OPT)
 
 # For MKL libraries
-FFT_LIB	    = mkl
-FFT_PATH    = ${MKLROOT}
+#FFT_LIB	    = mkl
+#FFT_PATH    = ${MKLROOT}
 
 # For FFTW libraries
-#FFT_LIB	    = fftw
-#FFT_PATH    = /opt/fftw/current
-#FFTW_ROOT  = /opt/fftw/current
-#FFTW_INCL  = -I${FFTW_ROOT}/include
-#FFTW_LIBS  = -L${FFTW_ROOT}/lib -lfftw3 -lm
+FFT_LIB	    = fftw
+FFT_PATH    = /opt/fftw/current
+FFTW_ROOT  = /opt/fftw/current
+FFTW_INCL  = -I${FFTW_ROOT}/include
+FFTW_LIBS  = -L${FFTW_ROOT}/lib -lfftw3 -lm
 
 
 MKL_LIBS   = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -openmp
