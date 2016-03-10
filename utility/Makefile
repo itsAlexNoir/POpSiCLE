@@ -21,6 +21,8 @@ POPSICLE_SRC=${POPSICLE_ROOT}/src
 POPSICLE_LIB=${POPSICLE_ROOT}/lib
 POPSICLE_INCL=${POPSICLE_ROOT}/include
 
+MKL_LIBS = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -openmp
+
 ifeq (${compiler},intel)
 OMPLIBS = -openmp
 else ifeq (${compiler},gnu)
@@ -45,10 +47,16 @@ endif
 
 HDF5_LIB += -lz -ldl -lm
 
-ifdef (FFT_LIB,fftw)
+ifeq (${FFT_LIB},fftw)
 FFT_LIBS = -L${FFT_PATH}/lib -lfftw3 -lm
 FFT_INCLUDE = -I${FFT_PATH}/include
 endif
+
+ifeq (${FFT_LIB},mkl)
+FFT_LIBS = ${MKL_LIBS}
+FFT_INCLUDE =
+endif
+
 
 POPSICLE_LIB_SER = ${POPSICLE_LIB}/libpopsicle_serial.a
 POPSICLE_LIB_PAR = ${POPSICLE_LIB}/libpopsicle_parallel.a
