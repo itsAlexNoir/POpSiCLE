@@ -376,7 +376,8 @@ CONTAINS
           ENDDO
        ENDDO
     ENDDO
-        
+
+    CALL delete_tricubic_matrix( )
     DEALLOCATE(i_am_in3D, cellindex3D)
     DEALLOCATE(xfdcoeffs,yfdcoeffs,zfdcoeffs)
     DEALLOCATE(psi_in_vol_x,psi_in_vol_y,psi_in_vol_z)
@@ -755,6 +756,8 @@ CONTAINS
        ENDDO
     ENDDO
 
+    
+    CALL delete_tricubic_matrix( )
     DEALLOCATE(i_am_in3D, cellindex3D)
     DEALLOCATE(xfdcoeffs,yfdcoeffs,zfdcoeffs)
     DEALLOCATE(psi_in_vol_x,psi_in_vol_y,psi_in_vol_z)
@@ -971,7 +974,8 @@ CONTAINS
           
        ENDDO
     ENDDO
-    
+
+    CALL delete_bicubic_matrix( )
     DEALLOCATE(i_am_in2D, cellindex2D)
     DEALLOCATE(rhofdcoeffs,zfdcoeffs)
     DEALLOCATE(psi_in_vol_rho,psi_in_vol_z,psi_in_vol_rhoz)
@@ -1200,7 +1204,8 @@ CONTAINS
           
        ENDDO
     ENDDO
-    
+
+    CALL delete_bicubic_matrix( )
     DEALLOCATE(i_am_in2D, cellindex2D)
     DEALLOCATE(rhofdcoeffs,zfdcoeffs)
     DEALLOCATE(psi_in_vol_rho,psi_in_vol_z,psi_in_vol_rhoz)
