@@ -859,14 +859,14 @@ CONTAINS
        IF (PRESENT(psi_sph_dx).AND.PRESENT(psi_sph_dy)) THEN
           psi_sph_dx = 0.0_dp
           psi_sph_dy = 0.0_dp
-
-          DO ir = 1, numrpts
-             DO itheta = 1, numthetapts
+          
+          DO itheta = 1, dims_out(2)
+             DO ir = 1, dims_out(1)
                 IF(i_am_in2D(ir,itheta).EQ.1) THEN
-
+                   
                    rhopt = r_ax(ir) * SIN(theta_ax(itheta))
                    zpt = r_ax(ir) * COS(theta_ax(itheta))
-
+                   
                    CALL scatt_interpolate(numpts_in,rhopt, zpt, rho_inp, z_inp, &
                         psi_inp, TRIM(method), psi_sph(ir,itheta), &
                         psi_sph_dx(ir,itheta), psi_sph_dy(ir,itheta),rank)
@@ -875,11 +875,11 @@ CONTAINS
           ENDDO
 
        ELSE
-
-          DO ir = 1, numrpts
-             DO itheta = 1, numthetapts
+          
+          DO itheta = 1, dims_out(2)
+             DO ir = 1, dims_out(1)
                 IF(i_am_in2D(ir,itheta).EQ.1) THEN
-
+                   
                    rhopt = r_ax(ir) * SIN(theta_ax(itheta))
                    zpt = r_ax(ir) * COS(theta_ax(itheta))
                    CALL scatt_interpolate(numpts,rhopt, zpt, rho_inp, z_inp, &
@@ -897,11 +897,11 @@ CONTAINS
        IF (PRESENT(psi_sph_dx).AND.PRESENT(psi_sph_dy)) THEN
           psi_sph_dx = 0.0_dp
           psi_sph_dy = 0.0_dp
-
-          DO ir = 1, numrpts
-             DO itheta = 1, numthetapts
+          
+          DO itheta = 1, dims_out(2)
+             DO ir = 1, dims_out(1)
                 IF(i_am_in2D(ir,itheta).EQ.1) THEN
-
+                   
                    rhopt = r_ax(ir) * SIN(theta_ax(itheta))
                    zpt = r_ax(ir) * COS(theta_ax(itheta))
                    CALL scatt_interpolate(numpts_in,rhopt, zpt, rho_inp, z_inp, &
@@ -910,13 +910,12 @@ CONTAINS
                 ENDIF
              ENDDO
           ENDDO
-
+          
        ELSE
-
-          DO ir = 1, numrpts
-             DO itheta = 1, numthetapts
+          DO itheta = 1, dims_out(2)
+             DO ir = 1, dims_out(1)
                 IF(i_am_in2D(ir,itheta).EQ.1) THEN
-
+                   
                    rhopt = r_ax(ir) * SIN(theta_ax(itheta))
                    zpt = r_ax(ir) * COS(theta_ax(itheta))
                    CALL scatt_interpolate(numpts,rhopt, zpt, rho_inp, z_inp, &
@@ -924,11 +923,11 @@ CONTAINS
                 ENDIF
              ENDDO
           ENDDO
-
+          
        ENDIF
-
+       
     ENDIF
-
+    
     DEALLOCATE(i_am_in2D)
     DEALLOCATE(rho_inp, z_inp,psi_inp)
 
@@ -1014,8 +1013,8 @@ CONTAINS
           psi_sph_dx = ZERO
           psi_sph_dy = ZERO
           
-          DO ir = 1, numrpts
-             DO itheta = 1, numthetapts
+          DO itheta = 1, dims_out(2)
+             DO ir = 1, dims_out(1)
                 IF(i_am_in2D(ir,itheta).EQ.1) THEN
                    
                    rhopt = r_ax(ir) * SIN(theta_ax(itheta))
@@ -1027,13 +1026,13 @@ CONTAINS
                 ENDIF
              ENDDO
           ENDDO
-
+          
        ELSE
-
-          DO ir = 1, numrpts
-             DO itheta = 1, numthetapts
+          
+          DO itheta = 1, dims_out(2)
+             DO ir = 1, dims_out(1)
                 IF(i_am_in2D(ir,itheta).EQ.1) THEN
-
+                   
                    rhopt = r_ax(ir) * SIN(theta_ax(itheta))
                    zpt = r_ax(ir) * COS(theta_ax(itheta))
                    CALL scatt_interpolate(numpts,rhopt, zpt, rho_inp, z_inp, &
@@ -1052,8 +1051,8 @@ CONTAINS
           psi_sph_dx = ZERO
           psi_sph_dy = ZERO
           
-          DO ir = 1, numrpts
-             DO itheta = 1, numthetapts
+          DO itheta = 1, dims_out(2)
+             DO ir = 1, dims_out(1)
                 IF(i_am_in2D(ir,itheta).EQ.1) THEN
 
                    rhopt = r_ax(ir) * SIN(theta_ax(itheta))
@@ -1064,13 +1063,13 @@ CONTAINS
                 ENDIF
              ENDDO
           ENDDO
-
+          
        ELSE
-
-          DO ir = 1, numrpts
-             DO itheta = 1, numthetapts
+          
+          DO itheta = 1, dims_out(2)
+             DO ir = 1, dims_out(1)
                 IF(i_am_in2D(ir,itheta).EQ.1) THEN
-
+                   
                    rhopt = r_ax(ir) * SIN(theta_ax(itheta))
                    zpt = r_ax(ir) * COS(theta_ax(itheta))
                    CALL scatt_interpolate(numpts,rhopt, zpt, rho_inp, z_inp, &
@@ -1080,15 +1079,15 @@ CONTAINS
           ENDDO
 
        ENDIF
-
+       
     ENDIF
-
+    
     DEALLOCATE(i_am_in2D)
     DEALLOCATE(rho_inp, z_inp,psi_inp)
-
-
+    
+    
   END SUBROUTINE zscatt_cylindrical2spherical2D
-
+  
   !----------------------------------------------------------------!
 
 END MODULE scattcoords

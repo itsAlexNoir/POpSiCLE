@@ -130,7 +130,7 @@ CONTAINS
        ALLOCATE(AQ_IM(5,numpts))
        ALLOCATE(AL_IM(2,numpts))
        
-
+       
        !WRITE(*,*) 'Creating the interpolant...'
        CALL QSHEP2(numpts, x1, x2, func, NQ, NW, NR, LCELL_RE, &
             LNEXT_RE, XMIN_RE, YMIN_RE, DX_RE, DY_RE, &
@@ -423,18 +423,18 @@ CONTAINS
        
        
     ELSEIF (.NOT.PRESENT(interp_val_dx).AND. .NOT.PRESENT(interp_val_dy) ) THEN
-       
        IF (method .EQ. 'quadratic') THEN
           ! Interpolate the real part
-          interp_val = QS2VAL(y1, y2, numpts, x1, x2, func, NR, LCELL3_RE, LNEXT_RE, &
+          
+          interp_val = QS2VAL(y1, y2, numpts, x1, x2, func, NR, LCELL_RE, LNEXT_RE, &
                XMIN_RE, YMIN_RE, DX_RE, DY_RE, RMAX_RE, RSQ_RE, AQ_RE )
-          IF (interp_val .EQ. 0) THEN
-             WRITE (*, *) 'Q2VAL - ERROR!'
-             WRITE (*, *) 'Error in QS2VAL (REAL), IER = ', interp_val
-             IF(PRESENT(rank)) &
-                  WRITE(*,*) 'From processor ',rank
-             STOP
-          END IF
+          !IF (interp_val .EQ. 0) THEN
+          !   WRITE (*, *) 'Q2VAL - ERROR!'
+          !   WRITE (*, *) 'Error in QS2VAL (REAL), IER = ', interp_val
+          !   IF(PRESENT(rank)) &
+          !        WRITE(*,*) 'From processor ',rank
+          !   STOP
+          !END IF
                  
           !---------------------------------!
        ENDIF
@@ -516,7 +516,7 @@ CONTAINS
        
        IF (method .EQ. 'quadratic') THEN
           ! Interpolate the real part
-          interp_val_re = QS2VAL(y1, y2, numpts, x1, x2, func_re, NR, LCELL3_RE, LNEXT_RE, &
+          interp_val_re = QS2VAL(y1, y2, numpts, x1, x2, func_re, NR, LCELL_RE, LNEXT_RE, &
                XMIN_RE, YMIN_RE, DX_RE, DY_RE, RMAX_RE, RSQ_RE, AQ_RE )
           IF (interp_val_re .EQ. 0) THEN
              WRITE (*, *) 'Q2VAL - ERROR!'
@@ -528,7 +528,7 @@ CONTAINS
           
           
           ! Interpolate the imaginary part
-          interp_val_im = QS2VAL(y1, y2, numpts, x1, x2, func_im, NR, LCELL3_IM, LNEXT_IM, &
+          interp_val_im = QS2VAL(y1, y2, numpts, x1, x2, func_im, NR, LCELL_IM, LNEXT_IM, &
                XMIN_IM, YMIN_IM, DX_IM, DY_IM, RMAX_IM, RSQ_IM, AQ_IM )
           IF (interp_val_im .EQ. 0) THEN
              WRITE (*, *) 'Q2VAL - ERROR!'
