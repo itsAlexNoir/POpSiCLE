@@ -399,7 +399,7 @@ CONTAINS
     REAL(dp), INTENT(OUT), OPTIONAL      :: interp_val_dy
     INTEGER, INTENT(IN), OPTIONAL        :: rank
     
-    INTEGER                      :: ierror
+    INTEGER                              :: ierror
     
     !-----------------------------------------------!
     
@@ -425,9 +425,10 @@ CONTAINS
     ELSEIF (.NOT.PRESENT(interp_val_dx).AND. .NOT.PRESENT(interp_val_dy) ) THEN
        IF (method .EQ. 'quadratic') THEN
           ! Interpolate the real part
-          
+          write(*,*) 'y1',y1,'y2',y2
           interp_val = QS2VAL(y1, y2, numpts, x1, x2, func, NR, LCELL_RE, LNEXT_RE, &
                XMIN_RE, YMIN_RE, DX_RE, DY_RE, RMAX_RE, RSQ_RE, AQ_RE )
+          
           !IF (interp_val .EQ. 0) THEN
           !   WRITE (*, *) 'Q2VAL - ERROR!'
           !   WRITE (*, *) 'Error in QS2VAL (REAL), IER = ', interp_val

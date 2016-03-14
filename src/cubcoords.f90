@@ -110,7 +110,9 @@ CONTAINS
     INTEGER                             :: rulepts, centralpt
     INTEGER                             :: lower_x, lower_y, lower_z
     INTEGER                             :: upper_x, upper_y, upper_z
-    
+
+    character(len=50)                     :: name
+    character(len=1)                      :: crank
     !------------------------------------------------------------------!
     
     dims_in = SHAPE(psi_cart)
@@ -155,7 +157,7 @@ CONTAINS
           ENDDO
        ENDDO
     ENDDO
-
+    
     ! Begin with the interpolation
     ! First, if we are parallel
     
@@ -207,7 +209,11 @@ CONTAINS
                 psi_in(7) = psi_cart(left_x+1,left_y+1,left_z+1)
                 psi_in(8) = psi_cart(left_x,left_y+1,left_z+1)
                 
-                IF(left_x-fdrule.LT.LBOUND(x_ax,DIM=1)) THEN
+                IF( (left_x-rulepts.LT.LBOUND(x_ax,DIM=1)) .AND. &
+                     (left_x+rulepts.GT.UBOUND(x_ax,DIM=1)) ) THEN
+                   WRITE(*,*) 'Error!: There are no enough points to apply the fd rule chosen.'
+                   STOP
+                ELSEIF(left_x-fdrule.LT.LBOUND(x_ax,DIM=1)) THEN
                    lower_x = left_x
                    upper_x = left_x + rulepts
                 ELSEIF(left_x+fdrule+1.GT.UBOUND(x_ax,DIM=1)) THEN
@@ -221,7 +227,11 @@ CONTAINS
                 CALL fdweights(x_ax(left_x),x_ax(lower_x:upper_x),&
                      rulepts+1,2,xfdcoeffs)
                 
-                IF(left_y-fdrule.LT.LBOUND(y_ax,DIM=1)) THEN
+                IF( (left_y-rulepts.LT.LBOUND(y_ax,DIM=1)) .AND. &
+                     (left_y+rulepts.GT.UBOUND(y_ax,DIM=1)) ) THEN
+                   WRITE(*,*) 'Error!: There are no enough points to apply the fd rule chosen.'
+                   STOP
+                ELSEIF(left_y-fdrule.LT.LBOUND(y_ax,DIM=1)) THEN
                    lower_y = left_y
                    upper_y = left_y + rulepts
                 ELSEIF(left_y+fdrule+1.GT.UBOUND(y_ax,DIM=1)) THEN
@@ -235,7 +245,11 @@ CONTAINS
                 CALL fdweights(y_ax(left_y),y_ax(lower_y:upper_y),&
                      rulepts+1,2,yfdcoeffs)
                 
-                IF(left_z-fdrule.LT.LBOUND(z_ax,DIM=1)) THEN
+                IF( (left_z-rulepts.LT.LBOUND(z_ax,DIM=1)) .AND. &
+                     (left_z+rulepts.GT.UBOUND(z_ax,DIM=1)) ) THEN
+                   WRITE(*,*) 'Error!: There are no enough points to apply the fd rule chosen.'
+                   STOP
+                ELSEIF(left_z-fdrule.LT.LBOUND(z_ax,DIM=1)) THEN
                    lower_z = left_z
                    upper_z = left_z + rulepts
                 ELSEIF(left_z+fdrule+1.GT.UBOUND(z_ax,DIM=1)) THEN
@@ -248,7 +262,7 @@ CONTAINS
                 ! Calculate fd weights for differentiation in z case             
                 CALL fdweights(z_ax(left_z),z_ax(lower_z:upper_z),&
                      rulepts+1,2,zfdcoeffs)
-                                
+                
                 psi_in_vol_x(:,1) = psi_cart(lower_x:upper_x,left_y,left_z)
                 psi_in_vol_x(:,2) = psi_cart(lower_x+1:upper_x+1,left_y,left_z)
                 psi_in_vol_x(:,3) = psi_cart(lower_x+1:upper_x+1,left_y+1,left_z)
@@ -560,7 +574,11 @@ CONTAINS
                 psi_in(7) = psi_cart(left_x+1,left_y+1,left_z+1)
                 psi_in(8) = psi_cart(left_x,left_y+1,left_z+1)
                 
-                IF(left_x-fdrule.LT.LBOUND(x_ax,DIM=1)) THEN
+                IF( (left_x-rulepts.LT.LBOUND(x_ax,DIM=1)) .AND. &
+                     (left_x+rulepts.GT.UBOUND(x_ax,DIM=1)) ) THEN
+                   WRITE(*,*) 'Error!: There are no enough points to apply the fd rule chosen.'
+                   STOP
+                ELSEIF(left_x-fdrule.LT.LBOUND(x_ax,DIM=1)) THEN
                    lower_x = left_x
                    upper_x = left_x + rulepts
                 ELSEIF(left_x+fdrule+1.GT.UBOUND(x_ax,DIM=1)) THEN
@@ -574,7 +592,11 @@ CONTAINS
                 CALL fdweights(x_ax(left_x),x_ax(lower_x:upper_x),&
                      rulepts+1,2,xfdcoeffs)
                 
-                IF(left_y-fdrule.LT.LBOUND(y_ax,DIM=1)) THEN
+                IF( (left_y-rulepts.LT.LBOUND(y_ax,DIM=1)) .AND. &
+                     (left_y+rulepts.GT.UBOUND(y_ax,DIM=1)) ) THEN
+                   WRITE(*,*) 'Error!: There are no enough points to apply the fd rule chosen.'
+                   STOP
+                ELSEIF(left_y-fdrule.LT.LBOUND(y_ax,DIM=1)) THEN
                    lower_y = left_y
                    upper_y = left_y + rulepts
                 ELSEIF(left_y+fdrule+1.GT.UBOUND(y_ax,DIM=1)) THEN
@@ -588,7 +610,11 @@ CONTAINS
                 CALL fdweights(y_ax(left_y),y_ax(lower_y:upper_y),&
                      rulepts+1,2,yfdcoeffs)
                 
-                IF(left_z-fdrule.LT.LBOUND(z_ax,DIM=1)) THEN
+                IF( (left_z-rulepts.LT.LBOUND(z_ax,DIM=1)) .AND. &
+                     (left_z+rulepts.GT.UBOUND(z_ax,DIM=1)) ) THEN
+                   WRITE(*,*) 'Error!: There are no enough points to apply the fd rule chosen.'
+                   STOP
+                ELSEIF(left_z-fdrule.LT.LBOUND(z_ax,DIM=1)) THEN
                    lower_z = left_z
                    upper_z = left_z + rulepts
                 ELSEIF(left_z+fdrule+1.GT.UBOUND(z_ax,DIM=1)) THEN
@@ -890,8 +916,11 @@ CONTAINS
              psi_in = (/psi_cyl(left_rho,left_z), psi_cyl(left_rho+1,left_z), &
                   psi_cyl(left_rho+1,left_z+1), psi_cyl(left_rho,left_z+1)/)
              
-             
-             IF(left_rho-fdrule.LT.LBOUND(rho_ax,DIM=1)) THEN
+             IF( (left_rho-rulepts.LT.LBOUND(rho_ax,DIM=1)) .AND. &
+                  (left_rho+rulepts.GT.UBOUND(rho_ax,DIM=1)) ) THEN
+                WRITE(*,*) 'Error!: There are no enough points to apply the fd rule chosen.'
+                STOP             
+             ELSEIF(left_rho-fdrule.LT.LBOUND(rho_ax,DIM=1)) THEN
                 lower_rho = left_rho
                 upper_rho = left_rho + rulepts
              ELSEIF(left_rho+fdrule+1.GT.UBOUND(rho_ax,DIM=1)) THEN
@@ -905,7 +934,11 @@ CONTAINS
              CALL fdweights(rho_ax(left_rho),rho_ax(lower_rho:upper_rho),&
                   rulepts,2,rhofdcoeffs)
              
-             IF(left_z-fdrule.LT.LBOUND(z_ax,DIM=1)) THEN
+             IF( (left_z-rulepts.LT.LBOUND(z_ax,DIM=1)) .AND. &
+                  (left_z+rulepts.GT.UBOUND(z_ax,DIM=1)) ) THEN
+                WRITE(*,*) 'Error!: There are no enough points to apply the fd rule chosen.'
+                STOP
+             ELSEIF(left_z-fdrule.LT.LBOUND(z_ax,DIM=1)) THEN
                 lower_z = left_z
                 upper_z = left_z + rulepts
              ELSEIF(left_z+fdrule+1.GT.UBOUND(z_ax,DIM=1)) THEN
@@ -1103,8 +1136,11 @@ CONTAINS
              psi_in = (/psi_cyl(left_rho,left_z), psi_cyl(left_rho+1,left_z), &
                   psi_cyl(left_rho+1,left_z+1), psi_cyl(left_rho,left_z+1)/)
              
-             
-             IF(left_rho-fdrule.LT.LBOUND(rho_ax,DIM=1)) THEN
+             IF( (left_rho-rulepts.LT.LBOUND(rho_ax,DIM=1)) .AND. &
+                  (left_rho+rulepts.GT.UBOUND(rho_ax,DIM=1)) ) THEN
+                WRITE(*,*) 'Error!: There are no enough points to apply the fd rule chosen.'
+                STOP             
+             ELSEIF(left_rho-fdrule.LT.LBOUND(rho_ax,DIM=1)) THEN
                 lower_rho = left_rho
                 upper_rho = left_rho + rulepts
              ELSEIF(left_rho+fdrule+1.GT.UBOUND(rho_ax,DIM=1)) THEN
@@ -1118,7 +1154,11 @@ CONTAINS
              CALL fdweights(rho_ax(left_rho),rho_ax(lower_rho:upper_rho),&
                   rulepts,2,rhofdcoeffs)
              
-             IF(left_z-fdrule.LT.LBOUND(z_ax,DIM=1)) THEN
+             IF( (left_z-rulepts.LT.LBOUND(z_ax,DIM=1)) .AND. &
+                  (left_z+rulepts.GT.UBOUND(z_ax,DIM=1)) ) THEN
+                WRITE(*,*) 'Error!: There are no enough points to apply the fd rule chosen.'
+                STOP
+             ELSEIF(left_z-fdrule.LT.LBOUND(z_ax,DIM=1)) THEN
                 lower_z = left_z
                 upper_z = left_z + rulepts
              ELSEIF(left_z+fdrule+1.GT.UBOUND(z_ax,DIM=1)) THEN
@@ -1131,7 +1171,7 @@ CONTAINS
              ! Calculate fd weights for differentiation in z case             
              CALL fdweights(z_ax(left_z),z_ax(lower_z:upper_z),&
                   rulepts,2,zfdcoeffs)
-
+             
              psi_in_vol_rho(:,1) = psi_cyl(lower_rho:upper_rho,left_z)
              psi_in_vol_rho(:,2) = psi_cyl(lower_rho+1:upper_rho+1,left_z)
              psi_in_vol_rho(:,3) = psi_cyl(lower_rho+1:upper_rho+1,left_z+1)
@@ -1141,7 +1181,7 @@ CONTAINS
              psi_in_vol_z(:,2) = psi_cyl(left_rho+1,lower_z:upper_z)
              psi_in_vol_z(:,3) = psi_cyl(left_rho+1,lower_z+1:upper_z+1)
              psi_in_vol_z(:,4) = psi_cyl(left_rho,lower_z+1:upper_z+1)
-
+             
              psi_in_vol_rhoz(:,:,1) = psi_cyl(lower_rho:upper_rho,lower_z:upper_z)
              psi_in_vol_rhoz(:,:,2) = psi_cyl(lower_rho+1:upper_rho+1,lower_z:upper_z)
              psi_in_vol_rhoz(:,:,3) = psi_cyl(lower_rho+1:upper_rho+1,lower_z+1:upper_z+1)
