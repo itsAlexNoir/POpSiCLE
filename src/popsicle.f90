@@ -19,6 +19,7 @@ MODULE POPSICLE
   USE scattcoords
   USE cubcoords
   USE coords
+  USE waveduplicate
   USE scattboundcyl
   USE scattboundcart
   USE cubboundcyl

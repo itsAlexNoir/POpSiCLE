@@ -134,6 +134,7 @@ cubic_interp.o: constants.o
 scattcoords.o: constants.o scatt_interp.o
 cubcoords.o: constants.o tools.o cubic_interp.o
 coords.o: scattcoords.o cubcoords.o
+waveduplicate.o: constants.o tools.o cubic_interp.o
 scattboundcyl.o: constants.o gaussleg.o scatt_interp.o
 scattboundcart.o: constants.o gaussleg.o scatt_interp.o
 cubboundcyl.o: constants.o tools.o gaussleg.o \
@@ -176,6 +177,7 @@ cubic_interp.lo: constants.lo
 scattcoords.lo: constants.lo scatt_interp.lo
 cubcoords.lo: constants.lo tools.o cubic_interp.lo
 coords.lo: scattcoords.lo cubcoords.lo
+waveduplicate.lo: constants.lo tools.lo cubic_interp.lo
 scattboundcyl.lo: constants.lo gaussleg.lo scatt_interp.lo
 scattboundcart.lo: constants.lo gaussleg.lo scatt_interp.lo
 cubboundcyl.lo: constants.lo tools.lo gaussleg.lo \
