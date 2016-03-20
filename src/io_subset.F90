@@ -78,6 +78,7 @@ CONTAINS
     INTEGER                      :: ipx, ipy, ipz, ipr
     INTEGER                      :: iprocx, iprocy
     INTEGER                      :: iprocz, iprocr
+    INTEGER                      :: ix,iy,iz,ir
     INTEGER                      :: ierror
     
     ! File identifier
@@ -149,8 +150,8 @@ CONTAINS
     ALLOCATE(subset_dims_global(0:numprocx-1,0:numprocy-1,0:numprocz-1,0:numprocr-1,1:rank))
     my_subset_dims = 0
     subset_dims_global = 0
-
-    ! Check if the processor are within the doamin
+    
+    ! Check if the processor are within the domain
     IF(rank.EQ.2) THEN
        CALL get_subset_coordinates(xpts(1:dims_local(1)),ypts(1:dims_local(2)), &
             domain,local_offset,subset_dims)
@@ -173,7 +174,7 @@ CONTAINS
     
     CALL MPI_ALLREDUCE(i_am_subset_local,i_am_subset,numtotalprocs, &
          MPI_INTEGER,MPI_SUM,globalcomm,ierror)
-
+    
     my_subset_dims(ipx,ipy,ipz,ipr,:) = subset_dims(:)
     
     CALL MPI_ALLREDUCE(my_subset_dims,subset_dims_global,numtotalprocs*rank, &
@@ -190,7 +191,7 @@ CONTAINS
                 IF(i_am_subset(iprocx,iprocy,iprocz,iprocr).EQ.1) THEN
                    ipro = ipro + 1
                    members(ipro) = grid_addresses(indx(iprocx+1,iprocy+1,iprocz+1, &
-                        1,numprocx,numprocy,numprocz,numprocr))
+                        iprocr+1,numprocx,numprocy,numprocz,numprocr))
                 ENDIF
              ENDDO
           ENDDO
@@ -210,21 +211,39 @@ CONTAINS
        ! Obtain the piece of the data needed
        IF(rank.EQ.2) THEN
           ALLOCATE(wave2D_redux(1:subset_dims(1),1:subset_dims(2)))
-          wave2D_redux = wave2D(local_offset(1)+1:local_offset(1)+1+subset_dims(1), &
-               local_offset(2)+1:local_offset(2)+1+subset_dims(2))
+          DO iy = 1, subset_dims(2)
+             DO ix = 1, subset_dims(1)
+                wave2D_redux(ix,iy) = wave2D(local_offset(1)+ix,local_offset(2)+iy)
+             ENDDO
+          ENDDO
           
        ELSEIF(rank.EQ.3) THEN
           ALLOCATE(wave3D_redux(1:subset_dims(1),1:subset_dims(2),1:subset_dims(3)))
-          wave3D_redux = wave3D(local_offset(1)+1:local_offset(1)+1+subset_dims(1), &
-               local_offset(2)+1:local_offset(2)+1+subset_dims(2), &
-               local_offset(3)+1:local_offset(3)+1+subset_dims(3))
+          
+          DO iz = 1, subset_dims(3)
+             DO iy = 1, subset_dims(2)
+                DO ix = 1, subset_dims(1)
+                   wave3D_redux(ix,iy,iz) = wave3D(local_offset(1)+ix,local_offset(2)+iy, &
+                        local_offset(3)+iz)
+                ENDDO
+             ENDDO
+          ENDDO
+          
        ELSEIF(rank.EQ.4) THEN
           ALLOCATE(wave4D_redux(1:subset_dims(1),1:subset_dims(2),1:subset_dims(3),&
                1:subset_dims(4)))
-          wave4D_redux = wave4D(local_offset(1)+1:local_offset(1)+1+subset_dims(1), &
-               local_offset(2)+1:local_offset(2)+1+subset_dims(2), &
-               local_offset(3)+1:local_offset(3)+1+subset_dims(3), &
-               local_offset(4)+1:local_offset(4)+1+subset_dims(4))
+          
+          DO ir = 1, subset_dims(4)
+             DO iz = 1, subset_dims(3)
+                DO iy = 1, subset_dims(2)
+                   DO ix = 1, subset_dims(1)
+                      wave4D_redux(ix,iy,iz,ir) = wave4D(local_offset(1)+ix,local_offset(2)+iy, &
+                           local_offset(3)+iz,local_offset(4)+ir)
+                   ENDDO
+                ENDDO
+             ENDDO
+          ENDDO
+          
        ENDIF
 
        ! Initialize fortran interface

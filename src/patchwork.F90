@@ -123,12 +123,12 @@ CONTAINS
        IF(ALL(xpts.GT.domain(2,1))) THEN
           dims(1) = 0
        ELSE
-          dims(1) = MAXLOC(xpts,1,xpts.LT.domain(2,1)) + 1
+          dims(1) = MAXLOC(xpts,1,xpts.LT.domain(2,1))
        ENDIF
     ELSE
        offset(1) = MAXLOC(xpts,1,xpts.LT.domain(1,1))
        dims(1) = MAXLOC(xpts,1,xpts.LT.domain(2,1)) &
-            - MAXLOC(xpts,1,xpts.LT.domain(1,1)) + 1
+            - MAXLOC(xpts,1,xpts.LT.domain(1,1))
     ENDIF
     
     IF(ALL(ypts.GT.domain(1,2))) THEN
@@ -136,12 +136,12 @@ CONTAINS
        IF(ALL(ypts.GT.domain(2,2))) THEN
           dims(2) = 0
        ELSE
-          dims(2) = MAXLOC(ypts,1,ypts.LT.domain(2,2)) + 1
+          dims(2) = MAXLOC(ypts,1,ypts.LT.domain(2,2))
        ENDIF
     ELSE
        offset(2) = MAXLOC(ypts,1,ypts.LT.domain(1,2))
        dims(2) = MAXLOC(ypts,1,ypts.LT.domain(2,2)) &
-            - MAXLOC(ypts,1,ypts.LT.domain(1,2)) + 1
+            - MAXLOC(ypts,1,ypts.LT.domain(1,2))
     ENDIF
     
     IF(ALL(zpts.GT.domain(1,3))) THEN
@@ -149,12 +149,12 @@ CONTAINS
        IF(ALL(zpts.GT.domain(2,3))) THEN
           dims(3) = 0
        ELSE
-          dims(3) = MAXLOC(zpts,1,zpts.LT.domain(2,3)) + 1
+          dims(3) = MAXLOC(zpts,1,zpts.LT.domain(2,3))
        ENDIF
     ELSE
        offset(3) = MAXLOC(zpts,1,zpts.LT.domain(1,3))
        dims(3) = MAXLOC(zpts,1,zpts.LT.domain(2,3)) &
-            - MAXLOC(zpts,1,zpts.LT.domain(1,3)) + 1
+            - MAXLOC(zpts,1,zpts.LT.domain(1,3))
     ENDIF
     
   END SUBROUTINE get_subset_coordinates_3Dserial
