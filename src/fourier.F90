@@ -1034,11 +1034,11 @@ CONTAINS
                 rad = SQRT(x_ax(ix) * x_ax(ix) + &
                      y_ax(iy) * y_ax(iy) + &
                      z_ax(iz) * z_ax(iz) + &
-                     r_ax(ir) * r_ax(ir) )
+                     r_ax(ir) * r_ax(ir) ) 
                 
                 IF (rad.LE.inner_rad) THEN 
                    mask(ix,iy,iz,ir) = 0.0E-15_dp
-                ELSEIF (rad.GE.inner_rad .AND. rad.LT.outer_rad) THEN
+                ELSEIF (rad.GT.inner_rad .AND. rad.LT.outer_rad) THEN
                    mask(ix,iy,iz,ir) = 1.0 - EXP( - ( (rad - inner_rad) / sigma )**2 )
                 ELSE
                    mask(ix,iy,iz,ir) = 1.0_dp
@@ -1088,7 +1088,7 @@ CONTAINS
     
     ! Calculate the sigma
     sigma    = (outer_rad - inner_rad) / SQRT( - LOG( 1E-8 ) )
-    
+
     ! Create the mask
     DO iz = 1, dims(3)
        DO iy = 1, dims(2)
@@ -1100,7 +1100,7 @@ CONTAINS
              
              IF (rad.LE.inner_rad) THEN 
                 mask(ix,iy,iz) = 0.0_dp
-             ELSEIF (rad.GE.inner_rad .AND. rad.LT.outer_rad) THEN
+             ELSEIF (rad.GT.inner_rad .AND. rad.LT.outer_rad) THEN
                 mask(ix,iy,iz) = 1.0 - EXP( - ( (rad - inner_rad) / sigma )**2 )
              ELSE
                 mask(ix,iy,iz) = 1.0_dp
@@ -1158,7 +1158,7 @@ CONTAINS
           
           IF (rad.LE.inner_rad) THEN 
              mask(ix,iy) = 0.0_dp
-          ELSEIF (rad.GE.inner_rad .AND. rad.LT.outer_rad) THEN
+          ELSEIF (rad.GT.inner_rad .AND. rad.LT.outer_rad) THEN
              mask(ix,iy) = 1.0 - EXP( - ( (rad - inner_rad) / sigma )**2 )
           ELSE
              mask(ix,iy) = 1.0_dp
