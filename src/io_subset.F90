@@ -53,7 +53,6 @@ CONTAINS
     REAL(dp), INTENT(IN), OPTIONAL :: xpts(:), ypts(:)
     REAL(dp), INTENT(IN), OPTIONAL :: zpts(:), rpts(:)
     
-    
     !! Shaped arrrays
     REAL(dp), ALLOCATABLE        :: wave2D(:, :)
     REAL(dp), ALLOCATABLE        :: wave3D(:, :, :)
@@ -153,14 +152,16 @@ CONTAINS
     
     ! Check if the processor are within the domain
     IF(rank.EQ.2) THEN
-       CALL get_subset_coordinates(xpts(1:dims_local(1)),ypts(1:dims_local(2)), &
-            domain,local_offset,subset_dims)
+       CALL get_subset_cartesian_coordinates(domain,local_offset,subset_dims,&
+            xpts(1:dims_local(1)),ypts(1:dims_local(2)))
     ELSEIF(rank.EQ.3) THEN
-       CALL get_subset_coordinates(xpts(1:dims_local(1)),ypts(1:dims_local(2)), &
-            zpts(1:dims_local(3)),domain,local_offset,subset_dims)
+       CALL get_subset_cartesian_coordinates(domain,local_offset,subset_dims,&
+            xpts(1:dims_local(1)),ypts(1:dims_local(2)), &
+            zpts(1:dims_local(3)))
     ELSEIF(rank.EQ.4) THEN
-       CALL get_subset_coordinates(xpts(1:dims_local(1)),ypts(1:dims_local(2)), &
-            zpts(1:dims_local(3)),rpts(1:dims_local(4)),domain,local_offset,subset_dims)
+       CALL get_subset_cartesian_coordinates(domain,local_offset,subset_dims,&
+            xpts(1:dims_local(1)),ypts(1:dims_local(2)), &
+            zpts(1:dims_local(3)),rpts(1:dims_local(4)))
     ELSE
        WRITE(*,*) 'Number of dimensions not implemented!'
        STOP

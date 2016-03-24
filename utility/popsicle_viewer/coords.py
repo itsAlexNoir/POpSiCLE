@@ -70,43 +70,40 @@ def cart2sph3D(cartfunc,x,y,z,r,theta,phi):
 
     return sphfunc
 
-def get_radial_prob2D(sphfunc,rpts,theta):
+def get_radial_prob2D(sphfunc,rpts,theta,theta_weights):
     print('Getting radial probability...')
     # Allocate arrays 
-    jacobian = np.zeros(sphfunc.shape)
+    jacobian = np.zeros(sphfunc.shape])
     probr = np.zeros(sphfunc.shape[1])
     
-    aux.create_sphjacobian(jacobian,rpts,np.sin(theta))
-    aux.integrate1D_over_2D(probr,sphfunc,jacobian)
-    dtheta = theta[1] - theta[0]
-    probr[:] *= dtheta
+    aux.create_sphjacobian(jacobian,rpts,np.ones(shape(theta)))
+    aux.spherical_polar_integral(sphfunc,probr,jacobian,theta_weights)
     return probr
 
-def get_radial_prob3D(sphfunc,rpts,theta,phi):
+def get_radial_prob3D(sphfunc,rpts,theta,phi,
+                      theta_weights):
     print('Getting radial probability...')
     # Allocate arrays
     jacobian = np.zeros(sphfunc.shape[1:3])
     probr = np.zeros(sphfunc.shape[2])
-    
-    aux.create_sphjacobian(jacobian,rpts,np.sin(theta))
-    aux.integrate1D_over_3D(probr,sphfunc,jacobian)
-    dtheta = theta[1] - theta[0]
+
+    weights = np.ones(np.shape(phi))[:,None] * theta_weights[None,:]
+    aux.create_sphjacobian(jacobian,rpts,np.ones(shape(theta)))
+    aux.spherical_angular_integral(sphfunc,probr,jacobian,weights)
     dphi = phi[1] - phi[0]
-    probr[:] *= dtheta * dphi
+    probr[:] *= dphi
     return probr
 
 def get_PAD(sphfunc,rpts,theta,phi):
     print('Getting PAD...')
     # Allocate arrays
-    jacobian = np.zeros(sphfunc.shape[1:3])
-    probPAD = np.zeros(sphfunc.shape[2])
+    probPAD = np.zeros(sphfunc.shape[1:])
     
-    aux.create_sphjacobian(jacobian,rpts,np.sin(theta))
-    aux.integrate2D_over_3D(probPAD,sphfunc,jacobian)
-    dtheta = theta[1] - theta[0]
+    aux.spherical_azimuthal_integral(sphfunc,probPAD,
+                                     np.ones(shape(phi)))
     dphi = phi[1] - phi[0]
-    probr[:] *= dtheta * dphi
-    return probr
+    probPAD[:] *= dphi
+    return probPAD
 
 def probk2probE(probk,ke,Eax,massfactor):
     print('From momentum to Energy probability...')

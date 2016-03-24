@@ -77,8 +77,6 @@ class parameters:
         self.draw_polar_amplitude = int(inparams['draw_polar_amplitude'])
         self.draw_mes = int(inparams['draw_mes'])
         self.draw_pes = int(inparams['draw_pes'])
-        # self.draw_PAD = int(inparams['draw_PAD'])
-        # self.draw_ktotal = int(inparams['draw_ktotal'])
         # self.draw_Etotal = int(inparams['draw_Etotal'])
         self.draw_diff_cross = int(inparams['draw_diff_cross'])
         self.draw_total_cross = int(inparams['draw_total_cross'])
