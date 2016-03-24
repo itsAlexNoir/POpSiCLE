@@ -46,11 +46,12 @@ if(params.draw_pes):
     pes = np.loadtxt(params.pes_filename)
 
 if(params.draw_total_cross):
-    probk = coords.func_smoother(ax.ke_ax,mes,ax.k_ax)
-    wki = ax.k_ax[np.argmax(probk)]**2*0.5
-    #wki = params.w0 - 0.602634444682201 - 0.5
-    total_cross = cross.get_total_cross(probk,ax.k_ax,ax.k_ax**2*0.5,
-                                        wki,params.pulse_duration-0.6,
+    #probk = coords.func_smoother(ax.ke_ax,mes,ax.k_ax)
+    w   = kax.ke_ax**2 * params.mufac
+    wki = w - params.Ip
+    total_cross = cross.get_total_cross(probke,ax.ke_ax,wki,
+                                        params.w0,
+                                        params.pulse_duration,
                                         params.pulse_bandwidth,
                                         params.A0)
 
