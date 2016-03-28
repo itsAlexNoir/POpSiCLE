@@ -883,7 +883,7 @@ CONTAINS
              cellindex2D(ir,itheta,1) = left
              CALL interv(z_ax,SIZE(z_ax),zpt,left,mflag)
              cellindex2D(ir,itheta,2) = left
-             
+
           ENDIF
        ENDDO
     ENDDO
@@ -932,8 +932,8 @@ CONTAINS
              ENDIF
              ! Calculate fd weights for differentiation in rho case
              CALL fdweights(rho_ax(left_rho),rho_ax(lower_rho:upper_rho),&
-                  rulepts,2,rhofdcoeffs)
-             
+                  rulepts+1,2,rhofdcoeffs)
+
              IF( (left_z-rulepts.LT.LBOUND(z_ax,DIM=1)) .AND. &
                   (left_z+rulepts.GT.UBOUND(z_ax,DIM=1)) ) THEN
                 WRITE(*,*) 'Error!: There are no enough points to apply the fd rule chosen.'
@@ -951,7 +951,7 @@ CONTAINS
              
              ! Calculate fd weights for differentiation in z case             
              CALL fdweights(z_ax(left_z),z_ax(lower_z:upper_z),&
-                  rulepts,2,zfdcoeffs)
+                  rulepts+1,2,zfdcoeffs)
              
              psi_in_vol_rho(:,1) = psi_cyl(lower_rho:upper_rho,left_z)
              psi_in_vol_rho(:,2) = psi_cyl(lower_rho+1:upper_rho+1,left_z)
@@ -1152,7 +1152,7 @@ CONTAINS
              ENDIF
              ! Calculate fd weights for differentiation in rho case
              CALL fdweights(rho_ax(left_rho),rho_ax(lower_rho:upper_rho),&
-                  rulepts,2,rhofdcoeffs)
+                  rulepts+1,2,rhofdcoeffs)
              
              IF( (left_z-rulepts.LT.LBOUND(z_ax,DIM=1)) .AND. &
                   (left_z+rulepts.GT.UBOUND(z_ax,DIM=1)) ) THEN
@@ -1170,7 +1170,7 @@ CONTAINS
              ENDIF
              ! Calculate fd weights for differentiation in z case             
              CALL fdweights(z_ax(left_z),z_ax(lower_z:upper_z),&
-                  rulepts,2,zfdcoeffs)
+                  rulepts+1,2,zfdcoeffs)
              
              psi_in_vol_rho(:,1) = psi_cyl(lower_rho:upper_rho,left_z)
              psi_in_vol_rho(:,2) = psi_cyl(lower_rho+1:upper_rho+1,left_z)
