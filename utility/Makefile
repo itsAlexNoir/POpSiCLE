@@ -8,7 +8,7 @@
 ##    Utility makefile
 ##************************************************
 
-default: pes_calculator
+default: tsurff_calculator
 
 .PHONY: clean clean_src clean_include clean_lib \
 	clean_app clean_all
@@ -61,11 +61,17 @@ endif
 POPSICLE_LIB_SER = ${POPSICLE_LIB}/libpopsicle_serial.a
 POPSICLE_LIB_PAR = ${POPSICLE_LIB}/libpopsicle_parallel.a
 
-pes_calculator: ${POPSICLE_LIB_SER}
-	${FC} ${F90FLAGS} pes_calculator.f90 -o ../bin/pes_calculator.exec \
+sp_calculator: ${POPSICLE_LIB_SER}	
+	${FC} ${F90FLAGS} sp_calculator.f90 -o ../bin/sp_calculator.exec \
 	-I${POPSICLE_INCL} ${HDF5_INCLUDE} ${FFT_INCLUDE} \
 	${POPSICLE_LIB}/libpopsicle_serial.a ${HDF5_LIB} \
 	${FFT_LIBS} ${OMPLIBS}
+
+tsurff_calculator: ${POPSICLE_LIB_SER}
+	${FC} ${F90FLAGS} tsurff_calculator.f90 -o ../bin/tsurff_calculator.exec \
+	-I${POPSICLE_INCL} ${HDF5_INCLUDE} ${FFT_INCLUDE} \
+	${POPSICLE_LIB}/libpopsicle_serial.a ${HDF5_LIB} \
+	${FFT_LIBS} ${OMPLIBS}	
 
 ${POPSICLE_LIB_SER}:
 	cd ${POPSICLE_ROOT}; ${MAKE} lib "FC=${FC}" "compiler=${compiler}" \

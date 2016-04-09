@@ -34,6 +34,7 @@ MODULE POPSICLE
   USE surface
   USE flux
   USE observables
+  USE io_sampt
 
   IMPLICIT NONE
 

@@ -68,8 +68,14 @@ MODULE constants
   REAL(dp), PARAMETER, PUBLIC :: sqrtoneovertwopito3 = SQRT(oneovertwopi)**3
   !> One atomic unit of time in femtoseconds
   REAL(dp), PARAMETER, PUBLIC :: autime_to_fs        = 2.418884326505E-2 ! fs
+    !> One atomic unit of time in seconds
+  REAL(dp), PARAMETER, PUBLIC :: autime_to_s         = 2.418884326505E-17 ! s
   !> One bohr (one atomic unit of length) in angstroms
   REAL(dp), PARAMETER, PUBLIC :: bohr_to_ang         = 0.5291772083_dp
+  !> One bohr (one atomic unit of length) in m
+  REAL(dp), PARAMETER, PUBLIC :: aulength_m          = 5.2917721092E-11
+  !> One bohr (one atomic unit of length) in nm
+  REAL(dp), PARAMETER, PUBLIC :: aulength_nm         = 5.2917721092E-2  
   !> Unit of current intensity.
   REAL(dp), PARAMETER, PUBLIC :: efs_to_microamps    = 160.2176462_dp
   !> Dielectric constant in vacuum
