@@ -69,8 +69,16 @@ dyplib:
 		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
 		"HDF5_PATH=${HDF5_PATH}"
 
-pes_calculator:
-	cd utility; ${MAKE} pes_calculator "FC=${FC}" \
+tsurff_calculator:
+	cd utility; ${MAKE} tsurff_calculator "FC=${FC}" \
+		"compiler=${compiler}" "POPSICLE_ROOT=${PWD}" \
+		"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
+		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
+		"HDF5_PATH=${HDF5_PATH}" "SZIP_PATH=${SZIP_PATH}" \
+		"ZLIB_PATH=${ZLIB_PATH}"
+
+sp_calculator:
+	cd utility; ${MAKE} sp_calculator "FC=${FC}" \
 		"compiler=${compiler}" "POPSICLE_ROOT=${PWD}" \
 		"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \

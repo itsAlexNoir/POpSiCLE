@@ -160,13 +160,15 @@ surface.o: constants.o tools.o boundary.o \
 flux.o: constants.o gaussleg.o bessel.o sht.o \
 	io_surface.o io_pop.o
 observables.o: constants.o sht.o flux.o io_pop.o
+io_sampt.o: constants.o
 popsicle.o : constants.o fourier.o \
 	scattboundcyl.o scattboundcart.o \
 	cubboundcyl.o  cubboundcart.o \
 	scattcoords.o cubcoords.o coords.o \
 	io_pop.o io_subset.o io_surface.o \
 	sht.o bessel.o gaussleg.o \
-	patchwork.o surface.o observables.o
+	patchwork.o surface.o observables.o \
+	io_sampt.o
 
 
 ########################################################
@@ -205,13 +207,14 @@ surface.lo: constants.lo tools.lo boundary.lo \
 flux.lo: constants.lo gaussleg.lo bessel.lo sht.lo \
 	io_surface.lo io_pop.lo
 observables.lo: constants.lo sht.lo flux.lo io_pop.lo
+io_sampt.lo: constants.lo
 popsicle.lo : constants.lo fourier.lo \
 	scattboundcyl.lo scattboundcart.lo \
 	cubboundcyl.lo  cubboundcart.lo \
 	scattcoords.lo cubcoords.lo coords.lo \
 	io_pop.lo io_subset.lo io_surface.lo \
 	sht.lo bessel.lo gaussleg.lo \
-	patchwork.lo observables.lo
+	patchwork.lo observables.lo io_sampt.lo
 
 #################################################################
 ##                                                             ##

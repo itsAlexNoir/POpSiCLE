@@ -889,7 +889,7 @@ CONTAINS
     CALL c_f_pointer(p_dims,dims_for_fftw,[4])
     
     in4d  = RESHAPE(in,(/ Nx, Ny, Nz, Nr /))
-    dims_for_fftw = dims(4:1:-1)
+    dims_for_fftw = (/ Nr, Nz, Ny, Nx /)
     
     plan = fftw_plan_dft(4,dims_for_fftw,in4d,out,FFTW_FORWARD,FFTW_ESTIMATE)
     

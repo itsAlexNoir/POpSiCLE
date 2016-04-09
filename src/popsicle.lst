@@ -3,7 +3,7 @@ constants tools bessel gaussleg waveduplicate \
 scattcoords cubcoords coords fourier sht scattboundcyl \
 scattboundcart cubboundcyl cubboundcart boundary \
 scatt_interp cubic_interp io_pop io_subset io_surface \
-patchwork surface flux observables popsicle
+patchwork surface flux observables io_sampt popsicle
 
 POPSICLE_MONO_LIST = constants tools bessel gaussleg \
 scatt_interp cubic_interp scattcoords cubcoords coords \
@@ -11,6 +11,6 @@ waveduplicate sht flux observables popsicle
 
 POPSICLE_HYBRID_LIST = scattboundcyl scattboundcart \
 cubboundcyl cubboundcart boundary fourier patchwork \
-io_pop io_subset io_surface surface
+io_pop io_subset io_surface surface io_sampt
 
 FFTW_LIST = fftw

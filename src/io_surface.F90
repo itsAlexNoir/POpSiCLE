@@ -207,8 +207,8 @@ CONTAINS
     !------------------------------------------------------!
     
     ! Increase in 1 the count
-    WRITE(cstep,'(I6.6)') dataset_count
     dataset_count = dataset_count + 1
+    WRITE(cstep,'(I6.6)') dataset_count
     
     ! Initialize fortran interface
     CALL h5open_f(error)
@@ -381,9 +381,9 @@ CONTAINS
     !------------------------------------------------------!
     
     ! Increase in 1 the count
-    WRITE(cstep,'(I6.6)') dataset_count
     dataset_count = dataset_count + 1
-
+    WRITE(cstep,'(I6.6)') dataset_count
+    
     ! Initialize fortran interface
     CALL h5open_f(error)
     
@@ -620,8 +620,8 @@ CONTAINS
     !------------------------------------------------------!
     
     ! Increase in 1 the count
-    WRITE(cstep,'(I6.6)') dataset_count
     dataset_count = dataset_count + 1
+    WRITE(cstep,'(I6.6)') dataset_count
     
     ! Initialize fortran interface
     CALL h5open_f(error)
@@ -798,8 +798,8 @@ CONTAINS
     !------------------------------------------------------!
     
     ! Increase in 1 the count
-    WRITE(cstep,'(I6.6)') dataset_count
     dataset_count = dataset_count + 1
+    WRITE(cstep,'(I6.6)') dataset_count
     
     ! Initialize fortran interface
     CALL h5open_f(error)
