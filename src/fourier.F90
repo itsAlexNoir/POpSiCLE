@@ -39,6 +39,13 @@ MODULE fourier
 #endif
   END INTERFACE FourierTransform
   
+  INTERFACE FourierBesselTransform
+     MODULE PROCEDURE FourierBesselTransform_serial
+#if _COM_MPI
+     MODULE PROCEDURE FourierBesselTransform_parallel
+#endif
+  END INTERFACE FourierBesselTransform
+  
 CONTAINS
   
   SUBROUTINE FourierTransform_serial( psi, psik, rank, dims_local )
@@ -324,7 +331,7 @@ CONTAINS
                    ENDDO
                    
                    ! Send all the elements to all the processors
-                   CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nygl, MPI_COMPLEX16,&
+                   CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nygl, MPI_DOUBLE_COMPLEX,&
                         MPI_SUM, fftcomm(ipro), ierror)
                    
                    CALL FFT(psi_rc, 1, dims_phony)
@@ -437,7 +444,7 @@ CONTAINS
                    ENDDO
                    
                    ! Send all the elements to all the processors
-                   CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nzgl, MPI_COMPLEX16,&
+                   CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nzgl, MPI_DOUBLE_COMPLEX,&
                         MPI_SUM, fftcomm(ipro), ierror)
                
                    CALL FFT(psi_rc, 1, dims_phony)
@@ -546,7 +553,7 @@ CONTAINS
                    ENDDO
                    
                    ! Send all the elements to all the processors
-                   CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nrgl, MPI_COMPLEX16,&
+                   CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nrgl, MPI_DOUBLE_COMPLEX,&
                         MPI_SUM, fftcomm(ipro), ierror)
                    
                    dims_phony(1) = Nrgl
@@ -577,7 +584,7 @@ CONTAINS
   
   !----------------------------------------------------!
   
-  SUBROUTINE FourierBesselTransform(psi, psik, rho_ax, krho_ax, &
+  SUBROUTINE FourierBesselTransform_serial(psi, psik, rho_ax, krho_ax, &
        jacobrho, fftshift_on)
     
     IMPLICIT NONE
@@ -589,7 +596,6 @@ CONTAINS
     REAL(dp), INTENT(IN), OPTIONAL :: jacobrho(:)
     LOGICAL, INTENT(IN), OPTIONAL  :: fftshift_on
     
-    COMPLEX(dp), ALLOCATABLE       :: psik_shift(:, :, :)
     INTEGER                        :: dims_in(3), dims_out(3)
     REAL(dp), ALLOCATABLE          :: jacobian(:)
     COMPLEX(dp), ALLOCATABLE       :: inz(:), inr(:)
@@ -604,7 +610,6 @@ CONTAINS
     dims_in = SHAPE(psi)
     dims_out = SHAPE(psik)
     
-    ALLOCATE(psik_shift(1:dims_out(1),1:dims_out(2),dims_out(3)))
     ALLOCATE(jacobian(1:dims_in(2)))
     
     IF(PRESENT(jacobrho)) THEN
@@ -747,10 +752,443 @@ CONTAINS
     ENDIF
     DEALLOCATE(jacobian)
     
-  END SUBROUTINE FourierBesselTransform
+  END SUBROUTINE FourierBesselTransform_serial
   
   !----------------------------------------------------!
+#if _COM_MPI
   
+  SUBROUTINE FourierBesselTransform_parallel(psi, psik, rho_ax, krho_ax, &
+       rank, dims_local, dims_global ,comm_gl, grid_rank, &
+       grid_addresses, jacobrho )
+    
+    IMPLICIT NONE
+    
+    COMPLEX(dp), INTENT(IN)        :: psi(:, :, :)
+    COMPLEX(dp), INTENT(OUT)       :: psik(:, :, :)
+    REAL(dp), INTENT(IN)           :: rho_ax(:)
+    REAL(dp), INTENT(IN)           :: krho_ax(:)   
+    REAL(dp), INTENT(IN), OPTIONAL :: jacobrho(:)
+    INTEGER, INTENT(IN)            :: rank
+    INTEGER, INTENT(IN)            :: dims_local(:)
+    INTEGER, INTENT(IN)            :: dims_global(:)
+    INTEGER, INTENT(IN)            :: comm_gl
+    INTEGER, INTENT(IN)            :: grid_rank(:)
+    INTEGER, INTENT(IN)            :: grid_addresses(:)
+    
+    INTEGER                        :: dims_in(3), dims_out(3)
+    REAL(dp), ALLOCATABLE          :: jacobian(:)
+    REAL(dp), ALLOCATABLE          :: jacobian_sd(:), jacobian_rc(:)
+    REAL(dp), ALLOCATABLE          :: rho_ax_sd(:), rho_ax_rc(:)
+    COMPLEX(dp), ALLOCATABLE       :: inrho(:), outrho(:)
+    COMPLEX(dp), ALLOCATABLE       :: psi_sd(:), psi_rc(:)
+    INTEGER, ALLOCATABLE           :: fftcomm(:)
+    INTEGER                        :: group_gl, group_lc
+    INTEGER                        :: group_size
+    INTEGER, ALLOCATABLE           :: members(:)
+    INTEGER                        :: dims_phony(4)
+    INTEGER                        :: Nr, Nrho, Nz, Ndummy
+    INTEGER                        :: Nrgl, Nrhogl, Nzgl, Ndummygl
+    INTEGER                        :: ipr, iprho, ipz, ipdummy
+    INTEGER                        :: numprocr, numprocrho
+    INTEGER                        :: numprocz, numprocdummy
+    INTEGER                        :: igl, shift
+    INTEGER                        :: iprocr, iprocrho
+    INTEGER                        :: iprocz
+    INTEGER                        :: ipro
+    INTEGER                        :: ierror
+    INTEGER                        :: ir, irho, iz, ii
+    INTEGER                        :: ikr, ikrho, ikz
+    
+    !-----------------------------------!
+    
+    psik = ZERO
+    dims_in = SHAPE(psi)
+    dims_out = SHAPE(psik)
+    
+    IF(rank.EQ.2) THEN
+       ! Assign dimensions
+       CALL get_simulation_parameters( rank, &
+            dims_local, dims_global, grid_rank, &
+            Nrho, Nz, Nr, Ndummy, Nrhogl, Nzgl, Nrgl, Ndummygl, &
+            iprho, ipz, ipr, ipdummy, &
+            numprocrho, numprocz, numprocr, numprocdummy )
+    ELSEIF(rank.EQ.3) THEN
+       CALL get_simulation_parameters( rank, &
+            dims_local, dims_global, grid_rank, &
+            Nr, Nrho, Nz, Ndummy, Nrgl, Nrhogl, Nzgl, Ndummygl, &
+            ipr, iprho, ipz, ipdummy, &
+            numprocr, numprocrho, numprocz, numprocdummy )
+    ELSE
+       WRITE(*,*) 'Number of dimensions not implemented in Fourier'&
+            ' Bessel transform.'
+       STOP
+    ENDIF
+    
+    ! Create global group (for all the processors)
+    CALL MPI_COMM_GROUP(comm_gl,group_gl,ierror)
+    dims_phony = 1
+    
+    !-------------------------------------------------!
+    ! Transform the wavefunction into momentum space. !
+    !-------------------------------------------------!
+    
+    !-----------------!
+    ! RHO coordinate  !
+    !-----------------!
+    
+    IF (dims_in(2).NE.1) THEN
+       
+       IF(numprocrho.EQ.1) THEN
+          
+          ALLOCATE(jacobian(1:dims_in(2)))
+          
+          IF(PRESENT(jacobrho)) THEN
+             jacobian = jacobrho
+          ELSE
+             jacobian = rho_ax
+          ENDIF
+          
+          !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ir,irho,iz,ikrho,inrho,outrho)  COPYIN(inrho,outrho)
+          ALLOCATE(inrho(1:dims_in(2)))
+          ALLOCATE(outrho(1:dims_out(2)))
+          
+          !$OMP DO COLLAPSE(2)
+          DO iz = 1, dims_in(3)
+             DO ir = 1, dims_in(1)
+                
+                DO irho = 1, dims_in(2)
+                   inrho(irho) = psi(ir,irho,iz)
+                ENDDO
+                
+                DO ikrho = 1, dims_out(2)
+                   outrho(ikrho) = HankelTransform(inrho, dims_in(2), &
+                        rho_ax, krho_ax(ikrho), jacobian)
+                ENDDO
+                
+                DO irho = 1, dims_out(2)
+                   psik(ir,irho,iz) = outrho(irho)
+                ENDDO
+                
+             ENDDO
+          ENDDO
+          
+          !$OMP END DO NOWAIT
+          
+          DEALLOCATE(inrho)
+          DEALLOCATE(outrho)
+          DEALLOCATE(jacobian)
+          
+          !$OMP END PARALLEL
+       ELSE
+          
+          group_size = numprocz * numprocr
+          ALLOCATE(members(0:numprocrho-1))
+          members = 0
+          ALLOCATE(fftcomm(0:group_size-1))
+          fftcomm = 0
+          
+          ipro = -1
+          DO iprocz = 0, numprocz - 1
+             DO iprocr = 0, numprocr - 1
+                
+                ipro = ipro + 1
+                DO iprocrho = 0, numprocrho - 1
+                   ! Look out! We add +1 in the indx routine. Subroutines do not know
+                   ! lower and upper bounds for assumed-shape arrays
+                   IF(rank.EQ.2) THEN
+                      shift = (iprocrho + 1) + iprocz * numprocrho
+                      members(iprocrho) = grid_addresses(shift)
+                   ELSEIF(rank.EQ.3) THEN
+                      members(iprocrho)  = grid_addresses(indx(iprocr+1,iprocrho+1,iprocz+1, &
+                           1,numprocr,numprocrho,numprocz,0))
+                   ENDIF
+                ENDDO
+                
+                CALL MPI_GROUP_INCL(group_gl, numprocrho, members, group_lc, ierror)
+                
+                CALL MPI_COMM_CREATE(comm_gl, group_lc, fftcomm(ipro), ierror)
+                
+             ENDDO
+          ENDDO
+          
+          ! Work out in which group we are
+          ipro = ipr + numprocr * ipz
+          ALLOCATE(psi_sd(1:Nrhogl))
+          ALLOCATE(psi_rc(1:Nrhogl))
+          ALLOCATE(outrho(1:dims_out(2)))
+          ALLOCATE(rho_ax_sd(1:Nrhogl))
+          ALLOCATE(rho_ax_rc(1:Nrhogl))
+          ALLOCATE(jacobian_sd(1:Nrhogl))
+          ALLOCATE(jacobian_rc(1:Nrhogl))
+          
+          DO irho = 1, Nrho
+             igl = irho + iprho * Nrho
+             rho_ax_sd(igl) = rho_ax(irho)
+             IF(PRESENT(jacobrho)) THEN
+                jacobian_sd(igl) = jacobrho(irho)
+             ELSE
+                jacobian_sd(igl) = rho_ax(irho)
+             ENDIF
+          ENDDO
+          
+          ! Send all the elements to all the processors
+          CALL MPI_ALLREDUCE(rho_ax_sd, rho_ax_rc, Nrhogl, MPI_DOUBLE_PRECISION,&
+               MPI_SUM, fftcomm(ipro), ierror)
+          CALL MPI_ALLREDUCE(jacobian_sd, jacobian_rc, Nrhogl, MPI_DOUBLE_PRECISION,&
+               MPI_SUM, fftcomm(ipro), ierror)
+          
+          DO iz = 1, dims_in(3)
+             DO ir = 1, dims_in(1)
+                
+                psi_sd = ZERO
+                psi_rc = ZERO
+                DO irho = 1, Nrho
+                   igl = irho + iprho * Nrho
+                   psi_sd(igl) = psi(ir,irho,iz)
+                ENDDO
+                
+                ! Send all the elements to all the processors
+                CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nrhogl, MPI_DOUBLE_COMPLEX,&
+                     MPI_SUM, fftcomm(ipro), ierror)
+                
+                DO ikrho = 1, dims_out(2)
+                   outrho(ikrho) = HankelTransform(psi_rc, Nrhogl, &
+                        rho_ax_rc, krho_ax(ikrho), jacobian_rc)
+                ENDDO
+                
+                DO irho = 1, dims_out(2)
+                   psik(ir,irho,iz) = outrho(irho)
+                ENDDO
+                
+             ENDDO
+          ENDDO
+          
+          DEALLOCATE(outrho)
+          DEALLOCATE(rho_ax_sd,rho_ax_rc)
+          DEALLOCATE(jacobian_sd,jacobian_rc)
+          DEALLOCATE(psi_sd,psi_rc)
+          DEALLOCATE(members,fftcomm)
+          
+       ENDIF
+    ENDIF
+    
+    !---------------------!
+    ! R and Z coordinates !
+    !---------------------!
+    
+    ! In case there is only one processor in this dimension
+    IF (numprocz .EQ. 1) THEN
+       ALLOCATE(psi_sd(1:Nzgl))
+       ALLOCATE(psi_rc(1:Nzgl))
+       dims_phony(1) = Nzgl
+       
+       DO irho = 1, Nrho
+          DO ir = 1, Nr
+             
+             ! Set arrays to zero at the begining
+             psi_sd = ZERO
+             psi_rc = ZERO
+             
+             DO iz =1, Nz
+                psi_rc(iz) = psik(ir,irho,iz)
+             ENDDO
+             
+             CALL FFT(psi_rc, 1, dims_phony)
+             
+             ! fftshift the array
+             CALL fftshift(psi_rc,psi_sd)
+             
+             ! Copy the result back to the local psik
+             DO iz = 1, Nz
+                psik(ir,irho,iz) = psi_sd(iz)
+             ENDDO
+             
+          ENDDO
+       ENDDO
+       
+       DEALLOCATE(psi_sd,psi_rc)
+       
+    ELSE
+       
+       group_size = numprocrho * numprocr
+       ALLOCATE(members(0:numprocz-1))
+       members = 0
+       ALLOCATE(fftcomm(0:group_size-1))
+       fftcomm = 0
+       
+       ipro = -1
+       DO iprocrho = 0, numprocrho - 1
+          DO iprocr = 0, numprocr - 1
+             
+             ipro = ipro + 1
+             DO iprocz = 0, numprocz - 1
+                ! Look out! We add +1 in the indx routine. Subroutines do not know
+                ! lower and upper bounds for assumed-shape arrays
+                IF(rank.EQ.2) THEN
+                   shift = (iprocrho + 1) + iprocz * numprocrho
+                   members(iprocz) = grid_addresses(shift)
+                ELSEIF(rank.EQ.3) THEN
+                   members(iprocz)  = grid_addresses(indx(iprocr+1,iprocrho+1,iprocz+1, &
+                        1,numprocr,numprocrho,numprocz,0))
+                ENDIF
+             ENDDO
+             
+             CALL MPI_GROUP_INCL(group_gl, numprocz, members, group_lc, ierror)
+             
+             CALL MPI_COMM_CREATE(comm_gl, group_lc, fftcomm(ipro), ierror)
+             
+          ENDDO
+       ENDDO
+       
+       ALLOCATE(psi_sd(1:Nzgl))
+       ALLOCATE(psi_rc(1:Nzgl))
+       dims_phony(1) = Nzgl
+       
+       ! Work out in which group we are
+       ipro = ipr + numprocr * iprho
+       
+       DO irho = 1, Nrho
+          DO ir = 1, Nr
+             
+             ! Set arrays to zero at the begining
+             psi_sd = ZERO
+             psi_rc = ZERO
+             
+             DO iz = 1, Nz
+                igl = iz + ipz * Nz
+                psi_sd(igl) = psik(ir,irho,iz)
+             ENDDO
+             
+             ! Send all the elements to all the processors
+             CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nzgl, MPI_DOUBLE_COMPLEX,&
+                  MPI_SUM, fftcomm(ipro), ierror)
+             
+             CALL FFT(psi_rc, 1, dims_phony)
+             
+             ! fftshift the array
+             CALL fftshift(psi_rc, psi_sd)
+             
+             DO iz = 1, Nz
+                igl = iz + ipz * Nz
+                psik(ir,irho,iz) = psi_sd(igl)
+             ENDDO
+             
+          ENDDO
+       ENDDO
+       
+       DEALLOCATE(psi_sd,psi_rc)
+       DEALLOCATE(members,fftcomm)
+       
+    ENDIF
+    
+    IF(rank.EQ.3) THEN
+       
+       IF (numprocr .EQ. 1) THEN
+          ALLOCATE(psi_sd(1:Nrgl))
+          ALLOCATE(psi_rc(1:Nrgl))
+          dims_phony(1) = Nrgl
+          
+          DO irho = 1, Nrho
+             DO iz = 1, Nz
+                
+                ! Set arrays to zero at the begining
+                psi_sd = ZERO
+                psi_rc = ZERO
+                
+                DO ir =1, Nr
+                   psi_rc(ir) = psik(ir,irho,iz)
+                ENDDO
+                
+                CALL FFT(psi_rc, 1, dims_phony)
+                
+                ! fftshift the array
+                CALL fftshift(psi_rc,psi_sd)
+                
+                ! Copy the result back to the local psik
+                DO ir = 1, Nr
+                   psik(ir,irho,iz) = psi_sd(ir)
+                ENDDO
+                
+             ENDDO
+          ENDDO
+          
+          DEALLOCATE(psi_sd,psi_rc)
+          
+       ELSE
+          
+          group_size = numprocrho * numprocz
+          ALLOCATE(members(0:numprocr-1))
+          members = 0
+          ALLOCATE(fftcomm(0:group_size-1))
+          fftcomm = 0
+          
+          ipro = -1
+          DO iprocz = 0, numprocz - 1
+             DO iprocrho = 0, numprocrho - 1
+                
+                ipro = ipro + 1
+                DO iprocr = 0, numprocr - 1
+                   ! Look out! We add +1 in the indx routine. Subroutines do not know
+                   ! lower and upper bounds for assumed-shape arrays
+                   members(iprocr)  = grid_addresses(indx(iprocr+1,iprocrho+1,iprocz+1, &
+                        1,numprocr,numprocrho,numprocz,0))
+                ENDDO
+                
+                CALL MPI_GROUP_INCL(group_gl, numprocr, members, group_lc, ierror)
+                
+                CALL MPI_COMM_CREATE(comm_gl, group_lc, fftcomm(ipro), ierror)
+                
+             ENDDO
+          ENDDO
+          
+          ! Work out in which group we are
+          ipro = iprho + numprocrho * ipz 
+          dims_phony(1) = Nrgl
+          
+          ALLOCATE(psi_sd(1:Nrgl))
+          ALLOCATE(psi_rc(1:Nrgl))
+          
+          DO iz = 1, Nz
+             DO irho = 1, Nrho
+                
+                ! Set arrays to zero at the begining
+                psi_sd = ZERO
+                psi_rc = ZERO
+                
+                DO ir = 1, Nr
+                   igl = ir + ipr * Nr
+                   psi_sd(igl) = psik(ir,irho,iz)
+                ENDDO
+                
+                ! Send all the elements to all the processors
+                CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nrgl, MPI_DOUBLE_COMPLEX,&
+                     MPI_SUM, fftcomm(ipro), ierror)
+                
+                CALL FFT(psi_rc, 1, dims_phony)
+                
+                ! fftshift the array
+                CALL fftshift(psi_rc,psi_sd)
+                
+                ! Copy the result back to the local psik
+                DO ir = 1, Nr
+                   igl = ir + ipr * Nr
+                   psik(ir,irho,iz) = psi_sd(igl)
+                ENDDO
+                
+             ENDDO
+          ENDDO
+          
+          DEALLOCATE(psi_sd,psi_rc)
+          DEALLOCATE(members,fftcomm)
+          
+       ENDIF
+    ENDIF
+        
+  END SUBROUTINE FourierBesselTransform_parallel
+
+#endif
+  !----------------------------------------------------!
+
 #if _USE_MKL
   
   SUBROUTINE FFT(in, rank, dims)

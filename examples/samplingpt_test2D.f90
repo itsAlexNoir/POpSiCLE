@@ -19,8 +19,11 @@ PROGRAM samplingpt_test2D
   INTEGER                     :: dims(2)
   INTEGER                     :: rank
   REAL(dp)                    :: dx, dz, dt
-  COMPLEX(dp), ALLOCATABLE    :: psi(:, :), halfpsi(:, :)
+  REAL(dp)                    :: dkx, dkz
+  COMPLEX(dp), ALLOCATABLE    :: psi(:, :), psik(:, :)
+  COMPLEX(dp), ALLOCATABLE    :: halfpsi(:, :)
   REAL(dp), ALLOCATABLE       :: x_ax(:) , z_ax(:)
+  REAL(dp), ALLOCATABLE       :: kx_ax(:) , kz_ax(:)
   REAL(dp), ALLOCATABLE       :: detectorpts(:, :)
   REAL(dp), ALLOCATABLE       :: time(:)
   INTEGER                     :: numdetectorpts
@@ -69,26 +72,34 @@ PROGRAM samplingpt_test2D
   WRITE(*,*) 'Create arrays and coordiante axis...'
   WRITE(*,*) '------------------------------------'
     
-  numxpts   = 301
-  numzpts   = 301
+  numxpts   = 401
+  numzpts   = 401
   dims      = (/numxpts, numzpts/)
   rank      = 2
-  dx        = 0.2_dp
-  dz        = 0.2_dp
+  dx        = 0.4_dp
+  dz        = 0.4_dp
+  dkx       = twopi / ( numxpts * dx )
+  dkz       = twopi / ( numzpts * dz )
   !halxpts   = (numxpts - 1) * 0.5
   
   ! Allocate arrays
   ALLOCATE(x_ax(numxpts),z_ax(numzpts))
   ALLOCATE(psi(numxpts,numzpts))
+  ALLOCATE(kx_ax(numxpts),kz_ax(numzpts))
+  ALLOCATE(psik(numxpts,numzpts))
   
   DO ix = 1, numxpts
      x_ax(ix) = (-REAL(numxpts-1,dp) * 0.5_dp + &
           REAL(ix-1,dp) ) * dx
+     kx_ax(ix) = (-REAL(numxpts-1,dp) * 0.5_dp + &
+          REAL(ix-1,dp) ) * dkx
   ENDDO
   
   DO iz = 1, numzpts
      z_ax(iz) = (-REAL(numzpts-1,dp) * 0.5_dp + &
           REAL(iz-1,dp) ) * dz 
+     kz_ax(iz) = (-REAL(numzpts-1,dp) * 0.5_dp + &
+          REAL(iz-1,dp) ) * dkz 
   ENDDO
   
   ! Set the detector
@@ -100,7 +111,7 @@ PROGRAM samplingpt_test2D
   numdetectorpts = 100
   ALLOCATE(detectorpts(numdetectorpts,rank))
   
-  rad_detector = 20.0_dp
+  rad_detector = 30.0_dp
   dtheta = twopi / (numdetectorpts + 1)
   
   DO ipt = 1, numdetectorpts
@@ -117,7 +128,7 @@ PROGRAM samplingpt_test2D
   CALL create_detector_file('./results/detector_data',rank)
   
   ! Open file for ionised population
-  wave_snapshot = .FALSE.
+  wave_snapshot = .TRUE.
   OPEN(UNIT=33,FORM='formatted',FILE='./results/population.dat')
   OPEN(UNIT=35,FORM='formatted',FILE='./results/field.dat')
   
@@ -126,8 +137,8 @@ PROGRAM samplingpt_test2D
   pz0 = 1.0_dp
   r0 = 0.0_dp
   s0 = 0.0_dp
-  mu0 = 1.0_dp
-  chi0 = 1.0_dp
+  mu0 = 3.0_dp
+  chi0 = 3.0_dp
   omega0 = 0.0_dp
 
   WRITE(*,*) '------------------------------------'
@@ -142,6 +153,13 @@ PROGRAM samplingpt_test2D
              EXP( - (x_ax(ix) - r0)**2 / (2.0_dp * mu0) ) * &
              EXP( - (z_ax(iz) - s0)**2 / (2.0_dp * chi0) ) * &
              EXP( - ZIMAGONE * omega0 )
+
+        psik(ix,iz) = (mu0 / pi)**(0.25_dp) * &
+             (chi0 / pi)**(0.25_dp) * &
+             EXP(-ZIMAGONE * r0 * (px0 - kx_ax(ix))) * &
+             EXP(-ZIMAGONE * s0 * (pz0 - kz_ax(iz))) * &
+             EXP(- 0.5_dp * mu0 * (kx_ax(ix) - px0)**2) * &
+             EXP(- 0.5_dp * chi0 * (kx_ax(iz) - pz0)**2)
      ENDDO
   ENDDO
 
@@ -177,19 +195,28 @@ PROGRAM samplingpt_test2D
         ENDDO
      ENDDO
      close(30)
+
+
+     OPEN(unit=30,form='formatted',file='./results/initial_psik.dat')
+     DO ix = 1, numxpts
+        DO iz = 1, numzpts
+           write(30,*) ABS(psik(ix,iz))**2
+        ENDDO
+     ENDDO
+     close(30)
   ENDIF
   
   !------------------- Start the evolution. -------------------!
   !---------------- The detector is recording! ----------------!
 
   ! Time step
-  dt = 0.1_dp
+  dt = 0.2_dp
   
   ! Set electric field
   intensity = 2.0E14_dp
   wavelength = 23.0_dp
-  nocycles   = 13
-  afterpulse = 5
+  nocycles   = 5
+  afterpulse = 30
   
   wavelength0 = wavelength / aulength_nm
   wl = twopi * speed_light / wavelength0
