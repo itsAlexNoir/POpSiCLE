@@ -142,7 +142,7 @@ CONTAINS
   
   SUBROUTINE write_mes(bk, filename, groupname)
     IMPLICIT NONE
-    
+
     COMPLEX(dp), INTENT(IN)        :: bk(:, :, :)
     CHARACTER(LEN=*), INTENT(IN)   :: filename
     CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: groupname
@@ -174,7 +174,7 @@ CONTAINS
     OPEN(UNIT=55,FORM='formatted',FILE=name)
     
     DO ik = 1, numkpts
-      WRITE(55,*) probk1D(ik)
+       WRITE(55,*) k_ax(ik), probk1D(ik)
     ENDDO
 
     DEALLOCATE(probk1D)
@@ -243,7 +243,7 @@ CONTAINS
     OPEN(UNIT=55,FORM='formatted',FILE=name)
 
     DO ik = 1, numkpts
-      WRITE(55,*) prob1D(ik)
+      WRITE(55,*) k_ax(ik)**2*0.5_dp, prob1D(ik)
     ENDDO
 
     DEALLOCATE(prob1D)

@@ -83,7 +83,7 @@ if(params.draw_polar_amplitude):
 
 if(params.draw_mes):
     print('Plotting photoelectron momentum...')
-    probk = coords.func_smoother(ax.ke_ax,mes,ax.k_ax)
+    probk = coords.func_smoother(ax.ke_ax,mes[:,1],ax.k_ax)
     xticks = np.arange(0,3.0,0.4)
     yticks = None
     ylim = None #[0.0,max(probke)]
@@ -96,7 +96,7 @@ if(params.draw_mes):
 
 if(params.draw_pes):
     print('Plotting photoelectron energy spectra...')
-    probE = coords.func_smoother(ax.ke_ax**2*params.mufac,pes,ax.Ee_ax)
+    probE = coords.func_smoother(ax.ke_ax**2*params.mufac,pes[:,1],ax.Ee_ax)
     xticks = np.arange(0,3.0,0.4)
     yticks = None
     ylim = None #[0.0,max(probke)]
@@ -118,7 +118,7 @@ if(params.draw_pes):
 
 if(params.draw_total_cross):
     print('Plotting photoelectron momentum...')
-    probk = coords.func_smoother(ax.ke_ax,mes,ax.k_ax)
+    probk = coords.func_smoother(ax.ke_ax,mes[:,1],ax.k_ax)
     xticks = np.arange(0,3.0,0.4)
     yticks = None
     ylim = None #[0.0,max(probke)]

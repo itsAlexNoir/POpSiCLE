@@ -10,6 +10,7 @@ PROGRAM tsurff_test
   INTEGER                    :: numphipts 
   REAL(dp)                   :: k_cutoff
   REAL(dp)                   :: coulomb_exp_energy
+  REAL(dp)                   :: aftertime_fs
   COMPLEX(dp), ALLOCATABLE   :: b(:, :, :)
   CHARACTER(LEN=100)         :: filename_surf
   CHARACTER(LEN=100)         :: filename_pes
@@ -59,7 +60,24 @@ PROGRAM tsurff_test
   WRITE(*, *) '-------------------------'
   READ(*, *) lmax
   WRITE(*, *)
-
+  
+  WRITE(*, *) 'Do you want to add time at the end of the evolution? (y or n)'
+  WRITE(*, *) '---------------------------------------------------------'
+  READ(*, '(1A1)') answer
+  WRITE(*, *)
+  
+  aftertime_fs = 0.0_dp
+  
+  IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
+     
+     WRITE(*, *) 'Time added after the evolution (fs):'
+     WRITE(*, *) '--------------------------------'
+     READ(*, *) aftertime_fs
+     WRITE(*, *)
+     
+  ENDIF
+  
+  
   WRITE(*, *) 'Do you want to add the Coulomb explosion energy? (y or n)'
   WRITE(*, *) '---------------------------------------------------------'
   READ(*, '(1A1)') answer
@@ -139,10 +157,10 @@ PROGRAM tsurff_test
   
   CALL initialize_tsurff(filename_surf, radius_boundary, lmax, &
        k_cutoff, numkpts, numthetapts, numphipts, &
-       lmax_total, mmax, coulomb_exp_energy )
+       lmax_total, mmax, aftertime_fs, coulomb_exp_energy )
   
   mmin = - mmax
-
+  
   ! Allocate momentum amplitude array
   ALLOCATE(b(1:numkpts,1:numthetapts,1:numphipts))
 
