@@ -50,12 +50,12 @@ class axes():
         ########################################################
 
         if(fixed_nuclei):
-            self.kn_ax = np.linspace(0.0,self.knmax,self.knmaxpts)
+            self.kn_ax = np.linspace(self.dkn,self.knmax,self.knmaxpts)
 
         ######################################################
 
-        self.ke_ax = np.linspace(0.0,self.kemax,self.kemaxpts)
-        self.k_ax = np.linspace(0.0,self.kmax,self.kmaxpts)
+        self.ke_ax = np.linspace(self.dke,self.kemax,self.kemaxpts)
+        self.k_ax = np.linspace(self.dke,self.kmax,self.kmaxpts)
 
         ######################################################
 
@@ -70,7 +70,7 @@ class axes():
 
         ######################################################
 
-        self.Ee_ax = np.linspace(0.0,self.Eemax,self.Eemaxpts)
+        self.Ee_ax = np.linspace(self.dke**2*mufac,self.Eemax,self.Eemaxpts)
 
         if(fixed_nuclei == False):
             self.En_ax = np.linspace(0.0,self.Enmax,self.dEn)
