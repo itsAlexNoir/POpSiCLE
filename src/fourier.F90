@@ -627,11 +627,11 @@ CONTAINS
     !-----------------!
     
     IF (dims_in(2).NE.1) THEN
-       
-       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ir,irho,iz,ikrho,inrho,outrho)  COPYIN(inrho,outrho)
+
        ALLOCATE(inrho(1:dims_in(2)))
        ALLOCATE(outrho(1:dims_out(2)))
-       
+
+       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ir,irho,iz,ikrho,inrho,outrho)
        !$OMP DO COLLAPSE(2)
        DO iz = 1, dims_in(3)
           DO ir = 1, dims_in(1)
@@ -665,13 +665,13 @@ CONTAINS
     ! R and Z coordinates !
     !---------------------!
     
-    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ir,irho,iz) COPYIN(inrz,outrz)
     ALLOCATE(inrz(dims_in(1) * dims_in(3)))
     ALLOCATE(outrz(dims_in(1) * dims_in(3)))
+    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ir,irho,iz,inrz,outrz)
     
     !$OMP DO
     DO irho = 1, dims_out(2)
-
+       
        ii = 0
        DO iz = 1, dims_in(3)
           DO ir = 1, dims_in(1)
@@ -682,7 +682,7 @@ CONTAINS
        
        ! Compute forward transform
        CALL FourierTransform(inrz,outrz, 2, (/ dims_in(1), dims_in(3) /) )
-
+       
        ii = 0
        DO iz = 1, dims_out(3)
           DO ir = 1, dims_out(1)
@@ -697,19 +697,19 @@ CONTAINS
     DEALLOCATE(inrz, outrz)
     
     !$OMP END PARALLEL
-
+    
     !
     ! FFTshift the arrays
     !
-
-    IF(PRESENT(fftshift_on) .AND. fftshift_on.EQ..TRUE.) THEN
+    
+    IF(PRESENT(fftshift_on) .AND. fftshift_on.EQV..TRUE.) THEN
        
        IF(dims_out(1).NE.1) THEN
 
           ALLOCATE(inr(1:dims_out(1)))
           inr = ZERO
           
-          !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ir,iz,irho) &
+          !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ir,iz,irho,inr)
           !$OMP DO COLLAPSE(2)
           DO iz = 1, dims_out(3)
              DO irho = 1, dims_out(2)
@@ -730,7 +730,7 @@ CONTAINS
        
        ALLOCATE(inz(1:dims_out(3)))
        inz = ZERO
-       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ir,irho,iz) &
+       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ir,irho,iz)
        !$OMP DO COLLAPSE(2)    
        DO irho = 1, dims_out(2)
           DO ir = 1, dims_out(1)
@@ -820,7 +820,7 @@ CONTAINS
             numprocr, numprocrho, numprocz, numprocdummy )
     ELSE
        WRITE(*,*) 'Number of dimensions not implemented in Fourier'&
-            ' Bessel transform.'
+            &' Bessel transform.'
        STOP
     ENDIF
     
@@ -848,10 +848,9 @@ CONTAINS
              jacobian = rho_ax
           ENDIF
           
-          !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ir,irho,iz,ikrho,inrho,outrho)  COPYIN(inrho,outrho)
           ALLOCATE(inrho(1:dims_in(2)))
           ALLOCATE(outrho(1:dims_out(2)))
-          
+          !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ir,irho,iz,ikrho,inrho,outrho)          
           !$OMP DO COLLAPSE(2)
           DO iz = 1, dims_in(3)
              DO ir = 1, dims_in(1)
