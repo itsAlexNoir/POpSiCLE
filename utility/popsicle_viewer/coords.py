@@ -73,7 +73,7 @@ def cart2sph3D(cartfunc,x,y,z,r,theta,phi):
 def get_radial_prob2D(sphfunc,rpts,theta,theta_weights):
     print('Getting radial probability...')
     # Allocate arrays 
-    jacobian = np.zeros(sphfunc.shape])
+    jacobian = np.zeros(sphfunc.shape)
     probr = np.zeros(sphfunc.shape[1])
     
     aux.create_sphjacobian(jacobian,rpts,np.ones(shape(theta)))

@@ -115,7 +115,7 @@ CONTAINS
     ENDDO
     
     numrpts = 2 * fdpts + 1
-    numthetapts = 2 * lmax + 1
+    numthetapts = lmax + 1
     
     ALLOCATE(rpts_boundary(1:numrpts))
     ALLOCATE(theta_boundary(1:numthetapts))
@@ -286,7 +286,7 @@ CONTAINS
     ENDDO
     
     numrpts = 2 * fdpts + 1
-    numthetapts = 2 * lmax + 1
+    numthetapts = lmax + 1
     
     ALLOCATE(rpts_boundary(1:numrpts))
     ALLOCATE(theta_boundary(1:numthetapts))
