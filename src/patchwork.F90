@@ -92,7 +92,7 @@ CONTAINS
     IF(PRESENT(rpts)) THEN
        IF(ALL(rpts.GT.domain(1,4))) THEN
           offset(4) = 0
-          IF(ALL(rpts.GT.domain(2,3))) THEN
+          IF(ALL(rpts.GT.domain(2,4))) THEN
              dims(4) = 0
           ELSE
              dims(4) = MAXLOC(rpts,1,rpts.LT.domain(2,4))

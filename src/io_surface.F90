@@ -227,7 +227,7 @@ CONTAINS
     CALL h5gopen_f(file_id, name, time_group, error)
     
     ! Number of theta points in a serial run, its
-    numthetapts = 2 * lmax + 1
+    numthetapts = lmax + 1
     !Define rank, in this case 2.
     wave_rank = 2
     field_rank = 2
@@ -406,7 +406,7 @@ CONTAINS
     name = '/time'
     CALL h5gopen_f(file_id, name, time_group, error)
     
-    numthetapts = 2 * lmax + 1
+    numthetapts = lmax + 1
     numthetaoffset = INT(numthetapts / numsurfaceprocs)
     !Define rank, in this case 2.
     wave_rank = 2
@@ -640,8 +640,8 @@ CONTAINS
     CALL h5gopen_f(file_id, name, time_group, error)
     
     ! Number of theta points in a serial run, its
-    numthetapts = 2 * lmax + 1
-    numphipts = 2 * lmax + 1
+    numthetapts = lmax + 1
+    numphipts = lmax + 1
     !Define rank, in this case 2.
     wave_rank = 3
     field_rank = 2
@@ -823,8 +823,8 @@ CONTAINS
     name = '/time'
     CALL h5gopen_f(file_id, name, time_group, error)
     
-    numthetapts = 2 * lmax + 1
-    numphipts = 2 * lmax + 1
+    numthetapts = lmax + 1
+    numphipts = lmax + 1
     numthetaoffset = INT(numthetapts / numsurfaceprocs)
     numphioffset = INT(numphipts / numsurfaceprocs)
     wave_rank = 3
@@ -1062,11 +1062,11 @@ CONTAINS
     IF(dspace_dims(3).EQ.0) THEN
        numthetapts = dspace_dims(1)
        numphipts = 1
-       lmax = (numthetapts - 1)/2
+       lmax = numthetapts - 1
     ELSE
        numthetapts = dspace_dims(1)
        numphipts = dspace_dims(2)
-       lmax = (numthetapts - 1)/2
+       lmax = numthetapts - 1
     ENDIF
     
     ! Close dataspaces and sets opened so far.
@@ -1137,10 +1137,10 @@ CONTAINS
          &----------------------'
     WRITE(*,'(A,A,A)')   'Path and name of the file:      ',TRIM(filename) // '.h5'
     WRITE(*,'(A,I8)')    'Number of time step in the file: ',ntime
-    WRITE(*,'(A,F9.6)')  'Time step:                       ',dt 
+    WRITE(*,'(A,F0.6)')  'Time step:                       ',dt 
     WRITE(*,'(A,I4)')    'Number of theta points:          ',numthetapts
     WRITE(*,'(A,I4)')    'Number of phi points:            ',numphipts
-    WRITE(*,'(A,I4)')    'Maximun angular momenta:         ',lmax
+    WRITE(*,'(A,I4)')    'Maximum angular momenta:         ',lmax
     
     ! Close the file.
     CALL h5fclose_f(file_id, error)

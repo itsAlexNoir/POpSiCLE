@@ -140,7 +140,7 @@ CONTAINS
     
     
     numrpts = 2 * fdpts + 1
-    numthetapts = 2 * lmax + 1
+    numthetapts = lmax + 1
     !numthetapts = INT( (maxtheta - mintheta) / deltatheta )
     
     ALLOCATE(rpts_boundary(1:numrpts))
@@ -359,7 +359,7 @@ CONTAINS
     ENDDO
     
     numrpts = 2 * fdpts + 1
-    numthetapts = 2 * lmax + 1
+    numthetapts = lmax + 1
     !numthetapts = INT( (maxtheta - mintheta) / deltatheta )
     
     ALLOCATE(rpts_boundary(1:numrpts))

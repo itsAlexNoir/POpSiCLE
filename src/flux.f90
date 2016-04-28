@@ -21,11 +21,11 @@ MODULE flux
   USE sht
   USE io_surface
   USE omp_lib
-
+  
   IMPLICIT NONE
-
+  
   PRIVATE
-
+  
   ! Public routines
   PUBLIC        :: initialize_tsurff
   PUBLIC        :: get_volkov_phase
@@ -45,7 +45,7 @@ MODULE flux
   INTEGER                       :: numkpts
   REAL(dp)                      :: dt, dk, kmax, kmax_th
   REAL(dp)                      :: coulomb_exp_ener
-  INTEGER                       :: ntime
+  INTEGER                       :: ntime, ntimeafter, ntimetotal
   INTEGER                       :: maxfactlog
   COMPLEX(dp), ALLOCATABLE      :: psi_sph(:, :), psip_sph(:, :)
   COMPLEX(dp), ALLOCATABLE      :: psi_lm(:, :), psip_lm(:, :)
@@ -57,18 +57,19 @@ MODULE flux
   INTEGER                       :: lmax_total
   INTEGER                       :: numpts, numrpts
   INTEGER                       :: numthetapts, numphipts
-
+  LOGICAL                       :: aftercycles
+  
   !-------------------------------------------------------------!
   !-------------------------------------------------------------!
-
+  
 CONTAINS
-
+  
   SUBROUTINE initialize_tsurff(filename, radb, lmax_desired, &
        kmax_input, maxkpts, maxthetapts, maxphipts, &
-       lmax_total, mmax, coulomb_exp )
-
+       lmax_total, mmax, timeafter_fs, coulomb_exp )
+    
     IMPLICIT NONE
-
+    
     CHARACTER(LEN=*), INTENT(IN)     :: filename
     INTEGER, INTENT(IN)              :: lmax_desired
     REAL(dp), INTENT(IN)             :: radb
@@ -79,10 +80,11 @@ CONTAINS
     INTEGER, INTENT(OUT)             :: lmax_total
     INTEGER, INTENT(OUT)             :: mmax
     REAL(dp), INTENT(IN), OPTIONAL   :: coulomb_exp
+    REAL(dp), INTENT(IN), OPTIONAL   :: timeafter_fs
     
     INTEGER                          :: lmax, mmin
     INTEGER                          :: iphi, ik, il
-
+    
     !-------------------------------------------------!
 
     ! Find out the number of time steps in the file
@@ -92,10 +94,21 @@ CONTAINS
     maxthetapts = numthetapts
     maxphipts = numphipts
 
+    ! If we want to padd with zeros at the end
+    ! of the time evolution
+    ntimeafter = 0.0_dp
+    aftercycles = .FALSE.
+    IF(PRESENT(timeafter_fs)) THEN
+       aftercycles = .TRUE.
+       ntimeafter = INT(timeafter_fs / autime_fs / dt)
+    ENDIF
+    ! Total time for the calculation
+    ntimetotal = ntime + ntimeafter
+    
     ! Create momentum axis
     kmax_th = twopi / dt
-    dk = twopi / ntime / dt
-
+    dk = twopi / ntimetotal / dt
+    
     ! This factor shift the energy if we
     ! are dealing with fixed nuclei molecules
     coulomb_exp_ener = 0.0_dp
@@ -109,15 +122,24 @@ CONTAINS
     ENDIF
     
     WRITE(*,'(A,F10.6)')  'Theoretical kmax:                ',kmax_th
-    WRITE(*,'(A,F9.6)')  'Desired kmax:                    ',kmax
-    WRITE(*,'(A,F9.6)')  'dk:                              ',dk
+    WRITE(*,'(A,F9.6)')  'Desired kmax:                     ',kmax
+    WRITE(*,'(A,F9.6)')  'dk:                               ',dk
+    WRITE(*,'(A,F0.6)')  'Time in the file (a.u.):          ', ntime * dt
+    WRITE(*,'(A,F0.6)')  'Time in the file (fs):            ', ntime * dt * autime_fs
+    IF(aftercycles) THEN     
+       WRITE(*,'(A,F0.6)')  'Time added after the pulse (a.u.): ', ntimeafter * dt
+       WRITE(*,'(A,F0.6)')  'Time added after the pulse (fs):   ', timeafter_fs
+    ENDIF
+    WRITE(*,'(A,F0.6)')  'Total time (a.u.):                 ', ntimetotal * dt
+    WRITE(*,'(A,F0.6)')  'Total time (fs):                   ', ntimetotal * dt * autime_fs
+    
     IF(PRESENT(coulomb_exp)) &
          WRITE(*,'(A,F9.6)')  'Coulomb explosion energy (a.u.): ', coulomb_exp_ener
     WRITE(*,*)           '---------------------------------------------------------&
          &---------------------'
     WRITE(*,*)
     
-    numkpts = INT( kmax / dk)
+    numkpts = INT( kmax / dk) + 1
     maxkpts = numkpts
     
     ALLOCATE(k_ax(1:numkpts))
@@ -150,8 +172,7 @@ CONTAINS
     ALLOCATE(psip_sph(1:numthetapts,1:numphipts))
     ALLOCATE(psi_lm(mmin:mmax,0:lmax))
     ALLOCATE(psip_lm(mmin:mmax,0:lmax))
-
-
+    
     ! Create spherical coordinates
     ALLOCATE(theta_ax(1:numthetapts),costheta_ax(1:numthetapts))
     ALLOCATE(gauss_th_weights(1:numthetapts))
@@ -163,31 +184,31 @@ CONTAINS
     DO iphi = 1, numphipts
        phi_ax(iphi) = REAL(iphi,dp) * twopi / REAL(numphipts,dp)
     ENDDO
-
+    
     ! Create spherical harmonics
     maxfactlog = 3 * lmax + 1
     ALLOCATE(factlog(0:maxfactlog))
     CALL make_factlog(factlog, maxfactlog)
-
+    
     CALL initialize_spherical_harmonics(lmax,costheta_ax)
-
+    
     ! Initialize Bessel functions
     ALLOCATE(jl(0:lmax,1:numkpts))
     ALLOCATE(jlp(0:lmax,1:numkpts))
     ALLOCATE(jy(1:numkpts),jyp(1:numkpts))
     ALLOCATE(krb_ax(1:numkpts))
-
+    
     krb_ax = k_ax * rb
-
+    
     jl  = 0.0_dp
     jlp = 0.0_dp
     jy  = 0.0_dp
     jyp = 0.0_dp
-
+    
     DO il = 0, lmax
        CALL sphbessjy(il,krb_ax,jl(il,:),jy,jlp(il,:),jyp)
     ENDDO
-
+    
 
   END SUBROUTINE initialize_tsurff
 
@@ -339,14 +360,58 @@ CONTAINS
        ! End loop over coordinates
 
     ENDDO ! End time loop
-
+    
+    
+    IF(aftercycles) THEN
+       ! We padd with zeros the evolution!!
+       DO itime = 1, ntimeafter
+          
+          !WRITE(*,'(A,I6)') 'Loop number: ',itime
+          psi_lm  = ZERO
+          psip_lm = ZERO
+          
+          ! Calculate flux
+          intflux = ZERO
+          CALL calculate_time_integrand(psi_lm, psip_lm, &
+               lmax, mmax, &
+               (/0.0_dp, 0.0_dp, 0.0_dp/), &
+               intflux)
+          
+          ! Get the Volkov phase (one per time step)
+          CALL get_volkov_phase(volkov_phase, &
+               (/0.0_dp, 0.0_dp, 0.0_dp/), dt, &
+               coulomb_exp_ener )
+          
+          !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi)
+          
+          !$OMP DO COLLAPSE(3)
+          DO iphi = 1, numphipts
+             DO itheta = 1, numthetapts
+                DO ik = 1, numkpts
+                   
+                   intflux(ik,itheta,iphi) = intflux(ik,itheta,iphi) * &
+                        volkov_phase(ik,itheta,iphi)
+                   
+                   bk(ik,itheta,iphi) = bk(ik,itheta,iphi) + &
+                        intflux(ik,itheta,iphi)
+                   
+                ENDDO
+             ENDDO
+          ENDDO
+          !$OMP END DO NOWAIT
+          !$OMP END PARALLEL
+          ! End loop over coordinates
+          
+       ENDDO ! End time loop
+    ENDIF
+    
     WRITE(*,*)
     WRITE(*,*) 'Time integral finished!'
     WRITE(*,*) '------------------------'
     WRITE(*,*)
     
     bk = bk * SQRT(2.0_dp / pi) * ZIMAGONE * dt
-   
+    
   END SUBROUTINE get_flux
 
   !***************************************!
