@@ -827,7 +827,7 @@ CONTAINS
     ! Create global group (for all the processors)
     CALL MPI_COMM_GROUP(comm_gl,group_gl,ierror)
     dims_phony = 1
-    
+
     !-------------------------------------------------!
     ! Transform the wavefunction into momentum space. !
     !-------------------------------------------------!
@@ -902,7 +902,7 @@ CONTAINS
                            1,numprocr,numprocrho,numprocz,0))
                    ENDIF
                 ENDDO
-                
+
                 CALL MPI_GROUP_INCL(group_gl, numprocrho, members, group_lc, ierror)
                 
                 CALL MPI_COMM_CREATE(comm_gl, group_lc, fftcomm(ipro), ierror)
@@ -919,10 +919,17 @@ CONTAINS
           ALLOCATE(rho_ax_rc(1:Nrhogl))
           ALLOCATE(jacobian_sd(1:Nrhogl))
           ALLOCATE(jacobian_rc(1:Nrhogl))
+          psi_sd = ZERO
+          psi_rc = ZERO
+          rho_ax_sd = 0.0_dp
+          rho_ax_rc = 0.0_dp
+          jacobian_sd = 0.0_dp
+          jacobian_rc = 0.0_dp
           
           DO irho = 1, Nrho
              igl = irho + iprho * Nrho
              rho_ax_sd(igl) = rho_ax(irho)
+                          
              IF(PRESENT(jacobrho)) THEN
                 jacobian_sd(igl) = jacobrho(irho)
              ELSE
@@ -970,13 +977,14 @@ CONTAINS
           
        ENDIF
     ENDIF
-    
+
     !---------------------!
     ! R and Z coordinates !
     !---------------------!
     
     ! In case there is only one processor in this dimension
     IF (numprocz .EQ. 1) THEN
+       
        ALLOCATE(psi_sd(1:Nzgl))
        ALLOCATE(psi_rc(1:Nzgl))
        dims_phony(1) = Nzgl
@@ -1031,7 +1039,7 @@ CONTAINS
                         1,numprocr,numprocrho,numprocz,0))
                 ENDIF
              ENDDO
-             
+
              CALL MPI_GROUP_INCL(group_gl, numprocz, members, group_lc, ierror)
              
              CALL MPI_COMM_CREATE(comm_gl, group_lc, fftcomm(ipro), ierror)
@@ -1080,7 +1088,7 @@ CONTAINS
        
     ENDIF
     
-    IF(rank.EQ.3) THEN
+    IF(rank.EQ.3) THEN       
        
        IF (numprocr .EQ. 1) THEN
           ALLOCATE(psi_sd(1:Nrgl))
@@ -1101,11 +1109,11 @@ CONTAINS
                 CALL FFT(psi_rc, 1, dims_phony)
                 
                 ! fftshift the array
-                CALL fftshift(psi_rc,psi_sd)
+                !CALL fftshift(psi_rc,psi_sd)
                 
                 ! Copy the result back to the local psik
                 DO ir = 1, Nr
-                   psik(ir,irho,iz) = psi_sd(ir)
+                   psik(ir,irho,iz) = psi_rc(ir)
                 ENDDO
                 
              ENDDO
@@ -1162,16 +1170,17 @@ CONTAINS
                 ! Send all the elements to all the processors
                 CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nrgl, MPI_DOUBLE_COMPLEX,&
                      MPI_SUM, fftcomm(ipro), ierror)
-                
+
                 CALL FFT(psi_rc, 1, dims_phony)
+
                 
                 ! fftshift the array
-                CALL fftshift(psi_rc,psi_sd)
+                !CALL fftshift(psi_rc,psi_sd)
                 
                 ! Copy the result back to the local psik
                 DO ir = 1, Nr
                    igl = ir + ipr * Nr
-                   psik(ir,irho,iz) = psi_sd(igl)
+                   psik(ir,irho,iz) = psi_rc(igl)
                 ENDDO
                 
              ENDDO
@@ -1181,10 +1190,10 @@ CONTAINS
           DEALLOCATE(members,fftcomm)
           
        ENDIF
-    ENDIF
+ ENDIF
         
   END SUBROUTINE FourierBesselTransform_parallel
-
+  
 #endif
   !----------------------------------------------------!
 
