@@ -177,6 +177,8 @@ CONTAINS
        WRITE(55,*) k_ax(ik), probk1D(ik)
     ENDDO
 
+    CLOSE(55)
+    
     DEALLOCATE(probk1D)
 
   END SUBROUTINE write_mes
@@ -246,6 +248,8 @@ CONTAINS
       WRITE(55,*) k_ax(ik)**2*0.5_dp, prob1D(ik)
     ENDDO
 
+    CLOSE(55)
+    
     DEALLOCATE(prob1D)
 
   END SUBROUTINE write_pes

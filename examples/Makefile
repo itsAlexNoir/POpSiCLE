@@ -8,7 +8,7 @@
 ##    POpSiCLE examples
 ##************************************************
 
-include Sys/aigis_mkl.make
+include Sys/intel15_mkl.make
 
 default: example_serial
 
@@ -153,6 +153,7 @@ clean_include:
 
 clean_examples:
 	@echo 'Deleting examples...'
+	rm -rf ./*.o
 	rm -rf ./${RES_DIR}/*.dat 
 	rm -rf ./${RES_DIR}/*.exec
 	rm -rf ./${RES_DIR}/*.h5

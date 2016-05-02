@@ -48,7 +48,8 @@ MODULE fourier
   
 CONTAINS
   
-  SUBROUTINE FourierTransform_serial( psi, psik, rank, dims_local )
+  SUBROUTINE FourierTransform_serial( psi, psik, rank, dims_local, &
+       inverse )
     
     IMPLICIT NONE
     
@@ -56,6 +57,7 @@ CONTAINS
     COMPLEX(dp), INTENT(OUT)      :: psik(:)
     INTEGER, INTENT(IN)           :: rank
     INTEGER, INTENT(IN)           :: dims_local(:)
+    LOGICAL, INTENT(IN), OPTIONAL :: inverse
     
     !***************************************************!
     
@@ -69,8 +71,11 @@ CONTAINS
     !-------------------------------------------------!
     
     ! Compute forward transform
-    CALL FFT(psik,rank,dims_local)
-    
+    IF(PRESENT(inverse)) THEN
+       CALL FFT(psik,rank,dims_local,inverse)
+    ELSE
+       CALL FFT(psik,rank,dims_local)
+    ENDIF
     
   END SUBROUTINE FourierTransform_serial
   
@@ -79,7 +84,7 @@ CONTAINS
 #if _COM_MPI
   
   SUBROUTINE FourierTransform_parallel(psi, psik, rank, dims_local, &
-       dims_global, comm_gl, grid_rank, grid_addresses )
+       dims_global, comm_gl, grid_rank, grid_addresses, inverse )
     
     IMPLICIT NONE
     
@@ -91,6 +96,7 @@ CONTAINS
     INTEGER, INTENT(IN)           :: comm_gl
     INTEGER, INTENT(IN)           :: grid_rank(:)
     INTEGER, INTENT(IN)           :: grid_addresses(:)
+    LOGICAL, INTENT(IN), OPTIONAL :: inverse
     
     !--------------------------------------------------!
 
@@ -151,8 +157,12 @@ CONTAINS
                 DO ix =1, Nx
                    psi_rc(ix) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
                 ENDDO
-                
-                CALL FFT(psi_rc, 1, dims_phony)
+
+                IF(PRESENT(inverse)) THEN
+                   CALL FFT(psi_rc, 1, dims_phony,inverse)
+                ELSE
+                   CALL FFT(psi_rc, 1, dims_phony)
+                ENDIF
                 
                 ! fftshift the array
                 CALL fftshift(psi_rc,psi_sd)
@@ -221,9 +231,13 @@ CONTAINS
                 ! Send all the elements to all the processors
                 CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nxgl, MPI_COMPLEX16,&
                      MPI_SUM, fftcomm(ipro), ierror)
-                
-                CALL FFT(psi_rc, 1, dims_phony)
-                
+
+                IF(PRESENT(inverse)) THEN
+                   CALL FFT(psi_rc, 1, dims_phony,inverse)
+                ELSE
+                   CALL FFT(psi_rc, 1, dims_phony)
+                ENDIF
+
                 ! fftshift the array
                 CALL fftshift(psi_rc, psi_sd)
                 
@@ -263,8 +277,12 @@ CONTAINS
                    DO iy =1, Ny
                       psi_rc(iy) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
                    ENDDO
-                   
-                   CALL FFT(psi_rc, 1, dims_phony)
+
+                   IF(PRESENT(inverse)) THEN
+                      CALL FFT(psi_rc, 1, dims_phony,inverse)
+                   ELSE
+                      CALL FFT(psi_rc, 1, dims_phony)
+                   ENDIF
                    
                    ! fftshift the array
                    CALL fftshift(psi_rc,psi_sd)
@@ -334,7 +352,11 @@ CONTAINS
                    CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nygl, MPI_DOUBLE_COMPLEX,&
                         MPI_SUM, fftcomm(ipro), ierror)
                    
-                   CALL FFT(psi_rc, 1, dims_phony)
+                   IF(PRESENT(inverse)) THEN
+                      CALL FFT(psi_rc, 1, dims_phony,inverse)
+                   ELSE
+                      CALL FFT(psi_rc, 1, dims_phony)
+                   ENDIF
                    
                    ! fftshift the array
                    CALL fftshift(psi_rc,psi_sd)
@@ -377,8 +399,12 @@ CONTAINS
                    DO iz =1, Nz
                       psi_rc(iz) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
                    ENDDO
-                   
-                   CALL FFT(psi_rc, 1, dims_phony)
+
+                   IF(PRESENT(inverse)) THEN
+                      CALL FFT(psi_rc, 1, dims_phony,inverse)
+                   ELSE
+                      CALL FFT(psi_rc, 1, dims_phony)
+                   ENDIF
                    
                    ! fftshift the array
                    CALL fftshift(psi_rc,psi_sd)
@@ -446,8 +472,12 @@ CONTAINS
                    ! Send all the elements to all the processors
                    CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nzgl, MPI_DOUBLE_COMPLEX,&
                         MPI_SUM, fftcomm(ipro), ierror)
-               
-                   CALL FFT(psi_rc, 1, dims_phony)
+
+                   IF(PRESENT(inverse)) THEN
+                      CALL FFT(psi_rc, 1, dims_phony,inverse)
+                   ELSE
+                      CALL FFT(psi_rc, 1, dims_phony)
+                   ENDIF
                    
                    ! fftshift the array
                    CALL fftshift(psi_rc,psi_sd)
@@ -487,8 +517,12 @@ CONTAINS
                    DO ir =1, Nr
                       psi_rc(ir) = psik(indx(ix,iy,iz,ir,Nx,Ny,Nz,Nr))
                    ENDDO
-                   
-                   CALL FFT(psi_rc, 1, dims_phony)
+
+                   IF(PRESENT(inverse)) THEN
+                      CALL FFT(psi_rc, 1, dims_phony,inverse)
+                   ELSE
+                      CALL FFT(psi_rc, 1, dims_phony)
+                   ENDIF
                    
                    !! fftshift the array
                    !CALL fftshift(psi_rc,psi_sd)
@@ -536,6 +570,7 @@ CONTAINS
           ! Work out in which group we are
           ipro = ipx + numprocx * ipy + &
                numprocx * numprocy * ipz
+          dims_phony(1) = Nrgl
           
           ALLOCATE(psi_sd(1:Nrgl))
           ALLOCATE(psi_rc(1:Nrgl))
@@ -556,8 +591,12 @@ CONTAINS
                    CALL MPI_ALLREDUCE(psi_sd, psi_rc, Nrgl, MPI_DOUBLE_COMPLEX,&
                         MPI_SUM, fftcomm(ipro), ierror)
                    
-                   dims_phony(1) = Nrgl
-                   CALL FFT(psi_rc, 1, dims_phony)
+                   
+                   IF(PRESENT(inverse)) THEN
+                      CALL FFT(psi_rc, 1, dims_phony,inverse)
+                   ELSE
+                      CALL FFT(psi_rc, 1, dims_phony)
+                   ENDIF
                    
                    !! fftshift the array
                    CALL fftshift(psi_rc,psi_sd)
@@ -1199,7 +1238,7 @@ CONTAINS
 
 #if _USE_MKL
   
-  SUBROUTINE FFT(in, rank, dims)
+  SUBROUTINE FFT(in, rank, dims, inverse)
     
     USE MKL_DFTI
     
@@ -1210,6 +1249,7 @@ CONTAINS
     COMPLEX(dp), INTENT(INOUT)       :: in(:)
     INTEGER, INTENT(IN)              :: rank
     INTEGER, INTENT(IN)              :: dims(:)
+    LOGICAL, INTENT(IN),OPTIONAL     :: inverse
     
     ! Execution status
     COMPLEX(dp), ALLOCATABLE         :: out(:, :, :, :)
@@ -1263,8 +1303,12 @@ CONTAINS
        WRITE(*,*) 'Error committing the descriptor!'
        STOP
     ENDIF
-    
-    status = DftiComputeForward(hand, out(:,1,1,1))
+
+    IF((PRESENT(inverse)).AND.(inverse.EQV..TRUE.)) THEN
+       status = DftiComputeBackward(hand, out(:,1,1,1))
+    ELSE
+       status = DftiComputeForward(hand, out(:,1,1,1))
+    ENDIF
     
     status = DftiFreeDescriptor(hand)
     
@@ -1278,8 +1322,8 @@ CONTAINS
   
 #elif _USE_FFTW
   
-  SUBROUTINE FFT(in, rank, dims)
-
+  SUBROUTINE FFT(in, rank, dims, inverse)
+    
     USE FFTW
     
     IMPLICIT NONE
@@ -1289,6 +1333,7 @@ CONTAINS
     COMPLEX(dp), INTENT(INOUT)          :: in(:)
     INTEGER, INTENT(IN)                 :: rank
     INTEGER, INTENT(IN)                 :: dims(:)
+    LOGICAL, INTENT(IN), OPTIONAL       :: inverse
     
     ! Execution status
     type(C_PTR)                         :: plan
@@ -1337,7 +1382,11 @@ CONTAINS
     in4d  = RESHAPE(in,(/ Nx, Ny, Nz, Nr /))
     dims_for_fftw = (/ Nr, Nz, Ny, Nx /)
     
-    plan = fftw_plan_dft(4,dims_for_fftw,in4d,out,FFTW_FORWARD,FFTW_ESTIMATE)
+    IF((PRESENT(inverse)).AND.(inverse.EQV..TRUE.)) THEN
+       plan = fftw_plan_dft(4,dims_for_fftw,in4d,out,FFTW_BACKWARD,FFTW_ESTIMATE)
+    ELSE
+       plan = fftw_plan_dft(4,dims_for_fftw,in4d,out,FFTW_FORWARD,FFTW_ESTIMATE)
+    ENDIF
     
     ! Execute it!!
     CALL fftw_execute_dft(plan, in4d, out)

@@ -1,24 +1,21 @@
-PROGRAM tsurff_test
+PROGRAM sampling_calculator
   
   USE popsicle
   
   REAL(dp)                   :: radius_boundary
-  INTEGER                    :: lmax, mmin, mmax
-  INTEGER                    :: lmax_total
-  INTEGER                    :: numkpts
+  INTEGER                    :: numwpts
   INTEGER                    :: numthetapts
   INTEGER                    :: numphipts 
-  REAL(dp)                   :: k_cutoff
   REAL(dp)                   :: coulomb_exp_energy
-  COMPLEX(dp), ALLOCATABLE   :: b(:, :, :)
-  CHARACTER(LEN=100)         :: filename_surf
+  REAL(dp), ALLOCATABLE      :: pes(:), pad(:, :, :)
+  REAL(dp)                   :: aftertime_fs
+  CHARACTER(LEN=100)         :: filename_sampling
+  CHARACTER(LEN=100)         :: filename_wavevstime
   CHARACTER(LEN=100)         :: filename_pes
-  CHARACTER(LEN=100)         :: filename_mes
   CHARACTER(LEN=100)         :: filename_polar
   CHARACTER(LEN=100)         :: filename_amplitude
   CHARACTER(LEN=1)           :: answer
   
-  LOGICAL                    :: desired_mes
   LOGICAL                    :: desired_polar
   LOGICAL                    :: desired_amplitude
   
@@ -26,14 +23,14 @@ PROGRAM tsurff_test
 
   WRITE(*,*)
   WRITE(*,*)
-  WRITE(*,*) '****************************'
-  WRITE(*,*) '     PES calculator app     '
-  WRITE(*,*) '****************************'
+  WRITE(*,*) '*******************************'
+  WRITE(*,*) '   Sampling calculator app     '
+  WRITE(*,*) '*******************************'
   WRITE(*,*)
   WRITE(*,*)
-  WRITE(*,*) ' Welcome to the PES calculator. This little program'
+  WRITE(*,*) ' Welcome to the sampling calculator. This little program'
   WRITE(*,*) ' will help to calculate photoelectron spectra from '
-  WRITE(*,*) ' a surface file (HDF5). '
+  WRITE(*,*) ' a surface file (HDF5), with the sampling point method.'
   WRITE(*,*)
   WRITE(*,*)
   WRITE(*,*) ' Initializing...'
@@ -42,22 +39,12 @@ PROGRAM tsurff_test
   
   WRITE(*, *) 'Path of the surface file:'
   WRITE(*, *) '-------------------------'
-  READ(*, '(1A80)') filename_surf
+  READ(*, '(1A80)') filename_sampling
   WRITE(*, *)
   
   WRITE(*, *) 'Boundary radius (a.u.):'
   WRITE(*, *) '-----------------------'
   READ(*, *) radius_boundary
-  WRITE(*, *)
-
-  WRITE(*, *) 'Cut-off frequency k:'
-  WRITE(*, *) '--------------------'
-  READ(*, *) k_cutoff
-  WRITE(*, *)
-
-  WRITE(*, *) 'Maximum angular momentum:'
-  WRITE(*, *) '-------------------------'
-  READ(*, *) lmax
   WRITE(*, *)
 
   WRITE(*, *) 'Do you want to add the Coulomb explosion energy? (y or n)'
@@ -76,29 +63,27 @@ PROGRAM tsurff_test
      
      
   ENDIF
+
+  WRITE(*, *) 'Do you want to plot the probabillity density vs time.'
+  WRITE(*, *) '-----------------------------------------------------'
+  READ(*, '(1A1)') answer
+  WRITE(*, *)
+  
+  IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
+     
+     WRITE(*, *) 'Name of the wave vs time file.  '
+     WRITE(*, *) '--------------------------------'
+     READ(*, *) filename_wavevstime
+     WRITE(*, *)
+     
+     
+  ENDIF
   
   WRITE(*, *) 'Name of the PES file:'
   WRITE(*, *) '---------------------'
   READ(*,'(1A80)') filename_pes
   WRITE(*, *)
   
-  WRITE(*, *) 'Do you want momentum electron? (y or n)'
-  WRITE(*, *) '---------------------------------------'
-  READ(*, '(1A1)') answer
-  WRITE(*, *)
-
-  desired_mes = .FALSE.
-
-  IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
-     
-     desired_mes = .TRUE.
-
-     WRITE(*, *) 'Name of the MES file:'
-     WRITE(*, *) '---------------------'
-     READ(*,'(1A80)') filename_mes
-     WRITE(*, *)
-  
-  ENDIF
 
   WRITE(*, *) 'Do you want the 3D spherical scattering amplitude? (y or n)'
   WRITE(*, *) '-----------------------------------------------------------'
@@ -136,37 +121,34 @@ PROGRAM tsurff_test
    
   ENDIF
   
-  
-  CALL initialize_tsurff(filename_surf, radius_boundary, lmax, &
-       k_cutoff, numkpts, numthetapts, numphipts, &
-       lmax_total, mmax, coulomb_exp_energy )
-  
-  mmin = - mmax
 
+  CALL initialize_sampling_points(filename_sampling, radius_boundary, &
+       numdetectorpts, numthetapts, numphipts, aftertime_fs, &
+       coulomb_exp_energy, maxwpts )
+  
+  
   ! Allocate momentum amplitude array
-  ALLOCATE(b(1:numkpts,1:numthetapts,1:numphipts))
+  ALLOCATE(pes(1:numwpts))
+  ALLOCATE(pad(1:numthetapts,1:numphipts,1:numwpts))
 
   ! The name is self-explanatory
-  CALL get_flux(filename_surf, lmax, mmax, b )
-
+  CALL calculate_sampling_pes(filename_sampling, pes, pad)
+  
   !-------------------!
   !    OUTPUT TIME!   !
   !-------------------!
 
-  CALL write_pes(b,filename_pes)
+  CALL write_sampling_pes(filename_pes,pes)
   
   IF(desired_polar) &
-       CALL write_polar_amplitude(b, filename_polar)
+       CALL write_sampling_polar(filename_polar, pad)
   
   IF(desired_amplitude) &
-       CALL write_amplitude(b, filename_amplitude)
+       CALL write_sampling_3Damplitude(filename_amplitude, pad)
   
-  IF(desired_mes) &
-       CALL write_mes(b,filename_mes)
- 
   ! Deallocate the amplitude
-  DEALLOCATE(b)
-
+  DEALLOCATE(pes,pad)
+  
   WRITE(*,*) 'Our spectra is ready!!!'
-
-END PROGRAM tsurff_test
+  
+END PROGRAM sampling_calculator
