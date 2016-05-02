@@ -32,9 +32,12 @@ MODULE POPSICLE
   USE io_subset
   USE io_surface
   USE surface
+  USE corrtools
+  USE corrsurface
+  USE io_corrsurface
   USE flux
   USE observables
-  USE io_sampt
+  USE samplingpt
 
   IMPLICIT NONE
 

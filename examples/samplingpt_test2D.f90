@@ -1,6 +1,6 @@
 !-----------------------------------------------------!
 !
-!  PROGRAM detector test
+!  PROGRAM Sampling point test 2D
 !  \brief This example test the detector method.
 !  \details This program runs and example for
 !  the detector method. In cylindrical coordinates,
@@ -16,30 +16,22 @@ PROGRAM samplingpt_test2D
   IMPLICIT NONE
   
   INTEGER                     :: numxpts, numzpts
-  INTEGER                     :: dims(2)
-  INTEGER                     :: rank
+  INTEGER                     :: dims(2), halfxpts
+  INTEGER                     :: rank, lmax
   REAL(dp)                    :: dx, dz, dt
   REAL(dp)                    :: dkx, dkz
   COMPLEX(dp), ALLOCATABLE    :: psi(:, :), psik(:, :)
-  COMPLEX(dp), ALLOCATABLE    :: halfpsi(:, :)
   REAL(dp), ALLOCATABLE       :: x_ax(:) , z_ax(:)
   REAL(dp), ALLOCATABLE       :: kx_ax(:) , kz_ax(:)
-  REAL(dp), ALLOCATABLE       :: detectorpts(:, :)
-  REAL(dp), ALLOCATABLE       :: time(:)
   INTEGER                     :: numdetectorpts
   REAL(dp)                    :: timept, numtimesteps
   INTEGER                     :: timesteps
+  INTEGER                     :: numthetapts, numphipts
   INTEGER                     :: no_detectors
   REAL(dp)                    :: rad_detector
   INTEGER                     :: numwpts
-  REAL(dp), ALLOCATABLE       :: points(:, :)
-  REAL(dp), ALLOCATABLE       :: fields(:, :, :)
-  COMPLEX(dp), ALLOCATABLE    :: data(:, :)
-  REAL(dp), ALLOCATABLE       :: w(:), pes(:)
-  REAL(dp), ALLOCATABLE       :: pad(:, :)
-  REAL(dp)                    :: rpt, dtheta
-  REAL(dp)                    :: xpt, zpt, thetapt
-  REAL(dp)                    :: sumatot, sumaion
+  REAL(dp), ALLOCATABLE       :: pes(:), pad(:, :, :)
+  REAL(dp)                    :: sumatot, sumaion, rpt
   
   ! Waveapcket parameters
   REAL(dp)                    :: px0, pz0,chi0, mu0
@@ -80,7 +72,7 @@ PROGRAM samplingpt_test2D
   dz        = 0.4_dp
   dkx       = twopi / ( numxpts * dx )
   dkz       = twopi / ( numzpts * dz )
-  !halxpts   = (numxpts - 1) * 0.5
+  halfxpts   = (numxpts - 1) * 0.5
   
   ! Allocate arrays
   ALLOCATE(x_ax(numxpts),z_ax(numzpts))
@@ -109,23 +101,13 @@ PROGRAM samplingpt_test2D
   WRITE(*,*) '------------------------------------'
   
   numdetectorpts = 100
-  ALLOCATE(detectorpts(numdetectorpts,rank))
-  
   rad_detector = 30.0_dp
-  dtheta = twopi / (numdetectorpts + 1)
+  lmax = numdetectorpts - 1
   
-  DO ipt = 1, numdetectorpts
-     thetapt = REAL(ipt-1,dp) * dtheta
-     xpt = rad_detector * SIN(thetapt)
-     zpt = rad_detector * COS(thetapt)
-     detectorpts(ipt,1) = xpt
-     detectorpts(ipt,2) = zpt
-  ENDDO
-  
-  CALL initialize_detector(numdetectorpts,detectorpts, &
-       x_ax,z_ax)
-  
-  CALL create_detector_file('./results/detector_data',rank)
+  CALL initialize_cylindrical_surface(x_ax(halfxpts:numxpts), &
+       z_ax(1:numzpts), dims, rad_detector, &
+       radius_tolerance=0.5_dp, fd_rule=2, dr=0.1_dp, &
+       lmax=lmax, write_to_file=.TRUE.,filename='./results/detector_data')
   
   ! Open file for ionised population
   wave_snapshot = .TRUE.
@@ -221,7 +203,7 @@ PROGRAM samplingpt_test2D
   wavelength0 = wavelength / aulength_nm
   wl = twopi * speed_light / wavelength0
   period0 = twopi / wl
-  e0 = SQRT(intensity / intensityau)
+  e0 = SQRT(intensity / intensity_au)
   a0 = e0 / wl
   durationpulse0  = nocycles * period0
   interactiontime  = ( nocycles + afterpulse ) * period0
@@ -268,10 +250,10 @@ PROGRAM samplingpt_test2D
                 EXP( - ZIMAGONE * omega)
         ENDDO
      ENDDO
-     
-     CALL write_detector_points('./results/detector_data', &
-          RESHAPE(psi,(/numxpts * numzpts/)),rank,dims,&
-          timept, efield, afield )
+
+     CALL get_cylindrical_surface('./results/detector_data', psi(halfxpts:numxpts,:), &
+          x_ax(halfxpts:numxpts), z_ax(1:numzpts),dims, 2, timept, efield, afield, &
+          lmax, .TRUE.)
      
      sumatot = 0.0_dp
      sumaion = 0.0_dp
@@ -307,7 +289,7 @@ PROGRAM samplingpt_test2D
            write(30,*) ABS(psi(ix,iz))**2
         ENDDO
      ENDDO
-     close(30)
+     CLOSE(30)
   ENDIF
   
   CLOSE(33)
@@ -318,8 +300,18 @@ PROGRAM samplingpt_test2D
   
   timesteps    = 0
   no_detectors = 0
-  CALL get_detector_params('./results/detector_data',no_detectors,timesteps,rank)
+  
+  CALL initialize_sampling_points('./results/detector_data', rad_detector, &
+       no_detectors, numthetapts, numphipts, timeafter_fs=0.0_dp, &
+       coulomb_exp=0.0_dp, maxwpts=numwpts )
 
+  timesteps = 2 * (numwpts - 1) + 1
+  IF(numphipts.EQ.1) THEN
+     rank = 2
+  ELSE
+     rank=3
+  ENDIF
+  
   WRITE(*,*)
   WRITE(*,*) 'Reading data back...'
   WRITE(*,*) '------------------------------------'
@@ -329,70 +321,31 @@ PROGRAM samplingpt_test2D
   WRITE(*,*) '------------------------------------'
 
   ! Allocate arrays for reading back
-  ALLOCATE(points(no_detectors,rank))
-  ALLOCATE(time(timesteps))
-  ALLOCATE(fields(timesteps,2,3))
-  ALLOCATE(data(no_detectors,timesteps))
-  
-  ! Read data from file
-  CALL read_detector('./results/detector_data',points,data,time,fields)
-  
+  ALLOCATE(pes(numwpts))
+  ALLOCATE(pad(numthetapts,numphipts,numwpts))
   
   !-----------------------------------------------------------!
   !---------- Now, from the data, compute the spectra --------!
   
-  numwpts = INT((timesteps-1) * 0.5) + 1
-  ALLOCATE(w(numwpts))
-  ALLOCATE(pes(numwpts))
-  ALLOCATE(pad(no_detectors,numwpts))
-
   WRITE(*,*)
   WRITE(*,*) 'Calculating pes and pad...'
   WRITE(*,*) '------------------------------------'
-    
-  CALL calculate_sampt_pes(data,points,time,pes,w,pad)
+  
+  CALL calculate_sampling_pes('./results/detector_data', pes, pad)
   
   ! Save pes and pad
   WRITE(*,*)
   WRITE(*,*) 'Writing results to file...'
   WRITE(*,*) '------------------------------------'
-    
-  OPEN(UNIT=20,FORM='formatted',FILE='./results/pes.dat')
-  OPEN(UNIT=22,FORM='formatted',FILE='./results/pad.dat')
-
-  OPEN(UNIT=24,FORM='formatted',FILE='theta_ax.dat')
-  OPEN(UNIT=26,FORM='formatted',FILE='energies.dat')
   
-  DO itime = 1, numwpts
-     WRITE(20,*) w(itime), pes(itime)
-     DO ipt = 1, no_detectors
-        WRITE(22,*) pad(ipt,itime)
-     ENDDO
-  ENDDO
-
-  DO itime = 1, numwpts
-     WRITE(24,*) w(itime)
-  ENDDO
-
-  DO ipt = 1, no_detectors
-     thetapt = REAL(ipt-1,dp) * dtheta
-     WRITE(26,*) thetapt 
-  ENDDO
-     
-  CLOSE(20)
-  CLOSE(22)
-  CLOSE(24)
-  CLOSE(26)
-
+  CALL write_sampling_pes('./results/pes',pes)
+  
+  CALL write_sampling_polar('./results/pad', pad,'pad')
+  
   ! Release memory
   DEALLOCATE(x_ax,z_ax)
   DEALLOCATE(psi)
-  DEALLOCATE(detectorpts)
-  
-  DEALLOCATE(points)
-  DEALLOCATE(time, fields,data)
-  
-  DEALLOCATE(w,pes,pad)
+  DEALLOCATE(pes,pad)
 
   WRITE(*,*)
   WRITE(*,*) '------------------------------------'  

@@ -59,8 +59,8 @@ PHDF5_LIBS    =   -L${PHDF5_ROOT}/lib/ \
                 ${PHDF5_ROOT}/lib/libhdf5hl_fortran.a \
                 ${PHDF5_ROOT}/lib/libhdf5_hl.a \
                 ${PHDF5_ROOT}/lib/libhdf5_fortran.a \
-                ${PHDF5_ROOT}/lib/libhdf5.a          
-PHDF5LIBS   +=   -L${SZIP_ROOT}/lib -lsz -lz -ldl -lm
+                ${PHDF5_ROOT}/lib/libhdf5.a
+PHDF5_LIBS   +=   -L${SZIP_ROOT}/lib -lsz -lz -ldl -lm
 PHDF5_INCL   = -I${PHDF5_ROOT}/include
 
 POPSICLE_ROOT = /Users/adelacalle/Documents/Codigo/POpSiCLE

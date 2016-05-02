@@ -61,8 +61,8 @@ endif
 POPSICLE_LIB_SER = ${POPSICLE_LIB}/libpopsicle_serial.a
 POPSICLE_LIB_PAR = ${POPSICLE_LIB}/libpopsicle_parallel.a
 
-sp_calculator: ${POPSICLE_LIB_SER}	
-	${FC} ${F90FLAGS} sp_calculator.f90 -o ../bin/sp_calculator.exec \
+sampling_calculator: ${POPSICLE_LIB_SER}	
+	${FC} ${F90FLAGS} sampling_calculator.f90 -o ../bin/sampling_calculator.exec \
 	-I${POPSICLE_INCL} ${HDF5_INCLUDE} ${FFT_INCLUDE} \
 	${POPSICLE_LIB}/libpopsicle_serial.a ${HDF5_LIB} \
 	${FFT_LIBS} ${OMPLIBS}
