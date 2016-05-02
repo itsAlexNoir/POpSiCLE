@@ -62,6 +62,15 @@ if(params.draw_total_cross):
     # diff_cross = cross.get_diff_cross(w,wki,probketheta,kax.ke_ax,params.pulse_duration,
     #                             params.A0)
 
+if(params.draw_sampling_pes):
+    params.samp_pes_filename+='.dat'
+    samp_pes = np.loadtxt(params.samp_pes_filename)
+if(params.draw_sampling_pad):
+    samp_pad, ntime = data.load_h5series(params.samp_pad_filename)
+if(params.draw_wavetime):
+    params.samp_wavetime_filename+='.dat'
+    samp_wavetime = np.loadtxt(params.samp_wavetime_filename)
+    
 ###############################
 ### Plotting!!!
 ###############################
@@ -106,6 +115,44 @@ if(params.draw_pes):
                      xticks,yticks,
                      'Energy (au)',r'$P(E)$',logplot,
                      params.makeframe,'probEe')
+
+if(params.draw_wavetime):
+    print('Plotting sampling photoelectron energy spectra...')
+    xticks = np.arange(0,3.0,0.4)
+    yticks = None
+    ylim = None #[0.0,max(probke)]
+    logplot = 0
+    graph.plotprob1d(samp_wavetime[:,1],samp_wavetime[:,0]*const.autime_fs,
+                     [0.0,2.8],ylim,
+                     xticks,yticks,
+                     'Time (au)',r'$P(x)$',logplot,
+                     params.makeframe,'prob_wavetime')
+
+        
+if(params.draw_sampling_pes):
+    print('Plotting sampling photoelectron energy spectra...')
+    xticks = np.arange(0,3.0,0.4)
+    yticks = None
+    ylim = None #[0.0,max(probke)]
+    logplot = 0
+    graph.plotprob1d(samp_pes[:,1],samp_pes[:,0],
+                     [0.0,2.8],ylim,
+                     xticks,yticks,
+                     'Energy (au)',r'$P(E)$',logplot,
+                     params.makeframe,'prob_SPES')
+
+if(params.draw_sampling_pad):
+    print('Plotting sampling pad...')
+    logplot = 1
+    clamp = [-10,-6]
+    xticks = np.arange(0,np.pi,0.4)
+    yticks = np.arange(0.0,5.0,0.3)
+    graph.oneframe_surf(samp_pad,ax.theta_ax,samp_pes[:,0],clamp,
+                        [min(ax.theta_ax),max(ax.theta_ax)],[0.0,3.0],
+                        xticks,yticks,
+                        r'$\theta$(rad)',r'Energy (a.u.)',
+                        r'$\log_{10}|\Psi(E_e,\theta)|^2$',
+                        logplot,params.makeframe,'prob_SPAD')
 
 # if(params.draw_Etotal):
 #     xlim = [0.0,2.0]

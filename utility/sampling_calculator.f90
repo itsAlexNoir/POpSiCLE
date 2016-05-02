@@ -15,7 +15,8 @@ PROGRAM sampling_calculator
   CHARACTER(LEN=100)         :: filename_polar
   CHARACTER(LEN=100)         :: filename_amplitude
   CHARACTER(LEN=1)           :: answer
-  
+
+  LOGICAL                    :: desired_wavevstime
   LOGICAL                    :: desired_polar
   LOGICAL                    :: desired_amplitude
   
@@ -47,6 +48,22 @@ PROGRAM sampling_calculator
   READ(*, *) radius_boundary
   WRITE(*, *)
 
+  WRITE(*, *) 'Do you want to add time at the end of the evolution? (y or n)'
+  WRITE(*, *) '---------------------------------------------------------'
+  READ(*, '(1A1)') answer
+  WRITE(*, *)
+  
+  aftertime_fs = 0.0_dp
+  
+  IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
+     
+     WRITE(*, *) 'Time added after the evolution (fs):'
+     WRITE(*, *) '--------------------------------'
+     READ(*, *) aftertime_fs
+     WRITE(*, *)
+     
+  ENDIF
+  
   WRITE(*, *) 'Do you want to add the Coulomb explosion energy? (y or n)'
   WRITE(*, *) '---------------------------------------------------------'
   READ(*, '(1A1)') answer
@@ -70,6 +87,8 @@ PROGRAM sampling_calculator
   WRITE(*, *)
   
   IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
+
+     desired_wavevstime = .TRUE.
      
      WRITE(*, *) 'Name of the wave vs time file.  '
      WRITE(*, *) '--------------------------------'
@@ -124,8 +143,8 @@ PROGRAM sampling_calculator
 
   CALL initialize_sampling_points(filename_sampling, radius_boundary, &
        numdetectorpts, numthetapts, numphipts, aftertime_fs, &
-       coulomb_exp_energy, maxwpts )
-  
+       coulomb_exp_energy, numwpts )
+
   
   ! Allocate momentum amplitude array
   ALLOCATE(pes(1:numwpts))
@@ -138,6 +157,9 @@ PROGRAM sampling_calculator
   !    OUTPUT TIME!   !
   !-------------------!
 
+  IF(desired_wavevstime) &
+       CALL get_wave_time_file(filename_wavevstime)
+  
   CALL write_sampling_pes(filename_pes,pes)
   
   IF(desired_polar) &

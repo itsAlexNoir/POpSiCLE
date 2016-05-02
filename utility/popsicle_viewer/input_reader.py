@@ -80,9 +80,16 @@ class parameters:
         # self.draw_Etotal = int(inparams['draw_Etotal'])
         self.draw_diff_cross = int(inparams['draw_diff_cross'])
         self.draw_total_cross = int(inparams['draw_total_cross'])
+        self.draw_sampling_pes = int(inparams['draw_sampling_pes'])
+        self.draw_sampling_pad = int(inparams['draw_sampling_pad'])
+        self.draw_wavetime = int(inparams['draw_wavetime'])
 
         self.makeframe = int(inparams['makeframe'])
         self.polar_filename = inparams['polar_filename']
         self.spherical_filename = inparams['spherical_filename']
         self.mes_filename = inparams['mes_filename']
         self.pes_filename = inparams['pes_filename']
+        self.samp_pes_filename = inparams['samp_pes_filename']
+        self.samp_pad_filename = inparams['samp_pad_filename']
+        self.samp_wavetime_filename = inparams['samp_wavetime_filename']
+ 
