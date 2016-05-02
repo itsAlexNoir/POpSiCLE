@@ -208,7 +208,7 @@ CONTAINS
     ALLOCATE(before(ntimetotal))
     ALLOCATE(after(ntimetotal))
     ALLOCATE(modsq(ntimetotal))
-    
+
     DO iphi = 1, numphipts
        DO itheta = 1, numthetapts
 
@@ -339,7 +339,6 @@ CONTAINS
        CALL write_wave(RESHAPE(prob2D,(/numthetapts*numwpts/)),2,&
             (/numthetapts,numwpts/),filename,groupname,groupname)
     ELSE
-       write(*,*) 'yeah!'
        CALL write_wave(RESHAPE(prob2D,(/numthetapts*numwpts/)),2,&
             (/numthetapts,numwpts/),filename)
     ENDIF

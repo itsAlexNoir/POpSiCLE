@@ -108,7 +108,7 @@ clean_include:
 
 clean_app:
 	@echo 'Deleting app...' 
-	rm -rf *.exec
+	rm -rf *.exec *.o
 
 ###############################
 ## Rules for makefile
