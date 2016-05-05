@@ -71,7 +71,7 @@ class parameters:
         self.Ee_ejec_au = float(inparams['Ee_ejec_eV']) / const.energy_au_ev # in au
         self.ke_ejec = np.sqrt(2.0 * self.muelec * self.Ee_ejec_au)
         self.Eg = float(inparams['Eg'])
-        self.Ip = self.Eg + 0.5
+        self.Ip = self.Eg - 0.5
 
         self.draw_spherical_amplitude = int(inparams['draw_spherical_amplitude'])
         self.draw_polar_amplitude = int(inparams['draw_polar_amplitude'])

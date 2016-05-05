@@ -60,7 +60,7 @@ def plotprob1d(func,axes,xlim=None,ylim=None,
 
 ################################################################
 
-def oneframe_surf(matrix,ax1,ax2,clamp,xlim=None,ylim=None,xticks=None,yticks=None,
+def oneframe_surf(matrix,ax1,ax2,clamp,rotated=False,xlim=None,ylim=None,xticks=None,yticks=None,
         xlabel=None,ylabel=None,barlabel=None,logplot=0,makeframe=0,filename='none'):
 
     AX1, AX2 = np.meshgrid(ax1,ax2)
@@ -72,7 +72,11 @@ def oneframe_surf(matrix,ax1,ax2,clamp,xlim=None,ylim=None,xticks=None,yticks=No
     gs = gridspec.GridSpec(1,1)
 
     ax1 = plt.subplot(gs[0,0])
-    surf1 = ax1.pcolormesh(AX1,AX2,matrix,vmax=clamp[1],vmin=clamp[0],
+    if(rotated):
+        surf1 = ax1.pcolormesh(AX2,AX1,matrix,vmax=clamp[1],vmin=clamp[0],
+                           shading='gouraud',rasterized='True')
+    else:    
+        surf1 = ax1.pcolormesh(AX1,AX2,matrix,vmax=clamp[1],vmin=clamp[0],
                            shading='gouraud',rasterized='True')
     cb1 = fig.colorbar(surf1,ax=ax1,use_gridspec=True)
     cb1.set_ticks(np.arange(clamp[1],clamp[0]-1,-1))

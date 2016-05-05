@@ -80,13 +80,13 @@ print('Plotting selected frames...')
 if(params.draw_polar_amplitude):
     print('Plotting polar amplitude...')
     logplot = 1
-    clamp = [-5,-3]
+    clamp = [-7,-4]
     xticks = None #np.arange(0,25,0.2)
     yticks = None #np.arange(-15.,16.,0.2)
-    graph.oneframe_surf(polar_prob,ax.ke_ax,ax.theta_ax,clamp,
-                        [ax.dke,2.8],[min(ax.theta_ax),max(ax.theta_ax)],
+    graph.oneframe_surf(polar_prob,ax.ke_ax,ax.theta_ax,clamp,True,
+                        [min(ax.theta_ax),max(ax.theta_ax)],[ax.dke,2.8],
                         xticks,yticks,
-                        r'$k_e$(a.u.)',r'$\theta$(rad)',
+                        r'$\theta$(rad)',r'$k_e$(a.u.)',
                         r'$\log_{10}|\Psi(k_e,\theta)|^2$',
                         logplot,params.makeframe,'polar_prob')
 
