@@ -204,7 +204,7 @@ CONTAINS
     CALL get_mes(bk, bk_pes)
 
     DO ik = 1, numkpts
-      bk_pes(ik) = bk_pes(ik) / k_ax(ik)
+      bk_pes(ik) = bk_pes(ik) * k_ax(ik)
     ENDDO
 
   END SUBROUTINE get_pes
