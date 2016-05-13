@@ -8,6 +8,7 @@ PROGRAM tsurff_test
   INTEGER                    :: numkpts
   INTEGER                    :: numthetapts
   INTEGER                    :: numphipts 
+  REAL(dp)                   :: dk
   REAL(dp)                   :: k_cutoff
   REAL(dp)                   :: coulomb_exp_energy
   REAL(dp)                   :: aftertime_fs
@@ -49,6 +50,11 @@ PROGRAM tsurff_test
   WRITE(*, *) 'Boundary radius (a.u.):'
   WRITE(*, *) '-----------------------'
   READ(*, *) radius_boundary
+  WRITE(*, *)
+  
+  WRITE(*, *) 'Momentum grid spacing (dk):'
+  WRITE(*, *) '---------------------------'
+  READ(*, *) dk
   WRITE(*, *)
 
   WRITE(*, *) 'Cut-off frequency k:'
@@ -156,7 +162,7 @@ PROGRAM tsurff_test
   
   
   CALL initialize_tsurff(filename_surf, radius_boundary, lmax, &
-       k_cutoff, numkpts, numthetapts, numphipts, &
+       dk, k_cutoff, numkpts, numthetapts, numphipts, &
        lmax_total, mmax, aftertime_fs, coulomb_exp_energy )
   
   mmin = - mmax

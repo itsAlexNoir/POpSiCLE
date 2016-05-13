@@ -65,7 +65,7 @@ MODULE flux
 CONTAINS
   
   SUBROUTINE initialize_tsurff(filename, radb, lmax_desired, &
-       kmax_input, maxkpts, maxthetapts, maxphipts, &
+       ddk, kmax_input, maxkpts, maxthetapts, maxphipts, &
        lmax_total, mmax, timeafter_fs, coulomb_exp )
     
     IMPLICIT NONE
@@ -73,6 +73,7 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN)     :: filename
     INTEGER, INTENT(IN)              :: lmax_desired
     REAL(dp), INTENT(IN)             :: radb
+    REAL(dp), INTENT(IN)             :: ddk
     REAL(dp), INTENT(IN)             :: kmax_input
     INTEGER, INTENT(OUT)             :: maxkpts
     INTEGER, INTENT(OUT)             :: maxthetapts
@@ -107,7 +108,7 @@ CONTAINS
     
     ! Create momentum axis
     kmax_th = twopi / dt
-    dk = twopi / ntimetotal / dt
+    dk = ddk
     
     ! This factor shift the energy if we
     ! are dealing with fixed nuclei molecules
