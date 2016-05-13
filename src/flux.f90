@@ -458,7 +458,7 @@ CONTAINS
                    sph_harm = ZERO
                    
                    term1 = 0.5_dp * (-ZIMAGONE)**il * &
-                        (krb_ax(ik) * jlp(il,ik) - jl(il,ik)) * &
+                        (krb_ax(ik) * jlp(il,ik) + jl(il,ik)) * &
                         func_lm(im,il)
                    
                    term2 =  - 0.5_dp * (-ZIMAGONE)**il * &
