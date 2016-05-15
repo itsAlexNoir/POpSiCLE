@@ -48,11 +48,13 @@ MODULE samplingpt
   INTEGER                       :: ntime, ntimeafter, ntimetotal
   REAL(dp), ALLOCATABLE         :: time(:), efield(:, :), afield(:, :)
   COMPLEX(dp), ALLOCATABLE      :: psi_sph(:, :, :), psip_sph(:, :)
+  COMPLEX(dp), ALLOCATABLE      :: psi_sph_v(:, :)
   REAL(dp)                      :: rb
   INTEGER                       :: numpts, numrpts, numwpts
   INTEGER                       :: numthetapts, numphipts
   INTEGER                       :: numtotalsamplingpts
   LOGICAL                       :: aftercycles
+  LOGICAL                       :: gauge_trans_desired
   
 CONTAINS
  
@@ -62,7 +64,7 @@ CONTAINS
   !**************************************************************************!
 
   SUBROUTINE initialize_sampling_points(filename, radb, maxtotalsamplingpts, &
-       maxthetapts, maxphipts, timeafter_fs, coulomb_exp, maxwpts )
+       maxthetapts, maxphipts, timeafter_fs, gauge_trans_on, coulomb_exp, maxwpts )
     
     IMPLICIT NONE
     
@@ -73,6 +75,7 @@ CONTAINS
     INTEGER, INTENT(OUT)             :: maxphipts
     REAL(dp), INTENT(IN), OPTIONAL   :: coulomb_exp
     REAL(dp), INTENT(IN), OPTIONAL   :: timeafter_fs
+    LOGICAL, INTENT(IN), OPTIONAL    :: gauge_trans_on
     INTEGER, INTENT(OUT), OPTIONAL   :: maxwpts
     
     INTEGER                          :: lmax
@@ -106,6 +109,14 @@ CONTAINS
     IF(PRESENT(coulomb_exp)) &
          coulomb_exp_ener = coulomb_exp
 
+    ! If this option is on, we will transform
+    ! from length to velocity gauge the wavefunction
+    IF(gauge_trans_on) THEN
+       gauge_trans_desired = .TRUE.
+    ELSE
+       gauge_trans_desired = .FALSE.
+    ENDIF
+    
     ! Maximum energy
     dw = twopi / (ntimetotal * dt)
     numwpts = INT((ntimetotal-1)*0.5+1)
@@ -147,6 +158,11 @@ CONTAINS
     ! Allocate wavefunction arrays and rest of stuff
     ALLOCATE(psi_sph(1:numthetapts,1:numphipts,1:ntime))
     ALLOCATE(psip_sph(1:numthetapts,1:numphipts))
+
+    IF(gauge_trans_desired) THEN
+       ALLOCATE(psi_sph_v(1:numthetapts,1:numphipts))
+    ENDIF
+    
     ALLOCATE(time(1:ntime))
     ALLOCATE(efield(1:3,1:ntime),afield(1:3,1:ntime))
     
@@ -182,10 +198,10 @@ CONTAINS
     INTEGER                          :: iw, itime
     
     !------------------------------------------------------!
-
+    
     pes = 0.0_dp
     pad = 0.0_dp
-
+    
     ! Read quantities from file
     DO itime = 1, ntime
        
@@ -194,27 +210,28 @@ CONTAINS
             psi_sph(:,:,itime), psip_sph, &
             time(itime), efield(:,itime), afield(:,itime) )
        
+       IF(gauge_trans_desired) THEN
+          CALL gauge_transform_l2v(psi_sph(:,:,itime), psi_sph_v, afield(:,itime))
+          psi_sph(:,:,itime)  = psi_sph_v
+       ENDIF
+       
     ENDDO
-
-    ! If we want to pad with zero the end of the array.
-    IF(aftercycles) THEN
-       DO itime = ntime + 1, ntimetotal
-          psi_sph(:,:,itime) = ZERO
-       ENDDO
-    ENDIF
-
+    
     !-----------------------------!
     
     ALLOCATE(before(ntimetotal))
     ALLOCATE(after(ntimetotal))
     ALLOCATE(modsq(ntimetotal))
-
+    before = ZERO
+    
     DO iphi = 1, numphipts
        DO itheta = 1, numthetapts
-
-          before = psi_sph(itheta,iphi,:) * &
-               EXP(ZIMAGONE * coulomb_exp_ener * time)
-
+          
+          DO itime = 1, ntime
+             before(itime) = psi_sph(itheta,iphi,itime) * &
+                  EXP(ZIMAGONE * coulomb_exp_ener * time(itime))
+          ENDDO
+             
           CALL FourierTransform(before,after,1,&
                (/ntimetotal/),inverse=.TRUE.)
           
@@ -231,6 +248,7 @@ CONTAINS
                   SQRT(w(iw)) * modsq(iw)
 
           ENDDO
+          
        ENDDO
     ENDDO
 
@@ -260,13 +278,13 @@ CONTAINS
     
     !----------------------------------------------!
 
-    ALLOCATE(wavevstime(1:ntimetotal))
+    ALLOCATE(wavevstime(1:ntime))
     wavevstime = REAL( CONJG(psi_sph(1,1,:)) * psi_sph(1,1,:),dp)
     
     name = TRIM(filename) // '.dat'
     OPEN(UNIT=33,FORM='formatted',FILE=name)
     
-    DO itime = 1, ntimetotal
+    DO itime = 1, ntime
        WRITE(33,*) time(itime), wavevstime(itime)
     ENDDO
     
@@ -371,5 +389,37 @@ CONTAINS
   END SUBROUTINE write_sampling_3Damplitude
 
   !**************************************************************************!
-
+  
+  SUBROUTINE gauge_transform_l2v(psi_length,psi_vel,afield)
+    
+    IMPLICIT NONE
+    
+    COMPLEX(dp), INTENT(IN)   :: psi_length(:, :)
+    COMPLEX(dp), INTENT(OUT)  :: psi_vel(:, :)
+    REAL(dp), INTENT(IN)      :: afield(:)
+    
+    INTEGER                   :: dims(2)
+    INTEGER                   :: itheta, iphi
+    
+    !--------------------------------------!
+    
+    dims = shape(psi_length)
+    numthetapts = dims(1)
+    numphipts   = dims(2)
+    
+    DO iphi = 1, numphipts
+       DO itheta = 1, numthetapts
+          psi_vel(itheta,iphi) = psi_length(itheta,iphi) * &
+               EXP(- ZIMAGONE * ( &
+               afield(1) * rb * SIN(theta_ax(itheta)) * COS(phi_ax(iphi)) + &
+               afield(2) * rb * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi)) + &
+               afield(3) * rb * costheta_ax(itheta) ))
+       ENDDO
+    ENDDO
+    
+  END SUBROUTINE gauge_transform_l2v
+  
+  !***********************************************************!
+  !***********************************************************!
+  
 END MODULE samplingpt

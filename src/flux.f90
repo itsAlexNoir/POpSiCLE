@@ -33,13 +33,12 @@ MODULE flux
   PUBLIC        :: calculate_time_integrand
 
   !-------------------------------------------------------------!
-
+  
   ! Public variables
   REAL(dp), PUBLIC, ALLOCATABLE :: k_ax(:)
   REAL(dp), PUBLIC, ALLOCATABLE :: theta_ax(:), costheta_ax(:)
   REAL(dp), PUBLIC, ALLOCATABLE :: phi_ax(:)
   REAL(dp), PUBLIC, ALLOCATABLE :: gauss_th_weights(:)
-  
 
   ! Private variables
   INTEGER                       :: numkpts
@@ -48,6 +47,7 @@ MODULE flux
   INTEGER                       :: ntime, ntimeafter, ntimetotal
   INTEGER                       :: maxfactlog
   COMPLEX(dp), ALLOCATABLE      :: psi_sph(:, :), psip_sph(:, :)
+  COMPLEX(dp), ALLOCATABLE      :: psi_sph_v(:, :), psip_sph_v(:, :)
   COMPLEX(dp), ALLOCATABLE      :: psi_lm(:, :), psip_lm(:, :)
   REAL(dp)                      :: rb
   REAL(dp), ALLOCATABLE         :: jl(:, :), jlp(:, :)
@@ -58,6 +58,7 @@ MODULE flux
   INTEGER                       :: numpts, numrpts
   INTEGER                       :: numthetapts, numphipts
   LOGICAL                       :: aftercycles
+  LOGICAL                       :: gauge_trans_desired
   
   !-------------------------------------------------------------!
   !-------------------------------------------------------------!
@@ -66,7 +67,7 @@ CONTAINS
   
   SUBROUTINE initialize_tsurff(filename, radb, lmax_desired, &
        ddk, kmax_input, maxkpts, maxthetapts, maxphipts, &
-       lmax_total, mmax, timeafter_fs, coulomb_exp )
+       lmax_total, mmax, timeafter_fs, gauge_trans_on, coulomb_exp )
     
     IMPLICIT NONE
     
@@ -82,6 +83,7 @@ CONTAINS
     INTEGER, INTENT(OUT)             :: mmax
     REAL(dp), INTENT(IN), OPTIONAL   :: coulomb_exp
     REAL(dp), INTENT(IN), OPTIONAL   :: timeafter_fs
+    LOGICAL, INTENT(IN), OPTIONAL    :: gauge_trans_on
     
     INTEGER                          :: lmax, mmin
     INTEGER                          :: iphi, ik, il
@@ -115,6 +117,14 @@ CONTAINS
     coulomb_exp_ener = 0.0_dp
     IF(PRESENT(coulomb_exp)) &
          coulomb_exp_ener = coulomb_exp
+
+    ! If this option is on, we will transform
+    ! from length to velocity gauge the wavefunction
+    IF(gauge_trans_on) THEN
+       gauge_trans_desired = .TRUE.
+    ELSE
+       gauge_trans_desired = .FALSE.
+    ENDIF
     
     kmax = kmax_input
     if(kmax.GT.kmax_th) THEN
@@ -171,6 +181,12 @@ CONTAINS
     ! Allocate wavefunction arrays
     ALLOCATE(psi_sph(1:numthetapts,1:numphipts))
     ALLOCATE(psip_sph(1:numthetapts,1:numphipts))
+    
+    IF(gauge_trans_desired) THEN
+       ALLOCATE(psi_sph_v(1:numthetapts,1:numphipts))
+       ALLOCATE(psip_sph_v(1:numthetapts,1:numphipts))
+    ENDIF
+
     ALLOCATE(psi_lm(mmin:mmax,0:lmax))
     ALLOCATE(psip_lm(mmin:mmax,0:lmax))
     
@@ -313,6 +329,13 @@ CONTAINS
        ! Read wavefunction at Rb from file
        CALL read_surface(filename, itime - 1, numthetapts, numphipts, &
             psi_sph, psip_sph, time(itime), efield(:,itime), afield(:,itime) )
+
+       IF(gauge_trans_desired) THEN
+          CALL gauge_transform_l2v(psi_sph, psi_sph_v, afield(:,itime))
+          CALL gauge_transform_l2v(psip_sph, psip_sph_v, afield(:,itime))
+          psi_sph  = psi_sph_v
+          psip_sph = psip_sph_v 
+       ENDIF
        
        ! Decompose into spherical harmonics:
        ! The wavefunction
@@ -512,7 +535,41 @@ CONTAINS
     
     
   END SUBROUTINE calculate_time_integrand
+
+  !***********************************************************!
   
+  SUBROUTINE gauge_transform_l2v(psi_length,psi_vel,afield)
+    
+    IMPLICIT NONE
+    
+    COMPLEX(dp), INTENT(IN)   :: psi_length(:, :)
+    COMPLEX(dp), INTENT(OUT)  :: psi_vel(:, :)
+    REAL(dp), INTENT(IN)      :: afield(:)
+    
+    INTEGER                   :: dims(2)
+    INTEGER                   :: numthetapts
+    INTEGER                   :: numphipts
+    INTEGER                   :: itheta, iphi
+    
+    !--------------------------------------!
+    
+    dims = shape(psi_length)
+    numthetapts = dims(1)
+    numphipts   = dims(2)
+    
+    DO iphi = 1, numphipts
+       DO itheta = 1, numthetapts
+          psi_vel(itheta,iphi) = psi_length(itheta,iphi) * &
+               EXP(- ZIMAGONE * ( &
+               afield(1) * rb * SIN(theta_ax(itheta)) * COS(phi_ax(iphi)) + &
+               afield(2) * rb * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi)) + &
+               afield(3) * rb * costheta_ax(itheta) ))
+       ENDDO
+    ENDDO
+    
+  END SUBROUTINE gauge_transform_l2v
+  
+  !***********************************************************!
   !***********************************************************!
   
 END MODULE flux
