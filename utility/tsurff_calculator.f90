@@ -19,7 +19,8 @@ PROGRAM tsurff_test
   CHARACTER(LEN=100)         :: filename_polar
   CHARACTER(LEN=100)         :: filename_amplitude
   CHARACTER(LEN=1)           :: answer
-  
+
+  LOGICAL                    :: desired_gauge_trans
   LOGICAL                    :: desired_mes
   LOGICAL                    :: desired_polar
   LOGICAL                    :: desired_amplitude
@@ -100,6 +101,20 @@ PROGRAM tsurff_test
      
      
   ENDIF
+
+  WRITE(*, *) 'Do you want to gauge transform from length to velocity (y or n)'
+  WRITE(*, *) '---------------------------------------------------------------'
+  READ(*, '(1A1)') answer
+  WRITE(*, *)
+  
+  desired_gauge_trans = .FALSE.
+  
+  IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
+     
+     desired_gauge_trans = .TRUE.
+     
+  ENDIF
+  
   
   WRITE(*, *) 'Name of the PES file:'
   WRITE(*, *) '---------------------'
@@ -152,7 +167,7 @@ PROGRAM tsurff_test
   IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
      
      desired_polar = .TRUE.
-
+     
      WRITE(*, *) 'Name of the polar amplitude file:'
      WRITE(*, *) '---------------------------------'
      READ(*,'(1A80)') filename_polar
@@ -163,13 +178,13 @@ PROGRAM tsurff_test
   
   CALL initialize_tsurff(filename_surf, radius_boundary, lmax, &
        dk, k_cutoff, numkpts, numthetapts, numphipts, &
-       lmax_total, mmax, aftertime_fs, coulomb_exp_energy )
+       lmax_total, mmax, aftertime_fs, desired_gauge_trans, coulomb_exp_energy )
   
   mmin = - mmax
   
   ! Allocate momentum amplitude array
   ALLOCATE(b(1:numkpts,1:numthetapts,1:numphipts))
-
+  
   ! The name is self-explanatory
   CALL get_flux(filename_surf, lmax, mmax, b )
 

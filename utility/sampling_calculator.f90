@@ -16,6 +16,7 @@ PROGRAM sampling_calculator
   CHARACTER(LEN=100)         :: filename_amplitude
   CHARACTER(LEN=1)           :: answer
 
+  LOGICAL                    :: desired_gauge_trans
   LOGICAL                    :: desired_wavevstime
   LOGICAL                    :: desired_polar
   LOGICAL                    :: desired_amplitude
@@ -78,9 +79,22 @@ PROGRAM sampling_calculator
      READ(*, *) coulomb_exp_energy
      WRITE(*, *)
      
+  ENDIF
+  
+  WRITE(*, *) 'Do you want to gauge transform from length to velocity (y or n)'
+  WRITE(*, *) '---------------------------------------------------------------'
+  READ(*, '(1A1)') answer
+  WRITE(*, *)
+  
+  desired_gauge_trans = .FALSE.
+  
+  IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
+     
+     desired_gauge_trans = .TRUE.
      
   ENDIF
-
+  
+  
   WRITE(*, *) 'Do you want to plot the probabillity density vs time.'
   WRITE(*, *) '-----------------------------------------------------'
   READ(*, '(1A1)') answer
@@ -143,8 +157,8 @@ PROGRAM sampling_calculator
 
   CALL initialize_sampling_points(filename_sampling, radius_boundary, &
        numdetectorpts, numthetapts, numphipts, aftertime_fs, &
-       coulomb_exp_energy, numwpts )
-
+       desired_gauge_trans, coulomb_exp_energy, numwpts )
+  
   
   ! Allocate momentum amplitude array
   ALLOCATE(pes(1:numwpts))
