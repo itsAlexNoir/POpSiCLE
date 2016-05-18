@@ -16,6 +16,7 @@ MODULE POPSICLE
   USE gaussleg
   USE scatt_interp
   USE cubic_interp
+  USE spline_interp
   USE scattcoords
   USE cubcoords
   USE coords

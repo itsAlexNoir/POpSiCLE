@@ -18,6 +18,8 @@ MODULE flux
   USE constants
   USE gaussleg
   USE bessel
+  USE spline_interp
+  USE tools
   USE sht
   USE io_surface
   USE omp_lib
@@ -39,17 +41,19 @@ MODULE flux
   REAL(dp), PUBLIC, ALLOCATABLE :: theta_ax(:), costheta_ax(:)
   REAL(dp), PUBLIC, ALLOCATABLE :: phi_ax(:)
   REAL(dp), PUBLIC, ALLOCATABLE :: gauss_th_weights(:)
-
+  REAL(dp), PUBLIC, ALLOCATABLE :: gauss_time(:)
+  REAL(dp), PUBLIC, ALLOCATABLE :: gauss_time_weights(:)
+  
   ! Private variables
   INTEGER                       :: numkpts
   REAL(dp)                      :: dt, dk, kmax, kmax_th
   REAL(dp)                      :: coulomb_exp_ener
-  INTEGER                       :: ntime, ntimeafter, ntimetotal
+  INTEGER                       :: ntime, ntime_gauss
   INTEGER                       :: maxfactlog
   COMPLEX(dp), ALLOCATABLE      :: psi_sph(:, :), psip_sph(:, :)
   COMPLEX(dp), ALLOCATABLE      :: psi_sph_v(:, :), psip_sph_v(:, :)
   COMPLEX(dp), ALLOCATABLE      :: psi_lm(:, :), psip_lm(:, :)
-  REAL(dp)                      :: rb
+  REAL(dp)                      :: rb, total_time
   REAL(dp), ALLOCATABLE         :: jl(:, :), jlp(:, :)
   REAL(dp), ALLOCATABLE         :: jy(:), jyp(:)
   REAL(dp), ALLOCATABLE         :: krb_ax(:)
@@ -57,7 +61,6 @@ MODULE flux
   INTEGER                       :: lmax_total
   INTEGER                       :: numpts, numrpts
   INTEGER                       :: numthetapts, numphipts
-  LOGICAL                       :: aftercycles
   LOGICAL                       :: gauge_trans_desired
   
   !-------------------------------------------------------------!
@@ -66,8 +69,8 @@ MODULE flux
 CONTAINS
   
   SUBROUTINE initialize_tsurff(filename, radb, lmax_desired, &
-       ddk, kmax_input, maxkpts, maxthetapts, maxphipts, &
-       lmax_total, mmax, timeafter_fs, gauge_trans_on, coulomb_exp )
+       ddk, kmax_input, numgausstime, maxkpts, maxthetapts, maxphipts, &
+       lmax_total, mmax, gauge_trans_on, coulomb_exp )
     
     IMPLICIT NONE
     
@@ -76,13 +79,13 @@ CONTAINS
     REAL(dp), INTENT(IN)             :: radb
     REAL(dp), INTENT(IN)             :: ddk
     REAL(dp), INTENT(IN)             :: kmax_input
+    INTEGER, INTENT(IN)              :: numgausstime
     INTEGER, INTENT(OUT)             :: maxkpts
     INTEGER, INTENT(OUT)             :: maxthetapts
     INTEGER, INTENT(OUT)             :: maxphipts
     INTEGER, INTENT(OUT)             :: lmax_total
     INTEGER, INTENT(OUT)             :: mmax
     REAL(dp), INTENT(IN), OPTIONAL   :: coulomb_exp
-    REAL(dp), INTENT(IN), OPTIONAL   :: timeafter_fs
     LOGICAL, INTENT(IN), OPTIONAL    :: gauge_trans_on
     
     INTEGER                          :: lmax, mmin
@@ -97,20 +100,12 @@ CONTAINS
     maxthetapts = numthetapts
     maxphipts = numphipts
 
-    ! If we want to padd with zeros at the end
-    ! of the time evolution
-    ntimeafter = 0.0_dp
-    aftercycles = .FALSE.
-    IF(PRESENT(timeafter_fs)) THEN
-       aftercycles = .TRUE.
-       ntimeafter = INT(timeafter_fs / autime_fs / dt)
-    ENDIF
-    ! Total time for the calculation
-    ntimetotal = ntime + ntimeafter
-    
     ! Create momentum axis
     kmax_th = twopi / dt
     dk = ddk
+
+    ! Set how many points will be in the time quadrature
+    ntime_gauss = numgausstime
     
     ! This factor shift the energy if we
     ! are dealing with fixed nuclei molecules
@@ -137,12 +132,9 @@ CONTAINS
     WRITE(*,'(A,F9.6)')  'dk:                               ',dk
     WRITE(*,'(A,F0.6)')  'Time in the file (a.u.):          ', ntime * dt
     WRITE(*,'(A,F0.6)')  'Time in the file (fs):            ', ntime * dt * autime_fs
-    IF(aftercycles) THEN     
-       WRITE(*,'(A,F0.6)')  'Time added after the pulse (a.u.): ', ntimeafter * dt
-       WRITE(*,'(A,F0.6)')  'Time added after the pulse (fs):   ', timeafter_fs
-    ENDIF
-    WRITE(*,'(A,F0.6)')  'Total time (a.u.):                 ', ntimetotal * dt
-    WRITE(*,'(A,F0.6)')  'Total time (fs):                   ', ntimetotal * dt * autime_fs
+    WRITE(*,'(A,I4.4)')  'Points in time quadrature:        ', ntime_gauss
+    !WRITE(*,'(A,F0.6)')  'Total time (a.u.):                 ', ntimetotal * dt
+    !WRITE(*,'(A,F0.6)')  'Total time (fs):                   ', ntimetotal * dt * autime_fs
     
     IF(PRESENT(coulomb_exp)) &
          WRITE(*,'(A,F9.6)')  'Coulomb explosion energy (a.u.): ', coulomb_exp_ener
@@ -226,30 +218,56 @@ CONTAINS
        CALL sphbessjy(il,krb_ax,jl(il,:),jy,jlp(il,:),jyp)
     ENDDO
     
-
+    ! Create time axis for time integration
+    ALLOCATE(gauss_time(1:ntime_gauss))
+    ALLOCATE(gauss_time_weights(1:ntime_gauss))
+    total_time = ntime * dt
+    CALL get_gauss_stuff(0.0_dp,total_time,gauss_time,gauss_time_weights)
+   
+    
   END SUBROUTINE initialize_tsurff
 
   !**************************************!
   
-  SUBROUTINE get_volkov_phase(phase, afield, deltat, &
+  SUBROUTINE get_volkov_phase(afield,time,maxtime,phase, &
        coulomb_exp_ener)
     
     IMPLICIT NONE
 
-    COMPLEX(dp), INTENT(INOUT)     :: phase(:, :, :)
-    REAL(dp), INTENT(IN)           :: afield(:)
-    REAL(dp), INTENT(IN)           :: deltat
+    REAL(dp), INTENT(IN)           :: afield(:, :)
+    REAL(dp), INTENT(IN)           :: time(:)
+    REAL(dp), INTENT(IN)           :: maxtime
+    COMPLEX(dp), INTENT(OUT)       :: phase(:, :, :)
     REAL(dp), INTENT(IN), OPTIONAL :: coulomb_exp_ener
     
-    REAL(dp), ALLOCATABLE          :: newterm(:, :, :)
+    REAL(dp), ALLOCATABLE          :: time_ax(:)
+    REAL(dp), ALLOCATABLE          :: weights(:)
+    REAL(dp), ALLOCATABLE          :: newafield(:, :)
+    REAL(dp), ALLOCATABLE          :: af2(:)
     REAL(dp)                       :: term1, term2
     REAL(dp)                       :: term3, term4
-    REAL(dp)                       :: cou_ener
+    REAL(dp)                       :: cou_ener, newterm
+    REAL(dp)                       :: fdcoeffs(-2:2,2)
+    REAL(dp)                       :: afield_deriv
+    INTEGER                        :: nt, left
+    INTEGER                        :: lower, upper
+    INTEGER                        :: fdrule, rulepts
     INTEGER                        :: ik, itheta, iphi
+    INTEGER                        :: itime, i
 
     !-------------------------------------------------!
 
-    ALLOCATE(newterm(1:numkpts, 1:numthetapts, 1:numphipts))
+    nt      = SIZE(time)
+    fdrule  = 2
+    rulepts = 2 * fdrule
+    
+    ALLOCATE(time_ax(1:ntime_gauss))
+    ALLOCATE(weights(1:ntime_gauss))
+    ALLOCATE(af2(1:nt))
+    ALLOCATE(newafield(3,ntime_gauss))
+    
+    newafield = 0.0_dp
+    phase = ZERO
     
     IF(PRESENT(coulomb_exp_ener)) THEN
        cou_ener = coulomb_exp_ener
@@ -257,30 +275,71 @@ CONTAINS
        cou_ener = 0.0_dp
     ENDIF
     
-    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
-    !$OMP& PRIVATE(term1,term2,term3,term4)
+    ! Create axis for integration
+    CALL get_gauss_stuff(0.0_dp,maxtime,time_ax,weights)
+    
+    ! Get index of the last time value
+    left = MAXLOC(time,DIM=1,MASK=(time.LE.maxtime))
+    
+    IF(left-fdrule.LT.LBOUND(time,DIM=1)) THEN
+       lower = left
+       upper = left + rulepts
+    ELSEIF(left+fdrule+1.GT.UBOUND(time,DIM=1)) THEN
+       lower = left - rulepts
+       upper = left
+    ELSE
+       lower = left - fdrule
+       upper = left + fdrule
+    ENDIF
+    ! Calculate fd weights for differentiation in z case             
+    CALL fdweights(time(left),time(lower:upper),&
+         rulepts+1,2,fdcoeffs)
+    
+    DO i = 1, 3
+       af2 = 0.0_dp
+       CALL make_derivative(afield(i,lower:upper),afield_deriv,fdrule, &
+            dt,fdcoeffs(:,2))
+       CALL get_scnd_derivatives_spline(time,afield(i,:),0.0_dp,afield_deriv,af2)
+       
+       DO itime = 1, ntime_gauss
+          CALL spline_interpolation(time,afield(i,:),af2,time_ax(itime),newafield(i,itime))
+       ENDDO
+    ENDDO
+    
+    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi,itime) &
+    !$OMP& PRIVATE(term1,term2,term3,term4,newterm)
     
     !$OMP DO COLLAPSE(3)
     DO ik = 1, numkpts
        DO iphi = 1, numphipts
           DO itheta = 1, numthetapts
-             term1 =  k_ax(ik) * k_ax(ik)
-             
-             term2 = k_ax(ik) * afield(1) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
-             term3 = k_ax(ik) * afield(2) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
-             term4 = k_ax(ik) * afield(3) * costheta_ax(itheta)
-             newterm(ik,itheta,iphi) = term1 + 2.0_dp * (term2 + term3 + term4)
-             
-             phase(ik,itheta,iphi) = phase(ik,itheta,iphi) * &
-                  EXP( ZIMAGONE * (0.5_dp * newterm(ik,itheta,iphi) + &
-                  cou_ener) * deltat )
+
+             newterm = 0.0_dp
+             DO itime = 1, ntime_gauss
+                term1 =  k_ax(ik) * k_ax(ik)
+                
+                term2 = k_ax(ik) * newafield(1,itime) * &
+                     SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
+                
+                term3 = k_ax(ik) * newafield(2,itime) * &
+                     SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
+                
+                term4 = k_ax(ik) * newafield(3,itime) * costheta_ax(itheta)
+                
+                newterm = newterm + &
+                     (term1 + 2.0_dp * (term2 + term3 + term4)) * weights(itime)
+                
+             ENDDO
+             phase(ik,itheta,iphi) = EXP( ZIMAGONE * (0.5_dp * newterm + &
+                  cou_ener * maxtime) )
           ENDDO
        ENDDO
     ENDDO
     !$OMP END DO NOWAIT
     !$OMP END PARALLEL
     
-    DEALLOCATE(newterm)
+    DEALLOCATE(time_ax,weights)
+    DEALLOCATE(af2,newafield)
     
   END SUBROUTINE get_volkov_phase
 
@@ -294,14 +353,20 @@ CONTAINS
     INTEGER, INTENT(IN)          :: lmax, mmax
     COMPLEX(dp), INTENT(OUT)     :: bk(:, :, :)
 
-    REAL(dp), ALLOCATABLE        :: time(:)
+    REAL(dp), ALLOCATABLE        :: time(:), af2(:)
     REAL(dp), ALLOCATABLE        :: efield(:, :)
     REAL(dp), ALLOCATABLE        :: afield(:, :)
+    REAL(dp), ALLOCATABLE        :: gauss_afield(:, :)
     COMPLEX(dp), ALLOCATABLE     :: intflux(:, :, :)
     COMPLEX(dp), ALLOCATABLE     :: volkov_phase(:, :, :)
+    COMPLEX(dp), ALLOCATABLE     :: func_sph(:, :, :)
+    COMPLEX(dp), ALLOCATABLE     :: funcp_sph(:, :, :)
+    REAL(dp), ALLOCATABLE        :: func2_re(:), func2_imag(:)
+    REAL(dp), ALLOCATABLE        :: funcp2_re(:), funcp2_imag(:)
+    REAL(dp)                     :: new_func_re, new_func_imag
     INTEGER                      :: mmin
-    INTEGER                      :: itime, il, im
-    INTEGER                      :: ik, itheta, iphi
+    INTEGER                      :: itime, igtime, il, im
+    INTEGER                      :: ik, itheta, iphi, i
 
     !----------------------------------------------------!
 
@@ -311,6 +376,11 @@ CONTAINS
     ALLOCATE(volkov_phase(1:numkpts,1:numthetapts,1:numphipts))
     ALLOCATE(time(ntime))
     ALLOCATE(efield(3,ntime),afield(3,ntime))
+    ALLOCATE(gauss_afield(3,ntime_gauss),af2(ntime))
+    ALLOCATE(func_sph(1:numthetapts,1:numphipts,1:ntime))
+    ALLOCATE(funcp_sph(1:numthetapts,1:numphipts,1:ntime))
+    ALLOCATE(func2_re(1:ntime),func2_imag(1:ntime))
+    ALLOCATE(funcp2_re(1:ntime),funcp2_imag(1:ntime))
 
     intflux = ZERO
     bk = ZERO
@@ -321,18 +391,78 @@ CONTAINS
     WRITE(*,*) '------------------------'
     WRITE(*,*) 'Begin time integral...'
 
-    ! We begin the time loop!!
+    ! First, get the time axis and vector potential
     DO itime = 1, ntime
-       
-       !WRITE(*,'(A,I6)') 'Loop number: ',itime
-       
+       !WRITE(*,'(A,I6)') 'Reading loop number: ',itime
        ! Read wavefunction at Rb from file
        CALL read_surface(filename, itime - 1, numthetapts, numphipts, &
             psi_sph, psip_sph, time(itime), efield(:,itime), afield(:,itime) )
+    ENDDO
 
+    ! Get afield on the Gauss time axis.
+    DO i = 1, 3
+       CALL get_scnd_derivatives_spline(time,afield(i,:),0.0_dp, 0.0_dp, af2)
+       
+       DO itime = 1, ntime_gauss
+          CALL spline_interpolation(time,afield(i,:),af2, &
+               gauss_time(itime),gauss_afield(i,itime))
+       ENDDO
+    ENDDO
+    
+    !-------------------------------------------!
+    
+    DO itime = 1, ntime
+       ! Read wavefunction at Rb from file
+       CALL read_surface(filename, itime - 1, numthetapts, numphipts, &
+            func_sph(:,:,itime), funcp_sph(:,:,itime), time(itime), &
+            efield(:,itime), afield(:,itime) )
+    ENDDO
+    
+    ! We begin the time loop!!
+    DO igtime  = 1, ntime_gauss
+       
+       !WRITE(*,*) 'Loop number: ',igtime
+       ! Get function (for all times).
+       DO iphi = 1, numphipts
+          DO itheta = 1, numthetapts
+             
+             func2_re    = 0.0_dp
+             func2_imag  = 0.0_dp
+             funcp2_re   = 0.0_dp
+             funcp2_imag = 0.0_dp
+             
+             ! Get second derivatives, for real and imaginary parts
+             CALL get_scnd_derivatives_spline(time,REAL(func_sph(itheta,iphi,:)), &
+                  0.0_dp,0.0_dp,func2_re)
+             CALL get_scnd_derivatives_spline(time,AIMAG(func_sph(itheta,iphi,:)), &
+                  0.0_dp,0.0_dp,func2_imag)
+             
+             ! Get second derivatives, for real and imaginary parts
+             CALL get_scnd_derivatives_spline(time,REAL(funcp_sph(itheta,iphi,:)), &
+                  0.0_dp,0.0_dp,funcp2_re)
+             CALL get_scnd_derivatives_spline(time,AIMAG(funcp_sph(itheta,iphi,:)), &
+                  0.0_dp,0.0_dp,funcp2_imag)
+             
+             CALL spline_interpolation(time,REAL(func_sph(itheta,iphi,:)),&
+                  func2_re, gauss_time(igtime),new_func_re)
+             CALL spline_interpolation(time,AIMAG(func_sph(itheta,iphi,:)),&
+                  func2_imag, gauss_time(igtime),new_func_imag)
+             
+             psi_sph(itheta,iphi) = CMPLX(new_func_re,new_func_imag)
+             
+             CALL spline_interpolation(time,REAL(funcp_sph(itheta,iphi,:)), &
+                  funcp2_re, gauss_time(igtime),new_func_re)
+             CALL spline_interpolation(time,AIMAG(funcp_sph(itheta,iphi,:)), &
+                  funcp2_imag, gauss_time(igtime),new_func_imag)
+             
+             psip_sph(itheta,iphi) = CMPLX(new_func_re,new_func_imag)
+             
+          ENDDO
+       ENDDO
+       
        IF(gauge_trans_desired) THEN
-          CALL gauge_transform_l2v(psi_sph, psi_sph_v, afield(:,itime))
-          CALL gauge_transform_l2v(psip_sph, psip_sph_v, afield(:,itime))
+          CALL gauge_transform_l2v(psi_sph, psi_sph_v, gauss_afield(:,igtime))
+          CALL gauge_transform_l2v(psip_sph, psip_sph_v, gauss_afield(:,igtime))
           psi_sph  = psi_sph_v
           psip_sph = psip_sph_v 
        ENDIF
@@ -348,15 +478,14 @@ CONTAINS
        psi_lm = psi_lm * rb
        psip_lm = psip_lm * rb + psi_lm / rb
        
-       
        ! Calculate flux
        intflux = ZERO
        CALL calculate_time_integrand(psi_lm, psip_lm, &
-            lmax, mmax, afield(:,itime), intflux)
+            lmax, mmax, gauss_afield(:,igtime), intflux)
 
        ! Get the Volkov phase (one per time step)
-       CALL get_volkov_phase(volkov_phase, afield(:,itime), dt, &
-            coulomb_exp_ener )
+       CALL get_volkov_phase(afield, time, gauss_time(igtime), &
+            volkov_phase, coulomb_exp_ener )
        
        !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi)
        
@@ -368,73 +497,33 @@ CONTAINS
                 intflux(ik,itheta,iphi) = intflux(ik,itheta,iphi) * &
                      volkov_phase(ik,itheta,iphi)
                 
-                IF((itime.EQ.1) .OR. (itime.EQ.ntime)) THEN
-                   bk(ik,itheta,iphi) = bk(ik,itheta,iphi) + &
-                        intflux(ik,itheta,iphi) * 0.5_dp
-                ELSE
-                   bk(ik,itheta,iphi) = bk(ik,itheta,iphi) + &
-                        intflux(ik,itheta,iphi)
-                ENDIF
-
+                
+                bk(ik,itheta,iphi) = bk(ik,itheta,iphi) + &
+                     intflux(ik,itheta,iphi) * gauss_time_weights(igtime)
+                
              ENDDO
           ENDDO
        ENDDO
        !$OMP END DO NOWAIT
        !$OMP END PARALLEL
        ! End loop over coordinates
-
+       
     ENDDO ! End time loop
-    
-    
-    IF(aftercycles) THEN
-       ! We padd with zeros the evolution!!
-       DO itime = 1, ntimeafter
-          
-          !WRITE(*,'(A,I6)') 'Loop number: ',itime
-          psi_lm  = ZERO
-          psip_lm = ZERO
-          
-          ! Calculate flux
-          intflux = ZERO
-          CALL calculate_time_integrand(psi_lm, psip_lm, &
-               lmax, mmax, &
-               (/0.0_dp, 0.0_dp, 0.0_dp/), &
-               intflux)
-          
-          ! Get the Volkov phase (one per time step)
-          CALL get_volkov_phase(volkov_phase, &
-               (/0.0_dp, 0.0_dp, 0.0_dp/), dt, &
-               coulomb_exp_ener )
-          
-          !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi)
-          
-          !$OMP DO COLLAPSE(3)
-          DO iphi = 1, numphipts
-             DO itheta = 1, numthetapts
-                DO ik = 1, numkpts
-                   
-                   intflux(ik,itheta,iphi) = intflux(ik,itheta,iphi) * &
-                        volkov_phase(ik,itheta,iphi)
-                   
-                   bk(ik,itheta,iphi) = bk(ik,itheta,iphi) + &
-                        intflux(ik,itheta,iphi)
-                   
-                ENDDO
-             ENDDO
-          ENDDO
-          !$OMP END DO NOWAIT
-          !$OMP END PARALLEL
-          ! End loop over coordinates
-          
-       ENDDO ! End time loop
-    ENDIF
     
     WRITE(*,*)
     WRITE(*,*) 'Time integral finished!'
     WRITE(*,*) '------------------------'
     WRITE(*,*)
     
-    bk = bk * SQRT(2.0_dp / pi) * ZIMAGONE * dt
+    bk = bk * SQRT(2.0_dp / pi) * ZIMAGONE
+
+    ! Deallocate like no other
+    DEALLOCATE(time,efield,afield)
+    DEALLOCATE(gauss_time,gauss_afield,af2)
+    DEALLOCATE(intflux,volkov_phase)
+    DEALLOCATE(func_sph,funcp_sph)
+    DEALLOCATE(func2_re,func2_imag)
+    DEALLOCATE(funcp2_re,funcp2_imag)
     
   END SUBROUTINE get_flux
 

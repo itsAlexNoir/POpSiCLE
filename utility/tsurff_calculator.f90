@@ -11,7 +11,7 @@ PROGRAM tsurff_test
   REAL(dp)                   :: dk
   REAL(dp)                   :: k_cutoff
   REAL(dp)                   :: coulomb_exp_energy
-  REAL(dp)                   :: aftertime_fs
+  INTEGER                    :: numtimegausspts
   COMPLEX(dp), ALLOCATABLE   :: b(:, :, :)
   CHARACTER(LEN=100)         :: filename_surf
   CHARACTER(LEN=100)         :: filename_pes
@@ -68,21 +68,10 @@ PROGRAM tsurff_test
   READ(*, *) lmax
   WRITE(*, *)
   
-  WRITE(*, *) 'Do you want to add time at the end of the evolution? (y or n)'
-  WRITE(*, *) '---------------------------------------------------------'
-  READ(*, '(1A1)') answer
+  WRITE(*, *) 'Number of points for the time integral'
+  WRITE(*, *) '--------------------------------------'
+  READ(*,*) numtimegausspts
   WRITE(*, *)
-  
-  aftertime_fs = 0.0_dp
-  
-  IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
-     
-     WRITE(*, *) 'Time added after the evolution (fs):'
-     WRITE(*, *) '--------------------------------'
-     READ(*, *) aftertime_fs
-     WRITE(*, *)
-     
-  ENDIF
   
   
   WRITE(*, *) 'Do you want to add the Coulomb explosion energy? (y or n)'
@@ -177,8 +166,8 @@ PROGRAM tsurff_test
   
   
   CALL initialize_tsurff(filename_surf, radius_boundary, lmax, &
-       dk, k_cutoff, numkpts, numthetapts, numphipts, &
-       lmax_total, mmax, aftertime_fs, desired_gauge_trans, coulomb_exp_energy )
+       dk, k_cutoff, numtimegausspts,numkpts, numthetapts, numphipts, &
+       lmax_total, mmax, desired_gauge_trans, coulomb_exp_energy )
   
   mmin = - mmax
   
