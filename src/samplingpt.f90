@@ -352,7 +352,7 @@ CONTAINS
        prob2D = prob2D *  twopi / REAL(numphipts,dp)
        
     ENDIF
-    
+
     IF(PRESENT(groupname)) THEN
        CALL write_wave(RESHAPE(prob2D,(/numthetapts*numwpts/)),2,&
             (/numthetapts,numwpts/),filename,groupname,groupname)
