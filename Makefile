@@ -91,6 +91,7 @@ clean:
 	cd bin; rm -rf *.exec
 	cd lib; rm -rf *.a *.la
 	cd include; rm -rf *.mod *.o
+	cd utility; ${MAKE} clean
 
 help:
 	@echo

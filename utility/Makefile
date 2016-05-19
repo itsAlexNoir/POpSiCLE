@@ -107,7 +107,7 @@ clean_include:
 	rm -rf *.mod
 
 clean_app:
-	@echo 'Deleting app...' 
+	@echo 'Deleting apps...' 
 	rm -rf *.exec *.o
 
 ###############################

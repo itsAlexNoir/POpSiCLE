@@ -442,6 +442,25 @@ CONTAINS
          numrpts*numthetapts*numphipts, MPI_INTEGER, MPI_SUM, comm, ierror )
     
     ! Check if there is a overlap of points between processors
+    IF(ANY(i_am_in_global3D.EQ.0)) THEN
+       WRITE(*,*) 'There is at least one point that lies beetween processors'
+       IF(mpi_rank.EQ.0) THEN
+          OPEN(UNIT=101,FORM='formatted',FILE='i_am_in.dat')
+          DO iphi = 1, numphipts
+             DO itheta = 1, numthetapts
+                DO ir = 1, numrpts
+                   WRITE(101,*) rpts_boundary(ir), &
+                        theta_boundary(itheta), phi_boundary(iphi), &
+                        i_am_in_global3D(ir,itheta,iphi)
+                ENDDO
+             ENDDO
+          ENDDO
+          CLOSE(101)
+       ENDIF
+       STOP
+    ENDIF
+    
+    ! Check if there is a overlap of points between processors
     IF(ANY(i_am_in_global3D.GT.1)) THEN
        WRITE(*,*) 'There is an overlap of points beetween processors'
        IF(mpi_rank.EQ.0) THEN
