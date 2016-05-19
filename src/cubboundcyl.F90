@@ -341,6 +341,22 @@ CONTAINS
     CALL MPI_ALLREDUCE(i_am_in_local2D, i_am_in_global2D, numrpts*numthetapts, &
          MPI_INTEGER, MPI_SUM, comm, ierror )
     
+    ! Check if there is a points that lies between processors
+    IF(ANY(i_am_in_global2D.EQ.0)) THEN
+       WRITE(*,*) 'There is at least one point that lies beetween processors'
+       IF(mpi_rank.EQ.0) THEN
+          OPEN(UNIT=101,FORM='formatted',FILE='i_am_in.dat')
+          DO itheta = 1, numthetapts
+             DO ir = 1, numrpts
+                WRITE(101,*) rpts_boundary(ir), &
+                     theta_boundary(itheta), i_am_in_global2D(ir,itheta)
+             ENDDO
+          ENDDO
+          CLOSE(101)
+       ENDIF
+       STOP
+    ENDIF
+    
     ! Check if there is a overlap of points between processors
     IF(ANY(i_am_in_global2D.GT.1)) THEN
        WRITE(*,*) 'There is an overlap of points beetween processors'
