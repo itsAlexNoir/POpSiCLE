@@ -57,6 +57,8 @@ MODULE flux
   REAL(dp), ALLOCATABLE         :: jl(:, :), jlp(:, :)
   REAL(dp), ALLOCATABLE         :: jy(:), jyp(:)
   REAL(dp), ALLOCATABLE         :: krb_ax(:)
+  COMPLEX(dp), ALLOCATABLE      :: xcoupling(:, :, :, :)
+  COMPLEX(dp), ALLOCATABLE      :: zcoupling(:, :, :, :)
   INTEGER                       :: lmax_total
   INTEGER                       :: numpts, numrpts
   INTEGER                       :: numthetapts, numphipts
@@ -86,9 +88,12 @@ CONTAINS
     INTEGER, INTENT(OUT)             :: mmax
     REAL(dp), INTENT(IN), OPTIONAL   :: coulomb_exp
     LOGICAL, INTENT(IN), OPTIONAL    :: gauge_trans_on
-    
+
+    COMPLEX(dp)                      :: suma
     INTEGER                          :: lmax, mmin
-    INTEGER                          :: iphi, ik, il
+    INTEGER                          :: iphi, ik
+    INTEGER                          :: il, im, ill, imm
+    INTEGER                          :: jtheta, jphi
     
     !-------------------------------------------------!
 
@@ -205,6 +210,86 @@ CONTAINS
     ALLOCATE(krb_ax(1:numkpts))
     
     krb_ax = k_ax * rb
+
+    IF(numphipts.EQ.1) THEN
+       ALLOCATE(xcoupling(0:1,0:lmax,0:1,0:lmax))
+       ALLOCATE(zcoupling(0:1,0:lmax,0:1,0:lmax))       
+       xcoupling = ZERO
+       zcoupling = ZERO       
+    ELSE
+       ALLOCATE(xcoupling(mmin:mmax,0:lmax,mmin:mmax,0:lmax))
+       ALLOCATE(zcoupling(mmin:mmax,0:lmax,mmin:mmax,0:lmax))
+       xcoupling = ZERO
+       zcoupling = ZERO       
+    ENDIF
+
+    ! Calculate matrix elements for laser-matter couling in
+    ! x direction laser polarisation.
+    
+    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(jtheta,jphi) &
+    !$OMP& PRIVATE(il,im,ill,imm,suma)
+    
+    !$OMP DO COLLAPSE(4)
+    DO ill = 0, lmax
+       DO imm = mmin, mmax
+          DO il = 0, lmax
+             DO im = mmin, mmax
+                ! Calculate matrix elements between spherical harmonics
+                suma = ZERO
+                DO jphi = 1, numphipts
+                   DO jtheta = 1, numthetapts
+                      suma = suma + CONJG(sph_harmonics(jphi,jtheta,im,il)) * &
+                           SIN(theta_ax(jtheta)) * COS(phi_ax(jphi)) * &
+                           sph_harmonics(jphi,jtheta,imm,ill) * &
+                           gauss_th_weights(jtheta)
+                   ENDDO
+                ENDDO
+                IF(numphipts.EQ.1) THEN
+                   suma = suma * twopi
+                ELSE
+                   suma = suma * dphi
+                ENDIF
+                xcoupling(im,il,imm,ill) = suma
+             ENDDO
+          ENDDO
+       ENDDO
+    ENDDO
+    !$OMP END DO NOWAIT
+    !$OMP END PARALLEL
+    
+    ! Calculate matrix elements for laser-matter couling in
+    ! x direction laser polarisation.
+    
+    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(jtheta,jphi) &
+    !$OMP& PRIVATE(il,im,ill,imm,suma)
+    
+    !$OMP DO COLLAPSE(4)
+    DO ill = 0, lmax
+       DO imm = mmin, mmax
+          DO il = 0, lmax
+             DO im = mmin, mmax
+                ! Calculate matrix elements between spherical harmonics
+                suma = ZERO
+                DO jphi = 1, numphipts
+                   DO jtheta = 1, numthetapts
+                      suma = suma + CONJG(sph_harmonics(jphi,jtheta,im,il)) * &
+                           costheta_ax(jtheta) * &
+                           sph_harmonics(jphi,jtheta,imm,ill) * &
+                           gauss_th_weights(jtheta)
+                   ENDDO
+                ENDDO
+                IF(numphipts.EQ.1) THEN
+                   suma = suma * twopi
+                ELSE
+                   suma = suma * dphi
+                ENDIF
+                zcoupling(im,il,imm,ill) = suma
+             ENDDO
+          ENDDO
+       ENDDO
+    ENDDO
+    !$OMP END DO NOWAIT
+    !$OMP END PARALLEL
     
     jl  = 0.0_dp
     jlp = 0.0_dp
@@ -540,18 +625,16 @@ CONTAINS
     COMPLEX(dp)                   :: term1, term2
     COMPLEX(dp)                   :: term3
     INTEGER                       :: mmin
-    COMPLEX(dp)                   :: suma
     INTEGER                       :: il, im
     INTEGER                       :: ill, imm
     INTEGER                       :: ik, itheta, iphi
-    INTEGER                       :: jtheta, jphi
     
     !---------------------------------------------------!
 
     mmin = -mmax
 
     !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
-    !$OMP& PRIVATE(term1,term2,term3,jtheta,jphi,suma) &
+    !$OMP& PRIVATE(term1,term2,term3) &
     !$OMP& PRIVATE(il,im,ill,imm)
     
     !$OMP DO COLLAPSE(3)
@@ -571,42 +654,12 @@ CONTAINS
                    term2 =  - 0.5_dp * (-ZIMAGONE)**il * &
                         rb * jl(il,ik) * funcp_lm(im,il)
                    
-                   
                    DO ill = 0, lmax
                       DO imm = mmin, mmax
                          
-                         suma = ZERO
-                         DO jphi = 1, numphipts
-                            DO jtheta = 1, numthetapts
-                               suma = suma + CONJG(sph_harmonics(jphi,jtheta,im,il)) * &
-                                    SIN(theta_ax(jtheta)) * COS(phi_ax(jphi)) * &
-                                    sph_harmonics(jphi,jtheta,imm,ill) * &
-                                    gauss_th_weights(jtheta)
-                            ENDDO
-                         ENDDO
-                         IF(numphipts.EQ.1) THEN
-                            suma = suma * twopi
-                         ELSE
-                            suma = suma * dphi
-                         ENDIF
-                         
-                         term3 = term3 + suma * afield(1) * psi_lm(imm,ill)
-                         
-                         suma = ZERO
-                         DO jphi = 1, numphipts
-                            DO jtheta = 1, numthetapts
-                               suma = suma + CONJG(sph_harmonics(jphi,jtheta,im,il)) * &
-                                    costheta_ax(jtheta) * sph_harmonics(jphi,jtheta,imm,il) * &
-                                    gauss_th_weights(jtheta)
-                            ENDDO
-                         ENDDO
-                         IF(numphipts.EQ.1) THEN
-                            suma = suma * twopi
-                         ELSE
-                            suma = suma * dphi
-                         ENDIF
-                         
-                         term3 = term3 + suma * afield(3) * psi_lm(imm,ill)
+                         term3 = term3 + &
+                              xcoupling(im,il,imm,ill) * afield(1) * psi_lm(imm,ill) + &
+                              zcoupling(im,il,imm,ill) * afield(3) * psi_lm(imm,ill)
                          
                       ENDDO
                    ENDDO
@@ -627,106 +680,6 @@ CONTAINS
     !$OMP END PARALLEL
    
   END SUBROUTINE calculate_time_integrand
-
-  !***********************************************************!
-  !***********************************************************!
-  
-  
-  !   SUBROUTINE calculate_time_integrand( func_lm, funcp_lm, &
-  !      lmax, mmax, afield, integrand )
-  
-  !   IMPLICIT NONE
-  
-  !   COMPLEX(dp), INTENT(IN)       :: func_lm(-mmax:, 0:)
-  !   COMPLEX(dp), INTENT(IN)       :: funcp_lm(-mmax:, 0:)
-  !   INTEGER, INTENT(IN)           :: lmax, mmax
-  !   REAL(dp), INTENT(IN)          :: afield(:)
-  !   COMPLEX(dp), INTENT(OUT)      :: integrand(:, :, :)
-  
-  !   COMPLEX(dp)                   :: term1, term2
-  !   COMPLEX(dp)                   :: term3, term4
-  !   INTEGER                       :: mmin
-  !   REAL(dp)                      :: sqrtcoeff
-  !   COMPLEX(dp)                   :: sph_harm
-  !   INTEGER                       :: il, ill, im
-  !   INTEGER                       :: ik, itheta, iphi
-
-  !   !---------------------------------------------------!
-
-  !   mmin = -mmax
-  !   sph_harm = ZERO
-
-  !   !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
-  !   !$OMP& PRIVATE(term1,term2,term3,term4) &
-  !   !$OMP& PRIVATE(sph_harm, sqrtcoeff)
-
-  !   !$OMP DO COLLAPSE(3)
-  !   DO iphi = 1, numphipts
-  !      DO itheta = 1, numthetapts
-  !         DO ik = 1, numkpts
-  !            DO il = 0, lmax
-  !               DO im = mmin, mmax
-  !                  term1 = ZERO
-  !                  term2 = ZERO
-  !                  term3 = ZERO
-  !                  term4 = ZERO
-  !                  sph_harm = ZERO
-                   
-  !                  term1 = 0.5_dp * (-ZIMAGONE)**il * &
-  !                       (krb_ax(ik) * jlp(il,ik) + jl(il,ik)) * &
-  !                       func_lm(im,il)
-                   
-  !                  term2 =  - 0.5_dp * (-ZIMAGONE)**il * &
-  !                       rb * jl(il,ik) * funcp_lm(im,il)
-                   
-  !                  term3 = - 0.5_dp * ZIMAGONE / SQRT(pi) * afield(3) * rb * &
-  !                       func_lm(im,il)
-                   
-  !                  DO ill = 0, lmax
-  !                     sqrtcoeff = SQRT(REAL(2 * il + 1,dp)) / REAL(2 * ill + 1,dp)
-  !                     sph_harm = ZERO
-  !                     IF(im.LT.0) THEN
-  !                        sph_harm = (-1.0_dp)**ABS(im) * normfact(ABS(im),ill) * &
-  !                             legenpl(itheta-1,ABS(im),ill) * &
-  !                             EXP(ZIMAGONE * im * phi_ax(iphi))
-  !                     ELSE
-  !                        sph_harm = normfact(im,ill) * &
-  !                             legenpl(itheta-1,im,ill) * &
-  !                             EXP(ZIMAGONE * im * phi_ax(iphi))
-  !                     ENDIF
-                      
-  !                     term4 = term4 + (-ZIMAGONE)**ill * &
-  !                          sqrtcoeff * jl(ill,ik) * &
-  !                          clebsch(il, 1, ill, im, 0, im, factlog, maxfactlog) * &
-  !                          clebsch(il, 1, ill, 0, 0, 0, factlog, maxfactlog) * &
-  !                          sph_harm
-  !                  ENDDO
-                   
-  !                  term3 = term3 * term4
-                   
-  !                  IF(im.LT.0) THEN
-  !                     sph_harm = (-1.0_dp)**ABS(im) * &
-  !                          normfact(ABS(im),il) * legenpl(itheta-1,ABS(im),il) * &
-  !                          EXP(ZIMAGONE * im * phi_ax(iphi))
-  !                  ELSE
-  !                     sph_harm = normfact(im,il) * legenpl(itheta-1,im,il) * &
-  !                          EXP(ZIMAGONE * im * phi_ax(iphi))
-  !                  ENDIF
-                   
-  !                  !! Finally, add together the terms
-  !                  integrand(ik,itheta,iphi) = integrand(ik,itheta,iphi) + &
-  !                       (term1 + term2) * sph_harm + term3
-                   
-  !               ENDDO
-  !            ENDDO
-  !         ENDDO
-  !      ENDDO
-  !   ENDDO
-  !   !$OMP END DO NOWAIT
-  !   !$OMP END PARALLEL
-    
-    
-  ! END SUBROUTINE calculate_time_integrand
 
   !***********************************************************!
   
