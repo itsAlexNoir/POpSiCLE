@@ -24,21 +24,23 @@ MODULE sht
   IMPLICIT NONE
   
   PRIVATE
-  
+
+  PUBLIC       :: initialize_legendre_stuff
   PUBLIC       :: initialize_spherical_harmonics
   PUBLIC       :: make_sht
     
   ! Public variables
   
-  REAL(dp), ALLOCATABLE, PUBLIC  :: legenpl(:, :, :)
-  REAL(dp), ALLOCATABLE, PUBLIC  :: normfact(:, :)
+  REAL(dp), ALLOCATABLE, PUBLIC    :: legenpl(:, :, :)
+  REAL(dp), ALLOCATABLE, PUBLIC    :: normfact(:, :)
+  COMPLEX(dp), ALLOCATABLE, PUBLIC :: sph_harmonics(:, :, :, :)
   
 CONTAINS
   
   !=======================================================================
   !=======================================================================
   !
-  !   SUBROUTINE initialize_spherical_harmonics
+  !   SUBROUTINE initialize_legendre_stuff
   !
   !>  \brief This subroutine initializes the Legendre polynomial and
   !>  his correpondent normalization factors for the maximum
@@ -57,7 +59,7 @@ CONTAINS
   !=======================================================================
   !=======================================================================
   
-  SUBROUTINE initialize_spherical_harmonics(lmax, axis)
+  SUBROUTINE initialize_legendre_stuff(lmax, axis)
     
     IMPLICIT NONE
     
@@ -94,8 +96,107 @@ CONTAINS
     ! Deallocate
     DEALLOCATE(factlog)
     
-  END SUBROUTINE initialize_spherical_harmonics
+  END SUBROUTINE initialize_legendre_stuff
+
+  !=======================================================================
+  !=======================================================================
+  !
+  !   SUBROUTINE initialize_spherical_harmonics
+  !
+  !>  \brief This subroutine initializes the spherical harmonic matrix.
+  !>  The routines that compute the polynomial and the factor are located
+  !>  at the module gaussleg. This is only a wrapper to call them once at
+  !>  the beginning of the simulation.
+  !
+  !======================SUBROUTINE ARGUMENTS=============================
+  !
+  !> \param[in] lmax Maximum angular momenta
+  !> \param[in] mmax Maximum magnetic angular momenta
+  !> \param[in] costheta_axis The abscissa (cos theta) for Legendre polynomials
+  !> \param[in] phi_axis Phi angle axis
+  !> \param[out] sph_harmonics The spherical harmonics matrix
+  !
+  !=======================================================================
+  !=======================================================================
   
+  SUBROUTINE initialize_spherical_harmonics(lmax, mmax, costheta_axis, phi_axis)
+    
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)     :: lmax
+    INTEGER, INTENT(IN)     :: mmax    
+    REAL(dp), INTENT(IN)    :: costheta_axis(:)
+    REAL(dp), INTENT(IN)    :: phi_axis(:)
+
+    REAL(dp), ALLOCATABLE   :: legendre_polynomial(:, :, :)
+    REAL(dp), ALLOCATABLE   :: normfactor(:, :)
+    REAL(dp), ALLOCATABLE   :: factlog(:)
+    INTEGER                 :: maxthetapts
+    INTEGER                 :: maxphipts
+    INTEGER                 :: maxfactlog
+    INTEGER                 :: mmin
+    INTEGER                 :: il, im
+    INTEGER                 :: itheta, iphi
+    
+    !-------------------------------------------!
+    
+    ! Number of points in (theta) axis
+    ! The -1 is becasue it assumes that
+    ! the array start at 0, not 1.
+    maxthetapts = SIZE(costheta_axis)
+    maxphipts = SIZE(phi_axis)
+    ! Maximum factorial needed, 3*lmax + 1
+    maxfactlog = 3 * lmax + 1
+    ! Set minimum magnetic angular momentum
+    mmin = - mmax
+    
+    ! Allocate arrays
+    IF(mmax.EQ.0) THEN
+    ALLOCATE(sph_harmonics(1:maxphipts,1:maxthetapts,0:1,0:lmax))
+    ELSE
+       ALLOCATE(sph_harmonics(1:maxphipts,1:maxthetapts,mmin:mmax,0:lmax))
+    ENDIF
+    ALLOCATE(factlog(0:maxfactlog))
+    ALLOCATE(legendre_polynomial(0:maxthetapts-1, 0:lmax, 0:lmax))
+    ALLOCATE(normfactor(0:lmax, 0:lmax))
+    sph_harmonics = ZERO
+    
+    ! Calculate the Legendre polynomial
+    CALL make_legendre(legendre_polynomial, costheta_axis, lmax, maxthetapts-1)
+    
+    ! Calculate the factorials needed for the normalization
+    ! factors.
+    CALL make_factlog(factlog, maxfactlog)
+    
+    ! Calculate the Normalization factor
+    CALL make_rnormal(normfactor, factlog, lmax, maxfactlog)
+
+    DO il = 0, lmax
+       DO im = mmin, mmax
+          DO itheta = 1, maxthetapts
+             DO iphi = 1, maxphipts
+                
+                IF(im.LT.0) THEN
+                   sph_harmonics(iphi,itheta,im,il) = (-1.0_dp)**ABS(im) &
+                        * normfactor(ABS(im),il) * &
+                        legendre_polynomial(itheta-1,ABS(im),il) * &
+                        EXP(ZIMAGONE * im * phi_axis(iphi))
+                ELSE
+                   sph_harmonics(iphi,itheta,im,il) = normfactor(im,il) * &
+                        legendre_polynomial(itheta-1,im,il) * &
+                        EXP(ZIMAGONE * im * phi_axis(iphi))
+                ENDIF
+             ENDDO
+          ENDDO
+       ENDDO
+    ENDDO
+    
+    ! Deallocate
+    DEALLOCATE(legendre_polynomial,normfactor)
+    DEALLOCATE(factlog)
+    
+  END SUBROUTINE initialize_spherical_harmonics
+
   !=======================================================================
   !=======================================================================
   !

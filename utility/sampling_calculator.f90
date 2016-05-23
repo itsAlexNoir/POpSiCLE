@@ -99,6 +99,8 @@ PROGRAM sampling_calculator
   WRITE(*, *) '-----------------------------------------------------'
   READ(*, '(1A1)') answer
   WRITE(*, *)
+
+  desired_wavevstime = .FALSE.
   
   IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
 
@@ -170,7 +172,7 @@ PROGRAM sampling_calculator
   !-------------------!
   !    OUTPUT TIME!   !
   !-------------------!
-
+  
   IF(desired_wavevstime) &
        CALL get_wave_time_file(filename_wavevstime)
   

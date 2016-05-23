@@ -43,13 +43,13 @@ MODULE flux
   REAL(dp), PUBLIC, ALLOCATABLE :: gauss_th_weights(:)
   REAL(dp), PUBLIC, ALLOCATABLE :: gauss_time(:)
   REAL(dp), PUBLIC, ALLOCATABLE :: gauss_time_weights(:)
+  REAL(dp), PUBLIC              :: dphi
   
   ! Private variables
   INTEGER                       :: numkpts
   REAL(dp)                      :: dt, dk, kmax, kmax_th
   REAL(dp)                      :: coulomb_exp_ener
   INTEGER                       :: ntime, ntime_gauss
-  INTEGER                       :: maxfactlog
   COMPLEX(dp), ALLOCATABLE      :: psi_sph(:, :), psip_sph(:, :)
   COMPLEX(dp), ALLOCATABLE      :: psi_sph_v(:, :), psip_sph_v(:, :)
   COMPLEX(dp), ALLOCATABLE      :: psi_lm(:, :), psip_lm(:, :)
@@ -57,7 +57,6 @@ MODULE flux
   REAL(dp), ALLOCATABLE         :: jl(:, :), jlp(:, :)
   REAL(dp), ALLOCATABLE         :: jy(:), jyp(:)
   REAL(dp), ALLOCATABLE         :: krb_ax(:)
-  REAL(dp), ALLOCATABLE         :: factlog(:)
   INTEGER                       :: lmax_total
   INTEGER                       :: numpts, numrpts
   INTEGER                       :: numthetapts, numphipts
@@ -190,16 +189,14 @@ CONTAINS
     CALL get_gauss_stuff(-1.0_dp, 1.0_dp, costheta_ax, gauss_th_weights)
     theta_ax = ACOS(costheta_ax)
     
+    dphi =  twopi / REAL(numphipts,dp)
     DO iphi = 1, numphipts
-       phi_ax(iphi) = REAL(iphi,dp) * twopi / REAL(numphipts,dp)
+       phi_ax(iphi) = REAL(iphi,dp) * dphi
     ENDDO
     
     ! Create spherical harmonics
-    maxfactlog = 3 * lmax + 1
-    ALLOCATE(factlog(0:maxfactlog))
-    CALL make_factlog(factlog, maxfactlog)
-    
-    CALL initialize_spherical_harmonics(lmax,costheta_ax)
+    CALL initialize_legendre_stuff(lmax, costheta_ax)
+    CALL initialize_spherical_harmonics(lmax,mmax,costheta_ax,phi_ax)
     
     ! Initialize Bessel functions
     ALLOCATE(jl(0:lmax,1:numkpts))
@@ -385,12 +382,12 @@ CONTAINS
     intflux = ZERO
     bk = ZERO
     volkov_phase = ZONE
-
+    
     WRITE(*,*)
     WRITE(*,*)
     WRITE(*,*) '------------------------'
     WRITE(*,*) 'Begin time integral...'
-
+    
     ! First, get the time axis and vector potential
     DO itime = 1, ntime
        !WRITE(*,'(A,I6)') 'Reading loop number: ',itime
@@ -398,7 +395,7 @@ CONTAINS
        CALL read_surface(filename, itime - 1, numthetapts, numphipts, &
             psi_sph, psip_sph, time(itime), efield(:,itime), afield(:,itime) )
     ENDDO
-
+    
     ! Get afield on the Gauss time axis.
     DO i = 1, 3
        CALL get_scnd_derivatives_spline(time,afield(i,:),0.0_dp, 0.0_dp, af2)
@@ -482,7 +479,7 @@ CONTAINS
        intflux = ZERO
        CALL calculate_time_integrand(psi_lm, psip_lm, &
             lmax, mmax, gauss_afield(:,igtime), intflux)
-
+       
        ! Get the Volkov phase (one per time step)
        CALL get_volkov_phase(afield, time, gauss_time(igtime), &
             volkov_phase, coulomb_exp_ener )
@@ -516,7 +513,7 @@ CONTAINS
     WRITE(*,*)
     
     bk = bk * SQRT(2.0_dp / pi) * ZIMAGONE
-
+    
     ! Deallocate like no other
     DEALLOCATE(time,efield,afield)
     DEALLOCATE(gauss_time,gauss_afield,af2)
@@ -526,37 +523,37 @@ CONTAINS
     DEALLOCATE(funcp2_re,funcp2_imag)
     
   END SUBROUTINE get_flux
-
+  
   !***************************************!
-
+  
   SUBROUTINE calculate_time_integrand( func_lm, funcp_lm, &
        lmax, mmax, afield, integrand )
-
+    
     IMPLICIT NONE
-
+    
     COMPLEX(dp), INTENT(IN)       :: func_lm(-mmax:, 0:)
     COMPLEX(dp), INTENT(IN)       :: funcp_lm(-mmax:, 0:)
     INTEGER, INTENT(IN)           :: lmax, mmax
     REAL(dp), INTENT(IN)          :: afield(:)
     COMPLEX(dp), INTENT(OUT)      :: integrand(:, :, :)
-
+    
     COMPLEX(dp)                   :: term1, term2
-    COMPLEX(dp)                   :: term3, term4
+    COMPLEX(dp)                   :: term3
     INTEGER                       :: mmin
-    REAL(dp)                      :: sqrtcoeff
-    COMPLEX(dp)                   :: sph_harm
-    INTEGER                       :: il, ill, im
+    COMPLEX(dp)                   :: suma
+    INTEGER                       :: il, im
+    INTEGER                       :: ill, imm
     INTEGER                       :: ik, itheta, iphi
-
+    INTEGER                       :: jtheta, jphi
+    
     !---------------------------------------------------!
 
     mmin = -mmax
-    sph_harm = ZERO
 
     !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
-    !$OMP& PRIVATE(term1,term2,term3,term4) &
-    !$OMP& PRIVATE(sph_harm, sqrtcoeff)
-
+    !$OMP& PRIVATE(term1,term2,term3,jtheta,jphi,suma) &
+    !$OMP& PRIVATE(il,im,ill,imm)
+    
     !$OMP DO COLLAPSE(3)
     DO iphi = 1, numphipts
        DO itheta = 1, numthetapts
@@ -566,53 +563,60 @@ CONTAINS
                    term1 = ZERO
                    term2 = ZERO
                    term3 = ZERO
-                   term4 = ZERO
-                   sph_harm = ZERO
                    
                    term1 = 0.5_dp * (-ZIMAGONE)**il * &
-                        (krb_ax(ik) * jlp(il,ik) + jl(il,ik)) * &
+                        (krb_ax(ik) * jlp(il,ik) - jl(il,ik)) * &
                         func_lm(im,il)
                    
                    term2 =  - 0.5_dp * (-ZIMAGONE)**il * &
                         rb * jl(il,ik) * funcp_lm(im,il)
                    
-                   term3 = - 0.5_dp * ZIMAGONE / SQRT(pi) * afield(3) * rb * &
-                        func_lm(im,il)
                    
                    DO ill = 0, lmax
-                      sqrtcoeff = SQRT(REAL(2 * il + 1,dp)) / REAL(2 * ill + 1,dp)
-                      sph_harm = ZERO
-                      IF(im.LT.0) THEN
-                         sph_harm = (-1.0_dp)**ABS(im) * normfact(ABS(im),ill) * &
-                              legenpl(itheta-1,ABS(im),ill) * &
-                              EXP(ZIMAGONE * im * phi_ax(iphi))
-                      ELSE
-                         sph_harm = normfact(im,ill) * &
-                              legenpl(itheta-1,im,ill) * &
-                              EXP(ZIMAGONE * im * phi_ax(iphi))
-                      ENDIF
-                      
-                      term4 = term4 + (-ZIMAGONE)**ill * &
-                           sqrtcoeff * jl(ill,ik) * &
-                           clebsch(il, 1, ill, im, 0, im, factlog, maxfactlog) * &
-                           clebsch(il, 1, ill, 0, 0, 0, factlog, maxfactlog) * &
-                           sph_harm
+                      DO imm = mmin, mmax
+                         
+                         suma = ZERO
+                         DO jphi = 1, numphipts
+                            DO jtheta = 1, numthetapts
+                               suma = suma + CONJG(sph_harmonics(jphi,jtheta,im,il)) * &
+                                    SIN(theta_ax(jtheta)) * COS(phi_ax(jphi)) * &
+                                    sph_harmonics(jphi,jtheta,imm,ill) * &
+                                    gauss_th_weights(jtheta)
+                            ENDDO
+                         ENDDO
+                         IF(numphipts.EQ.1) THEN
+                            suma = suma * twopi
+                         ELSE
+                            suma = suma * dphi
+                         ENDIF
+                         
+                         term3 = term3 + suma * afield(1) * psi_lm(imm,ill)
+                         
+                         suma = ZERO
+                         DO jphi = 1, numphipts
+                            DO jtheta = 1, numthetapts
+                               suma = suma + CONJG(sph_harmonics(jphi,jtheta,im,il)) * &
+                                    costheta_ax(jtheta) * sph_harmonics(jphi,jtheta,imm,il) * &
+                                    gauss_th_weights(jtheta)
+                            ENDDO
+                         ENDDO
+                         IF(numphipts.EQ.1) THEN
+                            suma = suma * twopi
+                         ELSE
+                            suma = suma * dphi
+                         ENDIF
+                         
+                         term3 = term3 + suma * afield(3) * psi_lm(imm,ill)
+                         
+                      ENDDO
                    ENDDO
                    
-                   term3 = term3 * term4
-                   
-                   IF(im.LT.0) THEN
-                      sph_harm = (-1.0_dp)**ABS(im) * &
-                           normfact(ABS(im),il) * legenpl(itheta-1,ABS(im),il) * &
-                           EXP(ZIMAGONE * im * phi_ax(iphi))
-                   ELSE
-                      sph_harm = normfact(im,il) * legenpl(itheta-1,im,il) * &
-                           EXP(ZIMAGONE * im * phi_ax(iphi))
-                   ENDIF
+                   term3 = term3 * (-ZIMAGONE)**il * (-ZIMAGONE) * &
+                        jl(il,ik) * rb
                    
                    !! Finally, add together the terms
                    integrand(ik,itheta,iphi) = integrand(ik,itheta,iphi) + &
-                        (term1 + term2) * sph_harm + term3
+                        (term1 + term2 + term3) * sph_harmonics(iphi,itheta,im,il)
                    
                 ENDDO
              ENDDO
@@ -621,9 +625,108 @@ CONTAINS
     ENDDO
     !$OMP END DO NOWAIT
     !$OMP END PARALLEL
-    
-    
+   
   END SUBROUTINE calculate_time_integrand
+
+  !***********************************************************!
+  !***********************************************************!
+  
+  
+  !   SUBROUTINE calculate_time_integrand( func_lm, funcp_lm, &
+  !      lmax, mmax, afield, integrand )
+  
+  !   IMPLICIT NONE
+  
+  !   COMPLEX(dp), INTENT(IN)       :: func_lm(-mmax:, 0:)
+  !   COMPLEX(dp), INTENT(IN)       :: funcp_lm(-mmax:, 0:)
+  !   INTEGER, INTENT(IN)           :: lmax, mmax
+  !   REAL(dp), INTENT(IN)          :: afield(:)
+  !   COMPLEX(dp), INTENT(OUT)      :: integrand(:, :, :)
+  
+  !   COMPLEX(dp)                   :: term1, term2
+  !   COMPLEX(dp)                   :: term3, term4
+  !   INTEGER                       :: mmin
+  !   REAL(dp)                      :: sqrtcoeff
+  !   COMPLEX(dp)                   :: sph_harm
+  !   INTEGER                       :: il, ill, im
+  !   INTEGER                       :: ik, itheta, iphi
+
+  !   !---------------------------------------------------!
+
+  !   mmin = -mmax
+  !   sph_harm = ZERO
+
+  !   !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
+  !   !$OMP& PRIVATE(term1,term2,term3,term4) &
+  !   !$OMP& PRIVATE(sph_harm, sqrtcoeff)
+
+  !   !$OMP DO COLLAPSE(3)
+  !   DO iphi = 1, numphipts
+  !      DO itheta = 1, numthetapts
+  !         DO ik = 1, numkpts
+  !            DO il = 0, lmax
+  !               DO im = mmin, mmax
+  !                  term1 = ZERO
+  !                  term2 = ZERO
+  !                  term3 = ZERO
+  !                  term4 = ZERO
+  !                  sph_harm = ZERO
+                   
+  !                  term1 = 0.5_dp * (-ZIMAGONE)**il * &
+  !                       (krb_ax(ik) * jlp(il,ik) + jl(il,ik)) * &
+  !                       func_lm(im,il)
+                   
+  !                  term2 =  - 0.5_dp * (-ZIMAGONE)**il * &
+  !                       rb * jl(il,ik) * funcp_lm(im,il)
+                   
+  !                  term3 = - 0.5_dp * ZIMAGONE / SQRT(pi) * afield(3) * rb * &
+  !                       func_lm(im,il)
+                   
+  !                  DO ill = 0, lmax
+  !                     sqrtcoeff = SQRT(REAL(2 * il + 1,dp)) / REAL(2 * ill + 1,dp)
+  !                     sph_harm = ZERO
+  !                     IF(im.LT.0) THEN
+  !                        sph_harm = (-1.0_dp)**ABS(im) * normfact(ABS(im),ill) * &
+  !                             legenpl(itheta-1,ABS(im),ill) * &
+  !                             EXP(ZIMAGONE * im * phi_ax(iphi))
+  !                     ELSE
+  !                        sph_harm = normfact(im,ill) * &
+  !                             legenpl(itheta-1,im,ill) * &
+  !                             EXP(ZIMAGONE * im * phi_ax(iphi))
+  !                     ENDIF
+                      
+  !                     term4 = term4 + (-ZIMAGONE)**ill * &
+  !                          sqrtcoeff * jl(ill,ik) * &
+  !                          clebsch(il, 1, ill, im, 0, im, factlog, maxfactlog) * &
+  !                          clebsch(il, 1, ill, 0, 0, 0, factlog, maxfactlog) * &
+  !                          sph_harm
+  !                  ENDDO
+                   
+  !                  term3 = term3 * term4
+                   
+  !                  IF(im.LT.0) THEN
+  !                     sph_harm = (-1.0_dp)**ABS(im) * &
+  !                          normfact(ABS(im),il) * legenpl(itheta-1,ABS(im),il) * &
+  !                          EXP(ZIMAGONE * im * phi_ax(iphi))
+  !                  ELSE
+  !                     sph_harm = normfact(im,il) * legenpl(itheta-1,im,il) * &
+  !                          EXP(ZIMAGONE * im * phi_ax(iphi))
+  !                  ENDIF
+                   
+  !                  !! Finally, add together the terms
+  !                  integrand(ik,itheta,iphi) = integrand(ik,itheta,iphi) + &
+  !                       (term1 + term2) * sph_harm + term3
+                   
+  !               ENDDO
+  !            ENDDO
+  !         ENDDO
+  !      ENDDO
+  !   ENDDO
+  !   !$OMP END DO NOWAIT
+  !   !$OMP END PARALLEL
+    
+    
+  ! END SUBROUTINE calculate_time_integrand
 
   !***********************************************************!
   
