@@ -147,7 +147,7 @@ if(params.draw_sampling_pad):
     clamp = [-10,-6]
     xticks = np.arange(0,np.pi,0.4)
     yticks = np.arange(0.0,5.0,0.3)
-    graph.oneframe_surf(samp_pad,ax.theta_ax,samp_pes[:,0],clamp,False,
+    graph.oneframe_surf(samp_pad,ax.theta_ax,samp_pes[:,0],clamp,False,False,
                         [min(ax.theta_ax),max(ax.theta_ax)],[0.0,3.0],
                         xticks,yticks,
                         r'$\theta$(rad)',r'Energy (a.u.)',
