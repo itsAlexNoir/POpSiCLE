@@ -137,7 +137,7 @@ CONTAINS
     
     numrpts = 2 * fdpts + 1
     numthetapts = lmax + 1
-    numphipts = lmax + 1
+    numphipts = 2 * lmax + 1
     deltaphi = twopi / REAL(numphipts, dp)
     
     ALLOCATE(rpts_boundary(1:numrpts))
@@ -371,7 +371,7 @@ CONTAINS
     
     numrpts = 2 * fdpts + 1
     numthetapts = lmax + 1
-    numphipts = lmax + 1
+    numphipts = 2 * lmax + 1
     deltaphi = (max_angles_global(2) - min_angles_global(2)) / REAL(numphipts, dp)
     
     ALLOCATE(rpts_boundary(1:numrpts))
