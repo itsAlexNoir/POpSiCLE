@@ -47,7 +47,7 @@ MODULE samplingpt
   REAL(dp)                      :: coulomb_exp_ener
   INTEGER                       :: ntime, ntimeafter, ntimetotal
   REAL(dp), ALLOCATABLE         :: time(:), efield(:, :), afield(:, :)
-  COMPLEX(dp), ALLOCATABLE      :: psi_sph(:, :, :), psip_sph(:, :)
+  COMPLEX(dp), ALLOCATABLE      :: psi_sph(:, :, :), psip_sph(:, :, :)
   COMPLEX(dp), ALLOCATABLE      :: psi_sph_v(:, :)
   REAL(dp)                      :: rb
   INTEGER                       :: numpts, numrpts, numwpts
@@ -157,7 +157,7 @@ CONTAINS
     
     ! Allocate wavefunction arrays and rest of stuff
     ALLOCATE(psi_sph(1:numthetapts,1:numphipts,1:ntime))
-    ALLOCATE(psip_sph(1:numthetapts,1:numphipts))
+    ALLOCATE(psip_sph(1:numthetapts,1:numphipts,1:ntime))
 
     IF(gauge_trans_desired) THEN
        ALLOCATE(psi_sph_v(1:numthetapts,1:numphipts))
@@ -207,7 +207,7 @@ CONTAINS
        
        ! Read wavefunction at Rb from file
        CALL read_surface(filename, itime - 1, numthetapts, numphipts, &
-            psi_sph(:,:,itime), psip_sph, &
+            psi_sph(:,:,itime), psip_sph(:,:,itime), &
             time(itime), efield(:,itime), afield(:,itime) )
        
        IF(gauge_trans_desired) THEN
@@ -280,12 +280,13 @@ CONTAINS
 
     ALLOCATE(wavevstime(1:ntime))
     wavevstime = REAL( CONJG(psi_sph(1,1,:)) * psi_sph(1,1,:),dp)
+    wavederivvstme = REAL( CONJG(psip_sph(1,1,:)) * psip_sph(1,1,:),dp)
     
     name = TRIM(filename) // '.dat'
     OPEN(UNIT=33,FORM='formatted',FILE=name)
     
     DO itime = 1, ntime
-       WRITE(33,*) time(itime), wavevstime(itime)
+       WRITE(33,*) time(itime), wavevstime(itime), wavederivvstime(itime)
     ENDDO
     
     CLOSE(33)
