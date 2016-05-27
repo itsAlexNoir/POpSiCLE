@@ -162,8 +162,8 @@ corrtools.o: constants.o
 corrsurface.o: constants.o tools.o corrtools.o \
 	boundary.o io_surface.o io_corrsurface.o
 io_corrsurface.o: constants.o boundary.o
-flux.o: constants.o gaussleg.o bessel.o sht.o tools.o \
-	spline_interp.o io_surface.o io_pop.o
+flux.o: constants.o gaussleg.o bessel.o sht.o \
+	tools.o io_surface.o io_pop.o
 observables.o: constants.o sht.o flux.o io_pop.o
 samplingpt.o: constants.o gaussleg.o fourier.o \
 	io_surface.o io_pop.o
@@ -217,13 +217,13 @@ corrtools.lo: constants.lo
 corrsurface.lo: constants.lo tools.lo corrtools.lo \
 	boundary.lo io_surface.lo io_corrsurface.lo
 io_corrsurface.lo: constants.lo boundary.lo
-flux.lo: constants.lo gaussleg.lo bessel.lo sht.lo tools.o \
-	spline_interp.o io_surface.lo io_pop.lo
+flux.lo: constants.lo gaussleg.lo bessel.lo sht.lo \
+	tools.lo io_surface.lo io_pop.lo
 observables.lo: constants.lo sht.lo flux.lo io_pop.lo
 samplingpt.lo: constants.lo gaussleg.lo fourier.lo \
 	io_surface.lo io_pop.lo
 popsicle.lo : constants.lo fourier.lo \
-	cubic_interp.o spline_interp.o \
+	cubic_interp.lo spline_interp.lo \
 	scattboundcyl.lo scattboundcart.lo \
 	cubboundcyl.lo  cubboundcart.lo \
 	scattcoords.lo cubcoords.lo coords.lo \

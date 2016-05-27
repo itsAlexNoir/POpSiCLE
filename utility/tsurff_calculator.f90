@@ -11,7 +11,6 @@ PROGRAM tsurff_test
   REAL(dp)                   :: dk
   REAL(dp)                   :: k_cutoff
   REAL(dp)                   :: coulomb_exp_energy
-  INTEGER                    :: numtimegausspts
   COMPLEX(dp), ALLOCATABLE   :: b(:, :, :)
   CHARACTER(LEN=100)         :: filename_surf
   CHARACTER(LEN=100)         :: filename_pes
@@ -67,13 +66,7 @@ PROGRAM tsurff_test
   WRITE(*, *) '-------------------------'
   READ(*, *) lmax
   WRITE(*, *)
-  
-  WRITE(*, *) 'Number of points for the time integral'
-  WRITE(*, *) '--------------------------------------'
-  READ(*,*) numtimegausspts
-  WRITE(*, *)
-  
-  
+    
   WRITE(*, *) 'Do you want to add the Coulomb explosion energy? (y or n)'
   WRITE(*, *) '---------------------------------------------------------'
   READ(*, '(1A1)') answer
@@ -166,7 +159,7 @@ PROGRAM tsurff_test
   
   
   CALL initialize_tsurff(filename_surf, radius_boundary, lmax, &
-       dk, k_cutoff, numtimegausspts,numkpts, numthetapts, numphipts, &
+       dk, k_cutoff, numkpts, numthetapts, numphipts, &
        lmax_total, mmax, desired_gauge_trans, coulomb_exp_energy )
   
   mmin = - mmax
