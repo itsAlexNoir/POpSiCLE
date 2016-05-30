@@ -1272,9 +1272,9 @@ CONTAINS
        CALL h5screate_simple_f(3,dspace_dims,wave_memspace,error)
        CALL h5screate_simple_f(3,dspace_dims,wavep_memspace,error)
        
-       CALL h5dread_f(wave_dset_id, H5T_NATIVE_DOUBLE, psi2D, dspace_dims, error, &
+       CALL h5dread_f(wave_dset_id, H5T_NATIVE_DOUBLE, psi3D, dspace_dims, error, &
             wave_memspace, wave_dspace_id )
-       CALL h5dread_f(wavep_dset_id, H5T_NATIVE_DOUBLE, psip2D, dspace_dims, error, &
+       CALL h5dread_f(wavep_dset_id, H5T_NATIVE_DOUBLE, psip3D, dspace_dims, error, &
             wavep_memspace, wavep_dspace_id )
        
        DO iphi = 1, numphipts
