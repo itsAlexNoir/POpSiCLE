@@ -273,25 +273,38 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN)     :: filename
 
     REAL(dp), ALLOCATABLE            :: wavevstime(:)
+    REAL(dp), ALLOCATABLE            :: wavederivvstime(:)    
+    REAL(dp), ALLOCATABLE            :: current(:)
     CHARACTER(LEN=100)               :: name
     INTEGER                          :: itime
     
     !----------------------------------------------!
-
-    ALLOCATE(wavevstime(1:ntime))
+    
+    ALLOCATE(wavevstime(1:ntime),wavederivvstime(1:ntime),current(1:ntime))
     wavevstime = REAL( CONJG(psi_sph(1,1,:)) * psi_sph(1,1,:),dp)
-    wavederivvstme = REAL( CONJG(psip_sph(1,1,:)) * psip_sph(1,1,:),dp)
+    wavederivvstime = REAL( CONJG(psip_sph(1,1,:)) * psip_sph(1,1,:),dp)
+    current = -ZIMAGONE * 0.5_dp * (psi_sph(1,1,:) * CONJG(psip_sph(1,1,:)) - &
+         CONJG(psi_sph(1,1,:)) * psi_sph(1,1,:))
     
     name = TRIM(filename) // '.dat'
+    OPEN(UNIT=23,FORM='formatted',FILE=name)
+    name = TRIM(filename) // '_psi.dat'
     OPEN(UNIT=33,FORM='formatted',FILE=name)
+    name = TRIM(filename) // '_psip.dat'
+    OPEN(UNIT=43,FORM='formatted',FILE=name)
+    name = TRIM(filename) // '_current.dat'
+    OPEN(UNIT=53,FORM='formatted',FILE=name)
     
     DO itime = 1, ntime
-       WRITE(33,*) time(itime), wavevstime(itime), wavederivvstime(itime)
+       WRITE(23,*) time(itime), wavevstime, wavederivvstime
+       WRITE(33,*) time(itime),REAL(psi_sph(1,1,itime)),AIMAG(psi_sph(1,1,itime))
+       WRITE(43,*) time(itime),REAL(psip_sph(1,1,itime)),AIMAG(psip_sph(1,1,itime))
+       WRITE(53,*) time(itime), current(itime)
     ENDDO
     
     CLOSE(33)
-
-    DEALLOCATE(wavevstime)
+    
+    DEALLOCATE(wavevstime,wavederivvstime)
     
   END SUBROUTINE get_wave_time_file
   

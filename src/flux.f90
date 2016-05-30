@@ -147,7 +147,6 @@ CONTAINS
        k_ax(ik) = REAL(ik,dp) * dk
     ENDDO
     
-    
     ! Assign  surface radius
     rb = radb
     ! Assign angular momenta
@@ -218,10 +217,10 @@ CONTAINS
     ! Calculate matrix elements for laser-matter couling in
     ! x direction laser polarisation.
     
-  !!!  !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(jtheta,jphi) &
-  !!!!  !$OMP& PRIVATE(il,im,ill,imm,suma)
+    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(jtheta,jphi) &
+    !$OMP& PRIVATE(il,im,ill,imm,suma)
     
-   !!! !$OMP DO COLLAPSE(4)
+    !$OMP DO COLLAPSE(4)
     DO ill = 0, lmax
        DO imm = mmin, mmax
           DO il = 0, lmax
@@ -246,16 +245,16 @@ CONTAINS
           ENDDO
        ENDDO
     ENDDO
-   !!!!1 !$OMP END DO NOWAIT
-   !!!!! !$OMP END PARALLEL
+    !$OMP END DO NOWAIT
+    !$OMP END PARALLEL
     
     ! Calculate matrix elements for laser-matter couling in
     ! x direction laser polarisation.
     
-  !!!!!  !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(jtheta,jphi) &
-  !!!!!  !$OMP& PRIVATE(il,im,ill,imm,suma)
+    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(jtheta,jphi) &
+    !$OMP& PRIVATE(il,im,ill,imm,suma)
     
-  !!!!  !$OMP DO COLLAPSE(4)
+    !$OMP DO COLLAPSE(4)
     DO ill = 0, lmax
        DO imm = mmin, mmax
           DO il = 0, lmax
@@ -280,8 +279,8 @@ CONTAINS
           ENDDO
        ENDDO
     ENDDO
-   !!!!! !$OMP END DO NOWAIT
-   !!!!! !$OMP END PARALLEL
+    !$OMP END DO NOWAIT
+    !$OMP END PARALLEL
     
     jl  = 0.0_dp
     jlp = 0.0_dp
@@ -291,7 +290,6 @@ CONTAINS
     DO il = 0, lmax
        CALL sphbessjy(il,krb_ax,jl(il,:),jy,jlp(il,:),jyp)
     ENDDO
-       
     
   END SUBROUTINE initialize_tsurff
 
@@ -326,10 +324,10 @@ CONTAINS
        cou_ener = 0.0_dp
     ENDIF
     
-    !!! !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi,itime) &
-    !!! !$OMP& PRIVATE(term1,term2,term3,term4,newterm)
+    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi,itime) &
+    !$OMP& PRIVATE(term1,term2,term3,term4,newterm)
     
-    !!! !$OMP DO COLLAPSE(3)
+    !$OMP DO COLLAPSE(3)
     DO ik = 1, numkpts
        DO iphi = 1, numphipts
           DO itheta = 1, numthetapts
@@ -348,20 +346,23 @@ CONTAINS
                 
                 IF( (itime.EQ.1) .OR. (itime.EQ.numtimesteps)) THEN
                    newterm = newterm + &
-                        (term1 + 2.0_dp * (term2 + term3 + term4)) * 0.5_dp
-                ELSE                
-                   newterm = newterm + &
                         (term1 + 2.0_dp * (term2 + term3 + term4))
+                ELSEIF(MOD(itime,2).EQ.0) THEN
+                   newterm = newterm + &
+                        (term1 + 2.0_dp * (term2 + term3 + term4)) * 4.0_dp
+                ELSEIF(MOD(itime,2).NE.0) THEN                
+                   newterm = newterm + &
+                        (term1 + 2.0_dp * (term2 + term3 + term4)) * 2.0_dp
                 ENDIF
                 
              ENDDO
              phase(ik,itheta,iphi) = EXP( ZIMAGONE * &
-                  (0.5_dp * newterm * dt + cou_ener * maxtime) )
+                  (0.5_dp * newterm * (dt / 3.0_dp) + cou_ener * maxtime) )
           ENDDO
        ENDDO
     ENDDO
-    !!!! !$OMP END DO NOWAIT
-    !!!! !$OMP END PARALLEL
+    !$OMP END DO NOWAIT
+    !$OMP END PARALLEL
     
     
   END SUBROUTINE get_volkov_phase
@@ -437,9 +438,9 @@ CONTAINS
        CALL get_volkov_phase(afield, time, time(itime), &
             volkov_phase, coulomb_exp_ener )
        
-    !!!   !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi)
+       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi)
        
-    !!!   !$OMP DO COLLAPSE(3)
+       !$OMP DO COLLAPSE(3)
        DO iphi = 1, numphipts
           DO itheta = 1, numthetapts
              DO ik = 1, numkpts
@@ -449,18 +450,21 @@ CONTAINS
                 
                 IF((itime.EQ.1) .OR. (itime.EQ.ntime)) THEN
                    bk(ik,itheta,iphi) = bk(ik,itheta,iphi) + &
-                        intflux(ik,itheta,iphi) * 0.5_dp
-                ELSE
-                   bk(ik,itheta,iphi) = bk(ik,itheta,iphi) + &
                         intflux(ik,itheta,iphi)
+                ELSEIF(MOD(itime,2).EQ.0) THEN
+                   bk(ik,itheta,iphi) = bk(ik,itheta,iphi) + &
+                        intflux(ik,itheta,iphi) * 4.0_dp                   
+                ELSEIF(MOD(itime,2).NE.0) THEN
+                   bk(ik,itheta,iphi) = bk(ik,itheta,iphi) + &
+                        intflux(ik,itheta,iphi) * 2.0_dp
                 ENDIF
                 
              ENDDO
           ENDDO
        ENDDO
-       !!! !$OMP END DO NOWAIT
-       !!! !$OMP END PARALLEL
-       !!! ! End loop over coordinates
+       !$OMP END DO NOWAIT
+       !$OMP END PARALLEL
+       ! End loop over coordinates
        
     ENDDO ! End time loop
     
@@ -469,7 +473,7 @@ CONTAINS
     WRITE(*,*) '------------------------'
     WRITE(*,*)
     
-    bk = bk * SQRT(2.0_dp / pi) * ZIMAGONE * dt
+    bk = bk * SQRT(2.0_dp / pi) * ZIMAGONE * ( dt / 0.3_dp )
     
     ! Deallocate like no other
     DEALLOCATE(time,efield,afield)
@@ -501,11 +505,11 @@ CONTAINS
 
     mmin = -mmax
 
-    !!!! !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
-    !!!! !$OMP& PRIVATE(term1,term2,term3) &
-    !!!! !$OMP& PRIVATE(il,im,ill,imm)
+    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
+    !$OMP& PRIVATE(term1,term2,term3) &
+    !$OMP& PRIVATE(il,im,ill,imm)
     
-    !!! !$OMP DO COLLAPSE(3)
+    !$OMP DO COLLAPSE(3)
     DO iphi = 1, numphipts
        DO itheta = 1, numthetapts
           DO ik = 1, numkpts
@@ -517,8 +521,12 @@ CONTAINS
                    term2 = ZERO
                    term3 = ZERO
                    
+!!$                   term1 = (-ZIMAGONE)**il * &
+!!$                        (0.5_dp * krb_ax(ik) * jlp(il,ik) - jl(il,ik)) * rb * &
+!!$                        func_lm(im,il)
+                   
                    term1 = (-ZIMAGONE)**il * &
-                        (0.5_dp * krb_ax(ik) * jlp(il,ik) - jl(il,ik)) * rb * &
+                        (0.5_dp * k_ax(ik) * jlp(il,ik)) * rb * rb * &
                         func_lm(im,il)
                    
                    term2 =  - 0.5_dp * (-ZIMAGONE)**il * &
@@ -526,11 +534,9 @@ CONTAINS
                    
                    DO ill = 0, lmax
                       DO imm = mmin, mmax
-                         
                          term3 = term3 + &
                               xcoupling(im,il,imm,ill) * afield(1) * psi_lm(imm,ill) + &
                               zcoupling(im,il,imm,ill) * afield(3) * psi_lm(imm,ill)
-                         
                       ENDDO
                    ENDDO
                    
@@ -547,8 +553,8 @@ CONTAINS
           ENDDO
        ENDDO
     ENDDO
-    !!!! !$OMP END DO NOWAIT
-    !!!! !$OMP END PARALLEL
+    !$OMP END DO NOWAIT
+    !$OMP END PARALLEL
    
   END SUBROUTINE calculate_time_integrand
 
