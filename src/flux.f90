@@ -473,7 +473,7 @@ CONTAINS
     WRITE(*,*) '------------------------'
     WRITE(*,*)
     
-    bk = bk * SQRT(2.0_dp / pi) * ZIMAGONE * ( dt / 0.3_dp )
+    bk = bk * ZIMAGONE * SQRT(2.0_dp / pi) * ( dt / 3.0_dp )
     
     ! Deallocate like no other
     DEALLOCATE(time,efield,afield)
@@ -516,7 +516,7 @@ CONTAINS
              suma = ZERO
              DO il = 0, lmax
                 DO im = mmin, mmax
-                  
+                   
                    term1 = ZERO
                    term2 = ZERO
                    term3 = ZERO
