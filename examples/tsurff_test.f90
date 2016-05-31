@@ -8,10 +8,11 @@ PROGRAM tsurff_test
   INTEGER                    :: numkpts
   INTEGER                    :: numthetapts
   INTEGER                    :: numphipts 
-  REAL(dp)                   :: k_cutoff
+  REAL(dp)                   :: k_cutoff, dk
   REAL(dp)                   :: coulomb_exp
   COMPLEX(dp), ALLOCATABLE   :: b(:, :, :)
   CHARACTER(LEN=100)         :: filename
+  LOGICAL                    :: desired_gauge
   
   !--------------------------------------!
   
@@ -30,16 +31,17 @@ PROGRAM tsurff_test
   
   
   k_cutoff = 3.0_dp
-  
+  dk = 0.005_dp
   radius_boundary = 50.0_dp
   lmax = 10
   coulomb_exp = 0.5_dp
+  desired_gauge = .FALSE.
   
   filename = 'data/h2p/surfaces/sphfunc.rb50.000.lmax010'
   
-  CALL initialize_tsurff(filename, radius_boundary, lmax, &
+  CALL initialize_tsurff(filename, radius_boundary, lmax, dk, &
        k_cutoff, numkpts, numthetapts, numphipts, &
-       lmax_total, mmax ,coulomb_exp )
+       lmax_total, mmax ,desired_gauge, coulomb_exp )
   
   mmin = - mmax
   
