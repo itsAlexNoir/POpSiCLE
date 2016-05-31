@@ -65,7 +65,7 @@ CONTAINS
 
     INTEGER                      :: i,j
     INTEGER                      :: n, m, its
-    REAL(dp), PARAMETER          :: precision = 1.0e-14_dp
+    REAL(dp), PARAMETER          :: precision = 1.0e-15_dp
     INTEGER, PARAMETER           :: MAXIT=10
     REAL(dp)                     :: xm, xl
     REAL(dp), DIMENSION((size(axis)+1)/2) :: z1, z

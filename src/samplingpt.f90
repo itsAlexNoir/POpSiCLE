@@ -283,7 +283,7 @@ CONTAINS
     ALLOCATE(wavevstime(1:ntime),wavederivvstime(1:ntime),current(1:ntime))
     wavevstime = REAL( CONJG(psi_sph(1,1,:)) * psi_sph(1,1,:),dp)
     wavederivvstime = REAL( CONJG(psip_sph(1,1,:)) * psip_sph(1,1,:),dp)
-    current = -ZIMAGONE * 0.5_dp * (psi_sph(1,1,:) * CONJG(psip_sph(1,1,:)) - &
+    current = ZIMAGONE * 0.5_dp * (psi_sph(1,1,:) * CONJG(psip_sph(1,1,:)) - &
          CONJG(psi_sph(1,1,:)) * psi_sph(1,1,:))
     
     name = TRIM(filename) // '.dat'

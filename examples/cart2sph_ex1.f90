@@ -25,7 +25,7 @@ PROGRAM cart2sph_ex1
   COMPLEX(dp), ALLOCATABLE   :: sphfunc_dth(:, :, :)
   COMPLEX(dp), ALLOCATABLE   :: sphfunc_dphi(:, :, :)
   COMPLEX(dp)                :: ref_value
-  REAL(dp)                   :: dr, dtheta, dphi
+  REAL(dp)                   :: dr, dtheta, deltaphi
   INTEGER                    :: lmax
   REAL(dp)                   :: Rboundary, tolerance
   REAL(dp)                   :: rpt, thetapt, phipt
@@ -111,7 +111,7 @@ PROGRAM cart2sph_ex1
   dr = 0.1_dp
   lmax = 10
   dtheta = 0.1_dp
-  dphi = 0.1_dp
+  deltaphi = 0.1_dp
   dims      = (/numxpts, numypts, numzpts/)
   
   WRITE(*,*) 'Number of points in x: ',numxpts
