@@ -52,7 +52,6 @@ MODULE flux
   COMPLEX(dp), ALLOCATABLE      :: psi_lm(:, :), psip_lm(:, :)
   REAL(dp)                      :: rb, total_time
   REAL(dp), ALLOCATABLE         :: jl(:, :), jlp(:, :)
-  REAL(dp), ALLOCATABLE         :: jy(:), jyp(:)
   REAL(dp), ALLOCATABLE         :: krb_ax(:)
   COMPLEX(dp), ALLOCATABLE      :: xcoupling(:, :, :, :)
   COMPLEX(dp), ALLOCATABLE      :: zcoupling(:, :, :, :)
@@ -90,6 +89,7 @@ CONTAINS
     INTEGER                          :: iphi, ik
     INTEGER                          :: il, im, ill, imm
     INTEGER                          :: jtheta, jphi
+    INTEGER                          :: max_order
     
     !-------------------------------------------------!
 
@@ -144,7 +144,7 @@ CONTAINS
     ALLOCATE(k_ax(1:numkpts))
     
     DO ik = 1, numkpts
-       k_ax(ik) = REAL(ik,dp) * dk
+       k_ax(ik) = REAL(ik-1,dp) * dk
     ENDDO
     
     ! Assign  surface radius
@@ -197,7 +197,6 @@ CONTAINS
     ! Initialize Bessel functions
     ALLOCATE(jl(0:lmax,1:numkpts))
     ALLOCATE(jlp(0:lmax,1:numkpts))
-    ALLOCATE(jy(1:numkpts),jyp(1:numkpts))
     ALLOCATE(krb_ax(1:numkpts))
     
     krb_ax = k_ax * rb
@@ -284,11 +283,9 @@ CONTAINS
     
     jl  = 0.0_dp
     jlp = 0.0_dp
-    jy  = 0.0_dp
-    jyp = 0.0_dp
     
-    DO il = 0, lmax
-       CALL sphbessjy(il,krb_ax,jl(il,:),jy,jlp(il,:),jyp)
+    DO ik = 1, numkpts
+       CALL sphj(lmax,krb_ax(ik),max_order,jl(:,ik),jlp(:,ik))
     ENDDO
     
   END SUBROUTINE initialize_tsurff
