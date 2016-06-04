@@ -296,7 +296,7 @@ CONTAINS
     OPEN(UNIT=53,FORM='formatted',FILE=name)
     
     DO itime = 1, ntime
-       WRITE(23,*) time(itime), wavevstime, wavederivvstime
+       WRITE(23,*) time(itime), wavevstime(itime), wavederivvstime(itime)
        WRITE(33,*) time(itime),REAL(psi_sph(1,1,itime)),AIMAG(psi_sph(1,1,itime))
        WRITE(43,*) time(itime),REAL(psip_sph(1,1,itime)),AIMAG(psip_sph(1,1,itime))
        WRITE(53,*) time(itime), current(itime)
