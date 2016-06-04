@@ -45,9 +45,9 @@ PROGRAM cart2sph_ex1
   WRITE(*,*)
 
   ! Set number of points
-  numxpts = 120
-  numypts = 120
-  numzpts = 120
+  numxpts = 191
+  numypts = 191
+  numzpts = 191
   
   ! Set grid spacing
   dx   = 0.1_dp
@@ -107,7 +107,7 @@ PROGRAM cart2sph_ex1
   
   
   ! Initialize the boundary
-  Rboundary = 3.0_dp
+  Rboundary = 4.5_dp
   tolerance = 0.15_dp
   dr = 0.1_dp
   lmax = 100
@@ -123,6 +123,10 @@ PROGRAM cart2sph_ex1
   WRITE(*,*) 'Grid spacing in y: ',dy
   WRITE(*,*) 'Grid spacing in z: ',dz
   
+  WRITE(*,*) 'Grid extent in x: ',x_ax(numxpts)
+  WRITE(*,*) 'Grid extent in y: ',y_ax(numypts)
+  WRITE(*,*) 'Grid extent in z: ',z_ax(numzpts)
+  
   WRITE(*,*) 'Boundary at radius: ',Rboundary
   WRITE(*,*) 'Radius tolerance: ',tolerance
   WRITE(*,*)
@@ -132,7 +136,7 @@ PROGRAM cart2sph_ex1
   ! Build interpolant
   WRITE(*,*) 'Creating interpolant...'
   CALL cpu_time(start_time)
-
+  
   !! For scattered interpolation uncomment the subroutine below
   CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
        Rboundary, tolerance, 2, dr, lmax, &
