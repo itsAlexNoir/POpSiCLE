@@ -80,11 +80,11 @@ print('Plotting selected frames...')
 if(params.draw_polar_amplitude):
     print('Plotting polar amplitude...')
     logplot = 1
-    clamp = [-7,-4]
+    clamp = [-6,-4]
     xticks = None #np.arange(0,25,0.2)
     yticks = None #np.arange(-15.,16.,0.2)
-    graph.oneframe_surf(polar_prob,ax.ke_ax,ax.theta_ax,clamp,True,
-                        [min(ax.theta_ax),max(ax.theta_ax)],[ax.dke,2.8],
+    graph.oneframe_surf(polar_prob/2.0/np.pi,ax.ke_ax,ax.theta_ax,clamp,True,
+                        [min(ax.theta_ax),max(ax.theta_ax)],[ax.dke,3.0],
                         xticks,yticks,
                         r'$\theta$(rad)',r'$k_e$(a.u.)',
                         r'$\log_{10}|\Psi(k_e,\theta)|^2$',
@@ -144,10 +144,10 @@ if(params.draw_sampling_pes):
 if(params.draw_sampling_pad):
     print('Plotting sampling pad...')
     logplot = 1
-    clamp = [-10,-6]
-    xticks = np.arange(0,np.pi,0.4)
-    yticks = np.arange(0.0,5.0,0.3)
-    graph.oneframe_surf(samp_pad,ax.theta_ax,samp_pes[:,0],clamp,False,False,
+    clamp = [-9,-6]
+    xticks = None #np.arange(0,np.pi,0.4)
+    yticks = None #np.arange(0.0,5.0,0.3)
+    graph.oneframe_surf(samp_pad,ax.theta_ax,samp_pes[:,0],clamp,False,
                         [min(ax.theta_ax),max(ax.theta_ax)],[0.0,3.0],
                         xticks,yticks,
                         r'$\theta$(rad)',r'Energy (a.u.)',

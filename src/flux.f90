@@ -53,8 +53,8 @@ MODULE flux
   REAL(dp)                      :: rb, total_time
   REAL(dp), ALLOCATABLE         :: jl(:, :), jlp(:, :)
   REAL(dp), ALLOCATABLE         :: krb_ax(:)
-  COMPLEX(dp), ALLOCATABLE      :: xcoupling(:, :, :, :)
-  COMPLEX(dp), ALLOCATABLE      :: zcoupling(:, :, :, :)
+  REAL(dp), ALLOCATABLE         :: xcoupling(:, :, :, :)
+  REAL(dp), ALLOCATABLE         :: zcoupling(:, :, :, :)
   INTEGER                       :: lmax_total
   INTEGER                       :: numpts, numrpts
   INTEGER                       :: numthetapts, numphipts
@@ -204,13 +204,13 @@ CONTAINS
     IF(numphipts.EQ.1) THEN
        ALLOCATE(xcoupling(0:1,0:lmax,0:1,0:lmax))
        ALLOCATE(zcoupling(0:1,0:lmax,0:1,0:lmax))       
-       xcoupling = ZERO
-       zcoupling = ZERO       
+       xcoupling = 0.0_dp
+       zcoupling = 0.0_dp     
     ELSE
        ALLOCATE(xcoupling(mmin:mmax,0:lmax,mmin:mmax,0:lmax))
        ALLOCATE(zcoupling(mmin:mmax,0:lmax,mmin:mmax,0:lmax))
-       xcoupling = ZERO
-       zcoupling = ZERO       
+       xcoupling = 0.0_dp
+       zcoupling = 0.0_dp     
     ENDIF
 
     ! Calculate matrix elements for laser-matter couling in
@@ -522,12 +522,9 @@ CONTAINS
 !!$                        (0.5_dp * krb_ax(ik) * jlp(il,ik) - jl(il,ik)) * rb * &
 !!$                        func_lm(im,il)
                    
-                   term1 = (-ZIMAGONE)**il * &
-                        (0.5_dp * k_ax(ik) * jlp(il,ik)) * rb * rb * &
-                        func_lm(im,il)
+                   term1 = k_ax(ik) * jlp(il,ik) * func_lm(im,il)
                    
-                   term2 =  - 0.5_dp * (-ZIMAGONE)**il * &
-                        rb * rb * jl(il,ik) * funcp_lm(im,il)
+                   term2 =  - jl(il,ik) * funcp_lm(im,il)
                    
                    DO ill = 0, lmax
                       DO imm = mmin, mmax
@@ -537,12 +534,12 @@ CONTAINS
                       ENDDO
                    ENDDO
                    
-                   term3 = term3 * (-ZIMAGONE)**il * (-ZIMAGONE) * &
-                        jl(il,ik) * rb * rb
+                   term3 = term3 * (-ZIMAGONE) * jl(il,ik)
                    
                    !! Finally, add together the terms
                    suma = suma + sph_harmonics(iphi,itheta,im,il) * &
-                        (term1 + term2 + term3)
+                        (-ZIMAGONE)**il * rb * rb * &
+                        (0.5_dp * (term1 + term2) + term3)
                    
                 ENDDO
              ENDDO
