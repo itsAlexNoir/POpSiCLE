@@ -32,9 +32,10 @@ PROGRAM cart2sph_ex1
   REAL(dp)                   :: start_time, end_time
   REAL(dp)                   :: interp_time
   REAL(dp)                   :: minerror, maxerror
-  INTEGER                    :: ix,iy, iz
+  INTEGER                    :: ix,iy,iz
   INTEGER                    :: ir, itheta, iphi
-
+  INTEGER                    :: iter
+  
   !------------------------------------------------------!
   
   WRITE(*,*) '****************************'
@@ -44,9 +45,9 @@ PROGRAM cart2sph_ex1
   WRITE(*,*)
 
   ! Set number of points
-  numxpts = 120
-  numypts = 120
-  numzpts = 120
+  numxpts = 191
+  numypts = 191
+  numzpts = 191
   
   ! Set grid spacing
   dx   = 0.1_dp
@@ -106,10 +107,10 @@ PROGRAM cart2sph_ex1
   
   
   ! Initialize the boundary
-  Rboundary = 3.0_dp
+  Rboundary = 4.5_dp
   tolerance = 0.15_dp
   dr = 0.1_dp
-  lmax = 10
+  lmax = 100
   dtheta = 0.1_dp
   deltaphi = 0.1_dp
   dims      = (/numxpts, numypts, numzpts/)
@@ -122,6 +123,10 @@ PROGRAM cart2sph_ex1
   WRITE(*,*) 'Grid spacing in y: ',dy
   WRITE(*,*) 'Grid spacing in z: ',dz
   
+  WRITE(*,*) 'Grid extent in x: ',x_ax(numxpts)
+  WRITE(*,*) 'Grid extent in y: ',y_ax(numypts)
+  WRITE(*,*) 'Grid extent in z: ',z_ax(numzpts)
+  
   WRITE(*,*) 'Boundary at radius: ',Rboundary
   WRITE(*,*) 'Radius tolerance: ',tolerance
   WRITE(*,*)
@@ -131,14 +136,14 @@ PROGRAM cart2sph_ex1
   ! Build interpolant
   WRITE(*,*) 'Creating interpolant...'
   CALL cpu_time(start_time)
-
-  !! For scattered interpolation uncomment the subroutine below
-  !CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
-  !     Rboundary, tolerance, 2, dr, lmax, &
-  !     numpts, numrpts, numthetapts, numphipts )
   
+  !! For scattered interpolation uncomment the subroutine below
   CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
-       Rboundary, 2, dr, lmax, numrpts, numthetapts, numphipts)
+       Rboundary, tolerance, 2, dr, lmax, &
+       numpts, numrpts, numthetapts, numphipts )
+  
+  !CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
+  !     Rboundary, 2, dr, lmax, numrpts, numthetapts, numphipts)
   
   CALL cpu_time(end_time)
   
@@ -167,20 +172,23 @@ PROGRAM cart2sph_ex1
   
   ! Interpolate!!
   WRITE(*,*) 'Interpolating boundary...'
-  CALL cpu_time(start_time)
-
-  !! For scattered interpolation uncomment the subroutine below
-  !CALL get_cartesian_boundary(cartfunc, sphfunc, sphfunc_dr, &
-  !     sphfunc_dth, sphfunc_dphi, 'quadratic')
-  
-  CALL get_cartesian_boundary(x_ax, y_ax, z_ax, dims, cartfunc, &
-       6, sphfunc, sphfunc_dr, sphfunc_dth, sphfunc_dphi)
-  
-  CALL cpu_time(end_time)
-  
-  interp_time = end_time - start_time
-  
-  WRITE(*,*) 'Interpolation time (seconds): ', interp_time
+  DO iter = 1, 10
+     CALL cpu_time(start_time)
+     
+     !! For scattered interpolation uncomment the subroutine below
+     CALL get_cartesian_boundary(cartfunc, sphfunc, sphfunc_dr, &
+          sphfunc_dth, sphfunc_dphi, 'quadratic')
+     
+     !CALL get_cartesian_boundary(x_ax, y_ax, z_ax, dims, cartfunc, &
+     !     6, sphfunc, sphfunc_dr, sphfunc_dth, sphfunc_dphi)
+     
+     CALL cpu_time(end_time)
+     
+     interp_time = end_time - start_time
+     
+     WRITE(*,*) 'Interpolation time (seconds): ', interp_time
+     
+  ENDDO
   
   DO iphi = 1, numphipts
      DO itheta = 1, numthetapts
@@ -188,7 +196,7 @@ PROGRAM cart2sph_ex1
            ref_value =  EXP(-rpts_boundary(ir) / 2.0_dp) *  &
                 0.25_dp * SQRT(5.0_dp / pi) * &
                 ( 3.0_dp * COS(theta_boundary(itheta))**2 - 1.0_dp)
-                !0.5_dp * SQRT(3.0_dp / pi) * COS(theta_boundary(itheta))
+           !0.5_dp * SQRT(3.0_dp / pi) * COS(theta_boundary(itheta))
            
            maxerror = MAX(maxerror, ABS(sphfunc(ir,itheta, iphi) -&
                 ref_value))

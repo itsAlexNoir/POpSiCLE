@@ -35,7 +35,8 @@ PROGRAM cyl2sph_ex1
   REAL(dp)                   :: minerror, maxerror
   INTEGER                    :: irho,iz
   INTEGER                    :: ir, itheta
-
+  INTEGER                    :: iter
+  
   !------------------------------------------------------------
   
   WRITE(*,*)
@@ -47,8 +48,8 @@ PROGRAM cyl2sph_ex1
   
   ! Set number of points
   
-  maxrhopts = 80
-  maxzpts = 80
+  maxrhopts = 300 !80
+  maxzpts = 601 !80
   
   minrho = 1
   maxrho = maxrhopts + 1
@@ -68,10 +69,11 @@ PROGRAM cyl2sph_ex1
   rhobeta = 0.0_dp
   
   DO irho = minrho, maxrho
-     rhopt          = REAL(irho,dp) * drho
-     sqrtrho	    = SQRT(rhopt)
-     sqrt1rho	    = SQRT(rhoalpha + rhobeta * rhopt)
-     rho_ax(irho)   = rhopt * sqrtrho / sqrt1rho
+!!$     rhopt          = REAL(irho,dp) * drho
+!!$     sqrtrho	    = SQRT(rhopt)
+!!$     sqrt1rho	    = SQRT(rhoalpha + rhobeta * rhopt)
+!!$     rho_ax(irho)   = rhopt * sqrtrho / sqrt1rho
+     rho_ax(irho)   = REAL(irho-1,dp) * drho
   ENDDO
   
   DO iz = minz, maxz
@@ -108,10 +110,10 @@ PROGRAM cyl2sph_ex1
   ENDDO
   
   ! Initialize the boundary
-  Rboundary = 1.0_dp
+  Rboundary = 25.0_dp
   tolerance = 0.3_dp !0.15_dp
   dr = 0.1_dp
-  lmax = 8
+  lmax = 10 !8
   dtheta = 0.1_dp
   dims      = (/maxrhopts, maxzpts/)
   
@@ -120,18 +122,20 @@ PROGRAM cyl2sph_ex1
   
   WRITE(*,*) 'Grid spacing in rho: ',drho
   WRITE(*,*) 'Grid spacing in z: ',dz
+
+  WRITE(*,*) 'Extent in rho: ',rho_ax(maxrhopts)
+  WRITE(*,*) 'Extent in z: ',z_ax(maxzpts)
   
   WRITE(*,*) 'Boundary at radius: ',Rboundary
   WRITE(*,*) 'Radius tolerance: ',tolerance
   WRITE(*,*)
   WRITE(*,*) '--------------------------'
-
-
+  
   ! Build interpolant
   WRITE(*,*) 'Creating interpolant...'
   
   CALL cpu_time(start_time)
-
+  
   !! For scattered interpolation uncomment the subroutine below
   !CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
   !     Rboundary, tolerance, 2, dr, lmax,  &
@@ -158,33 +162,38 @@ PROGRAM cyl2sph_ex1
 !!$  WRITE(*,'(A,I3)')   'Maximum angular momenta:          ',lmax
 !!$  WRITE(*,*)
 !!$  WRITE(*,*) '--------------------------'
-  
-  
+     
+     
   ALLOCATE(sphfunc(1:numrpts,1:numthetapts))
   ALLOCATE(sphfunc_dr(1:numrpts,1:numthetapts))
   ALLOCATE(sphfunc_dth(1:numrpts,1:numthetapts))
   
   ! Interpolate!!
   WRITE(*,*) 'Interpolating boundary...'
-  
-  CALL cpu_time(start_time)
 
-  !! For scattered interpolation uncomment the subroutine below
-  !CALL get_cylindrical_boundary(cylfunc, sphfunc, sphfunc_dr, &
-  !     sphfunc_dth, 'quadratic')
-  
-  CALL get_cylindrical_boundary(rho_ax, z_ax, dims, cylfunc, &
-       6, sphfunc, sphfunc_dr, sphfunc_dth)
-  
-  CALL cpu_time(end_time)
-  
-  interp_time = end_time - start_time
-
-  WRITE(*,*)
-  WRITE(*,*)           '*********************************************'
-  WRITE(*,'(A,F11.8)') ' Interpolation time (seconds): ', interp_time
-  WRITE(*,*)           '*********************************************'
-  WRITE(*,*)
+  DO iter = 1, 10
+     
+     CALL cpu_time(start_time)
+     
+     !! For scattered interpolation uncomment the subroutine below
+     !CALL get_cylindrical_boundary(cylfunc, sphfunc, sphfunc_dr, &
+     !     sphfunc_dth, 'quadratic')
+     
+     CALL get_cylindrical_boundary(rho_ax, z_ax, dims, cylfunc, &
+          6, sphfunc, sphfunc_dr, sphfunc_dth)
+     
+     CALL cpu_time(end_time)
+     
+     interp_time = end_time - start_time
+     
+     WRITE(*,*)
+     WRITE(*,*)           '*********************************************'
+     WRITE(*,'(A,F11.8)') ' Interpolation time (seconds): ', interp_time
+     !WRITE(*,'(A,E20.12)') ' Interpolation time (seconds): ', interp_time
+     WRITE(*,*)           '*********************************************'
+     WRITE(*,*)
+     
+  ENDDO
   
   DO itheta = 1, numthetapts
      DO ir = 1, numrpts
