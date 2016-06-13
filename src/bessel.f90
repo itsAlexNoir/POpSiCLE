@@ -12,10 +12,6 @@ MODULE bessel
   PUBLIC       :: sphbessjy
   PUBLIC       :: sphj
   PUBLIC       :: csphjy
-  !PUBLIC       :: envj
-  !PUBLIC       :: msta1
-  !PUBLIC       :: msta2
-  !PUBLIC       :: r8_gamma_log
   
   ! Interfaces
   
@@ -55,7 +51,7 @@ MODULE bessel
   
 CONTAINS
 
-  ! Returns the Bessel function J0(x) for any REAL x.
+  ! Returns the Bessel FUNCTION J0(x) for any REAL x.
   
   FUNCTION bessj0_s(x)
     
@@ -129,7 +125,7 @@ CONTAINS
   
   !-----------------------------------------------------------------------!
   
-  ! Returns the Bessel function J1(x) for any REAL x.
+  ! Returns the Bessel FUNCTION J1(x) for any REAL x.
   
   FUNCTION bessj1_s(x)
     
@@ -205,7 +201,7 @@ CONTAINS
   
   !-----------------------------------------------------------------------!
   
-  !Returns the Bessel functions rj = Jν , ry = Yν and their derivatives rjp = Jν′ ,
+  !Returns the Bessel FUNCTIONs rj = Jν , ry = Yν and their derivatives rjp = Jν′ ,
   !ryp = Yν′, for positive x and for xnu = ν ≥ 0
   
   SUBROUTINE bessjy(x,xnu,rj,ry,rjp,ryp)
@@ -390,7 +386,7 @@ CONTAINS
   
   !-------------------------------------------------------!
 
-  !Returns spherical Bessel functions jn(x), yn(x),
+  !Returns spherical Bessel FUNCTIONs jn(x), yn(x),
   ! and their derivatives jn′ (x), yn′ (x)
   ! for INTEGER n ≥ 0 and x > 0.
   
@@ -773,7 +769,7 @@ CONTAINS
 
   !*****************************************************************************80
   !
-  !! SPHJ computes spherical Bessel functions jn(x) and their derivatives.
+  !! SPHJ computes spherical Bessel FUNCTIONs jn(x) and their derivatives.
   !
   !  Licensing:
   !
@@ -793,12 +789,12 @@ CONTAINS
   !  Reference:
   !
   !    Shanjie Zhang, Jianming Jin,
-  !    Computation of Special Functions,
+  !    Computation of Special FUNCTIONs,
   !    Wiley, 1996,
   !    ISBN: 0-471-11963-6,
   !    LC: QA351.C45.
   !
-  !  Parameters:
+  !  PARAMETERs:
   !
   !    Input, INTEGER ( kind = 4 ) N, the order.
   !
@@ -917,11 +913,11 @@ CONTAINS
   
 !*****************************************************************************80
 !
-!! CSPHJY: spherical Bessel functions jn(z) and yn(z) for COMPLEX argument.
+!! CSPHJY: spherical Bessel FUNCTIONs jn(z) and yn(z) for COMPLEX argument.
 !
 !  Discussion:
 !
-!    This procedure computes spherical Bessel functions jn(z) and yn(z)
+!    This procedure computes spherical Bessel FUNCTIONs jn(z) and yn(z)
 !    and their derivatives for a COMPLEX argument.
 !
 !  Licensing:
@@ -941,12 +937,12 @@ CONTAINS
 !  Reference:
 !
 !    Shanjie Zhang, Jianming Jin,
-!    Computation of Special Functions,
+!    Computation of Special FUNCTIONs,
 !    Wiley, 1996,
 !    ISBN: 0-471-11963-6,
 !    LC: QA351.C45.
 ! 
-!  Parameters:
+!  PARAMETERs:
 !
 !    Input, INTEGER ( kind = 4 ) N, the order of jn(z) and yn(z).
 !
@@ -1062,14 +1058,14 @@ CONTAINS
   
   !*****************************************************************************80
   !
-  !! R8_GAMMA_LOG evaluates the logarithm of the gamma function.
+  !! R8_GAMMA_LOG evaluates the logarithm of the gamma FUNCTION.
   !
   !  Discussion:
   !
-  !    This routine calculates the LOG(GAMMA) function for a positive real
+  !    This routine calculates the LOG(GAMMA) FUNCTION for a positive REAL
   !    argument X.  Computation is based on an algorithm outlined in
-  !    references 1 and 2.  The program uses rational functions that
-  !    theoretically approximate LOG(GAMMA) to at least 18 significant
+  !    references 1 and 2.  The program uses rational FUNCTIONs that
+  !    theoretically approximate LOG(GAMMA) to at least 18 signIFicant
   !    decimal digits.  The approximation for X > 12 is from reference
   !    3, while approximations for X < 12.0 are similar to those in
   !    reference 1, but are unpublished.
@@ -1078,7 +1074,7 @@ CONTAINS
   !
   !    This code is distributed under the GNU LGPL license.
   !
-  !  Modified:
+  !  ModIFied:
   !
   !    15 April 2013
   !
@@ -1091,7 +1087,7 @@ CONTAINS
   !
   !    William Cody, Kenneth Hillstrom,
   !    Chebyshev Approximations for the Natural Logarithm of the
-  !    Gamma Function,
+  !    Gamma FUNCTION,
   !    Mathematics of Computation,
   !    Volume 21, Number 98, April 1967, pages 198-203.
   !
@@ -1106,17 +1102,22 @@ CONTAINS
   !    Wiley, 1968,
   !    LC: QA297.C64.
   !
-  !  Parameters:
+  !  PARAMETERs:
   !
-  !    Input, real ( kind = 8 ) X, the argument of the function.
+  !    Input, REAL ( kind = 8 ) X, the argument of the FUNCTION.
   !
-  !    Output, real ( kind = 8 ) R8_GAMMA_LOG, the value of the function.
+  !    Output, REAL ( kind = 8 ) R8_GAMMA_LOG, the value of the FUNCTION.
   !
-  function r8_gamma_log ( x )
+
+  FUNCTION r8_gamma_log ( x )
     
-    implicit none
+    IMPLICIT NONE
     
-    real ( kind = 8 ), dimension ( 7 ) :: c = (/ &
+    REAL(dp), INTENT(IN)       :: x
+    REAL(dp), INTENT(OUT)      :: r8_gamma_log
+    
+    
+    REAL(dp), DIMENSION ( 7 )  :: c = (/ &
          -1.910444077728D-03, &
          8.4171387781295D-04, &
          -5.952379913043012D-04, &
@@ -1124,13 +1125,13 @@ CONTAINS
          -2.777777777777681622553D-03, &
          8.333333333333333331554247D-02, &
          5.7083835261D-03 /)
-    real ( kind = 8 ) corr
-    real ( kind = 8 ) :: d1 = -5.772156649015328605195174D-01
-    real ( kind = 8 ) :: d2 = 4.227843350984671393993777D-01
-    real ( kind = 8 ) :: d4 = 1.791759469228055000094023D+00
-    real ( kind = 8 ), parameter :: frtbig = 2.25D+76
-    integer ( kind = 4 ) i
-    real ( kind = 8 ), dimension ( 8 ) :: p1 = (/ &
+    REAL(dp)               :: corr
+    REAL(dp)               :: d1 = -5.772156649015328605195174D-01
+    REAL(dp)               :: d2 = 4.227843350984671393993777D-01
+    REAL(dp)               :: d4 = 1.791759469228055000094023_dp
+    REAL(dp), PARAMETER    :: frtbig = 2.25D+76
+    INTEGER                :: i
+    REAL(dp), DIMENSION ( 8 ) :: p1 = (/ &
          4.945235359296727046734888D+00, &
          2.018112620856775083915565D+02, &
          2.290838373831346393026739D+03, &
@@ -1139,7 +1140,7 @@ CONTAINS
          3.848496228443793359990269D+04, &
          2.637748787624195437963534D+04, &
          7.225813979700288197698961D+03 /)
-    real ( kind = 8 ), dimension ( 8 ) :: p2 = (/ &
+    REAL(dp), DIMENSION ( 8 ) :: p2 = (/ &
          4.974607845568932035012064D+00, &
          5.424138599891070494101986D+02, &
          1.550693864978364947665077D+04, &
@@ -1148,7 +1149,7 @@ CONTAINS
          3.338152967987029735917223D+06, &
          5.106661678927352456275255D+06, &
          3.074109054850539556250927D+06 /)
-    real ( kind = 8 ), dimension ( 8 ) :: p4 = (/ &
+    REAL(dp), DIMENSION ( 8 ) :: p4 = (/ &
          1.474502166059939948905062D+04, &
          2.426813369486704502836312D+06, &
          1.214755574045093227939592D+08, &
@@ -1157,7 +1158,7 @@ CONTAINS
          1.702665737765398868392998D+11, &
          4.926125793377430887588120D+11, &
          5.606251856223951465078242D+11 /)
-    real ( kind = 8 ), dimension ( 8 ) :: q1 = (/ &
+    REAL(dp), DIMENSION ( 8 ) :: q1 = (/ &
          6.748212550303777196073036D+01, &
          1.113332393857199323513008D+03, &
          7.738757056935398733233834D+03, &
@@ -1166,7 +1167,7 @@ CONTAINS
          6.161122180066002127833352D+04, &
          3.635127591501940507276287D+04, &
          8.785536302431013170870835D+03 /)
-    real ( kind = 8 ), dimension ( 8 ) :: q2 = (/ &
+    REAL(dp), DIMENSION ( 8 ) :: q2 = (/ &
          1.830328399370592604055942D+02, &
          7.765049321445005871323047D+03, &
          1.331903827966074194402448D+05, &
@@ -1175,7 +1176,7 @@ CONTAINS
          1.346701454311101692290052D+07, &
          1.782736530353274213975932D+07, &
          9.533095591844353613395747D+06 /)
-    real ( kind = 8 ), dimension ( 8 ) :: q4 = (/ &
+    REAL(dp), DIMENSION ( 8 ) :: q4 = (/ &
          2.690530175870899333379843D+03, &
          6.393885654300092398984238D+05, &
          4.135599930241388052042842D+07, &
@@ -1184,135 +1185,135 @@ CONTAINS
          1.016803586272438228077304D+11, &
          3.417476345507377132798597D+11, &
          4.463158187419713286462081D+11 /)
-    real ( kind = 8 ) r8_gamma_log
-    real ( kind = 8 ) res
-    real ( kind = 8 ), parameter :: sqrtpi = 0.9189385332046727417803297D+00
-    real ( kind = 8 ) x
-    real ( kind = 8 ), parameter :: xbig = 2.55D+305
-    real ( kind = 8 ) xden
-    real ( kind = 8 ), parameter :: xinf = 1.79D+308
-    real ( kind = 8 ) xm1
-    real ( kind = 8 ) xm2
-    real ( kind = 8 ) xm4
-    real ( kind = 8 ) xnum
-    real ( kind = 8 ) y
-    real ( kind = 8 ) ysq
+    REAL(dp)              :: res
+    REAL(dp), PARAMETER   :: sqrtpi = 0.9189385332046727417803297_dp
+    REAL(dp), PARAMETER   :: xbig = 2.55D+305
+    REAL(dp)              :: xden
+    REAL(dp), PARAMETER   :: xinf = 1.79D+308
+    REAL(dp)              :: xm1
+    REAL(dp)              :: xm2
+    REAL(dp)              :: xm4
+    REAL(dp)              :: xnum
+    REAL(dp)              :: y
+    REAL(dp)              :: ysq
+
+    !-------------------------------------------------------!
     
     y = x
     
-    if ( 0.0D+00 < y .and. y <= xbig ) then
+    IF ( 0.0_dp < y .AND. y <= xbig ) THEN
        
-       if ( y <= epsilon ( y ) ) then
+       IF ( y <= EPSILON ( y ) ) THEN
           
-          res = - log ( y )
+          res = - LOG ( y )
           !
           !  EPS < X <= 1.5.
           !
-       else if ( y <= 1.5D+00 ) then
+       ELSE IF ( y <= 1.5_dp ) THEN
           
-          if ( y < 0.6796875D+00 ) then
-             corr = -log ( y )
+          IF ( y < 0.6796875_dp ) THEN
+             corr = -LOG ( y )
              xm1 = y
-          else
+          ELSE
              corr = 0.0D+00
-             xm1 = ( y - 0.5D+00 ) - 0.5D+00
-          end if
+             xm1 = ( y - 0.5_dp ) - 0.5_dp
+          ENDIF
           
-          if ( y <= 0.5D+00 .or. 0.6796875D+00 <= y ) then
+          IF ( y <= 0.5_dp .or. 0.6796875_dp <= y ) THEN
              
-             xden = 1.0D+00
-             xnum = 0.0D+00
-             do i = 1, 8
+             xden = 1.0_dp
+             xnum = 0.0_dp
+             DO i = 1, 8
                 xnum = xnum * xm1 + p1(i)
                 xden = xden * xm1 + q1(i)
-             end do
+             ENDDO
              
              res = corr + ( xm1 * ( d1 + xm1 * ( xnum / xden ) ) )
              
-          else
+          ELSE
              
-             xm2 = ( y - 0.5D+00 ) - 0.5D+00
-             xden = 1.0D+00
-             xnum = 0.0D+00
-             do i = 1, 8
+             xm2 = ( y - 0.5_dp ) - 0.5_dp
+             xden = 1.0_dp
+             xnum = 0.0_dp
+             DO i = 1, 8
                 xnum = xnum * xm2 + p2(i)
                 xden = xden * xm2 + q2(i)
-             end do
+             ENDDO
              
              res = corr + xm2 * ( d2 + xm2 * ( xnum / xden ) )
              
-          end if
+          ENDIF
           !
           !  1.5 < X <= 4.0.
           !
-       else if ( y <= 4.0D+00 ) then
+       ELSE IF ( y <= 4.0_dp ) THEN
           
-          xm2 = y - 2.0D+00
-          xden = 1.0D+00
-          xnum = 0.0D+00
-          do i = 1, 8
+          xm2 = y - 2.0_dp
+          xden = 1.0_dp
+          xnum = 0.0_dp
+          DO i = 1, 8
              xnum = xnum * xm2 + p2(i)
              xden = xden * xm2 + q2(i)
-          end do
+          ENDDO
           
           res = xm2 * ( d2 + xm2 * ( xnum / xden ) )
           !
           !  4.0 < X <= 12.0.
           !
-       else if ( y <= 12.0D+00 ) then
+       ELSE IF ( y <= 12.0_dp ) THEN
           
-          xm4 = y - 4.0D+00
-          xden = -1.0D+00
-          xnum = 0.0D+00
-          do i = 1, 8
+          xm4 = y - 4.0_dp
+          xden = -1.0_dp
+          xnum = 0.0_dp
+          DO i = 1, 8
              xnum = xnum * xm4 + p4(i)
              xden = xden * xm4 + q4(i)
-          end do
+          ENDDO
           
           res = d4 + xm4 * ( xnum / xden )
           !
           !  Evaluate for 12 <= argument.
           !
-       else
+       ELSE
           
-          res = 0.0D+00
+          res = 0.0_dp
           
-          if ( y <= frtbig ) then
+          IF ( y <= frtbig ) THEN
              
              res = c(7)
              ysq = y * y
              
-             do i = 1, 6
+             DO i = 1, 6
                 res = res / ysq + c(i)
-             end do
+             ENDDO
              
-          end if
+          ENDIF
           
           res = res / y
-          corr = log ( y )
-          res = res + sqrtpi - 0.5D+00 * corr
-          res = res + y * ( corr - 1.0D+00 )
+          corr = LOG ( y )
+          res = res + sqrtpi - 0.5_dp * corr
+          res = res + y * ( corr - 1.0_dp )
           
-       end if
+       ENDIF
        !
        !  Return for bad arguments.
        !
-    else
+    ELSE
        
        res = xinf
        
-    end if
+    ENDIF
     !
     !  Final adjustments and return.
     !
     r8_gamma_log = res
     
-    return
-  end function r8_gamma_log
+    RETURN
+  END FUNCTION r8_gamma_log
   
   !*****************************************************************************80
   !
-  !! ENVJ is a utility function used by MSTA1 and MSTA2.
+  !! ENVJ is a utility FUNCTION used by MSTA1 and MSTA2.
   !
   !  Discussion:
   !
@@ -1325,30 +1326,30 @@ CONTAINS
   !    they give permission to incorporate this routine into a user program 
   !    provided that the copyright is acknowledged.
   !
-  !  Modified:
+  !  ModIFied:
   !
   !    14 January 2016
   !
   !  Author:
   !
   !    Shanjie Zhang, Jianming Jin
-  !    Modifications suggested by Vincent Lafage, 11 January 2016.
+  !    ModIFications suggested by Vincent Lafage, 11 January 2016.
   !
   !  Reference:
   !
   !    Shanjie Zhang, Jianming Jin,
-  !    Computation of Special Functions,
+  !    Computation of Special FUNCTIONs,
   !    Wiley, 1996,
   !    ISBN: 0-471-11963-6,
   !    LC: QA351.C45.
   !
-  !  Parameters:
+  !  PARAMETERs:
   !
-  !    Input, integer ( kind = 4 ) N, the order of the Bessel function.
+  !    Input, INTEGER ( kind = 4 ) N, the order of the Bessel FUNCTION.
   !
-  !    Input, real ( kind = 8 ) X, the absolute value of the argument.
+  !    Input, REAL ( kind = 8 ) X, the absolute value of the argument.
   !
-  !    Output, real ( kind = 8 ) ENVJ, the value.
+  !    Output, REAL ( kind = 8 ) ENVJ, the value.
   !
   
   FUNCTION envj( n, x )
@@ -1372,7 +1373,7 @@ CONTAINS
        envj = 0.5_dp * LOG10 ( 6.28_dp * n ) &
             - n * LOG10 ( 1.36_dp * x / n )
        !
-       !  Modification suggested by Vincent Lafage.
+       !  ModIFication suggested by Vincent Lafage.
        !
     ELSE
        
@@ -1405,7 +1406,7 @@ CONTAINS
   !    they give permission to incorporate this routine into a user program 
   !    provided that the copyright is acknowledged.
   !
-  !  Modified:
+  !  ModIFied:
   !
   !    08 July 2012
   !
@@ -1416,60 +1417,61 @@ CONTAINS
   !  Reference:
   !
   !    Shanjie Zhang, Jianming Jin,
-  !    Computation of Special Functions,
+  !    Computation of Special FUNCTIONs,
   !    Wiley, 1996,
   !    ISBN: 0-471-11963-6,
   !    LC: QA351.C45.
   !
-  !  Parameters:
+  !  PARAMETERs:
   !
-  !    Input, real ( kind = 8 ) X, the argument.
+  !    Input, REAL ( kind = 8 ) X, the argument.
   !
-  !    Input, integer ( kind = 4 ) MP, the negative logarithm of the 
+  !    Input, INTEGER ( kind = 4 ) MP, the negative logarithm of the 
   !    desired magnitude.
   !
-  !    Output, integer ( kind = 4 ) MSTA1, the starting point.
+  !    Output, INTEGER ( kind = 4 ) MSTA1, the starting point.
   !
   
   FUNCTION msta1 ( x, mp )
     
     IMPLICIT NONE
 
-    integer ( kind = 4 ) msta1
-    real ( kind = 8 ) x
-    integer ( kind = 4 ) mp
+    INTEGER, INTENT(OUT)  :: msta1
+    REAL(dp), INTENT(IN)  :: x
+    INTEGER, INTENT(IN)   :: mp
     
-    real ( kind = 8 ) a0
-    real ( kind = 8 ) f
-    real ( kind = 8 ) f0
-    real ( kind = 8 ) f1
-    integer ( kind = 4 ) it
-    integer ( kind = 4 ) n0
-    integer ( kind = 4 ) n1
-    integer ( kind = 4 ) nn
+    REAL(dp)              :: a0
+    REAL(dp)              :: f
+    REAL(dp)              :: f0
+    REAL(dp)              :: f1
+    INTEGER               :: it
+    INTEGER               :: n0
+    INTEGER               :: n1
+    INTEGER               :: nn
+    
     !------------------------------!
     
-    a0 = abs ( x )
-    n0 = int ( 1.1D+00 * a0 ) + 1
+    a0 = ABS ( x )
+    n0 = INT ( 1.1_dp * a0 ) + 1
     f0 = envj ( n0, a0 ) - mp
     n1 = n0 + 5
     f1 = envj ( n1, a0 ) - mp
-    do it = 1, 20       
-       nn = n1 - ( n1 - n0 ) / ( 1.0D+00 - f0 / f1 )                  
+    DO it = 1, 20       
+       nn = n1 - ( n1 - n0 ) / ( 1.0_dp - f0 / f1 )                  
        f = envj ( nn, a0 ) - mp
-       if ( abs ( nn - n1 ) < 1 ) then
-          exit
-       end if
+       IF ( ABS ( nn - n1 ) < 1 ) THEN
+          EXIT
+       ENDIF
        n0 = n1
        f0 = f1
        n1 = nn
        f1 = f
-    end do
+    ENDDO
     
     msta1 = nn
     
-    return
-  end FUNCTION msta1
+    RETURN
+  END FUNCTION msta1
   
   !*****************************************************************************80
   !
@@ -1478,9 +1480,9 @@ CONTAINS
   !  Discussion:
   !
   !    This procedure determines the starting point for a backward
-  !    recurrence such that all Jn(x) has MP significant digits.
+  !    recurrence such that all Jn(x) has MP signIFicant digits.
   !
-  !    Jianming Jin supplied a modification to this code on 12 January 2016.
+  !    Jianming Jin supplied a modIFication to this code on 12 January 2016.
   !
   !  Licensing:
   !
@@ -1488,7 +1490,7 @@ CONTAINS
   !    they give permission to incorporate this routine into a user program 
   !    provided that the copyright is acknowledged.
   !
-  !  Modified:
+  !  ModIFied:
   !
   !    14 January 2016
   !
@@ -1499,49 +1501,49 @@ CONTAINS
   !  Reference:
   !
   !    Shanjie Zhang, Jianming Jin,
-  !    Computation of Special Functions,
+  !    Computation of Special FUNCTIONs,
   !    Wiley, 1996,
   !    ISBN: 0-471-11963-6,
   !    LC: QA351.C45.
   !
-  !  Parameters:
+  !  PARAMETERs:
   !
-  !    Input, real ( kind = 8 ) X, the argument of Jn(x).
+  !    Input, REAL ( kind = 8 ) X, the argument of Jn(x).
   !
-  !    Input, integer ( kind = 4 ) N, the order of Jn(x).
+  !    Input, INTEGER ( kind = 4 ) N, the order of Jn(x).
   !
-  !    Input, integer ( kind = 4 ) MP, the number of significant digits.
+  !    Input, INTEGER ( kind = 4 ) MP, the number of signIFicant digits.
   !
-  !    Output, integer ( kind = 4 ) MSTA2, the starting point.
+  !    Output, INTEGER ( kind = 4 ) MSTA2, the starting point.
   !
   FUNCTION msta2 ( x, n, mp )
     
     IMPLICIT NONE
     
-    integer ( kind = 4 ) msta2
-    real ( kind = 8 ) x
-    integer ( kind = 4 ) n
-    integer ( kind = 4 ) mp
+    INTEGER, INTENT(OUT)   :: msta2
+    REAL(dp), INTENT(IN)   :: x
+    INTEGER, INTENT(IN)    :: n
+    INTEGER, INTENT(IN)    :: mp
     
-    real ( kind = 8 ) a0
-    real ( kind = 8 ) ejn
-    real ( kind = 8 ) f
-    real ( kind = 8 ) f0
-    real ( kind = 8 ) f1
-    real ( kind = 8 ) hmp
-    integer ( kind = 4 ) it
-    integer ( kind = 4 ) n0
-    integer ( kind = 4 ) n1
-    integer ( kind = 4 ) nn
-    real ( kind = 8 ) obj
+    REAL(dp)               :: a0
+    REAL(dp)               :: ejn
+    REAL(dp)               :: f
+    REAL(dp)               :: f0
+    REAL(dp)               :: f1
+    REAL(dp)               :: hmp
+    INTEGER                :: it
+    INTEGER                :: n0
+    INTEGER                :: n1
+    INTEGER                :: nn
+    REAL(dp)               :: obj
 
     !--------------------------------------!
     
-    a0 = abs ( x )
-    hmp = 0.5D+00 * mp
+    a0 = ABS ( x )
+    hmp = 0.5_dp * mp
     ejn = envj ( n, a0 )
     
-    if ( ejn <= hmp ) then
+    IF ( ejn <= hmp ) THEN
        obj = mp
        !
        !  Original code:
@@ -1550,32 +1552,32 @@ CONTAINS
        !
        !  Updated code:
        !
-       n0 = int ( 1.1D+00 * a0 ) + 1
-    else
+       n0 = INT ( 1.1_dp * a0 ) + 1
+    ELSE
        obj = hmp + ejn
        n0 = n
-    end if
+    ENDIF
     
     f0 = envj ( n0, a0 ) - obj
     n1 = n0 + 5
     f1 = envj ( n1, a0 ) - obj
     
-    do it = 1, 20
-       nn = n1 - ( n1 - n0 ) / ( 1.0D+00 - f0 / f1 )
+    DO it = 1, 20
+       nn = n1 - ( n1 - n0 ) / ( 1.0_dp - f0 / f1 )
        f = envj ( nn, a0 ) - obj
-       if ( abs ( nn - n1 ) < 1 ) then
-          exit
-       end if
+       IF ( ABS ( nn - n1 ) < 1 ) THEN
+          EXIT
+       ENDIF
        n0 = n1
        f0 = f1
        n1 = nn
        f1 = f
-    end do
+    ENDDO
     
     msta2 = nn + 10
     
-    return
-  END function msta2
+    RETURN
+  END FUNCTION msta2
   
   !*********************************!
   
