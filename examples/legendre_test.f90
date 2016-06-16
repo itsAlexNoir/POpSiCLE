@@ -158,7 +158,7 @@ PROGRAM legendre_test
 !!$  !trial(:,1) = sqrt(1.0/4.0/pi)
 !!$  !
 !!$  ! l=1, m=0
-!!$  !trial(:,1) = CMPLX(1.0_dp,1.0_dp) * sqrt(3.0 / 4.0 / pi ) * cos(theta)
+!!$  !trial(:,1) = CMPLX(1.0_dp,1.0_dp, dp) * sqrt(3.0 / 4.0 / pi ) * cos(theta)
 !!$  !
 !!$  ! l=2, m=0
 !!$  !trial(:,1) = sqrt(5.0 / 16.0  / pi ) * (3.0 * cos(theta)**2 - 1.0 )
@@ -281,7 +281,7 @@ PROGRAM legendre_test
 !!$  enddo
 !!$
 !!$  DO itheta = 1, numthetapts
-!!$     write(33,*) REAL(psi(itheta)),AIMAG(psi(itheta))
+!!$     write(33,*) REAL(psi(itheta), dp),AIMAG(psi(itheta))
 !!$  ENDDO
 !!$     
 !!$  DO il = 0, lmax

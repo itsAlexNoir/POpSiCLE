@@ -1264,8 +1264,8 @@ CONTAINS
             wavep_memspace, wavep_dspace_id )
        
        DO itheta = 1, numthetapts
-          psi_sph(itheta,1) = CMPLX(psi2D(itheta,1), psi2D(itheta,2))
-          psip_sph(itheta,1) = CMPLX(psip2D(itheta,1), psip2D(itheta,2))
+          psi_sph(itheta,1) = CMPLX(psi2D(itheta,1), psi2D(itheta,2), dp)
+          psip_sph(itheta,1) = CMPLX(psip2D(itheta,1), psip2D(itheta,2), dp)
        ENDDO
        
     ELSE
@@ -1279,8 +1279,8 @@ CONTAINS
        
        DO iphi = 1, numphipts
           DO itheta = 1, numthetapts
-             psi_sph(itheta,iphi) = CMPLX(psi3D(itheta,iphi,1), psi3D(itheta,iphi,2))
-             psip_sph(itheta,iphi) = CMPLX(psip3D(itheta,iphi,1), psip3D(itheta,iphi,2))
+             psi_sph(itheta,iphi) = CMPLX(psi3D(itheta,iphi,1), psi3D(itheta,iphi,2), dp)
+             psip_sph(itheta,iphi) = CMPLX(psip3D(itheta,iphi,1), psip3D(itheta,iphi,2), dp)
           ENDDO
        ENDDO
     ENDIF
