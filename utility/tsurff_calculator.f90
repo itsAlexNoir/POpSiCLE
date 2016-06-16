@@ -45,31 +45,37 @@ PROGRAM tsurff_test
   WRITE(*, *) 'Path of the surface file:'
   WRITE(*, *) '-------------------------'
   READ(*, '(1A80)') filename_surf
+  WRITE(*, '(1A80)') filename_surf
   WRITE(*, *)
   
   WRITE(*, *) 'Boundary radius (a.u.):'
   WRITE(*, *) '-----------------------'
   READ(*, *) radius_boundary
+  WRITE(*, *) radius_boundary
   WRITE(*, *)
   
   WRITE(*, *) 'Momentum grid spacing (dk):'
   WRITE(*, *) '---------------------------'
   READ(*, *) dk
+  WRITE(*, *) dk
   WRITE(*, *)
 
   WRITE(*, *) 'Cut-off frequency k:'
   WRITE(*, *) '--------------------'
   READ(*, *) k_cutoff
+  WRITE(*, *) k_cutoff
   WRITE(*, *)
 
   WRITE(*, *) 'Maximum angular momentum:'
   WRITE(*, *) '-------------------------'
   READ(*, *) lmax
+  WRITE(*, *) lmax
   WRITE(*, *)
     
   WRITE(*, *) 'Do you want to add the Coulomb explosion energy? (y or n)'
   WRITE(*, *) '---------------------------------------------------------'
   READ(*, '(1A1)') answer
+  WRITE(*, '(1A1)') answer
   WRITE(*, *)
   
   coulomb_exp_energy = 0.0_dp
@@ -79,6 +85,7 @@ PROGRAM tsurff_test
      WRITE(*, *) 'Coulomb explosion energy (a.u.):'
      WRITE(*, *) '--------------------------------'
      READ(*, *) coulomb_exp_energy
+     WRITE(*, *) coulomb_exp_energy
      WRITE(*, *)
      
      
@@ -87,6 +94,7 @@ PROGRAM tsurff_test
   WRITE(*, *) 'Do you want to gauge transform from length to velocity (y or n)'
   WRITE(*, *) '---------------------------------------------------------------'
   READ(*, '(1A1)') answer
+  WRITE(*, '(1A1)') answer
   WRITE(*, *)
   
   desired_gauge_trans = .FALSE.
@@ -101,11 +109,13 @@ PROGRAM tsurff_test
   WRITE(*, *) 'Name of the PES file:'
   WRITE(*, *) '---------------------'
   READ(*,'(1A80)') filename_pes
+  WRITE(*,'(1A80)') filename_pes
   WRITE(*, *)
   
   WRITE(*, *) 'Do you want momentum electron? (y or n)'
   WRITE(*, *) '---------------------------------------'
   READ(*, '(1A1)') answer
+  WRITE(*, '(1A1)') answer
   WRITE(*, *)
 
   desired_mes = .FALSE.
@@ -117,6 +127,7 @@ PROGRAM tsurff_test
      WRITE(*, *) 'Name of the MES file:'
      WRITE(*, *) '---------------------'
      READ(*,'(1A80)') filename_mes
+     WRITE(*,'(1A80)') filename_mes
      WRITE(*, *)
   
   ENDIF
@@ -124,6 +135,7 @@ PROGRAM tsurff_test
   WRITE(*, *) 'Do you want the 3D spherical scattering amplitude? (y or n)'
   WRITE(*, *) '-----------------------------------------------------------'
   READ(*, '(1A1)') answer
+  WRITE(*, '(1A1)') answer
   WRITE(*, *)
 
   desired_amplitude = .FALSE.
@@ -135,6 +147,7 @@ PROGRAM tsurff_test
      WRITE(*, *) 'Name of the spherical amplitude file:'
      WRITE(*, *) '-------------------------------------'
      READ(*,'(1A80)') filename_amplitude
+     WRITE(*,'(1A80)') filename_amplitude
      WRITE(*, *)
    
   ENDIF
@@ -142,6 +155,7 @@ PROGRAM tsurff_test
   WRITE(*, *) 'Do you want polar scattering amplitude? (y or n)'
   WRITE(*, *) '------------------------------------------------'
   READ(*, '(1A1)') answer
+  WRITE(*, '(1A1)') answer
   WRITE(*, *)
 
   desired_polar = .FALSE.
@@ -153,6 +167,7 @@ PROGRAM tsurff_test
      WRITE(*, *) 'Name of the polar amplitude file:'
      WRITE(*, *) '---------------------------------'
      READ(*,'(1A80)') filename_polar
+     WRITE(*,'(1A80)') filename_polar
      WRITE(*, *)
    
   ENDIF

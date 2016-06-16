@@ -1114,7 +1114,7 @@ CONTAINS
     IMPLICIT NONE
     
     REAL(dp), INTENT(IN)       :: x
-    REAL(dp), INTENT(OUT)      :: r8_gamma_log
+    REAL(dp)                   :: r8_gamma_log
     
     
     REAL(dp), DIMENSION ( 7 )  :: c = (/ &
@@ -1436,7 +1436,7 @@ CONTAINS
     
     IMPLICIT NONE
 
-    INTEGER, INTENT(OUT)  :: msta1
+    INTEGER               :: msta1
     REAL(dp), INTENT(IN)  :: x
     INTEGER, INTENT(IN)   :: mp
     
@@ -1520,7 +1520,7 @@ CONTAINS
     
     IMPLICIT NONE
     
-    INTEGER, INTENT(OUT)   :: msta2
+    INTEGER                :: msta2
     REAL(dp), INTENT(IN)   :: x
     INTEGER, INTENT(IN)    :: n
     INTEGER, INTENT(IN)    :: mp
