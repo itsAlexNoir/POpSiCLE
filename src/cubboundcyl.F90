@@ -742,13 +742,13 @@ CONTAINS
                 psi_in_drhodz(ipt) = deriv
              ENDDO
 
-             realpsi_in = REAL(psi_in)
+             realpsi_in = REAL(psi_in, dp)
              imagpsi_in = AIMAG(psi_in)
-             realpsi_in_drho = REAL(psi_in_drho)
+             realpsi_in_drho = REAL(psi_in_drho, dp)
              imagpsi_in_drho = AIMAG(psi_in_drho)
-             realpsi_in_dz = REAL(psi_in_dz)
+             realpsi_in_dz = REAL(psi_in_dz, dp)
              imagpsi_in_dz = AIMAG(psi_in_dz)
-             realpsi_in_drhodz = REAL(psi_in_drhodz)
+             realpsi_in_drhodz = REAL(psi_in_drhodz, dp)
              imagpsi_in_drhodz = AIMAG(psi_in_drhodz)
              
              
@@ -764,9 +764,9 @@ CONTAINS
                   z_ax(left_z),z_ax(left_z+1),rhopt,zpt,&
                   imagpsi2D_sph,imagpsi2D_sph_dx,imagpsi2D_sph_dy)
              
-             psi2D_sph(ir,itheta)    = CMPLX(realpsi2D_sph,imagpsi2D_sph)
-             psi2D_sph_dx(ir,itheta) = CMPLX(realpsi2D_sph_dx,imagpsi2D_sph_dx)
-             psi2D_sph_dy(ir,itheta) = CMPLX(realpsi2D_sph_dy,imagpsi2D_sph_dy)
+             psi2D_sph(ir,itheta)    = CMPLX(realpsi2D_sph,imagpsi2D_sph, dp)
+             psi2D_sph_dx(ir,itheta) = CMPLX(realpsi2D_sph_dx,imagpsi2D_sph_dx, dp)
+             psi2D_sph_dy(ir,itheta) = CMPLX(realpsi2D_sph_dy,imagpsi2D_sph_dy, dp)
              
              !IF(PRESENT(rank)) THEN
              !   WRITE(*,'(A,I3)') '(Complex) bicubic interpolate error &

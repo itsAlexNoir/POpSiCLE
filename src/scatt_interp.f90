@@ -690,10 +690,10 @@ CONTAINS
           
        ENDIF
        
-       interp_val    = CMPLX(interp_val_re, interp_val_im)
-       interp_val_dx = CMPLX(interp_val_dx_re, interp_val_dx_im)
-       interp_val_dy = CMPLX(interp_val_dy_re, interp_val_dy_im)
-       interp_val_dz = CMPLX(interp_val_dz_re, interp_val_dz_im)
+       interp_val    = CMPLX(interp_val_re, interp_val_im, dp)
+       interp_val_dx = CMPLX(interp_val_dx_re, interp_val_dx_im, dp)
+       interp_val_dy = CMPLX(interp_val_dy_re, interp_val_dy_im, dp)
+       interp_val_dz = CMPLX(interp_val_dz_re, interp_val_dz_im, dp)
        
     ELSEIF (.NOT.PRESENT(interp_val_dx).AND. .NOT.PRESENT(interp_val_dy) &
          .AND. .NOT.PRESENT(interp_val_dz) ) THEN

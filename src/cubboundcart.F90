@@ -1098,21 +1098,21 @@ CONTAINS
                    psi_in_dxdydz(ipt) = deriv
                 ENDDO
                 
-                realpsi_in = REAL(psi_in)
+                realpsi_in = REAL(psi_in, dp)
                 imagpsi_in = AIMAG(psi_in)
-                realpsi_in_dx = REAL(psi_in_dx)
+                realpsi_in_dx = REAL(psi_in_dx, dp)
                 imagpsi_in_dx = AIMAG(psi_in_dx)
-                realpsi_in_dx = REAL(psi_in_dy)
+                realpsi_in_dx = REAL(psi_in_dy, dp)
                 imagpsi_in_dx = AIMAG(psi_in_dy)
-                realpsi_in_dz = REAL(psi_in_dz)
+                realpsi_in_dz = REAL(psi_in_dz, dp)
                 imagpsi_in_dz = AIMAG(psi_in_dz)
-                realpsi_in_dxdy = REAL(psi_in_dxdy)
+                realpsi_in_dxdy = REAL(psi_in_dxdy, dp)
                 imagpsi_in_dxdy = AIMAG(psi_in_dxdy)
-                realpsi_in_dxdz = REAL(psi_in_dxdz)
+                realpsi_in_dxdz = REAL(psi_in_dxdz, dp)
                 imagpsi_in_dxdz = AIMAG(psi_in_dxdz)
-                realpsi_in_dydz = REAL(psi_in_dydz)
+                realpsi_in_dydz = REAL(psi_in_dydz, dp)
                 imagpsi_in_dydz = AIMAG(psi_in_dydz)
-                realpsi_in_dxdydz = REAL(psi_in_dxdydz)
+                realpsi_in_dxdydz = REAL(psi_in_dxdydz, dp)
                 imagpsi_in_dxdydz = AIMAG(psi_in_dxdydz)
                 
                 CALL tricubic_interpolation(realpsi_in,realpsi_in_dx,realpsi_in_dy,&
@@ -1134,10 +1134,10 @@ CONTAINS
                      imagpsi3D_sph,imagpsi3D_sph_dx,imagpsi3D_sph_dy,imagpsi3D_sph_dz)
                 
                 
-                psi3D_sph(ir,itheta,iphi)    = CMPLX(realpsi3D_sph,imagpsi3D_sph)
-                psi3D_sph_dx(ir,itheta,iphi) = CMPLX(realpsi3D_sph_dx,imagpsi3D_sph_dx)
-                psi3D_sph_dy(ir,itheta,iphi) = CMPLX(realpsi3D_sph_dy,imagpsi3D_sph_dy)
-                psi3D_sph_dz(ir,itheta,iphi) = CMPLX(realpsi3D_sph_dz,imagpsi3D_sph_dz)
+                psi3D_sph(ir,itheta,iphi)    = CMPLX(realpsi3D_sph,imagpsi3D_sph, dp)
+                psi3D_sph_dx(ir,itheta,iphi) = CMPLX(realpsi3D_sph_dx,imagpsi3D_sph_dx, dp)
+                psi3D_sph_dy(ir,itheta,iphi) = CMPLX(realpsi3D_sph_dy,imagpsi3D_sph_dy, dp)
+                psi3D_sph_dz(ir,itheta,iphi) = CMPLX(realpsi3D_sph_dz,imagpsi3D_sph_dz, dp)
                 
                 !IF(PRESENT(rank)) THEN
                 !   WRITE(*,'(A,I3)') '(Real) bicubic interpolate error &
