@@ -53,7 +53,9 @@ CONTAINS
     INTEGER                       :: ik,il,im,itheta,iphi
     
     !---------------------------------------------------------!
-    
+
+    mmin = -mmax
+   
     dims = SHAPE(dPomega)
     
     numkpts     = dims(1)

@@ -45,63 +45,83 @@ PROGRAM tsurff_test
   WRITE(*, *) 'Path of the surface file:'
   WRITE(*, *) '-------------------------'
   READ(*, '(1A80)') filename_surf
-  WRITE(*, '(1A80)') filename_surf
+  WRITE(*, *)
+  WRITE(*, *) 'Filename: ',filename_surf
   WRITE(*, *)
   
   WRITE(*, *) 'Boundary radius (a.u.):'
   WRITE(*, *) '-----------------------'
   READ(*, *) radius_boundary
-  WRITE(*, *) radius_boundary
+  WRITE(*, *)
+  WRITE(*, '(A,F9.3)') 'Rb :',radius_boundary
   WRITE(*, *)
   
-  WRITE(*, *) 'Momentum grid spacing (dk):'
-  WRITE(*, *) '---------------------------'
+  WRITE(*, *) 'Momentum grid spacing (dk, in a.u.):'
+  WRITE(*, *) '------------------------------------'
   READ(*, *) dk
-  WRITE(*, *) dk
+  WRITE(*, *)
+  WRITE(*, '(A,F9.3)') 'dk: ',dk
   WRITE(*, *)
 
-  WRITE(*, *) 'Cut-off frequency k:'
-  WRITE(*, *) '--------------------'
+  WRITE(*, *) 'Momentum cut-off (a.u.):'
+  WRITE(*, *) '------------------------'
   READ(*, *) k_cutoff
-  WRITE(*, *) k_cutoff
+  WRITE(*, *)
+  WRITE(*, '(A,F9.3)') 'Cut-off: ',k_cutoff
   WRITE(*, *)
 
   WRITE(*, *) 'Maximum angular momentum:'
   WRITE(*, *) '-------------------------'
   READ(*, *) lmax
-  WRITE(*, *) lmax
+  WRITE(*, *)
+  WRITE(*, *) 'lmax :',lmax
   WRITE(*, *)
     
   WRITE(*, *) 'Do you want to add the Coulomb explosion energy? (y or n)'
   WRITE(*, *) '---------------------------------------------------------'
   READ(*, '(1A1)') answer
-  WRITE(*, '(1A1)') answer
   WRITE(*, *)
   
   coulomb_exp_energy = 0.0_dp
   
   IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
-     
+
+     WRITE(*, *)
+     WRITE(*, *) 'Yes'
+     WRITE(*, *)
      WRITE(*, *) 'Coulomb explosion energy (a.u.):'
      WRITE(*, *) '--------------------------------'
      READ(*, *) coulomb_exp_energy
-     WRITE(*, *) coulomb_exp_energy
+     WRITE(*, *)
+     WRITE(*, '(A,F9.6)') 'Coulomb explosion energy :',coulomb_exp_energy
      WRITE(*, *)
      
+  ELSE
+     
+     WRITE(*, *)
+     WRITE(*, *) 'No'
+     WRITE(*, *)
      
   ENDIF
 
   WRITE(*, *) 'Do you want to gauge transform from length to velocity (y or n)'
   WRITE(*, *) '---------------------------------------------------------------'
   READ(*, '(1A1)') answer
-  WRITE(*, '(1A1)') answer
   WRITE(*, *)
   
   desired_gauge_trans = .FALSE.
   
   IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
-     
+
+     WRITE(*, *)
+     WRITE(*, *) 'Yes'
+     WRITE(*, *)
      desired_gauge_trans = .TRUE.
+     
+  ELSE
+     WRITE(*, *)
+     WRITE(*, *) 'No'
+     WRITE(*, *)
      
   ENDIF
   
@@ -109,67 +129,98 @@ PROGRAM tsurff_test
   WRITE(*, *) 'Name of the PES file:'
   WRITE(*, *) '---------------------'
   READ(*,'(1A80)') filename_pes
-  WRITE(*,'(1A80)') filename_pes
+  WRITE(*, *)
+  WRITE(*, *) 'Filename for PES :',filename_pes
   WRITE(*, *)
   
   WRITE(*, *) 'Do you want momentum electron? (y or n)'
   WRITE(*, *) '---------------------------------------'
   READ(*, '(1A1)') answer
-  WRITE(*, '(1A1)') answer
   WRITE(*, *)
 
   desired_mes = .FALSE.
 
   IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
+
+     WRITE(*, *)
+     WRITE(*, *) 'Yes'
+     WRITE(*, *)
      
      desired_mes = .TRUE.
 
      WRITE(*, *) 'Name of the MES file:'
      WRITE(*, *) '---------------------'
      READ(*,'(1A80)') filename_mes
-     WRITE(*,'(1A80)') filename_mes
      WRITE(*, *)
-  
+     WRITE(*, *) 'Filename for MES :',filename_mes
+     WRITE(*, *)
+
+  ELSE
+
+     WRITE(*, *)
+     WRITE(*, *) 'No'
+     WRITE(*, *)
+     
   ENDIF
 
   WRITE(*, *) 'Do you want the 3D spherical scattering amplitude? (y or n)'
   WRITE(*, *) '-----------------------------------------------------------'
   READ(*, '(1A1)') answer
-  WRITE(*, '(1A1)') answer
   WRITE(*, *)
 
   desired_amplitude = .FALSE.
   
   IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
      
+     WRITE(*, *)
+     WRITE(*, *) 'Yes'
+     WRITE(*, *)
+
      desired_amplitude = .TRUE.
 
      WRITE(*, *) 'Name of the spherical amplitude file:'
      WRITE(*, *) '-------------------------------------'
      READ(*,'(1A80)') filename_amplitude
-     WRITE(*,'(1A80)') filename_amplitude
      WRITE(*, *)
-   
+     WRITE(*, *) 'Filename for amplitude: ',filename_amplitude
+     WRITE(*, *)
+
+  ELSE
+
+     WRITE(*, *)
+     WRITE(*, *) 'No'
+     WRITE(*, *)
+
   ENDIF
   
   WRITE(*, *) 'Do you want polar scattering amplitude? (y or n)'
   WRITE(*, *) '------------------------------------------------'
   READ(*, '(1A1)') answer
-  WRITE(*, '(1A1)') answer
   WRITE(*, *)
-
+  
   desired_polar = .FALSE.
   
   IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
+
+     WRITE(*, *)
+     WRITE(*, *) 'Yes'
+     WRITE(*, *)
      
      desired_polar = .TRUE.
      
      WRITE(*, *) 'Name of the polar amplitude file:'
      WRITE(*, *) '---------------------------------'
      READ(*,'(1A80)') filename_polar
-     WRITE(*,'(1A80)') filename_polar
      WRITE(*, *)
-   
+     WRITE(*, *) 'Filename for polar amplitude :',filename_polar
+     WRITE(*, *)
+
+  ELSE
+
+     WRITE(*, *)
+     WRITE(*, *) 'No'
+     WRITE(*, *)
+     
   ENDIF
   
   
@@ -199,10 +250,10 @@ PROGRAM tsurff_test
   
   IF(desired_mes) &
        CALL write_mes(b,filename_mes)
- 
+  
   ! Deallocate the amplitude
   DEALLOCATE(b)
-
+  
   WRITE(*,*) 'Our spectra is ready!!!'
 
 END PROGRAM tsurff_test
