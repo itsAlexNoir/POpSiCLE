@@ -75,6 +75,7 @@ class parameters:
 
         self.draw_spherical_amplitude = int(inparams['draw_spherical_amplitude'])
         self.draw_polar_amplitude = int(inparams['draw_polar_amplitude'])
+        self.draw_sph_polar_amplitude = int(inparams['draw_sph_polar_amplitude'])
         self.draw_mes = int(inparams['draw_mes'])
         self.draw_pes = int(inparams['draw_pes'])
         # self.draw_Etotal = int(inparams['draw_Etotal'])

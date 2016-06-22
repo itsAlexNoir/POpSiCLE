@@ -17,6 +17,7 @@ import matplotlib.gridspec as gridspec
 import matplotlib.patches as pat
 
 plt.rcParams['font.family']='sans-serif'
+plt.ioff()
 
 # Color stuff
 gbmap = color.ListedColormap(brew.colorbrewer.sequential.GnBu_9.mpl_colors)
@@ -31,7 +32,8 @@ quacol2 = brew.colorbrewer.qualitative.Set3_3.mpl_colors
 def plotprob1d(func,axes,xlim=None,ylim=None,
         xticks=None,yticks=None,
         xlabel=None,ylabel=None,
-        logplot=0,makeframe=0,filename='none'):
+               logplot=0,makeframe=0,filename='none',
+               showframe=True):
 
     if(logplot):
         func = np.log10(func)
@@ -56,12 +58,15 @@ def plotprob1d(func,axes,xlim=None,ylim=None,
     # Save the frame
     if(makeframe):
         fig.savefig(filename+'.pdf',format='pdf')
-    plt.show()
-
+    if(showframe):
+        plt.show()
+        
 ################################################################
 
-def oneframe_surf(matrix,ax1,ax2,clamp,rotated=False,xlim=None,ylim=None,xticks=None,yticks=None,
-        xlabel=None,ylabel=None,barlabel=None,logplot=0,makeframe=0,filename='none'):
+def oneframe_surf(matrix,ax1,ax2,clamp,rotated=False,
+                  xlim=None,ylim=None,xticks=None,yticks=None,
+                  xlabel=None,ylabel=None,barlabel=None,logplot=0,
+                  makeframe=0,filename='none',showframe=True):
 
     AX1, AX2 = np.meshgrid(ax1,ax2)
 
@@ -100,16 +105,17 @@ def oneframe_surf(matrix,ax1,ax2,clamp,rotated=False,xlim=None,ylim=None,xticks=
     #ax2.set_title()
     if(makeframe):
         fig.savefig(filename+'.pdf',format='pdf',rasterized=True)
-    plt.show()
-
+    if(showframe):
+        plt.show()
+        
 ################################################################
 
 def twoframe_surf(matrix1,ax1,ax2,clamp1,matrix2,ax3,ax4,clamp2,
-        xlim1=None,ylim1=None,xticks1=None,yticks1=None,
-        xlabel1=None,ylabel1=None,barlabel1=None,
-        xlim2=None,ylim2=None,xticks2=None,yticks2=None,
-        xlabel2=None,ylabel2=None,barlabel2=None,
-        logplot=0,makeframe=0,filename='none'):
+                  xlim1=None,ylim1=None,xticks1=None,yticks1=None,
+                  xlabel1=None,ylabel1=None,barlabel1=None,
+                  xlim2=None,ylim2=None,xticks2=None,yticks2=None,
+                  xlabel2=None,ylabel2=None,barlabel2=None,
+                  logplot=0,makeframe=0,filename='none',showframe=True):
 
     AX1, AX2 = np.meshgrid(ax1,ax2)
     AX3, AX4 = np.meshgrid(ax3,ax4)
@@ -169,20 +175,20 @@ def twoframe_surf(matrix1,ax1,ax2,clamp1,matrix2,ax3,ax4,clamp2,
     #ax2.set_title()
     if(makeframe):
         fig.savefig(filename+'.pdf',format='pdf',rasterized=True)
-
-    plt.show()
+    if(showframe):
+        plt.show()
 
 ################################################################
 
 def threeframe_surf(matrix1,ax1,ax2,clamp1,matrix2,ax3,ax4,clamp2,
-        matrix3,ax5,ax6,clamp3,
-        xlim1=None,ylim1=None,xticks1=None,yticks1=None,
-        xlabel1=None,ylabel1=None,barlabel1=None,
-        xlim2=None,ylim2=None,xticks2=None,yticks2=None,
-        xlabel2=None,ylabel2=None,barlabel2=None,
-        xlim3=None,ylim3=None,xticks3=None,yticks3=None,
-        xlabel3=None,ylabel3=None,barlabel3=None,
-        logplot=0,makeframe=0,filename='none'):
+                    matrix3,ax5,ax6,clamp3,
+                    xlim1=None,ylim1=None,xticks1=None,yticks1=None,
+                    xlabel1=None,ylabel1=None,barlabel1=None,
+                    xlim2=None,ylim2=None,xticks2=None,yticks2=None,
+                    xlabel2=None,ylabel2=None,barlabel2=None,
+                    xlim3=None,ylim3=None,xticks3=None,yticks3=None,
+                    xlabel3=None,ylabel3=None,barlabel3=None,
+                    logplot=0,makeframe=0,filename='none',showframe=True):
 
     AX1, AX2 = np.meshgrid(ax1,ax2)
     AX3, AX4 = np.meshgrid(ax3,ax4)
@@ -270,32 +276,22 @@ def threeframe_surf(matrix1,ax1,ax2,clamp1,matrix2,ax3,ax4,clamp2,
 
     if(makeframe):
         fig.savefig(filename+'.pdf',format='pdf',rasterized=True)
-    plt.show()
+    if(showframe):
+        plt.show()
 
 ################################################################
 
-# def fourframe_surf(matrix,ax1,ax2,clamp,xlim=None,ylim=None,xticks=None,yticks=None,
-#         xlabel=None,ylabel=None,barlabel=None,logplot=0,makeframe=0,filename='none'):
-#
-#     AX1, AX2 = np.meshgrid(ax1,ax2)
-#     if(logplot):
-#         matrix = np.log10(matrix)
-#
-#     fig = plt.figure(figsize=(15,13),facecolor='white')
-#     gs = gridspec.GridSpec(1,1)
-#
-
 def fourframe_surf(matrix1,ax1,ax2,clamp1,matrix2,ax3,ax4,clamp2,
-        matrix3,ax5,ax6,clamp3,matrix4,ax7,ax8,clamp4,
-        xlim1=None,ylim1=None,xticks1=None,yticks1=None,
-        xlabel1=None,ylabel1=None,barlabel1=None,
-        xlim2=None,ylim2=None,xticks2=None,yticks2=None,
-        xlabel2=None,ylabel2=None,barlabel2=None,
-        xlim3=None,ylim3=None,xticks3=None,yticks3=None,
-        xlabel3=None,ylabel3=None,barlabel3=None,
-        xlim4=None,ylim4=None,xticks4=None,yticks4=None,
-        xlabel4=None,ylabel4=None,barlabel4=None,
-        logplot=0,makeframe=0,filename='none'):
+                   matrix3,ax5,ax6,clamp3,matrix4,ax7,ax8,clamp4,
+                   xlim1=None,ylim1=None,xticks1=None,yticks1=None,
+                   xlabel1=None,ylabel1=None,barlabel1=None,
+                   xlim2=None,ylim2=None,xticks2=None,yticks2=None,
+                   xlabel2=None,ylabel2=None,barlabel2=None,
+                   xlim3=None,ylim3=None,xticks3=None,yticks3=None,
+                   xlabel3=None,ylabel3=None,barlabel3=None,
+                   xlim4=None,ylim4=None,xticks4=None,yticks4=None,
+                   xlabel4=None,ylabel4=None,barlabel4=None,
+                   logplot=0,makeframe=0,filename='none',showframe=True):
 
     AX1, AX2 = np.meshgrid(ax1,ax2)
     AX3, AX4 = np.meshgrid(ax3,ax4)
@@ -409,6 +405,54 @@ def fourframe_surf(matrix1,ax1,ax2,clamp1,matrix2,ax3,ax4,clamp2,
 
     if(makeframe):
         fig.savefig(filename+'.pdf',format='pdf',rasterized=True)
-    plt.show()
+    if(showframe):
+        plt.show()
+
+################################################################
+
+def oneframe_polarsurf(matrix,ax1,ax2,clamp,axes_aspect=True,
+                       ylim=None,xticks=None,yticks=None,
+                       xlabel=None,ylabel=None,barlabel=None,logplot=0,
+                       makeframe=0,filename='none',showframe=True):
+
+    matrix_twice = np.concatenate((matrix,matrix[::-1,:],matrix[0:1,:]),axis=0)
+    ax1_twice = np.concatenate((ax1,2.0*np.pi - ax1[::-1],ax1[0:1]),axis=0)
+    
+    AX1, AX2 = np.meshgrid(ax2,ax1_twice)
+    if(logplot):
+        matrix_twice = np.log10(matrix_twice)
+
+    fig = plt.figure(figsize=(10,8),facecolor='white')
+    #fig = plt.figure(figsize=(8,13),facecolor='white')
+    gs = gridspec.GridSpec(1,1)
+    
+    ax1 = plt.subplot(gs[0,0],polar=True)
+    surf1 = ax1.pcolormesh(AX2,AX1,matrix_twice,vmax=clamp[1],vmin=clamp[0],
+                               shading='gouraud',rasterized='True')
+    cb1 = fig.colorbar(surf1,ax=ax1,use_gridspec=True,pad=0.1)
+    cb1.set_ticks(np.arange(clamp[1],clamp[0]-1,-1))
+    if(barlabel is not None):
+        cb1.set_label(barlabel,rotation=90,fontsize=20)
+    if(axes_aspect is True):
+        ax1.set_aspect('equal')
+    #ax1.axis('tight')
+    ax1.set_theta_offset(np.pi/2.0)
+    if(xticks is not None):
+        ax1.set_xticks(xticks)
+    ax1.set_rlabel_position(-50)
+    if(yticks is not None):        
+        ax1.set_yticks(yticks)
+    ax1.tick_params(axis='both',labelsize=16)
+    ax1.tick_params(axis='y',colors='white')
+    if(ylim is not None):
+        ax1.set_ylim(ylim)
+    if(xlabel is not None):
+        ax1.set_xlabel(xlabel,fontsize=20)
+    #if(ylabel is not None):
+    #    ax1.set_ylabel(ylabel,fontsize=20)
+    if(makeframe):
+        fig.savefig(filename+'.pdf',format='pdf',rasterized=True)
+    if(showframe):
+        plt.show()
 
 ################################################################
