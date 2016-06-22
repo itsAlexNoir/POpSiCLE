@@ -83,13 +83,30 @@ if(params.draw_polar_amplitude):
     clamp = [-6,-4]
     xticks = None #np.arange(0,25,0.2)
     yticks = None #np.arange(-15.,16.,0.2)
-    graph.oneframe_surf(polar_prob/2.0/np.pi,ax.ke_ax,ax.theta_ax,clamp,True,
-                        [min(ax.theta_ax),max(ax.theta_ax)],[ax.dke,3.0],
+    graph.oneframe_surf(polar_prob,ax.ke_ax,ax.theta_ax,clamp,True,
+                        [min(ax.theta_ax),max(ax.theta_ax)],[0.0,3.0],
                         xticks,yticks,
                         r'$\theta$(rad)',r'$k_e$(a.u.)',
                         r'$\log_{10}|\Psi(k_e,\theta)|^2$',
-                        logplot,params.makeframe,'polar_prob')
+                        logplot,params.makeframe,'polar_prob',
+                        params.showframe)
 
+if(params.draw_sph_polar_amplitude):
+    print('Plotting polar amplitude in spherical coordinates...')
+    logplot = 1
+    clamp = [-6,-4]
+    xticks = None #np.arange(0,25,0.2)
+    yticks = np.arange(0.,5.,0.6)
+    graph.oneframe_polarsurf(polar_prob,np.fliplr([ax.theta_ax])[0],ax.ke_ax,
+                             clamp,True,
+                             [0.0,3.0],
+                             xticks,yticks,
+                             r'$\theta$ (degrees)',r'$k_e$(a.u.)',
+                             r'$\log_{10}|\Psi(k_e,\theta)|^2$',
+                             logplot,params.makeframe,'prob_sphpolarPAD',
+                             params.showframe)
+
+    
 if(params.draw_mes):
     print('Plotting photoelectron momentum...')
     probk = coords.func_smoother(ax.ke_ax,mes[:,1],ax.k_ax)
@@ -101,7 +118,8 @@ if(params.draw_mes):
                      [0.0,2.8],ylim,
                      xticks,yticks,
                      'Momentum (au)',r'$P(k)$',logplot,
-                     params.makeframe,'probke')
+                     params.makeframe,'probke',
+                     params.showframe)
 
 if(params.draw_pes):
     print('Plotting photoelectron energy spectra...')
@@ -114,7 +132,8 @@ if(params.draw_pes):
                      [0.0,2.8],ylim,
                      xticks,yticks,
                      'Energy (au)',r'$P(E)$',logplot,
-                     params.makeframe,'probEe')
+                     params.makeframe,'probEe',
+                     params.showframe)
 
 if(params.draw_wavetime):
     print('Plotting sampling photoelectron energy spectra...')
@@ -126,7 +145,8 @@ if(params.draw_wavetime):
                      [0.0,2.8],ylim,
                      xticks,yticks,
                      'Time (au)',r'$P(x)$',logplot,
-                     params.makeframe,'prob_wavetime')
+                     params.makeframe,'prob_wavetime',
+                     params.showframe)
 
         
 if(params.draw_sampling_pes):
@@ -139,8 +159,10 @@ if(params.draw_sampling_pes):
                      [0.0,2.8],ylim,
                      xticks,yticks,
                      'Energy (au)',r'$P(E)$',logplot,
-                     params.makeframe,'prob_SPES')
+                     params.makeframe,'prob_SPES',
+                     params.showframe)
 
+    
 if(params.draw_sampling_pad):
     print('Plotting sampling pad...')
     logplot = 1
@@ -152,7 +174,8 @@ if(params.draw_sampling_pad):
                         xticks,yticks,
                         r'$\theta$(rad)',r'Energy (a.u.)',
                         r'$\log_{10}|\Psi(E_e,\theta)|^2$',
-                        logplot,params.makeframe,'prob_SPAD')
+                        logplot,params.makeframe,'prob_SPAD',
+                        params.showframe)
 
 # if(params.draw_Etotal):
 #     xlim = [0.0,2.0]
@@ -161,7 +184,8 @@ if(params.draw_sampling_pad):
 #     graph.plotprob1d(probE*1e4,kax.E_ax,xlim,ylim,
 #                      xticks,yticks,
 #                      'Energy (au)',r'$P(E) (10^{-4} au)$',
-#                      logplot,params.makeframe,'probE')
+#                      logplot,params.makeframe,'probE',
+#                      params.showframe)
 
 if(params.draw_total_cross):
     print('Plotting photoelectron momentum...')
@@ -175,7 +199,8 @@ if(params.draw_total_cross):
                      xticks,yticks,
                      'Ejected electron energy (au)',
                      r'Total cross section (au)',logplot,
-                     params.makeframe,'total_cross')
+                     params.makeframe,'total_cross',
+                     params.showframe)
 
 
 # if(params.draw_diff_cross):
@@ -187,4 +212,5 @@ if(params.draw_total_cross):
 #                      [0.0,np.pi],ylim,
 #                      xticks,yticks,
 #                      'theta (rad)',r'DCS (au)',logplot,
-#                      params.makeframe,'diff_cross')
+#                      params.makeframe,'diff_cross',
+#                      params.showframe)

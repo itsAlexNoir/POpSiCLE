@@ -296,16 +296,15 @@ CONTAINS
        coulomb_exp_ener)
     
     IMPLICIT NONE
-
+    
     REAL(dp), INTENT(IN)           :: afield(:, :)
     REAL(dp), INTENT(IN)           :: time(:)
     REAL(dp), INTENT(IN)           :: maxtime
     COMPLEX(dp), INTENT(OUT)       :: phase(:, :, :)
     REAL(dp), INTENT(IN), OPTIONAL :: coulomb_exp_ener
     
-    REAL(dp)                       :: term1, term2
-    REAL(dp)                       :: term3, term4
-    REAL(dp)                       :: cou_ener, newterm
+    REAL(dp)                       :: integralAx, integralAz
+    REAL(dp)                       :: cou_ener
     INTEGER                        :: ik, itheta, iphi
     INTEGER                        :: itime, numtimesteps
     
@@ -321,40 +320,48 @@ CONTAINS
        cou_ener = 0.0_dp
     ENDIF
     
-    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi,itime) &
-    !$OMP& PRIVATE(term1,term2,term3,term4,newterm)
+    integralAx = 0.0_dp
+    integralAz = 0.0_dp
     
-    !$OMP DO COLLAPSE(3)
+    DO itime = 1, numtimesteps
+       IF( (itime.EQ.1) .OR. (itime.EQ.numtimesteps)) THEN
+          integralAx = integralAx + &
+               afield(1,itime)
+          
+          integralAz = integralAz + &
+               afield(3,itime)
+       ELSEIF(MOD(itime,2).EQ.0) THEN
+          integralAx = integralAx + &
+               afield(1,itime) * 4.0_dp
+          
+          integralAz = integralAz + &
+               afield(3,itime) * 4.0_dp
+       ELSEIF(MOD(itime,2).NE.0) THEN                
+          integralAx = integralAx + &
+               afield(1,itime) * 2.0_dp
+          
+          integralAz = integralAz + &
+               afield(3,itime) * 2.0_dp
+       ENDIF
+       
+    ENDDO
+    
+    integralAx = integralAx * dt / 3.0_dp
+    integralAz = integralAz * dt / 3.0_dp
+    
+    write(*,*) 'int',maxtime, integralAz
+    
+    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi)
+    
+    !$OMP DO COLLAPSE(3)    
     DO ik = 1, numkpts
        DO iphi = 1, numphipts
           DO itheta = 1, numthetapts
-             
-             newterm = 0.0_dp
-             DO itime = 1, numtimesteps
-                term1 =  k_ax(ik) * k_ax(ik)
-                
-                term2 = k_ax(ik) * afield(1,itime) * &
-                     SIN(theta_ax(itheta)) * COS(phi_ax(iphi))
-                
-                term3 = k_ax(ik) * afield(2,itime) * &
-                     SIN(theta_ax(itheta)) * SIN(phi_ax(iphi))
-                
-                term4 = k_ax(ik) * afield(3,itime) * costheta_ax(itheta)
-                
-                IF( (itime.EQ.1) .OR. (itime.EQ.numtimesteps)) THEN
-                   newterm = newterm + &
-                        (term1 + 2.0_dp * (term2 + term3 + term4))
-                ELSEIF(MOD(itime,2).EQ.0) THEN
-                   newterm = newterm + &
-                        (term1 + 2.0_dp * (term2 + term3 + term4)) * 4.0_dp
-                ELSEIF(MOD(itime,2).NE.0) THEN                
-                   newterm = newterm + &
-                        (term1 + 2.0_dp * (term2 + term3 + term4)) * 2.0_dp
-                ENDIF
-                
-             ENDDO
              phase(ik,itheta,iphi) = EXP( ZIMAGONE * &
-                  (0.5_dp * newterm * (dt / 3.0_dp) + cou_ener * maxtime) )
+                  ( 0.5_dp * k_ax(ik) * k_ax(ik) * maxtime ) + &
+                  ( k_ax(ik) * integralAx * SIN(theta_ax(itheta)) * COS(phi_ax(iphi)) ) + &
+                  ( k_ax(ik) * integralAz * costheta_ax(itheta) ) + &
+                  ( cou_ener * maxtime ) )
           ENDDO
        ENDDO
     ENDDO
@@ -363,7 +370,7 @@ CONTAINS
     
     
   END SUBROUTINE get_volkov_phase
-
+  
   !****************************************************************!
 
   SUBROUTINE get_flux(filename, lmax, mmax, bk)
@@ -471,6 +478,14 @@ CONTAINS
     WRITE(*,*)
     
     bk = bk * ZIMAGONE * SQRT(2.0_dp / pi) * ( dt / 3.0_dp )
+
+
+    open(unit=22,form='formatted',file='volkov.dat')
+    do ik =1, numkpts
+       write(22,*) k_ax(ik), REAL(volkov_phase(ik,1,1)) , AIMAG(volkov_phase(ik,1,1))
+    enddo
+    
+    close(22)
     
     ! Deallocate like no other
     DEALLOCATE(time,efield,afield)
