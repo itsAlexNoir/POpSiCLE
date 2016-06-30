@@ -368,7 +368,8 @@ CONTAINS
           sum = ZERO
           DO ifd = -fd_rule , fd_rule
              sum = sum + &
-                  fd_coeff1(ifd) * wave(fd_rule+1+ifd,itheta,iphi) 
+                  fd_coeff1(ifd) / deltar * &
+                  wave(fd_rule+1+ifd,itheta,iphi) 
           ENDDO
           wave_deriv(itheta,iphi) = sum
        ENDDO

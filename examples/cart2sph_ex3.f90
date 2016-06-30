@@ -218,7 +218,7 @@ PROGRAM cart2sph_ex2
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL cpu_time(start_time)
   
-  CALL get_cartesian_surface(filename, psi, x_ax, y_ax, z_ax, dims, &
+  CALL get_cartesian_surface(filename, psi, xpts, ypts, zpts, dims, &
        fdrule, 0.0_dp , efield, afield, lmax, .TRUE. )
   
   CALL cpu_time(end_time)
