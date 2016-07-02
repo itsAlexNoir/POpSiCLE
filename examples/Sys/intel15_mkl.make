@@ -36,7 +36,7 @@ FFTW_INCL  = -I${FFTW_ROOT}/include
 FFTW_LIBS  = -L${FFTW_ROOT}/lib -lfftw3 -lm
 
 
-MKL_LIBS   = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -openmp
+MKL_LIBS   = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -qopenmp
 
 LIBS	   = ${MKL_LIBS}
 OMPLIBS	   = -openmp

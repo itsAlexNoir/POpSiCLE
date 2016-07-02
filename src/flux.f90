@@ -288,6 +288,7 @@ CONTAINS
        CALL sphj(lmax,krb_ax(ik),max_order,jl(:,ik),jlp(:,ik))
     ENDDO
     
+    
   END SUBROUTINE initialize_tsurff
 
   !**************************************!
@@ -348,8 +349,6 @@ CONTAINS
     
     integralAx = integralAx * dt / 3.0_dp
     integralAz = integralAz * dt / 3.0_dp
-    
-    write(*,*) 'int',maxtime, integralAz
     
     !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi)
     
@@ -477,15 +476,8 @@ CONTAINS
     WRITE(*,*) '------------------------'
     WRITE(*,*)
     
-    bk = bk * ZIMAGONE * SQRT(2.0_dp / pi) * ( dt / 3.0_dp )
-
-
-    open(unit=22,form='formatted',file='volkov.dat')
-    do ik =1, numkpts
-       write(22,*) k_ax(ik), REAL(volkov_phase(ik,1,1)) , AIMAG(volkov_phase(ik,1,1))
-    enddo
-    
-    close(22)
+    bk = bk * ZIMAGONE * SQRT(2.0_dp / pi) * &
+         rb * rb * ( dt / 3.0_dp )
     
     ! Deallocate like no other
     DEALLOCATE(time,efield,afield)
@@ -507,7 +499,7 @@ CONTAINS
     COMPLEX(dp), INTENT(OUT)      :: integrand(:, :, :)
     
     COMPLEX(dp)                   :: term1, term2
-    COMPLEX(dp)                   :: term3, suma
+    COMPLEX(dp)                   :: fieldterm, suma
     INTEGER                       :: mmin
     INTEGER                       :: il, im
     INTEGER                       :: ill, imm
@@ -516,9 +508,9 @@ CONTAINS
     !---------------------------------------------------!
 
     mmin = -mmax
-
+    
     !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
-    !$OMP& PRIVATE(term1,term2,term3) &
+    !$OMP& PRIVATE(term1,term2,fieldterm) &
     !$OMP& PRIVATE(il,im,ill,imm)
     
     !$OMP DO COLLAPSE(3)
@@ -527,36 +519,35 @@ CONTAINS
           DO ik = 1, numkpts
              suma = ZERO
              DO il = 0, lmax
+                
                 DO im = mmin, mmax
-                   
                    term1 = ZERO
                    term2 = ZERO
-                   term3 = ZERO
                    
-!!$                   term1 = (-ZIMAGONE)**il * &
-!!$                        (0.5_dp * krb_ax(ik) * jlp(il,ik) - jl(il,ik)) * rb * &
-!!$                        func_lm(im,il)
-                   
-                   term1 = k_ax(ik) * jlp(il,ik) * func_lm(im,il)
-                   
-                   term2 =  - jl(il,ik) * funcp_lm(im,il)
+                   term1 = term1 + func_lm(im,il) * &
+                        sph_harmonics(iphi,itheta,im,il)
+                   term2 = term2 + funcp_lm(im,il) * &
+                        sph_harmonics(iphi,itheta,im,il)
                    
                    DO ill = 0, lmax
                       DO imm = mmin, mmax
-                         term3 = term3 + &
-                              xcoupling(im,il,imm,ill) * afield(1) * psi_lm(imm,ill) + &
-                              zcoupling(im,il,imm,ill) * afield(3) * psi_lm(imm,ill)
+                         fieldterm = ZERO
+                         fieldterm = fieldterm + &
+                              xcoupling(im,il,imm,ill) * afield(1) * func_lm(imm,ill) + &
+                              zcoupling(im,il,imm,ill) * afield(3) * func_lm(imm,ill)
+                         
                       ENDDO
                    ENDDO
                    
-                   term3 = term3 * (-ZIMAGONE) * jl(il,ik)
-                   
-                   !! Finally, add together the terms
-                   suma = suma + sph_harmonics(iphi,itheta,im,il) * &
-                        (-ZIMAGONE)**il * rb * rb * &
-                        (0.5_dp * (term1 + term2) + term3)
+                   fieldterm = fieldterm * ZIMAGONE * sph_harmonics(iphi,itheta,im,il)
                    
                 ENDDO
+                
+                suma = suma + (-ZIMAGONE)**il * &
+                     (0.5_dp * k_ax(ik) * jlp(il,ik) * term1 &
+                     - 0.5_dp * jl(il,ik) * term2 &
+                     - jl(il,ik) * fieldterm )
+                
              ENDDO
              integrand(ik,itheta,iphi) = suma
           ENDDO
