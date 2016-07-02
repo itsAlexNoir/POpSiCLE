@@ -57,7 +57,7 @@ endif
 #####################
 
 ifeq (${compiler},intel)
-OMPLIBS = -openmp
+OMPLIBS = -qopenmp
 else ifeq (${compiler},gnu)
 OMPLIBS = -fopenmp
 else ifeq (${compiler},cray)
