@@ -147,11 +147,12 @@ boundary.o: scattboundcyl.o scattboundcart.o \
 	cubboundcyl.o cubboundcart.o
 ifeq (${FFT_LIB},mkl)
 fourier.o: ${MKL_DFTI_OBJS} constants.o tools.o
-sht.o: ${MKL_DFTI_OBJS} constants.o gaussleg.o fourier.o
+#sht.o: ${MKL_DFTI_OBJS} constants.o gaussleg.o fourier.o
 else ifeq (${FFT_LIB},fftw)
 fourier.o: constants.o tools.o fftw.o
-sht.o: constants.o gaussleg.o fftw.o fourier.o
+#sht.lo: constants.o gaussleg.o fourier.o
 endif
+sht.o: constants.o gaussleg.o
 patchwork.o: constants.o tools.o
 io_pop.o: constants.o patchwork.o 
 io_subset.o: constants.o tools.o patchwork.o
@@ -205,11 +206,12 @@ io_subset.lo: constants.lo tools.lo patchwork.lo
 io_surface.lo: constants.lo boundary.lo
 ifeq (${FFT_LIB},mkl)
 fourier.lo: ${MKL_DFTI_LO} constants.lo tools.lo
-sht.lo: ${MKL_DFTI_LO} constants.lo gaussleg.lo fourier.lo
+#sht.lo: ${MKL_DFTI_LO} constants.lo gaussleg.lo fourier.lo
 else ifeq (${FFT_LIB},fftw)
 fourier.lo: constants.lo tools.lo fftw.lo
-sht.lo: constants.lo gaussleg.lo fftw.lo fourier.lo
+#sht.lo: constants.lo gaussleg.lo fftw.lo fourier.lo
 endif
+sht.lo: constants.lo gaussleg.lo
 patchwork.lo: constants.lo tools.lo
 surface.lo: constants.lo tools.lo boundary.lo \
 	io_surface.lo
@@ -242,7 +244,7 @@ lib: check_paths ${POPSICLE_OBJS}
 	@echo 'Creating static library...'
 	ar ${ARFLAGS} libpopsicle_${PLIB}.a ${POPSICLE_OBJS} \
 	${SHEPPACK_OBJS}; \
-	ranlib libpopsicle_${PLIB}.a
+	ranlib -c libpopsicle_${PLIB}.a
 	cp -rf libpopsicle_${PLIB}.a ${POPSICLE_LIB}
 	cp -rf *.mod ${POPSICLE_INCL}
 	rm -rf libpopsicle_${PLIB}.a

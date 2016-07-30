@@ -38,27 +38,13 @@ MODULE corrsurface
   
   !-------------------------------------------!
   
-  INTERFACE initialize_correlated_cylindrical_surface
-     MODULE PROCEDURE initialize_correlated_cylindrical_surface_serial
-#if _COM_MPI
-     MODULE PROCEDURE initialize_correlated_cylindrical_surface_parallel
-#endif
-  END INTERFACE initialize_correlated_cylindrical_surface
-  
 !!$  INTERFACE initialize_correlated_cartesian_surface
 !!$     MODULE PROCEDURE initialize_correlated_cartesian3D_surface_serial
 !!$#if _COM_MPI
 !!$     MODULE PROCEDURE initialize_correlated_cartesian3D_surface_parallel
 !!$#endif
 !!$  END INTERFACE initialize_correlated_cartesian_surface
-  
-  INTERFACE get_correlated_cylindrical_surface
-     MODULE PROCEDURE get_correlated_cylindrical_surface_serial
-#if _COM_MPI
-     MODULE PROCEDURE get_correlated_cylindrical_surface_parallel
-#endif
-  END INTERFACE get_correlated_cylindrical_surface
-  
+    
 !!$  INTERFACE get_correlated_cartesian_surface
 !!$     MODULE PROCEDURE get_correlated_cartesian3D_surface_serial
 !!$#if _COM_MPI
@@ -66,12 +52,6 @@ MODULE corrsurface
 !!$#endif
 !!$  END INTERFACE get_correlated_cartesian_surface
   
-  INTERFACE delete_correlated_surface2D
-     MODULE PROCEDURE delete_correlated_surface2D_serial
-#if _COM_MPI
-     MODULE PROCEDURE delete_correlated_surface2D_parallel
-#endif
-  END INTERFACE delete_correlated_surface2D
   
 !!$  INTERFACE delete_correlated_surface3D
 !!$     MODULE PROCEDURE delete_correlated_surface3D_serial
@@ -104,64 +84,104 @@ MODULE corrsurface
   
   REAL(dp)                  :: rb, deltar
   INTEGER                   :: basis_order
-  INTEGER                   :: numpts, numrpts
-  INTEGER                   :: numthetapts, numphipts
   INTEGER                   :: numbigrpts
-  INTEGER                   :: numthetaptsperproc
-  INTEGER                   :: numphiptsperproc
-  INTEGER                   :: surfacecomm
-  INTEGER                   :: surfacerank
-  INTEGER                   :: numsurfaceprocs
   
 CONTAINS
   !********************************************************************!
   !********************************************************************!
-  SUBROUTINE initialize_correlated_cylindrical_surface_serial(rho_ax, z_ax, &
-       bigr_ax, dims, Rboundary, radius_tolerance, fd_rule, dr, lmax, order_basis,&
-       write_to_file, filename)
+  
+  SUBROUTINE initialize_correlated_cylindrical_surface(rho_ax, z_ax,&
+       bigr_ax, dims, Rboundary, radius_tolerance, fd_rule, dr, lmax, &
+       order_basis, filename, mpi_rank, mpi_size, comm)
     
     IMPLICIT NONE
     
-    REAL(dp), INTENT(IN)       :: rho_ax(:), z_ax(:)
-    REAL(dp), INTENT(IN)       :: bigr_ax(:)
-    INTEGER, INTENT(IN)        :: dims(:)
-    REAL(dp), INTENT(IN)       :: Rboundary
-    REAL(dp), INTENT(IN)       :: radius_tolerance
-    INTEGER, INTENT(IN)        :: fd_rule
-    REAL(dp), INTENT(IN)       :: dr
-    INTEGER, INTENT(IN)        :: lmax
-    INTEGER, INTENT(IN)        :: order_basis
-    LOGICAL, INTENT(IN)        :: write_to_file
-    CHARACTER(LEN=*), INTENT(IN) :: filename
+    REAL(dp), INTENT(IN)           :: rho_ax(:), z_ax(:)
+    REAL(dp), INTENT(IN)           :: bigr_ax(:)
+    INTEGER, INTENT(IN)            :: dims(:)
+    REAL(dp), INTENT(IN)           :: Rboundary
+    REAL(dp), INTENT(IN)           :: radius_tolerance
+    INTEGER, INTENT(IN)            :: fd_rule
+    REAL(dp), INTENT(IN)           :: dr
+    INTEGER, INTENT(IN)            :: lmax
+    INTEGER, INTENT(IN)            :: order_basis
+    CHARACTER(LEN=*), INTENT(IN)   :: filename
+    INTEGER, INTENT(IN), OPTIONAL  :: mpi_rank, mpi_size
+    INTEGER, INTENT(IN), OPTIONAL  :: comm
+    
+    INTEGER                        :: numthetaoffset
     
     !------------------------------------------------------------!
-
+    
+    ! Initilize finite-difference coefficients
+    CALL initialize_fd_coeffs(fd_rule)
+    
     rb = Rboundary
     deltar = dr
     basis_order = order_basis
     numbigrpts = SIZE(bigr_ax)
     
-    ! Initialize finite-difference coefficients
-    CALL initialize_fd_coeffs(fd_rule)
-    
-    !! Initialize spherical grid
-    !! For scattered interpolation uncomment the paragraph below.
-    !CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
-    !     Rboundary, radius_tolerance, fd_rule, dr, lmax, numpts, &
-    !     numrpts, numthetapts )
-    
-    !For bicubic interpolation, the paragraph below.
-    CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
-         fd_rule, dr, lmax, numrpts, numthetapts)
-        
-    ! Allocate arrays
-    ALLOCATE(spherical_wave2D1D(1:numbigrpts,1:numrpts,1:numthetapts))   
-    ALLOCATE(spherical_wave2D1D_dr(1:numrpts,1:numthetapts))
-    ALLOCATE(spherical_wave2D1D_dtheta(1:numrpts,1:numthetapts))
-    ALLOCATE(sphericaln_wave2D(1:basis_order,1:numrpts,1:numthetapts))   
-    ALLOCATE(sphericaln_wave2D_deriv(1:basis_order,1:numthetapts))
-    ALLOCATE(basis_set(1:numbigrpts,1:basis_order))
-    
+    IF(PRESENT(mpi_size) .AND. (mpi_size.GT.1)) THEN
+       ! Initialize spherical grid
+       ! For scattered interpolation
+       !CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
+       !     radius_tolerance, fd_rule, dr, lmax, rank, size, comm )
+       
+       ! For bicubic interpolation
+       CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
+            fd_rule, dr, lmax, mpi_rank, mpi_size, comm )
+       
+       numthetaoffset = INT(numthetapts / numsurfaceprocs)
+       
+       IF(i_am_surface(mpi_rank).EQ.1) THEN
+          
+          
+          ALLOCATE(spherical_wave2D1D_local(1:numbigrpts,1:numrpts,1:numthetapts))
+          ALLOCATE(spherical_wave2D1D_global(1:numbigrpts,1:numrpts,1:numthetapts))
+          ALLOCATE(spherical_wave2D1D_dr(1:numrpts,1:numthetapts))
+          ALLOCATE(spherical_wave2D1D_dtheta(1:numrpts,1:numthetapts))
+          IF(numthetaoffset .EQ. 0) THEN
+             ALLOCATE(sphericaln_wave2D(1:basis_order,1:numrpts,1:numthetapts))
+             ALLOCATE(sphericaln_wave2D_deriv(1:basis_order,1:numthetapts))
+          ELSE
+             ALLOCATE(sphericaln_wave2D(1:basis_order,1:numrpts,1:numthetaptsperproc))
+             ALLOCATE(sphericaln_wave2D_deriv(1:basis_order,1:numthetaptsperproc))
+          ENDIF
+          ALLOCATE(basis_set(1:numbigrpts,1:basis_order))
+          
+          spherical_wave2D1D_local  = ZERO
+          spherical_wave2D1D_global = ZERO
+          
+          ! Create basis set
+          CALL create_sine_basis(basis_set,basis_order, bigr_ax)
+          
+          CALL create_surface_file(filename, surfacecomm)
+       ENDIF
+    ELSE
+
+       !! Initialize spherical grid
+       !! For scattered interpolation uncomment the paragraph below.
+       !CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
+       !     Rboundary, radius_tolerance, fd_rule, dr, lmax )
+       
+       !For bicubic interpolation, the paragraph below.
+       CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
+            fd_rule, dr, lmax )
+       
+       ! Allocate arrays
+       ALLOCATE(spherical_wave2D1D(1:numbigrpts,1:numrpts,1:numthetapts))   
+       ALLOCATE(spherical_wave2D1D_dr(1:numrpts,1:numthetapts))
+       ALLOCATE(spherical_wave2D1D_dtheta(1:numrpts,1:numthetapts))
+       ALLOCATE(sphericaln_wave2D(1:basis_order,1:numrpts,1:numthetapts))   
+       ALLOCATE(sphericaln_wave2D_deriv(1:basis_order,1:numthetapts))
+       ALLOCATE(basis_set(1:numbigrpts,1:basis_order))
+       
+       ! Create basis set
+       CALL create_sine_basis(basis_set,order_basis, bigr_ax)
+       
+       CALL create_surface_file(filename)
+    ENDIF
+
     spherical_wave2D1D        = ZERO
     spherical_wave2D1D_dr     = ZERO
     spherical_wave2D1D_dtheta = ZERO
@@ -169,96 +189,10 @@ CONTAINS
     sphericaln_wave2D_deriv   = ZERO
     basis_set                 = 0.0_dp
     
-    ! Create basis set
-    CALL create_sine_basis(basis_set,order_basis, bigr_ax)
     
-    IF(write_to_file) &
-         CALL create_surface_file(filename)
-    
-  END SUBROUTINE initialize_correlated_cylindrical_surface_serial
-  
-  !****************************************************************!
-#if _COM_MPI
-  SUBROUTINE initialize_correlated_cylindrical_surface_parallel(rho_ax, z_ax,&
-       bigr_ax, dims, Rboundary, radius_tolerance, fd_rule, dr, lmax, order_basis, &
-       mpirank, mpisize, comm, write_to_file, filename)
-    
-    IMPLICIT NONE
-    
-    REAL(dp), INTENT(IN)       :: rho_ax(:), z_ax(:)
-    REAL(dp), INTENT(IN)       :: bigr_ax(:)
-    INTEGER, INTENT(IN)        :: dims(:)
-    REAL(dp), INTENT(IN)       :: Rboundary
-    REAL(dp), INTENT(IN)       :: radius_tolerance
-    INTEGER, INTENT(IN)        :: fd_rule
-    REAL(dp), INTENT(IN)       :: dr
-    INTEGER, INTENT(IN)        :: lmax
-    INTEGER, INTENT(IN)        :: order_basis
-    INTEGER, INTENT(IN)        :: mpirank, mpisize
-    INTEGER, INTENT(IN)        :: comm
-    LOGICAL, INTENT(IN)        :: write_to_file
-    CHARACTER(LEN=*), INTENT(IN) :: filename
+       
+  END SUBROUTINE initialize_correlated_cylindrical_surface
 
-    INTEGER                    :: numthetaoffset
-    
-    !------------------------------------------------------------!
-    
-    ! Initilize finite-difference coefficients
-    CALL initialize_fd_coeffs(fd_rule)
-    
-    ! Initialize spherical grid
-    ! For scattered interpolation
-    !CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
-    !     radius_tolerance, fd_rule, dr, lmax, rank, size, comm, &
-    !     numpts, numrpts, numthetapts, surfacerank, numsurfaceprocs, &
-    !     surfacecomm, numthetaptsperproc )
-    
-    ! For bicubic interpolation
-    CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
-         fd_rule, dr, lmax, mpirank, mpisize, comm, &
-         numrpts, numthetapts, surfacerank, numsurfaceprocs, &
-         surfacecomm, numthetaptsperproc )
-
-    numthetaoffset = INT(numthetapts / numsurfaceprocs)
-    
-    IF(i_am_surface(mpirank).EQ.1) THEN
-
-       rb = Rboundary
-       deltar = dr
-       basis_order = order_basis
-       numbigrpts = SIZE(bigr_ax)
-       
-       ALLOCATE(spherical_wave2D1D_local(1:numbigrpts,1:numrpts,1:numthetapts))
-       ALLOCATE(spherical_wave2D1D_global(1:numbigrpts,1:numrpts,1:numthetapts))
-       ALLOCATE(spherical_wave2D1D_dr(1:numrpts,1:numthetapts))
-       ALLOCATE(spherical_wave2D1D_dtheta(1:numrpts,1:numthetapts))
-       IF(numthetaoffset .EQ. 0) THEN
-          ALLOCATE(sphericaln_wave2D(1:basis_order,1:numrpts,1:numthetapts))
-          ALLOCATE(sphericaln_wave2D_deriv(1:basis_order,1:numthetapts))
-       ELSE
-          ALLOCATE(sphericaln_wave2D(1:basis_order,1:numrpts,1:numthetaptsperproc))
-          ALLOCATE(sphericaln_wave2D_deriv(1:basis_order,1:numthetaptsperproc))
-       ENDIF
-       ALLOCATE(basis_set(1:numbigrpts,1:basis_order))
-       
-       spherical_wave2D1D_local  = ZERO
-       spherical_wave2D1D_global = ZERO
-       spherical_wave2D1D_dr     = ZERO
-       spherical_wave2D1D_dtheta = ZERO
-       spherical_wave2D1D        = ZERO
-       sphericaln_wave2D         = ZERO
-       sphericaln_wave2D_deriv   = ZERO
-       basis_set                 = 0.0_dp
-       
-       ! Create basis set
-       CALL create_sine_basis(basis_set,basis_order, bigr_ax)
-       
-       IF(write_to_file) &
-            CALL create_surface_file(filename, surfacecomm)
-    ENDIF
-    
-  END SUBROUTINE initialize_correlated_cylindrical_surface_parallel
-#endif  
   !****************************************************************!
   
 !!$  SUBROUTINE initialize_cartesian3D_surface_serial(x_ax, y_ax, z_ax, &
@@ -392,15 +326,17 @@ CONTAINS
 !!$    
 !!$  END SUBROUTINE initialize_cartesian3D_surface_parallel
 !!$#endif  
-  !****************************************************************!
-  !****************************************************************!
-  
-  SUBROUTINE get_correlated_cylindrical_surface_serial(filename, wavefunc, &
+  !**********************************************************************!
+  !**********************************************************************!
+    
+  !**********************************************************************!
+
+  SUBROUTINE get_correlated_cylindrical_surface(filename, wavefunc, &
        rho_ax, z_ax, bigr_ax, dims, fd_rule, time, efield, afield, &
-       lmax, write_to_file)
+       lmax, mpi_rank, mpi_size )
     
     IMPLICIT NONE
-
+    
     CHARACTER(LEN=*), INTENT(IN) :: filename
     COMPLEX(dp), INTENT(IN)      :: wavefunc(:, :, :)
     REAL(dp), INTENT(IN)         :: rho_ax(:), z_ax(:)
@@ -410,71 +346,7 @@ CONTAINS
     REAL(dp), INTENT(IN)         :: time
     REAL(dp), INTENT(IN)         :: efield(:), afield(:)
     INTEGER, INTENT(IN)          :: lmax
-    LOGICAL, INTENT(IN)          :: write_to_file
-    
-    INTEGER                      :: middle_pt
-    COMPLEX(dp)                  :: suma
-    INTEGER                      :: ir, itheta, ibigr
-    INTEGER                      :: iorder
-    !----------------------------------------------------------!
-
-    DO ibigr = 1, numbigrpts
-       ! For scattered interpolation
-       !CALL get_cylindrical_boundary( wavefunc, spherical_wave2D, &
-       !     spherical_wave2D_dr, spherical_wave2D_dtheta, &
-       !     'quadratic')
-       
-       ! For bicubic interpolation
-       CALL get_cylindrical_boundary( rho_ax, z_ax, dims, &
-            wavefunc(ibigr,:,:), fd_rule, spherical_wave2D1D(ibigr,:,:), &
-            spherical_wave2D1D_dr, spherical_wave2D1D_dtheta)
-    ENDDO
-    
-    middle_pt = fd_rule + 1
-    ! Project the basis set against the wavefunction at the boundary
-    DO iorder = 1, basis_order
-       DO itheta = 1, numthetapts
-          DO ir = 1, numrpts
-             suma = ZERO
-             DO ibigr = 1, numbigrpts
-                suma = suma + basis_set(ibigr,iorder) * &
-                     spherical_wave2D1D(ibigr,ir,itheta)
-             ENDDO
-             sphericaln_wave2D(iorder,ir,itheta) = suma
-          ENDDO
-       ENDDO
-       
-       ! Calculate the derivative
-       CALL make_wave_boundary_derivative(sphericaln_wave2D(iorder,:,:),&
-            sphericaln_wave2D_deriv(iorder,:),fd_rule,deltar,&
-            numrpts,numthetapts)
-    ENDDO
-    
-    ! Write boundary points to a HDF5 file
-    IF (write_to_file) &
-         CALL write_correlated_surface_file(filename, sphericaln_wave2D(:,middle_pt,:), &
-         sphericaln_wave2D_deriv, time, efield, afield, lmax, basis_order)
-    
-  END SUBROUTINE get_correlated_cylindrical_surface_serial
-  
-  !**********************************************************************!
-#if _COM_MPI
-  SUBROUTINE get_correlated_cylindrical_surface_parallel(filename, wavefunc, &
-       rho_ax, z_ax, bigr_ax, dims, fd_rule, time, efield, afield, &
-       lmax, rank, write_to_file)
-    
-    IMPLICIT NONE
-    
-    CHARACTER(LEN=*), INTENT(IN) :: filename
-    COMPLEX(dp), INTENT(IN)      :: wavefunc(:, :, :)
-    REAL(dp), INTENT(IN)         :: rho_ax(:), z_ax(:)
-    REAL(dp), INTENT(IN)         :: bigr_ax(:)
-    INTEGER, INTENT(IN)          :: dims(:)
-    INTEGER, INTENT(IN)          :: fd_rule
-    REAL(dp), INTENT(IN)         :: time
-    REAL(dp), INTENT(IN)         :: efield(:), afield(:)
-    INTEGER, INTENT(IN)          :: lmax, rank
-    LOGICAL, INTENT(IN)          :: write_to_file
+    INTEGER, INTENT(IN), OPTIONAL :: mpi_rank, mpi_size
     
     INTEGER                      :: numtotalpts
     INTEGER                      :: numthetaoffset
@@ -482,98 +354,140 @@ CONTAINS
     COMPLEX(dp)                  :: suma
     INTEGER                      :: ir, itheta, ierror
     INTEGER                      :: ibigr, iorder
+    
     !----------------------------------------------------------!
     
-    IF(i_am_surface(rank) .EQ. 1) THEN
+    IF(PRESENT(mpi_size) .AND. (mpi_size.GT.1)) THEN
+       IF(i_am_surface(mpi_rank) .EQ. 1) THEN
+          DO ibigr = 1, numbigrpts
+             !! For scattered interpolation
+             !CALL get_cylindrical_boundary( wavefunc, spherical_wave2D_local, &
+             !     spherical_wave2D_dr, spherical_wave2D_dtheta, &
+             !     'quadratic', rank)
+             
+             CALL get_cylindrical_boundary( rho_ax, z_ax, dims, &
+                  wavefunc(ibigr,:,:), fd_rule, spherical_wave2D1D_local(ibigr,:,:), &
+                  spherical_wave2D1D_dr, spherical_wave2D1D_dtheta, mpi_rank)
+          ENDDO
+          
+          ! Communicate the spherical wavefunction
+          numtotalpts = numrpts * numthetapts * numbigrpts
+          spherical_wave2D1D_global = ZERO
+#if _COM_MPI
+          CALL MPI_ALLREDUCE(spherical_wave2D1D_local, spherical_wave2D1D_global, &
+               numtotalpts, MPI_DOUBLE_COMPLEX, MPI_SUM, surfacecomm, ierror)
+#endif
+          middle_pt = fd_rule + 1
+          numthetaoffset = INT(numthetapts / numsurfaceprocs)
+          
+          IF(numthetaoffset.EQ.0) THEN
+             
+             spherical_wave2D1D = spherical_wave2D1D_global
+             
+             ! Project the basis set against the wavefunction at the boundary
+             DO iorder = 1, basis_order
+                DO itheta = 1, numthetapts
+                   DO ir = 1, numrpts
+                      suma = ZERO
+                      DO ibigr = 1, numbigrpts
+                         suma = suma + basis_set(ibigr,iorder) * &
+                              spherical_wave2D1D(ibigr,ir,itheta)
+                      ENDDO
+                      sphericaln_wave2D(iorder,ir,itheta) = suma
+                   ENDDO
+                ENDDO
+                
+                CALL make_wave_boundary_derivative(sphericaln_wave2D(iorder,:,:),&
+                     sphericaln_wave2D_deriv(iorder,:),fd_rule,deltar,&
+                     numrpts,numthetapts)
+                
+             ENDDO
+             ! Write boundary points to a HDF5 file
+!!$             IF (surfacerank.EQ.0) &
+!!$                  CALL write_correlated_surface_file(filename,&
+!!$                  sphericaln_wave2D(:,middle_pt,:), &
+!!$                  sphericaln_wave2D_deriv, time, efield, afield, lmax, basis_order)
+             
+          ELSE
+             offset = numthetaoffset * surfacerank       
+             
+             DO itheta = 1, numthetaptsperproc
+                DO ir = 1, numrpts
+                   DO ibigr = 1, numbigrpts
+                      spherical_wave2D1D(ibigr,ir,itheta) = &
+                           spherical_wave2D1D_global(ibigr,ir,offset+itheta)
+                   ENDDO
+                ENDDO
+             ENDDO
+             
+             ! Project the basis set against the wavefunction at the boundary
+             DO iorder = 1, basis_order
+                DO itheta = 1, numthetapts
+                   DO ir = 1, numrpts
+                      suma = ZERO
+                      DO ibigr = 1, numbigrpts
+                         suma = suma + basis_set(ibigr,iorder) * &
+                              spherical_wave2D1D(ibigr,ir,itheta)
+                      ENDDO
+                      sphericaln_wave2D(iorder,ir,itheta) = suma
+                   ENDDO
+                ENDDO
+                
+                CALL make_wave_boundary_derivative(sphericaln_wave2D(iorder,:,:),&
+                     sphericaln_wave2D_deriv(iorder,:),fd_rule,deltar,&
+                     numrpts,numthetaptsperproc)
+                
+             ENDDO
+             ! Write boundary points to a HDF5 file
+!!$             CALL write_correlated_surface_file(filename, &
+!!$                  sphericaln_wave2D(:,middle_pt,:), &
+!!$                  sphericaln_wave2D_deriv, time, efield, afield, lmax, basis_order,&
+!!$                  surfacerank, numsurfaceprocs, surfacecomm, numthetaptsperproc)
+          ENDIF
+       ENDIF
+    ELSE
+       
        DO ibigr = 1, numbigrpts
-          !! For scattered interpolation
-          !CALL get_cylindrical_boundary( wavefunc, spherical_wave2D_local, &
+          ! For scattered interpolation
+          !CALL get_cylindrical_boundary( wavefunc, spherical_wave2D, &
           !     spherical_wave2D_dr, spherical_wave2D_dtheta, &
-          !     'quadratic', rank)
+          !     'quadratic')
           
+          ! For bicubic interpolation
           CALL get_cylindrical_boundary( rho_ax, z_ax, dims, &
-               wavefunc(ibigr,:,:), fd_rule, spherical_wave2D1D_local(ibigr,:,:), &
-               spherical_wave2D1D_dr, spherical_wave2D1D_dtheta, rank)
+               wavefunc(ibigr,:,:), fd_rule, spherical_wave2D1D(ibigr,:,:), &
+               spherical_wave2D1D_dr, spherical_wave2D1D_dtheta)
        ENDDO
-          
-       ! Communicate the spherical wavefunction
-       numtotalpts = numrpts * numthetapts * numbigrpts
-       spherical_wave2D1D_global = ZERO
-       CALL MPI_ALLREDUCE(spherical_wave2D1D_local, spherical_wave2D1D_global, &
-            numtotalpts, MPI_DOUBLE_COMPLEX, MPI_SUM, surfacecomm, ierror)
        
        middle_pt = fd_rule + 1
-       numthetaoffset = INT(numthetapts / numsurfaceprocs)
-       
-       IF(numthetaoffset.EQ.0) THEN
-          
-          spherical_wave2D1D = spherical_wave2D1D_global
-
-          ! Project the basis set against the wavefunction at the boundary
-          DO iorder = 1, basis_order
-             DO itheta = 1, numthetapts
-                DO ir = 1, numrpts
-                   suma = ZERO
-                   DO ibigr = 1, numbigrpts
-                      suma = suma + basis_set(ibigr,iorder) * &
-                           spherical_wave2D1D(ibigr,ir,itheta)
-                   ENDDO
-                   sphericaln_wave2D(iorder,ir,itheta) = suma
-                ENDDO
-             ENDDO
-             
-             CALL make_wave_boundary_derivative(sphericaln_wave2D(iorder,:,:),&
-                  sphericaln_wave2D_deriv(iorder,:),fd_rule,deltar,&
-                  numrpts,numthetapts)
-             
-          ENDDO
-          ! Write boundary points to a HDF5 file
-          IF (write_to_file .AND. (surfacerank.EQ.0)) &
-               CALL write_correlated_surface_file(filename,&
-               sphericaln_wave2D(:,middle_pt,:), &
-               sphericaln_wave2D_deriv, time, efield, afield, lmax, basis_order)
-          
-       ELSE
-          offset = numthetaoffset * surfacerank       
-          
-          DO itheta = 1, numthetaptsperproc
+       ! Project the basis set against the wavefunction at the boundary
+       DO iorder = 1, basis_order
+          DO itheta = 1, numthetapts
              DO ir = 1, numrpts
+                suma = ZERO
                 DO ibigr = 1, numbigrpts
-                   spherical_wave2D1D(ibigr,ir,itheta) = &
-                        spherical_wave2D1D_global(ibigr,ir,offset+itheta)
+                   suma = suma + basis_set(ibigr,iorder) * &
+                        spherical_wave2D1D(ibigr,ir,itheta)
                 ENDDO
+                sphericaln_wave2D(iorder,ir,itheta) = suma
              ENDDO
           ENDDO
           
-          ! Project the basis set against the wavefunction at the boundary
-          DO iorder = 1, basis_order
-             DO itheta = 1, numthetapts
-                DO ir = 1, numrpts
-                   suma = ZERO
-                   DO ibigr = 1, numbigrpts
-                      suma = suma + basis_set(ibigr,iorder) * &
-                           spherical_wave2D1D(ibigr,ir,itheta)
-                   ENDDO
-                   sphericaln_wave2D(iorder,ir,itheta) = suma
-                ENDDO
-             ENDDO
-             
-             CALL make_wave_boundary_derivative(sphericaln_wave2D(iorder,:,:),&
-                  sphericaln_wave2D_deriv(iorder,:),fd_rule,deltar,&
-                  numrpts,numthetaptsperproc)
-             
-          ENDDO
-          ! Write boundary points to a HDF5 file
-          IF (write_to_file) &
-               CALL write_correlated_surface_file(filename, &
-               sphericaln_wave2D(:,middle_pt,:), &
-               sphericaln_wave2D_deriv, time, efield, afield, lmax, basis_order,&
-               surfacerank, numsurfaceprocs, surfacecomm, numthetaptsperproc)
-       ENDIF
+          ! Calculate the derivative
+          CALL make_wave_boundary_derivative(sphericaln_wave2D(iorder,:,:),&
+               sphericaln_wave2D_deriv(iorder,:),fd_rule,deltar,&
+               numrpts,numthetapts)
+       ENDDO
+       
+       ! Write boundary points to a HDF5 file
+       CALL write_correlated_surface_file(filename, sphericaln_wave2D(:,middle_pt,:), &
+            sphericaln_wave2D_deriv, time, efield, afield, lmax, basis_order)
+       
     ENDIF
     
-  END SUBROUTINE get_correlated_cylindrical_surface_parallel
-#endif
+    
+  END SUBROUTINE get_correlated_cylindrical_surface
+
   !*****************************************************************!
   
 !!$  SUBROUTINE get_cartesian3D_surface_serial(filename, wavefunc, &
@@ -708,42 +622,28 @@ CONTAINS
 !!$  
   !**********************************************************************!
   !**********************************************************************!
-  
-  SUBROUTINE delete_correlated_surface2D_serial()
+
+  SUBROUTINE delete_correlated_surface2D(mpi_rank)
     
     IMPLICIT NONE
+    
+    INTEGER, INTENT(IN), OPTIONAL    :: mpi_rank
     
     ! Deallocate fd coeffs
     CALL delete_fd_coeffs()
     
+    IF(PRESENT(mpi_rank)) THEN
+       IF(i_am_surface(mpi_rank) .EQ. 1) THEN  
+          DEALLOCATE(spherical_wave2D1D_local,spherical_wave2D1D_global)
+       ENDIF
+    ENDIF
     DEALLOCATE(sphericaln_wave2D,sphericaln_wave2D_deriv)
     DEALLOCATE(spherical_wave2D1D_dr,spherical_wave2D1D_dtheta)
     DEALLOCATE(spherical_wave2D1D)
     DEALLOCATE(basis_set)
     
-  END SUBROUTINE delete_correlated_surface2D_serial
-  
-  !---------------------------------------------------------------!
-#if _COM_MPI
-  SUBROUTINE delete_correlated_surface2D_parallel(rank)
-    
-    IMPLICIT NONE
-    
-    INTEGER, INTENT(IN)        :: rank
-    
-    ! Deallocate fd coeffs
-    CALL delete_fd_coeffs()
-    
-    IF(i_am_surface(rank) .EQ. 1) THEN  
-       DEALLOCATE(spherical_wave2D1D_local,spherical_wave2D1D_global)
-       DEALLOCATE(spherical_wave2D1D)
-       DEALLOCATE(sphericaln_wave2D,sphericaln_wave2D_deriv)
-       DEALLOCATE(spherical_wave2D1D_dr,spherical_wave2D1D_dtheta)
-       DEALLOCATE(basis_set)
-    ENDIF
-    
-  END SUBROUTINE delete_correlated_surface2D_parallel
-#endif
+  END SUBROUTINE delete_correlated_surface2D
+
   !----------------------------------------------------------!
   
 !!$  SUBROUTINE delete_surface3D_serial()

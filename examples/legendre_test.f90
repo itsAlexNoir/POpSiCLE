@@ -4,9 +4,7 @@ PROGRAM legendre_test
 
   IMPLICIT NONE
 
-  INTEGER                  :: numrpts
-  INTEGER                  :: numthetapts, numphipts
-  INTEGER                  :: lmax, maxfactlog, mmax
+  INTEGER                  :: lmax, maxfactlog
   REAL(dp), ALLOCATABLE    :: theta(:), costheta(:)
   REAL(dp), ALLOCATABLE    :: weights(:), phi(:)
   REAL(dp), ALLOCATABLE    :: r_ax(:), radialfunc(:)
@@ -19,7 +17,6 @@ PROGRAM legendre_test
   COMPLEX(dp), ALLOCATABLE              :: psi(:)
   
   lmax = 6
-  mmax = lmax
   maxfactlog = 3 * lmax + 1
   numthetapts = lmax + 1
   numphipts = 2 * lmax + 1
@@ -32,10 +29,10 @@ PROGRAM legendre_test
   ALLOCATE(r_ax(1:numrpts))
   
   ALLOCATE(trial(1:numthetapts,1:numphipts))
-  ALLOCATE(shcoeff(-mmax:mmax,0:lmax))
+  ALLOCATE(shcoeff(-lmax:lmax,0:lmax))
   ALLOCATE(func(1:numrpts,1:numthetapts,1:numphipts))
   ALLOCATE(radialfunc(1:numrpts))
-  ALLOCATE(shfunc(1:numrpts,-mmax:mmax,0:lmax))
+  ALLOCATE(shfunc(1:numrpts,-lmax:lmax,0:lmax))
   ALLOCATE(psi(1:numthetapts))
   
   ! Axis parade!  
@@ -54,7 +51,7 @@ PROGRAM legendre_test
   CALL get_gauss_stuff(-1.0_dp, 1.0_dp, costheta, weights)
   theta = acos(costheta)
   CALL initialize_legendre_stuff(lmax,costheta)
-  CALL initialize_spherical_harmonics(lmax,mmax,costheta,phi)
+  CALL initialize_spherical_harmonics(lmax,costheta,phi)
   
   !******************************************************!
 
@@ -242,7 +239,7 @@ PROGRAM legendre_test
   shfunc = ZERO
   
   DO ir = 1, 1!numrpts
-     CALL make_sht(func(ir,:,:),lmax,mmax,weights,shfunc(ir,:,:))
+     CALL make_sht(func(ir,:,:),lmax,weights,shfunc(ir,:,:))
   ENDDO
   
 !!$  DO il = 0, lmax

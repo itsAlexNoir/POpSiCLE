@@ -271,10 +271,10 @@ CONTAINS
     IMPLICIT NONE
 
     CHARACTER(LEN=*), INTENT(IN)     :: filename
-
+    
     REAL(dp), ALLOCATABLE            :: wavevstime(:)
     REAL(dp), ALLOCATABLE            :: wavederivvstime(:)    
-    REAL(dp), ALLOCATABLE            :: current(:)
+    COMPLEX(dp), ALLOCATABLE         :: current(:)
     CHARACTER(LEN=100)               :: name
     INTEGER                          :: itime
     
@@ -299,7 +299,7 @@ CONTAINS
        WRITE(23,*) time(itime), wavevstime(itime), wavederivvstime(itime)
        WRITE(33,*) time(itime),REAL(psi_sph(1,1,itime)),AIMAG(psi_sph(1,1,itime))
        WRITE(43,*) time(itime),REAL(psip_sph(1,1,itime)),AIMAG(psip_sph(1,1,itime))
-       WRITE(53,*) time(itime), current(itime)
+       WRITE(53,*) time(itime), REAL(current(itime),dp),AIMAG(current(itime))
     ENDDO
     
     CLOSE(33)

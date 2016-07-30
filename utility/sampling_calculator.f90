@@ -4,8 +4,6 @@ PROGRAM sampling_calculator
   
   REAL(dp)                   :: radius_boundary
   INTEGER                    :: numwpts
-  INTEGER                    :: numthetapts
-  INTEGER                    :: numphipts 
   REAL(dp)                   :: coulomb_exp_energy
   REAL(dp), ALLOCATABLE      :: pes(:), pad(:, :, :)
   REAL(dp)                   :: aftertime_fs

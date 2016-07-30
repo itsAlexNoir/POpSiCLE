@@ -194,7 +194,7 @@ CONTAINS
 #if _COM_MPI
   SUBROUTINE write_correlated_surface_file2D_parallel(filename, wave, &
        wavederiv, time, efield, afield, lmax, basis_order, &
-       surfacerank, numsurfaceprocs, comm, numthetaptsperproc )
+       surfacerank, comm )
     IMPLICIT NONE
     
     CHARACTER(LEN=*), INTENT(IN)   :: filename
@@ -204,17 +204,14 @@ CONTAINS
     REAL(dp), INTENT(IN)           :: efield(:), afield(:)
     INTEGER, INTENT(IN)            :: lmax
     INTEGER, INTENT(IN)            :: basis_order
-    INTEGER, INTENT(IN)            :: numsurfaceprocs
     INTEGER, INTENT(IN)            :: surfacerank
     INTEGER, INTENT(IN)            :: comm
-    INTEGER, INTENT(IN)            :: numthetaptsperproc
     
     INTEGER                        :: wave_rank, field_rank
     INTEGER                        :: time_rank
     REAL(dp), ALLOCATABLE          :: complex_wave(:, :, :)
     REAL(dp), ALLOCATABLE          :: complex_wavederiv(:, :, :)
     REAL(dp)                       :: field(3,2)
-    INTEGER                        :: numthetapts
     INTEGER                        :: numthetaoffset
     ! File identifier
     INTEGER(HID_T)                 :: file_id
@@ -236,9 +233,10 @@ CONTAINS
     INTEGER(HID_T)                 :: field_memspace
     INTEGER(HID_T)                 :: time_memspace
     ! Dataspace identifier
-    !INTEGER(HID_T)                 :: wave_dspace_id
-    !INTEGER(HID_T)                 :: wavederiv_dspace_id
-    !INTEGER(HID_T)                 :: field_dspace_id  
+    INTEGER(HID_T)                 :: wave_dspace_id
+    INTEGER(HID_T)                 :: wavederiv_dspace_id
+    INTEGER(HID_T)                 :: field_dspace_id  
+    INTEGER(HID_T)                 :: time_dspace_id  
     ! Dataset identifier  
     INTEGER(HID_T)                 :: wave_dset_id
     INTEGER(HID_T)                 :: wavederiv_dset_id

@@ -196,8 +196,8 @@ PROGRAM cart2sph_ex4
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL cpu_time(start_time)
   CALL initialize_cartesian_surface(xpts, ypts, zpts, dims_local, &
-       Rboundary, tolerance, fdrule, deltar, lmax, &
-       rank, size,MPI_COMM_WORLD, .TRUE., filename)
+       Rboundary, tolerance, fdrule, deltar, lmax, filename, &
+       rank, size, MPI_COMM_WORLD )
   CALL cpu_time(end_time)
   
   comp_time = end_time - start_time
@@ -286,7 +286,7 @@ PROGRAM cart2sph_ex4
   
   CALL get_cartesian_surface(filename, psi, x_ax, y_ax, z_ax, &
        dims_local, fdrule, 0.0_dp , &
-       efield, afield, lmax, rank, .TRUE. )
+       efield, afield, lmax, rank, size )
   
   CALL cpu_time(end_time)
   

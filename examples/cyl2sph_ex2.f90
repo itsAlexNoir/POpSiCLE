@@ -1,4 +1,3 @@
-
 PROGRAM cyl2sph_ex2
   
   USE MPI
@@ -10,10 +9,6 @@ PROGRAM cyl2sph_ex2
   INTEGER                    :: numrhopts, numzpts
   INTEGER                    :: maxrho, minrho
   INTEGER                    :: maxz, minz
-  INTEGER                    :: numrpts
-  INTEGER                    :: numthetapts
-  INTEGER                    :: numthetaptsperproc
-  INTEGER                    :: numpts
   REAL(dp), ALLOCATABLE      :: rho_ax(:)
   REAL(dp)                   :: rhoalpha, rhobeta
   REAL(dp)                   :: sqrtrho, sqrt1rho
@@ -24,13 +19,14 @@ PROGRAM cyl2sph_ex2
   COMPLEX(dp), ALLOCATABLE   :: Y_lm(:, :)
   COMPLEX(dp), ALLOCATABLE   :: R_nl(:, :)
   COMPLEX(dp), ALLOCATABLE   :: cylfunc(:, :)
+  COMPLEX(dp), ALLOCATABLE   :: cylfunc_deriv(:, :)
   REAL(dp)                   :: drho, dz
   COMPLEX(dp), ALLOCATABLE   :: sphfunc(:, :)
   COMPLEX(dp), ALLOCATABLE   :: sphfunc_dr(:, :)
   COMPLEX(dp), ALLOCATABLE   :: sphfunc_dth(:, :)
   COMPLEX(dp)                :: ref_value
-  REAL(dp)                   :: dr, dtheta
-  INTEGER                    :: lmax
+  REAL(dp)                   :: dr
+  INTEGER                    :: lmax, fdrule
   REAL(dp)                   :: Rboundary, tolerance
   REAL(dp)                   :: rpt, thetapt
   REAL(dp)                   :: start_time, end_time
@@ -38,10 +34,12 @@ PROGRAM cyl2sph_ex2
   REAL(dp)                   :: minerror, maxerror
   INTEGER                    :: irho,iz
   INTEGER                    :: ir, itheta
+  REAL(dp)                   :: efield(3), afield(3)
   
   INTEGER                    :: size, rank, comm
   INTEGER                    :: maxprocessor, ierror
-  INTEGER                    :: surfacerank, maxsurfprocs, newcomm
+  INTEGER                    :: newcomm
+  CHARACTER(LEN=100)         :: filename
   
   !------------------------------------------------------------
   
@@ -67,8 +65,8 @@ PROGRAM cyl2sph_ex2
   ENDIF
   
   ! Set number of points
-  numrhopts = 80
-  numzpts = 80
+  numrhopts = 300
+  numzpts = 601
   
   maxrhopts = numrhopts
   maxzpts = numzpts / size
@@ -91,11 +89,11 @@ PROGRAM cyl2sph_ex2
   rhobeta = 0.0_dp
   
   DO irho = minrho, maxrho
-     rhopt = REAL(irho,dp) * drho
-     sqrtrho	    = SQRT(rhopt)
-     sqrt1rho	    = SQRT(rhoalpha + rhobeta * rhopt)
-     
-     rho_ax(irho)   = rhopt * sqrtrho / sqrt1rho
+!!$     rhopt = REAL(irho,dp) * drho
+!!$     sqrtrho	    = SQRT(rhopt)
+!!$     sqrt1rho	    = SQRT(rhoalpha + rhobeta * rhopt)   
+!!$     rho_ax(irho)   = rhopt * sqrtrho / sqrt1rho
+     rho_ax(irho)  = REAL(irho,dp) * drho
   ENDDO
   
   DO iz = minz, maxz
@@ -107,6 +105,7 @@ PROGRAM cyl2sph_ex2
   ALLOCATE(Y_lm(minrho:maxrho,minz:maxz))
   ALLOCATE(R_nl(minrho:maxrho,minz:maxz))
   ALLOCATE(cylfunc(minrho:maxrho,minz:maxz))
+  ALLOCATE(cylfunc_deriv(minrho:maxrho,minz:maxz))
   
   DO iz = minz, maxz
      DO irho = minrho, maxrho
@@ -125,22 +124,29 @@ PROGRAM cyl2sph_ex2
         Y_lm(irho,iz) = 0.5_dp * SQRT(3.0_dp / pi ) * COS(thetapt)
         R_nl(irho,iz) = 1.0_dp
         
-        cylfunc(irho,iz) = EXP(-rpt / 2.0_dp) * R_nl(irho, iz) * &
-             Y_lm(irho,iz)
+!!$        cylfunc(irho,iz) = EXP(-rpt / 2.0_dp) * R_nl(irho, iz) * &
+!!$             Y_lm(irho,iz)
         
+        cylfunc(irho,iz) = EXP( ZIMAGONE * 2.0_dp * rpt) * Y_lm(irho,iz)
+        
+        cylfunc_deriv(irho,iz) = ZIMAGONE * 2.0_dp * &
+             EXP( ZIMAGONE * 2.0_dp * rpt) * Y_lm(irho,iz)
+                
      ENDDO
   ENDDO
   
   
   
   ! Initialize the boundary
-  Rboundary = 1.0_dp
+  Rboundary = 25.0_dp
   tolerance = 0.3_dp !0.15_dp
+  
   dr = 0.1_dp
-  lmax = 8
-  dtheta = 0.1_dp
-  local_dims      = (/maxrhopts, maxzpts/)
-  global_dims      = (/numrhopts, numzpts/)
+  lmax = 10
+  fdrule = 6
+  local_dims  = (/maxrhopts, maxzpts/)
+  global_dims = (/numrhopts, numzpts/)
+  filename    = 'results/cyl2sph'
   
   IF(rank.EQ.0) THEN
      WRITE(*,*) 'Number of proccessors: ',size
@@ -168,14 +174,14 @@ PROGRAM cyl2sph_ex2
   
   !! For scattered interpolation uncomment the subroutine below
   !CALL initialize_cylindrical_boundary(rho_ax, z_ax, local_dims, &
-  !     Rboundary, tolerance, 2, dr, lmax, rank, size, MPI_COMM_WORLD,  &
-  !     numpts, numrpts, numthetapts, surfacerank, maxsurfprocs, &
-  !     newcomm, numthetaptsperproc )
+  !     Rboundary, tolerance, 2, dr, lmax, rank, size, MPI_COMM_WORLD )
   
-  CALL initialize_cylindrical_boundary(rho_ax, z_ax, local_dims, &
-       Rboundary, 2, dr, lmax, rank, size, MPI_COMM_WORLD,  &
-       numrpts, numthetapts, surfacerank, maxsurfprocs, &
-       newcomm, numthetaptsperproc )
+!!$  CALL initialize_cylindrical_boundary(rho_ax, z_ax, local_dims, &
+!!$       Rboundary, 2, dr, lmax, rank, size, MPI_COMM_WORLD )
+  
+  CALL initialize_cylindrical_surface(rho_ax(1:maxrhopts+1), &
+       z_ax(1:maxzpts+1),(/maxrhopts+1,maxzpts+1/), Rboundary, &
+       tolerance, fdrule, dr, lmax, filename, rank, size, MPI_COMM_WORLD)
   
   CALL cpu_time(end_time)
   
@@ -183,18 +189,6 @@ PROGRAM cyl2sph_ex2
   
   WRITE(*,*) 'From rank ',rank,' Interpolant time (seconds): ', interp_time
   WRITE(*,*) 
-  
-!!$  WRITE(*,*) 'Total number of points to be interpolated: ',numpts
-!!$  
-!!$  WRITE(*,*) 'Number of radial boundary points: ',numrpts
-!!$  WRITE(*,*) 'Number of polar boundary points: ',numthetapts
-!!$  WRITE(*,*) 'Number of proccessors involved: ',maxsurfprocs
-!!$  
-!!$  WRITE(*,*) 'Grid spacing in r: ',dr
-!!$  WRITE(*,*) 'Maximum angular momenta: ',lmax
-!!$  WRITE(*,*)
-!!$  WRITE(*,*) '--------------------------'
-!!$  
   
   ALLOCATE(sphfunc(1:numrpts,1:numthetapts))
   ALLOCATE(sphfunc_dr(1:numrpts,1:numthetapts))
@@ -204,6 +198,9 @@ PROGRAM cyl2sph_ex2
   IF(rank.EQ.0) &
        WRITE(*,*) 'Interpolating boundary...'
   
+  efield = (/0.0_dp, 0.0_dp, 0.0_dp /)
+  afield = (/0.0_dp, 0.0_dp, 0.0_dp /)
+  
   IF(i_am_surface_local(rank)) THEN
      CALL cpu_time(start_time)
      
@@ -211,8 +208,14 @@ PROGRAM cyl2sph_ex2
      !CALL get_cylindrical_boundary(cylfunc, sphfunc, sphfunc_dr, &
      !     sphfunc_dth, 'quadratic')
      
-     CALL get_cylindrical_boundary(rho_ax, z_ax, local_dims, cylfunc, &
-          2, sphfunc, sphfunc_dr, sphfunc_dth)
+!!$     CALL get_cylindrical_boundary(rho_ax, z_ax, local_dims, cylfunc, &
+!!$          2, sphfunc, sphfunc_dr, sphfunc_dth)
+     
+     CALL get_cylindrical_surface(filename, &
+          cylfunc(1:maxrhopts+1,1:maxzpts+1), &
+          rho_ax(1:maxrhopts+1),z_ax(1:maxzpts+1), &
+          (/maxrhopts+1,maxzpts+1/), fdrule, 0.0_dp , &
+          efield, afield, lmax, rank, size )
      
      CALL cpu_time(end_time)
      
@@ -309,8 +312,9 @@ PROGRAM cyl2sph_ex2
   ! Free memory
   DEALLOCATE(rho_ax,z_ax)
   DEALLOCATE(Y_lm, R_nl)
-  DEALLOCATE(cylfunc)
-  DEALLOCATE(sphfunc, sphfunc_dr, sphfunc_dth)
+  DEALLOCATE(cylfunc, cylfunc_deriv)
+  DEALLOCATE(sphfunc)
+  DEALLOCATE(sphfunc_dr, sphfunc_dth)
   
   CALL MPI_finalize( ierror )
   

@@ -7,10 +7,6 @@ PROGRAM cart2sph_ex1
   INTEGER                    :: numxpts
   INTEGER                    :: numypts  
   INTEGER                    :: numzpts
-  INTEGER                    :: numrpts
-  INTEGER                    :: numthetapts
-  INTEGER                    :: numphipts
-  INTEGER                    :: numpts
   REAL(dp), ALLOCATABLE      :: x_ax(:)
   REAL(dp), ALLOCATABLE      :: y_ax(:)
   REAL(dp), ALLOCATABLE      :: z_ax(:)
@@ -27,7 +23,7 @@ PROGRAM cart2sph_ex1
   COMPLEX(dp), ALLOCATABLE   :: sphfunc_dphi(:, :, :)
   COMPLEX(dp)                :: ref_value
 
-  REAL(dp)                   :: dr, dtheta, deltaphi
+  REAL(dp)                   :: dr
   INTEGER                    :: lmax
   REAL(dp)                   :: Rboundary, tolerance
   REAL(dp)                   :: rpt, thetapt, phipt
@@ -121,8 +117,6 @@ PROGRAM cart2sph_ex1
   tolerance = 0.15_dp
   dr = 0.1_dp
   lmax = 10
-  dtheta = 0.1_dp
-  deltaphi = 0.1_dp
   dims      = (/numxpts, numypts, numzpts/)
   
   WRITE(rbstr,'(I3.3,F0.3)') INT(Rboundary),Rboundary-INT(Rboundary)
@@ -153,14 +147,13 @@ PROGRAM cart2sph_ex1
   
   !! For scattered interpolation uncomment the subroutine below
   !CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
-  !     Rboundary, tolerance, 2, dr, lmax, &
-  !     numpts, numrpts, numthetapts, numphipts )
+  !     Rboundary, tolerance, 2, dr, lmax )
   
   CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
-       Rboundary, 2, dr, lmax, numrpts, numthetapts, numphipts)
-
+       Rboundary, 2, dr, lmax )
+  
   !CALL initialize_cartesian_surface(x_ax, y_ax, z_ax, dims, &
-  !     Rboundary, tolerance, 2, dr, lmax, .TRUE., filename)
+  !     Rboundary, tolerance, 2, dr, lmax, filename)
   
   CALL cpu_time(end_time)
   
@@ -169,7 +162,7 @@ PROGRAM cart2sph_ex1
   WRITE(*,*) 'Interpolant time (seconds): ', interp_time
   WRITE(*,*) 
   
-  WRITE(*,*) 'Total number of points to be interpolated: ',numpts
+  !WRITE(*,*) 'Total number of points to be interpolated: ',numpts
   
   WRITE(*,*) 'Number of radial boundary points: ',numrpts
   WRITE(*,*) 'Number of polar boundary points: ',numthetapts
@@ -203,7 +196,7 @@ PROGRAM cart2sph_ex1
           2, sphfunc, sphfunc_dr, sphfunc_dth, sphfunc_dphi)
      
      !CALL get_cartesian_surface(filename, cartfunc, x_ax, y_ax, z_ax, dims, &
-     !     2, 0.0_dp , efield, afield, lmax, .TRUE. )
+     !     2, 0.0_dp , efield, afield, lmax )
      
      CALL cpu_time(end_time)
      
