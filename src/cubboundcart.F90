@@ -14,10 +14,7 @@ MODULE cubboundcart
   
   PRIVATE
   
-  PUBLIC           initialize_tricubic_cartesian_boundary3D_serial
-#if _COM_MPI
-  PUBLIC           initialize_tricubic_cartesian_boundary3D_parallel
-#endif
+  PUBLIC           initialize_tricubic_cartesian_boundary3D
   PUBLIC           dget_tricubic_cartesian_boundary3D  
   PUBLIC           zget_tricubic_cartesian_boundary3D
   PUBLIC           delete_tricubic_cartesian_boundary3D
@@ -25,248 +22,33 @@ MODULE cubboundcart
   ! Module variables
   
   INTEGER, ALLOCATABLE, PUBLIC     :: cellindex3D(: ,: ,:, :)
-  
-  INTEGER                          :: numrpts
-  INTEGER                          :: numthetapts
-  INTEGER                          :: numphipts
-  INTEGER                          :: numsurfaceprocs
-  
+    
 CONTAINS
   
   !----------------------------------------------------!
   
   !----------------------------------------------------!
-  !  INITIALIZE CARTESIAN BOUNDARY 2D
+  !  INITIALIZE CARTESIAN BOUNDARY 3D
   !----------------------------------------------------!
   
+  !*****************************************************************!
+  !*****************************************************************!
   
-  SUBROUTINE initialize_tricubic_cartesian_boundary3D_serial(x_ax, y_ax, z_ax, &
-       dims, Rb, fdpts, deltar, lmax, maxrpts, maxthetapts, maxphipts )
+  SUBROUTINE initialize_tricubic_cartesian_boundary3D(x_ax, y_ax, z_ax, &
+       dims, Rb, fdpts, deltar, lmax, mpi_rank, mpi_size, comm )
     
     IMPLICIT NONE
     
-    REAL(dp), INTENT(IN)      :: x_ax(:)
-    REAL(dp), INTENT(IN)      :: y_ax(:)
-    REAL(dp), INTENT(IN)      :: z_ax(:)
-    INTEGER, INTENT(IN)       :: dims(:)
-    REAL(dp), INTENT(IN)      :: Rb
-    INTEGER, INTENT(IN)       :: fdpts
-    REAL(dp), INTENT(IN)      :: deltar
-    INTEGER, INTENT(IN)       :: lmax
-    INTEGER, INTENT(OUT)      :: maxrpts
-    INTEGER, INTENT(OUT)      :: maxthetapts
-    INTEGER, INTENT(OUT)      :: maxphipts
-    
-    REAL(dp)                  :: minx, maxx
-    REAL(dp)                  :: miny, maxy
-    REAL(dp)                  :: minz, maxz
-    REAL(dp)                  :: minr, maxr
-    REAL(dp)                  :: mintheta, maxtheta
-    REAL(dp)                  :: minphi, maxphi
-    INTEGER                   :: halolims(3,2)
-    REAL(dp)                  :: Rb_start
-    REAL(dp)                  :: deltaphi
-    REAL(dp)                  :: rpt, thetapt, phipt
-    REAL(dp)                  :: xpt, ypt, zpt
-    INTEGER                   :: ix, iy, iz
-    INTEGER                   :: ir, itheta, iphi
-    INTEGER                   :: left, mflag
-    
-    !--------------------------------------------------!
-    
-    halolims(1,:) = (/ lbound(x_ax), ubound(x_ax) /)
-    halolims(2,:) = (/ lbound(y_ax), ubound(y_ax) /)
-    halolims(3,:) = (/ lbound(z_ax), ubound(z_ax) /)
-    
-    ! Assign max and min values for the axes
-    minx = MINVAL(ABS(x_ax))
-    maxx = MAXVAL(ABS(x_ax))
-    
-    miny = MINVAL(ABS(y_ax))
-    maxy = MAXVAL(ABS(y_ax))
-    
-    minz = MINVAL(ABS(z_ax))
-    maxz = MAXVAL(ABS(z_ax))
-    
-    minr = SQRT(minx**2 + miny**2 + minz**2)
-    maxr = SQRT(maxx**2 + maxy**2 + maxz**2)
-    
-    IF ( (Rb.LT.minr).AND.(Rb.GT.maxr) ) THEN
-       ALLOCATE(rpts_boundary(1))
-       ALLOCATE(theta_boundary(1))
-       ALLOCATE(phi_boundary(1))
-       ALLOCATE(costheta_boundary(1))
-       ALLOCATE(theta_weights(1))
-       ALLOCATE(i_am_in_local3D(1,1,1))
-       ALLOCATE(cellindex3D(1,1,1,1))
-       
-       RETURN
-    ENDIF
-    
-    mintheta = pi
-    maxtheta = 0.0_dp
-    minphi   = twopi
-    maxphi   = 0.0_dp
-    
-    ! Work out how many points will build the interpolant
-    DO iz = halolims(3,1), halolims(3,2)
-       DO iy = halolims(2,1), halolims(2,2)
-          DO ix = halolims(1,1), halolims(1,2)
-             ! Calculate the point in spherical coordinates
-             rpt = SQRT( x_ax(ix)**2 + y_ax(iy)**2 + z_ax(iz)**2 )
-             IF(rpt.EQ.0.0_dp) THEN
-                thetapt = pi / 2.0_dp
-             ELSE
-                thetapt = ACOS(z_ax(iz) / rpt )
-             ENDIF
-             phipt = pi - ATAN2( y_ax(iy) , - x_ax(ix) )
-             
-             ! Check the extend of the grid
-             minr = MIN(minr,rpt)
-             maxr = MAX(maxr,rpt)
-             
-             ! See if this points lies within the radius of
-             ! influence of the boundary
-             mintheta = MIN(mintheta,thetapt)
-             maxtheta = MAX(maxtheta,thetapt)
-             minphi = MIN(minphi,phipt)
-             maxphi = MAX(maxphi,phipt)
-          ENDDO
-       ENDDO
-    ENDDO
-    
-    numrpts = 2 * fdpts + 1
-    numthetapts = lmax + 1
-    numphipts = 2 * lmax + 1
-    deltaphi = twopi / REAL(numphipts, dp)
-    
-    ALLOCATE(rpts_boundary(1:numrpts))
-    ALLOCATE(theta_boundary(1:numthetapts))
-    ALLOCATE(phi_boundary(1:numphipts))
-    ALLOCATE(costheta_boundary(1:numthetapts))
-    ALLOCATE(theta_weights(1:numthetapts))
-    ALLOCATE(i_am_in_local3D(1:numrpts,1:numthetapts,1:numphipts))
-    ALLOCATE(cellindex3D(1:numrpts,1:numthetapts,1:numphipts,3))
-    
-    Rb_start = (Rb - deltar * (fdpts + 1))
-    DO ir = 1, numrpts
-       rpts_boundary(ir) = Rb_start + REAL( ir * deltar, dp )
-    ENDDO
-    
-    CALL get_gauss_stuff(-1.0_dp, 1.0_dp, &
-         costheta_boundary, theta_weights)
-    
-    theta_boundary = ACOS(costheta_boundary)
-    
-    ! Check limits on theta
-    IF (mintheta .GT. MINVAL(theta_boundary) .AND. &
-         maxtheta .LT. MAXVAL(theta_boundary)) THEN
-       WRITE(*,*) 'Pivots extent is bigger than &
-            & theta coordinate limits.'
-       STOP
-    ENDIF
-    
-    
-    DO iphi = 1, numphipts
-       phi_boundary(iphi) = REAL( iphi,dp ) * deltaphi
-    ENDDO
-    
-    ! Check limits on phi
-    IF (minphi .GT. MINVAL(phi_boundary) .AND. &
-         maxphi .LT. MAXVAL(phi_boundary)) THEN
-       WRITE(*,*) 'Phi nodes extent is bigger than &
-            & phi coordinate limits.'
-       STOP
-    ENDIF
-    
-    !------------!
-    
-    i_am_in_local3D = 0
-    cellindex3D = 0
-    ! Check if the new axis are within the cartesian domain.
-    DO iphi = 1, numphipts
-       DO itheta = 1, numthetapts
-          DO ir = 1, numrpts
-             
-             
-             xpt = rpts_boundary(ir) * SIN(theta_boundary(itheta)) * COS(phi_boundary(iphi))
-             ypt = rpts_boundary(ir) * SIN(theta_boundary(itheta)) * SIN(phi_boundary(iphi))
-             zpt = rpts_boundary(ir) * COS(theta_boundary(itheta))
-             
-             IF((xpt.GE.MINVAL(x_ax)) .AND. (xpt.LE.MAXVAL(x_ax)) .AND. &
-                  (ypt.GE.MINVAL(y_ax)) .AND. (ypt.LE.MAXVAL(y_ax)) .AND. &
-                  (zpt.GE.MINVAL(z_ax)) .AND. (zpt.LE.MAXVAL(z_ax))) THEN
-                i_am_in_local3D(ir,itheta,iphi) = 1
-                
-                ! Look for cell indexes
-                CALL interv(x_ax,SIZE(x_ax),xpt,left,mflag)
-                cellindex3D(ir,itheta,iphi,1) = left
-                CALL interv(y_ax,SIZE(y_ax),ypt,left,mflag)
-                cellindex3D(ir,itheta,iphi,2) = left
-                CALL interv(z_ax,SIZE(z_ax),zpt,left,mflag)
-                cellindex3D(ir,itheta,iphi,3) = left
-             ENDIF
-             
-          ENDDO
-       ENDDO
-    ENDDO
-    
-    ! Also, initialize the tricubic matrix
-    CALL initialize_tricubic_matrix( )
-    
-    maxrpts = numrpts
-    maxthetapts = numthetapts
-    maxphipts = numphipts
-    
-    WRITE(*,*)
-    WRITE(*,*) '*************************************'
-    WRITE(*,*) '  Surface parameters (Cartesian).    '
-    WRITE(*,*) '*************************************'
-    WRITE(*,*)
-    WRITE(*,'(A, F9.3)') ' Radius boundary:                       ',&
-         Rb
-    WRITE(*,'(A, F9.3)') ' Delta R :                              ',&
-         deltar
-    WRITE(*,'(A,I3)')    ' Finite difference rule used :          ',&
-         fdpts
-    WRITE(*,'(A,I3)')    ' Maximum angular momentum:              ',&
-         lmax
-    WRITE(*,'(A,I3)')    ' Total number of theta points:          ',&
-         numthetapts
-    WRITE(*,'(A,I3)')    ' Total number of phi points:            ',&
-         numphipts
-    WRITE(*,*)
-    WRITE(*,*)
-    
-    
-  END SUBROUTINE initialize_tricubic_cartesian_boundary3D_serial
-  
-  !*****************************************************************!
-  !*****************************************************************!
-#if _COM_MPI
-  
-  SUBROUTINE initialize_tricubic_cartesian_boundary3D_parallel(x_ax, y_ax, z_ax, &
-       dims, Rb, fdpts, deltar, lmax, mpi_rank, mpi_size, comm, &
-       maxrpts, maxthetapts, maxphipts, surfacerank, maxsurfaceprocs, newcomm, &
-       maxthetaptsperproc, maxphiptsperproc)
-    
-    IMPLICIT NONE
-    
-    REAL(dp), INTENT(IN)      :: x_ax(:)
-    REAL(dp), INTENT(IN)      :: y_ax(:)
-    REAL(dp), INTENT(IN)      :: z_ax(:)
-    INTEGER, INTENT(IN)       :: dims(:)
-    REAL(dp), INTENT(IN)      :: Rb
-    INTEGER, INTENT(IN)       :: fdpts
-    REAL(dp), INTENT(IN)      :: deltar
-    INTEGER, INTENT(IN)       :: lmax
-    INTEGER, INTENT(IN)       :: mpi_rank, mpi_size
-    INTEGER, INTENT(IN)       :: comm
-    INTEGER, INTENT(OUT)      :: maxrpts, maxthetapts, maxphipts
-    INTEGER, INTENT(OUT)      :: surfacerank
-    INTEGER, INTENT(OUT)      :: maxsurfaceprocs
-    INTEGER, INTENT(OUT)      :: newcomm
-    INTEGER, INTENT(OUT)      :: maxthetaptsperproc, maxphiptsperproc
+    REAL(dp), INTENT(IN)            :: x_ax(:)
+    REAL(dp), INTENT(IN)            :: y_ax(:)
+    REAL(dp), INTENT(IN)            :: z_ax(:)
+    INTEGER, INTENT(IN)             :: dims(:)
+    REAL(dp), INTENT(IN)            :: Rb
+    INTEGER, INTENT(IN)             :: fdpts
+    REAL(dp), INTENT(IN)            :: deltar
+    INTEGER, INTENT(IN)             :: lmax
+    INTEGER, INTENT(IN), OPTIONAL   :: mpi_rank, mpi_size
+    INTEGER, INTENT(IN), OPTIONAL   :: comm
     
     INTEGER                   :: simgroup, surfacegroup
     INTEGER                   :: ierror
@@ -355,19 +137,23 @@ CONTAINS
        ENDDO
     ENDDO
     
-    ! Communicate min and max phi values
-    max_angles_local = (/ maxtheta, maxphi /)
-    min_angles_local = (/ mintheta, minphi /)
-    
-    CALL MPI_ALLREDUCE(max_angles_local, max_angles_global, 2, &
-         MPI_DOUBLE_PRECISION, MPI_MAX, comm, ierror )
-    CALL MPI_ALLREDUCE(min_angles_local, min_angles_global, 2, &
-         MPI_DOUBLE_PRECISION, MPI_MIN, comm, ierror )
-    
-    IF(ALL(x_ax.GT.0.0)) THEN
-       minphi = pi - ATAN2(MINVAL(y_ax),-MINVAL(x_ax))
-       maxphi = pi - ATAN2(MAXVAL(y_ax),-MINVAL(x_ax))
+#if _COM_MPI
+    IF(PRESENT(mpi_size) .AND. (mpi_size.GT.1)) THEN
+       ! Communicate min and max phi values
+       max_angles_local = (/ maxtheta, maxphi /)
+       min_angles_local = (/ mintheta, minphi /)
+       
+       CALL MPI_ALLREDUCE(max_angles_local, max_angles_global, 2, &
+            MPI_DOUBLE_PRECISION, MPI_MAX, comm, ierror )
+       CALL MPI_ALLREDUCE(min_angles_local, min_angles_global, 2, &
+            MPI_DOUBLE_PRECISION, MPI_MIN, comm, ierror )
+       
+       IF(ALL(x_ax.GT.0.0)) THEN
+          minphi = pi - ATAN2(MINVAL(y_ax),-MINVAL(x_ax))
+          maxphi = pi - ATAN2(MAXVAL(y_ax),-MINVAL(x_ax))
+       ENDIF
     ENDIF
+#endif
     
     numrpts = 2 * fdpts + 1
     numthetapts = lmax + 1
@@ -379,11 +165,10 @@ CONTAINS
     ALLOCATE(phi_boundary(1:numphipts))
     ALLOCATE(costheta_boundary(1:numthetapts))
     ALLOCATE(theta_weights(1:numthetapts))
-    ALLOCATE(i_am_in_local3D(1:numrpts,1:numthetapts,1:numphipts))
-    ALLOCATE(i_am_in_global3D(1:numrpts,1:numthetapts,1:numphipts))
     ALLOCATE(cellindex3D(1:numrpts,1:numthetapts,1:numphipts,3))
-    i_am_in_local3D = 0
-    i_am_in_global3D = 0
+    ALLOCATE(i_am_in_local3D(1:numrpts,1:numthetapts,1:numphipts))
+    IF(PRESENT(mpi_size) .AND. (mpi_size.GT.1)) &
+         ALLOCATE(i_am_in_global3D(1:numrpts,1:numthetapts,1:numphipts))
     
     ! Create desired axis for interpolation
     ! Radial axis
@@ -398,7 +183,7 @@ CONTAINS
          costheta_boundary, theta_weights)
     
     theta_boundary = ACOS(costheta_boundary)
-
+    
     ! PHI AXIS
     DO iphi = 1, numphipts
        phi_boundary(iphi) = REAL( iphi,dp ) * deltaphi
@@ -435,127 +220,168 @@ CONTAINS
           ENDDO
        ENDDO
     ENDDO
-    
-    i_am_in_global3D = 0
-    ! Get I am in global array if needed.
-    CALL MPI_ALLREDUCE(i_am_in_local3D, i_am_in_global3D, &
-         numrpts*numthetapts*numphipts, MPI_INTEGER, MPI_SUM, comm, ierror )
-    
-    ! Check if there is a overlap of points between processors
-    IF(ANY(i_am_in_global3D.EQ.0)) THEN
-       WRITE(*,*) 'There is at least one point that lies beetween processors'
-       IF(mpi_rank.EQ.0) THEN
-          OPEN(UNIT=101,FORM='formatted',FILE='i_am_in.dat')
-          DO iphi = 1, numphipts
-             DO itheta = 1, numthetapts
-                DO ir = 1, numrpts
-                   WRITE(101,*) rpts_boundary(ir), &
-                        theta_boundary(itheta), phi_boundary(iphi), &
-                        i_am_in_global3D(ir,itheta,iphi)
-                ENDDO
-             ENDDO
-          ENDDO
-          CLOSE(101)
-       ENDIF
-       STOP
-    ENDIF
-    
-    ! Check if there is a overlap of points between processors
-    IF(ANY(i_am_in_global3D.GT.1)) THEN
-       WRITE(*,*) 'There is an overlap of points beetween processors'
-       IF(mpi_rank.EQ.0) THEN
-          OPEN(UNIT=101,FORM='formatted',FILE='i_am_in.dat')
-          DO iphi = 1, numphipts
-             DO itheta = 1, numthetapts
-                DO ir = 1, numrpts
-                   WRITE(101,*) rpts_boundary(ir), &
-                        theta_boundary(itheta), phi_boundary(iphi), &
-                        i_am_in_global3D(ir,itheta,iphi)
-                ENDDO
-             ENDDO
-          ENDDO
-          CLOSE(101)
-       ENDIF
-       STOP
-    ENDIF
-    
+
     ! Also, initialize the bicubic matrix
     CALL initialize_tricubic_matrix( )
     
-    ! Create communicator and surface members
-    !-----------------------------------------!
-    ALLOCATE(i_am_surface_local(0:mpi_size-1))
-    ALLOCATE(i_am_surface(0:mpi_size-1))
-    i_am_surface_local = 0
-    i_am_surface = 0
-
-    IF(SUM(i_am_in_local3D).NE.0) &
-         i_am_surface_local(mpi_rank) = 1
-    
-    ! Communicate to all processors if they are
-    ! at the surface
-    CALL MPI_ALLREDUCE(i_am_surface_local, i_am_surface, mpi_size, &
-         MPI_INTEGER, MPI_SUM, comm, ierror )
-
-    numsurfaceprocs = SUM(i_am_surface)
-    
-    ALLOCATE(surface_members(0:numsurfaceprocs-1))
-    ii = -1
-    DO inum = 0, mpi_size-1
-       IF(i_am_surface(inum).EQ.1) THEN
-          ii = ii + 1
-          surface_members(ii) = inum
-       ENDIF
-    ENDDO
-    
-    ! Create a global group
-    CALL MPI_COMM_GROUP(comm, simgroup, ierror)
-    
-    CALL MPI_GROUP_INCL(simgroup, numsurfaceprocs, surface_members, &
-         surfacegroup, ierror)
-    ! Actually, this line creates the communicator
-    CALL MPI_COMM_CREATE(comm, surfacegroup, newcomm, ierror)
-    
-    !Assign ranks for those who are on the surface
-    IF(i_am_surface_local(mpi_rank).EQ.1) &
-         CALL MPI_COMM_RANK( newcomm, surfacerank, ierror)
-    
-    ! Assign points to return
-    maxrpts = numrpts
-    maxthetapts = numthetapts
-    maxphipts = numphipts
-    maxsurfaceprocs = numsurfaceprocs
-    
-    ! Set number of points per proc
-    ! Take into account if the number of points is not
-    ! a multiplier of the number of processors
-    IF(numsurfaceprocs.GT.numthetapts) THEN
-       maxthetaptsperproc = 1
-    ELSE
-       maxthetaptsperproc = INT(numthetapts / numsurfaceprocs)
+#if _COM_MPI
+    !
+    ! Set parameters for parallel calculation
+    !
+    IF(PRESENT(mpi_size) .AND. (mpi_size.GT.1)) THEN
+       i_am_in_global3D = 0
+       ! Get I am in global array if needed.
+       CALL MPI_ALLREDUCE(i_am_in_local3D, i_am_in_global3D, &
+            numrpts*numthetapts*numphipts, MPI_INTEGER, MPI_SUM, comm, ierror )
        
-       IF(MOD(numthetapts,numsurfaceprocs).NE.0) THEN
-          IF((surfacerank-1).EQ.numsurfaceprocs) THEN
-             maxthetaptsperproc = numthetapts / numsurfaceprocs + &
-                  MOD(numthetapts,numsurfaceprocs)
+       ! Check if there is a overlap of points between processors
+       IF(ANY(i_am_in_global3D.EQ.0)) THEN
+          WRITE(*,*) 'There is at least one point that lies beetween processors'
+          IF(mpi_rank.EQ.0) THEN
+             OPEN(UNIT=101,FORM='formatted',FILE='i_am_in.dat')
+             DO iphi = 1, numphipts
+                DO itheta = 1, numthetapts
+                   DO ir = 1, numrpts
+                      WRITE(101,*) rpts_boundary(ir), &
+                           theta_boundary(itheta), phi_boundary(iphi), &
+                           i_am_in_global3D(ir,itheta,iphi)
+                   ENDDO
+                ENDDO
+             ENDDO
+             CLOSE(101)
+          ENDIF
+          STOP
+       ENDIF
+       
+       ! Check if there is a overlap of points between processors
+       IF(ANY(i_am_in_global3D.GT.1)) THEN
+          WRITE(*,*) 'There is an overlap of points beetween processors'
+          IF(mpi_rank.EQ.0) THEN
+             OPEN(UNIT=101,FORM='formatted',FILE='i_am_in.dat')
+             DO iphi = 1, numphipts
+                DO itheta = 1, numthetapts
+                   DO ir = 1, numrpts
+                      WRITE(101,*) rpts_boundary(ir), &
+                           theta_boundary(itheta), phi_boundary(iphi), &
+                           i_am_in_global3D(ir,itheta,iphi)
+                   ENDDO
+                ENDDO
+             ENDDO
+             CLOSE(101)
+          ENDIF
+          STOP
+       ENDIF
+       
+       
+       ! Create communicator and surface members
+       !-----------------------------------------!
+       ALLOCATE(i_am_surface_local(0:mpi_size-1))
+       ALLOCATE(i_am_surface(0:mpi_size-1))
+       i_am_surface_local = 0
+       i_am_surface = 0
+       
+       IF(SUM(i_am_in_local3D).NE.0) &
+            i_am_surface_local(mpi_rank) = 1
+       
+       ! Communicate to all processors if they are
+       ! at the surface
+       CALL MPI_ALLREDUCE(i_am_surface_local, i_am_surface, mpi_size, &
+            MPI_INTEGER, MPI_SUM, comm, ierror )
+       
+       numsurfaceprocs = SUM(i_am_surface)
+       
+       ALLOCATE(surface_members(0:numsurfaceprocs-1))
+       ii = -1
+       DO inum = 0, mpi_size-1
+          IF(i_am_surface(inum).EQ.1) THEN
+             ii = ii + 1
+             surface_members(ii) = inum
+          ENDIF
+       ENDDO
+       
+       ! Create a global group
+       CALL MPI_COMM_GROUP(comm, simgroup, ierror)
+       
+       CALL MPI_GROUP_INCL(simgroup, numsurfaceprocs, surface_members, &
+            surfacegroup, ierror)
+       ! Actually, this line creates the communicator
+       CALL MPI_COMM_CREATE(comm, surfacegroup, surfacecomm, ierror)
+       
+       !Assign ranks for those who are on the surface
+       IF(i_am_surface_local(mpi_rank).EQ.1) &
+            CALL MPI_COMM_RANK( surfacecomm, surfacerank, ierror)
+       
+       ! Set number of points per proc
+       ! Take into account if the number of points is not
+       ! a multiplier of the number of processors
+       IF(numsurfaceprocs.GT.numthetapts) THEN
+          numthetaptsperproc = 1
+       ELSE
+          numthetaptsperproc = INT(numthetapts / numsurfaceprocs)
+          
+          IF(MOD(numthetapts,numsurfaceprocs).NE.0) THEN
+             IF((surfacerank-1).EQ.numsurfaceprocs) THEN
+                numthetaptsperproc = numthetapts / numsurfaceprocs + &
+                     MOD(numthetapts,numsurfaceprocs)
+             ENDIF
+          ENDIF
+       ENDIF
+       
+       IF(numsurfaceprocs.GT.numphipts) THEN
+          numphiptsperproc = 1
+       ELSE
+          numphiptsperproc = INT(numphipts / numsurfaceprocs)
+          
+          IF(MOD(numphipts,numsurfaceprocs).NE.0) THEN
+             IF((surfacerank-1).EQ.numsurfaceprocs) THEN
+                numphiptsperproc = numthetapts / numsurfaceprocs + &
+                     MOD(numphipts,numsurfaceprocs)
+             ENDIF
           ENDIF
        ENDIF
     ENDIF
+#endif
     
-    IF(numsurfaceprocs.GT.numphipts) THEN
-       maxphiptsperproc = 1
-    ELSE
-       maxphiptsperproc = INT(numphipts / numsurfaceprocs)
-       
-       IF(MOD(numphipts,numsurfaceprocs).NE.0) THEN
-          IF((surfacerank-1).EQ.numsurfaceprocs) THEN
-             maxphiptsperproc = numthetapts / numsurfaceprocs + &
-                  MOD(numphipts,numsurfaceprocs)
+    
+    IF(PRESENT(mpi_size) .AND. (mpi_size.GT.1)) THEN
+       IF(mpi_rank.EQ.0) THEN
+          WRITE(*,*)
+          WRITE(*,*) '*************************************'
+          WRITE(*,*) '  Surface parameters (Cartesian).    '
+          WRITE(*,*) '*************************************'
+          WRITE(*,*)
+          WRITE(*,'(A, F9.3)') ' Radius boundary:                              ',&
+               Rb
+          WRITE(*,'(A,I3)')    ' Maximum angular momentum:                     ',&
+               lmax
+          WRITE(*,'(A, F9.3)') ' Delta R :                                     ',&
+               deltar
+          WRITE(*,'(A,I3)')    ' Finite difference rule used :                 ',&
+               fdpts
+          WRITE(*,'(A,I3)')    ' Number of processors on the surface:          ',&
+               numsurfaceprocs
+          WRITE(*,'(A,I3)')    ' Total number of theta points:                 ',&
+               numthetapts
+          WRITE(*,'(A,I3)')    ' Number of theta points per processors:        ',&
+               numthetaptsperproc
+          IF(MOD(numthetapts,numsurfaceprocs).NE.0) THEN
+             WRITE(*,'(A,I3)') ' Number of theta points on the last processor: ',&
+                  numthetaptsperproc + MOD(numthetapts,numsurfaceprocs)
           ENDIF
+          WRITE(*,'(A,I3)')    ' Total number of phi points:                   ',&
+               numphipts
+          WRITE(*,'(A,I3)')    ' Number of phi points per processors:          ',&
+               numphiptsperproc
+          IF(MOD(numphipts,numsurfaceprocs).NE.0) THEN
+             WRITE(*,'(A,I3)') ' Number of phi points on the last processor:   ',&
+                  numphiptsperproc + MOD(numphipts,numsurfaceprocs)
+          ENDIF
+          WRITE(*,'(A,F9.3)')  ' Delta phi :                                   ',&
+               deltaphi
+          WRITE(*,*)
+          WRITE(*,*)
        ENDIF
-    ENDIF
-    
-    IF(mpi_rank.EQ.0) THEN
+    ELSE
        WRITE(*,*)
        WRITE(*,*) '*************************************'
        WRITE(*,*) '  Surface parameters (Cartesian).    '
@@ -569,33 +395,18 @@ CONTAINS
             deltar
        WRITE(*,'(A,I3)')    ' Finite difference rule used :                 ',&
             fdpts
-       WRITE(*,'(A,I3)')    ' Number of processors on the surface:          ',&
-            numsurfaceprocs
        WRITE(*,'(A,I3)')    ' Total number of theta points:                 ',&
             numthetapts
-       WRITE(*,'(A,I3)')    ' Number of theta points per processors:        ',&
-            maxthetaptsperproc
-       IF(MOD(numthetapts,numsurfaceprocs).NE.0) THEN
-          WRITE(*,'(A,I3)') ' Number of theta points on the last processor: ',&
-               maxthetaptsperproc + MOD(numthetapts,numsurfaceprocs)
-       ENDIF
        WRITE(*,'(A,I3)')    ' Total number of phi points:                   ',&
             numphipts
-       WRITE(*,'(A,I3)')    ' Number of phi points per processors:          ',&
-            maxphiptsperproc
-       IF(MOD(numphipts,numsurfaceprocs).NE.0) THEN
-          WRITE(*,'(A,I3)') ' Number of phi points on the last processor:   ',&
-               maxphiptsperproc + MOD(numphipts,numsurfaceprocs)
-       ENDIF
        WRITE(*,'(A,F9.3)')  ' Delta phi :                                   ',&
             deltaphi
        WRITE(*,*)
        WRITE(*,*)
     ENDIF
     
-    
-  END SUBROUTINE initialize_tricubic_cartesian_boundary3D_parallel
-#endif
+  END SUBROUTINE initialize_tricubic_cartesian_boundary3D
+  
   !-----------------------------------------------------------------!
   !-----------------------------------------------------------------!
   

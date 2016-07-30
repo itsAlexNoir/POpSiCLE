@@ -18,20 +18,9 @@ MODULE io_surface
   
   !-----------------------------!
   
-  INTERFACE create_surface_file
-     MODULE PROCEDURE create_surface_file_serial
-#if _COM_MPI
-     MODULE PROCEDURE create_surface_file_parallel
-#endif
-  END INTERFACE create_surface_file
-  
   INTERFACE write_surface_file
-     MODULE PROCEDURE write_surface_file2D_serial
-     MODULE PROCEDURE write_surface_file3D_serial
-#if _COM_MPI
-     MODULE PROCEDURE write_surface_file2D_parallel
-     MODULE PROCEDURE write_surface_file3D_parallel
-#endif
+     MODULE PROCEDURE write_surface_file2D
+     MODULE PROCEDURE write_surface_file3D
   END INTERFACE write_surface_file
   
   !--------------------!
@@ -45,64 +34,12 @@ MODULE io_surface
   
 CONTAINS
   
-  SUBROUTINE create_surface_file_serial(filename)
+  SUBROUTINE create_surface_file(filename, comm)
     IMPLICIT NONE
     
-    CHARACTER(LEN=*), INTENT(IN) :: filename
-
-    ! File identifier
-    INTEGER(HID_T)                 :: file_id
-    ! Property list identifier 
-    INTEGER(HID_T)                 :: plist_id
-    ! Group identifiers
-    INTEGER(HID_T)                 :: wave_group
-    INTEGER(HID_T)                 :: wavederiv_group 
-    INTEGER(HID_T)                 :: field_group
-    INTEGER(HID_T)                 :: time_group    
-    ! Error flag
-    INTEGER                        :: error, info
-    ! Auxiliary strings
-    CHARACTER(LEN = 100)           :: name
-    !--------------------------------------------!
+    CHARACTER(LEN=*), INTENT(IN)    :: filename
+    INTEGER, INTENT(IN), OPTIONAL   :: comm
     
-    ! Initialize FORTRAN interface for hdf5.
-    CALL h5open_f(error)
-    
-    ! Create the file.
-    name = TRIM(filename) // '.h5'  
-    CALL h5fcreate_f(name, H5F_ACC_TRUNC_F, file_id, error)
-    
-    ! Create group in the root group.     
-    name = '/wave'     
-    CALL h5gcreate_f(file_id, name, wave_group, error)
-    name = '/wavederiv'     
-    CALL h5gcreate_f(file_id, name, wavederiv_group, error)
-    name = '/field'     
-    CALL h5gcreate_f(file_id, name, field_group, error)
-    name = '/time'
-    CALL h5gcreate_f(file_id, name, time_group, error)
-    
-    ! Close the property list, group, file and interface
-    CALL h5gclose_f(wave_group, error)
-    CALL h5gclose_f(wavederiv_group, error)
-    CALL h5gclose_f(field_group, error)
-    CALL h5gclose_f(time_group, error) 
-    CALL h5fclose_f(file_id, error)
-    CALL h5close_f(error)
-    
-    ! Set the count of datasets to -1. It will start at 0. 
-    dataset_count = -1
-    
-  END SUBROUTINE create_surface_file_serial
-  
-  !******************************************************!
-#if _COM_MPI  
-  SUBROUTINE create_surface_file_parallel(filename, comm)
-    IMPLICIT NONE
-    
-    CHARACTER(LEN=*), INTENT(IN) :: filename
-    INTEGER, INTENT(IN)          :: comm
-
     ! File identifier
     INTEGER(HID_T)                 :: file_id
     ! Property list identifier 
@@ -121,15 +58,23 @@ CONTAINS
     ! Initialize FORTRAN interface for hdf5.
     CALL h5open_f(error)
     
-    ! Setup file access property list with 
-    ! parallel I/O access.
-    CALL h5pcreate_f(H5P_FILE_ACCESS_F, plist_id, error)
-    CALL h5pset_fapl_mpio_f(plist_id, comm, MPI_INFO_NULL, error) 
-    
-    ! Create the file collectively.
-    name = TRIM(filename) // '.h5'  
-    CALL h5fcreate_f(name, H5F_ACC_TRUNC_F, file_id, error, access_prp = plist_id)
-    CALL h5pclose_f(plist_id, error)
+    IF(PRESENT(comm)) THEN
+       ! Setup file access property list with 
+       ! parallel I/O access.
+#if _COM_MPI
+       CALL h5pcreate_f(H5P_FILE_ACCESS_F, plist_id, error)
+       CALL h5pset_fapl_mpio_f(plist_id, comm, MPI_INFO_NULL, error) 
+#endif
+       
+       ! Create the file collectively.
+       name = TRIM(filename) // '.h5'  
+       CALL h5fcreate_f(name, H5F_ACC_TRUNC_F, file_id, error, access_prp = plist_id)
+       CALL h5pclose_f(plist_id, error)
+    ELSE
+       ! Create the file.
+       name = TRIM(filename) // '.h5'  
+       CALL h5fcreate_f(name, H5F_ACC_TRUNC_F, file_id, error)
+    ENDIF
     
     ! Create group in the root group.     
     name = '/wave'     
@@ -152,165 +97,15 @@ CONTAINS
     ! Set the count of datasets to -1. It will start at 0. 
     dataset_count = -1
     
-  END SUBROUTINE create_surface_file_parallel
-#endif
-  !***************************************************!
-  
-  !***************************************************!
-  
-  SUBROUTINE write_surface_file2D_serial(filename, wave, &
-       wavederiv, time, efield, afield, lmax )
-    IMPLICIT NONE
-
-    CHARACTER(LEN=*), INTENT(IN)   :: filename
-    COMPLEX(dp), INTENT(IN)        :: wave(:)
-    COMPLEX(dp), INTENT(IN)        :: wavederiv(:)
-    REAL(dp), INTENT(IN)           :: time
-    REAL(dp), INTENT(IN)           :: efield(:), afield(:)
-    INTEGER, INTENT(IN)            :: lmax
-    
-    INTEGER                        :: wave_rank, field_rank
-    INTEGER                        :: time_rank
-    REAL(dp), ALLOCATABLE          :: complex_wave(:, :)
-    REAL(dp), ALLOCATABLE          :: complex_wavederiv(:, :)
-    REAL(dp)                       :: field(3,2)
-    INTEGER                        :: numthetapts
-    ! File identifier
-    INTEGER(HID_T)                 :: file_id
-    ! Property list identifier 
-    INTEGER(HID_T)                 :: plist_id
-    ! Group identifiers
-    INTEGER(HID_T)                 :: wave_group
-    INTEGER(HID_T)                 :: wavederiv_group 
-    INTEGER(HID_T)                 :: field_group
-    INTEGER(HID_T)                 :: time_group
-    ! Dataspace identifier
-    INTEGER(HID_T)                 :: wave_dspace_id
-    INTEGER(HID_T)                 :: wavederiv_dspace_id
-    INTEGER(HID_T)                 :: field_dspace_id  
-    INTEGER(HID_T)                 :: time_dspace_id  
-    ! Dataset identifier  
-    INTEGER(HID_T)                 :: wave_dset_id
-    INTEGER(HID_T)                 :: wavederiv_dset_id
-    INTEGER(HID_T)                 :: field_dset_id
-    INTEGER(HID_T)                 :: time_dset_id
-    ! Dataset dimensions 
-    INTEGER(HSIZE_T)               :: wave_dims(2)
-    INTEGER(HSIZE_T)               :: field_dims(2)
-    INTEGER(HSIZE_T)               :: time_dim(1)  
-    ! Error flag
-    INTEGER                        :: error
-    CHARACTER(LEN=6)               :: cstep
-    CHARACTER(LEN=100)             :: name
-    CHARACTER(LEN = 100)           :: setname
-    
-    !------------------------------------------------------!
-    
-    ! Increase in 1 the count
-    dataset_count = dataset_count + 1
-    WRITE(cstep,'(I6.6)') dataset_count
-    
-    ! Initialize fortran interface
-    CALL h5open_f(error)
-    
-    ! Open files and groups
-    name = TRIM(filename) // '.h5'
-    CALL h5fopen_f(name, H5F_ACC_RDWR_F, file_id, error)
-    
-    name = '/wave'
-    CALL h5gopen_f(file_id, name, wave_group, error)
-    name = '/wavederiv'
-    CALL h5gopen_f(file_id, name, wavederiv_group, error)
-    name = '/field'
-    CALL h5gopen_f(file_id, name, field_group, error)
-    name = '/time'
-    CALL h5gopen_f(file_id, name, time_group, error)
-    
-    ! Number of theta points in a serial run, its
-    numthetapts = lmax + 1
-    !Define rank, in this case 2.
-    wave_rank = 2
-    field_rank = 2
-    time_rank = 1
-    wave_dims = (/numthetapts, 2/)
-    field_dims = (/ 3,2/)
-    time_dim = 1
-    
-    ! Write field array
-    ALLOCATE(complex_wave(numthetapts,2))
-    ALLOCATE(complex_wavederiv(numthetapts,2))
-    complex_wave(:,1) = REAL(wave,dp)
-    complex_wave(:,2) = AIMAG(wave)
-    complex_wavederiv(:,1) = REAL(wavederiv,dp)
-    complex_wavederiv(:,2) = AIMAG(wavederiv)
-    field(:,1) = (/ efield(1), efield(2), efield(3) /)
-    field(:,2) = (/ afield(1), afield(2), afield(3) /)
-    
-    ! Create the data spaces for the  datasets. 
-    CALL h5screate_simple_f(wave_rank, wave_dims, wave_dspace_id, error)
-    CALL h5screate_simple_f(wave_rank, wave_dims, wavederiv_dspace_id, error)
-    CALL h5screate_simple_f(field_rank, field_dims, field_dspace_id, error)
-    CALL h5screate_simple_f(time_rank, time_dim, time_dspace_id, error)
-    
-    setname = '/wave/'// cstep
-    ! Create the dataset.
-    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
-         wave_dspace_id, wave_dset_id, error)
-    CALL h5dwrite_f(wave_dset_id, H5T_NATIVE_DOUBLE, complex_wave, &
-         wave_dims, error)
-    
-    setname = '/wavederiv/'// cstep
-    ! Create the dataset.
-    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
-         wavederiv_dspace_id, wavederiv_dset_id, error)
-    CALL h5dwrite_f(wavederiv_dset_id, H5T_NATIVE_DOUBLE, complex_wavederiv, &
-         wave_dims, error)
-    
-    setname = '/field/'// cstep
-    ! Create the dataset.
-    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
-         field_dspace_id, field_dset_id, error)
-    CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, &
-         field_dims, error)
-    
-    setname = '/time/'// cstep
-    ! Create the dataset.
-    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
-         time_dspace_id, time_dset_id, error)
-    CALL h5dwrite_f(time_dset_id, H5T_NATIVE_DOUBLE, time, &
-         time_dim, error)
-
-    ! End access to the dataset and release 
-    ! resources used by it.
-    CALL h5dclose_f(wave_dset_id, error)
-    CALL h5dclose_f(wavederiv_dset_id, error)
-    CALL h5dclose_f(field_dset_id, error)
-    CALL h5dclose_f(time_dset_id, error)
-    
-    ! Terminate access to the data space.
-    CALL h5sclose_f(wave_dspace_id, error)
-    CALL h5sclose_f(wavederiv_dspace_id, error)
-    CALL h5sclose_f(field_dspace_id, error)
-    CALL h5sclose_f(time_dspace_id, error)
-    
-    ! Close the property list, group, file and interface
-    CALL h5gclose_f(wave_group, error)
-    CALL h5gclose_f(wavederiv_group, error)
-    CALL h5gclose_f(field_group, error)
-    CALL h5gclose_f(time_group, error)
-    CALL h5fclose_f(file_id, error)
-    CALL h5close_f(error)
-    
-    ! Deallocate aux arrays for data
-    DEALLOCATE(complex_wave,complex_wavederiv)
-    
-  END SUBROUTINE write_surface_file2D_serial
+  END SUBROUTINE create_surface_file
   
   !******************************************************!
-#if _COM_MPI
-  SUBROUTINE write_surface_file2D_parallel(filename, wave, &
-       wavederiv, time, efield, afield, lmax, &
-       surfacerank, numsurfaceprocs, comm, numthetaptsperproc )
+  
+  !******************************************************!
+  
+  SUBROUTINE write_surface_file2D(filename, wave, &
+       wavederiv, time, efield, afield, surfacerank, comm )
+    
     IMPLICIT NONE
     
     CHARACTER(LEN=*), INTENT(IN)   :: filename
@@ -318,19 +113,16 @@ CONTAINS
     COMPLEX(dp), INTENT(IN)        :: wavederiv(:)
     REAL(dp), INTENT(IN)           :: time
     REAL(dp), INTENT(IN)           :: efield(:), afield(:)
-    INTEGER, INTENT(IN)            :: lmax
-    INTEGER, INTENT(IN)            :: numsurfaceprocs
-    INTEGER, INTENT(IN)            :: surfacerank
-    INTEGER, INTENT(IN)            :: comm
-    INTEGER, INTENT(IN)            :: numthetaptsperproc
+    INTEGER, INTENT(IN), OPTIONAL  :: surfacerank
+    INTEGER, INTENT(IN), OPTIONAL  :: comm
     
     INTEGER                        :: wave_rank, field_rank
     INTEGER                        :: time_rank
     REAL(dp), ALLOCATABLE          :: complex_wave(:, :)
     REAL(dp), ALLOCATABLE          :: complex_wavederiv(:, :)
     REAL(dp)                       :: field(3,2)
-    INTEGER                        :: numthetapts
     INTEGER                        :: numthetaoffset
+    
     ! File identifier
     INTEGER(HID_T)                 :: file_id
     ! Property list identifier 
@@ -351,9 +143,10 @@ CONTAINS
     INTEGER(HID_T)                 :: field_memspace
     INTEGER(HID_T)                 :: time_memspace
     ! Dataspace identifier
-    !INTEGER(HID_T)                 :: wave_dspace_id
-    !INTEGER(HID_T)                 :: wavederiv_dspace_id
-    !INTEGER(HID_T)                 :: field_dspace_id  
+    INTEGER(HID_T)                 :: wave_dspace_id
+    INTEGER(HID_T)                 :: wavederiv_dspace_id
+    INTEGER(HID_T)                 :: field_dspace_id
+    INTEGER(HID_T)                 :: time_dspace_id 
     ! Dataset identifier  
     INTEGER(HID_T)                 :: wave_dset_id
     INTEGER(HID_T)                 :: wavederiv_dset_id
@@ -386,16 +179,23 @@ CONTAINS
     
     ! Initialize fortran interface
     CALL h5open_f(error)
-    
-    ! Setup file access property list with
-    ! parallel I/O access.
-    CALL h5pcreate_f(H5P_FILE_ACCESS_F, plist_id, error)
-    CALL h5pset_fapl_mpio_f(plist_id, comm, MPI_INFO_NULL, error)
-    
-    ! Open files and groups
-    name = TRIM(filename) // '.h5'
-    CALL h5fopen_f(name, H5F_ACC_RDWR_F, file_id, error, access_prp = plist_id)
-    CALL h5pclose_f(plist_id, error)
+
+    IF(PRESENT(comm)) THEN
+       ! Setup file access property list with
+       ! parallel I/O access.
+#if _COM_MPI
+       CALL h5pcreate_f(H5P_FILE_ACCESS_F, plist_id, error)
+       CALL h5pset_fapl_mpio_f(plist_id, comm, MPI_INFO_NULL, error)
+#endif
+       ! Open files and groups
+       name = TRIM(filename) // '.h5'
+       CALL h5fopen_f(name, H5F_ACC_RDWR_F, file_id, error, access_prp = plist_id)
+       CALL h5pclose_f(plist_id, error)
+    ELSE
+       ! Open files and groups
+       name = TRIM(filename) // '.h5'
+       CALL h5fopen_f(name, H5F_ACC_RDWR_F, file_id, error)
+    ENDIF
     
     name = '/wave'
     CALL h5gopen_f(file_id, name, wave_group, error)
@@ -406,20 +206,24 @@ CONTAINS
     name = '/time'
     CALL h5gopen_f(file_id, name, time_group, error)
     
-    numthetapts = lmax + 1
-    numthetaoffset = INT(numthetapts / numsurfaceprocs)
     !Define rank, in this case 2.
     wave_rank = 2
     field_rank = 2
     time_rank = 1
-    wave_dims = (/numthetaptsperproc, 2/)
     field_dims = (/ 3, 2/)
-    wave_global_dims = (/numthetapts, 2/)
     time_dim = 1
+    wave_global_dims = (/numthetapts, 2/)
+    IF(PRESENT(comm)) THEN
+       wave_dims = (/numthetaptsperproc, 2/)
+       ALLOCATE(complex_wave(numthetaptsperproc,2))
+       ALLOCATE(complex_wavederiv(numthetaptsperproc,2))
+       numthetaoffset = INT(numthetapts / numsurfaceprocs)
+    ELSE
+       wave_dims = (/numthetapts, 2/)
+       ALLOCATE(complex_wave(numthetapts,2))
+       ALLOCATE(complex_wavederiv(numthetapts,2))
+    ENDIF
     
-    ! Write field array
-    ALLOCATE(complex_wave(numthetaptsperproc,2))
-    ALLOCATE(complex_wavederiv(numthetaptsperproc,2))
     complex_wave(:,1) = REAL(wave,dp)
     complex_wave(:,2) = AIMAG(wave)
     complex_wavederiv(:,1) = REAL(wavederiv,dp)
@@ -427,285 +231,184 @@ CONTAINS
     
     field(:, 1) = (/efield(1), efield(2), efield(3)/)
     field(:, 2) = (/afield(1), afield(2), afield(3)/)
-    
-    ! Create the data space for the dataset.
-    CALL h5screate_simple_f(wave_rank, wave_global_dims, wave_filespace, error)
-    CALL h5screate_simple_f(wave_rank, wave_dims, wave_memspace, error)
-    CALL h5screate_simple_f(wave_rank, wave_global_dims, wavederiv_filespace, error)
-    CALL h5screate_simple_f(wave_rank, wave_dims, wavederiv_memspace, error)
-    
-    ! Create dataset.
-    setname = '/wave/'// cstep
-    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, wave_filespace, &
-         wave_dset_id, error)!, plist_id)
-    CALL h5sclose_f(wave_filespace, error)
-    setname = '/wavederiv/'// cstep
-    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, wavederiv_filespace, &
-         wavederiv_dset_id, error)!, plist_id)
-    CALL h5sclose_f(wavederiv_filespace, error)
-    
-    cont = wave_dims
-    offset = (/ numthetaoffset * surfacerank, 0 /)
-
-    ! Select hyperslab in the file.
-    CALL h5dget_space_f(wave_dset_id, wave_filespace, error)
-    CALL h5sselect_hyperslab_f (wave_filespace, H5S_SELECT_SET_F, offset,&
-         cont, error)!, stride, blck)
-    CALL h5dget_space_f(wavederiv_dset_id, wavederiv_filespace, error)
-    CALL h5sselect_hyperslab_f (wavederiv_filespace, H5S_SELECT_SET_F, offset,&
-         cont, error)!, stride, blck)
-    
-    ! Create property list for collective dataset write
-    CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
-    CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
-    ! Write the dataset collectively.
-    CALL h5dwrite_f(wave_dset_id, H5T_NATIVE_DOUBLE, complex_wave, wave_global_dims, &
-         error, file_space_id = wave_filespace, mem_space_id = wave_memspace, &
-         xfer_prp = plist_id)
-    CALL h5dwrite_f(wavederiv_dset_id, H5T_NATIVE_DOUBLE, complex_wavederiv, wave_global_dims, &
-         error, file_space_id = wavederiv_filespace, mem_space_id = wavederiv_memspace, &
-         xfer_prp = plist_id)
-    
-    ! Close dataspaces.
-    CALL h5pclose_f(plist_id, error)
-    CALL h5sclose_f(wave_filespace, error)
-    CALL h5sclose_f(wave_memspace, error)
-    CALL h5sclose_f(wavederiv_filespace, error)
-    CALL h5sclose_f(wavederiv_memspace, error)
-    
-    ! Close the dataset.
-    CALL h5dclose_f(wave_dset_id, error)
-    CALL h5dclose_f(wavederiv_dset_id, error)
-    
-    ! Deallocate aux arrays for data
-    DEALLOCATE(complex_wave,complex_wavederiv)
-    
-    ! For the field, only the first processor in the group
-    ! write the field data.
 
     ! Create the data space for the dataset.
-    CALL h5screate_simple_f(field_rank, field_dims, field_filespace, error)
-    CALL h5screate_simple_f(field_rank, field_dims, field_memspace, error)
-    IF(surfacerank.NE.1) &
-         CALL h5sselect_none_f(field_memspace,error)
-    
-    ! Create dataset
-    setname = '/field/'// cstep
-    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, field_filespace, &
-         field_dset_id, error)!, plist_id)
-    CALL h5sclose_f(field_filespace, error)
-
-    cont_field = field_dims
-    offset_field = 0
-    ! Select hyperslab in the file.
-    CALL h5dget_space_f(field_dset_id, field_filespace, error)
-    CALL h5sselect_hyperslab_f (field_filespace, H5S_SELECT_SET_F, offset_field,&
-         cont_field, error)!, stride, blck)
-    IF(surfacerank.NE.1) &
-         CALL h5sselect_none_f(field_filespace,error)
+    IF(PRESENT(comm)) THEN
+       CALL h5screate_simple_f(wave_rank, wave_global_dims, wave_filespace, error)
+       CALL h5screate_simple_f(wave_rank, wave_dims, wave_memspace, error)
+       CALL h5screate_simple_f(wave_rank, wave_global_dims, wavederiv_filespace, error)
+       CALL h5screate_simple_f(wave_rank, wave_dims, wavederiv_memspace, error)
        
-    ! Create property list for collective dataset write
-    CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
-    CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
-    
-    CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, field_dims, &
-         error, file_space_id = field_filespace, mem_space_id = field_memspace, &
-         xfer_prp = plist_id)
-
-    CALL h5pclose_f(plist_id, error)
-    CALL h5sclose_f(field_filespace, error)
-    CALL h5sclose_f(field_memspace, error)
-    CALL h5dclose_f(field_dset_id, error)
-
-    !-------------------------------------!
-
-     ! Create the data space for the dataset.
-    CALL h5screate_simple_f(time_rank, time_dim, time_filespace, error)
-    CALL h5screate_simple_f(time_rank, time_dim, time_memspace, error)
-    IF(surfacerank.NE.1) &
-         CALL h5sselect_none_f(time_memspace,error)
-    
-    ! Create dataset
-    setname = '/time/'// cstep
-    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, time_filespace, &
-         time_dset_id, error)!, plist_id)
-    CALL h5sclose_f(time_filespace, error)
-
-    cont_time = time_dim
-    offset_time = 0
-    ! Select hyperslab in the file.
-    CALL h5dget_space_f(time_dset_id, time_filespace, error)
-    CALL h5sselect_hyperslab_f (time_filespace, H5S_SELECT_SET_F, offset_time,&
-         cont_time, error)!, stride, blck)
-    IF(surfacerank.NE.1) &
-         CALL h5sselect_none_f(time_filespace,error)
+       ! Create dataset.
+       setname = '/wave/'// cstep
+       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, wave_filespace, &
+            wave_dset_id, error)!, plist_id)
+       CALL h5sclose_f(wave_filespace, error)
+       setname = '/wavederiv/'// cstep
+       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, wavederiv_filespace, &
+            wavederiv_dset_id, error)!, plist_id)
+       CALL h5sclose_f(wavederiv_filespace, error)
        
-    ! Create property list for collective dataset write
-    CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
-    CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
-    
-    CALL h5dwrite_f(time_dset_id, H5T_NATIVE_DOUBLE, time, time_dim, &
-         error, file_space_id = time_filespace, mem_space_id = time_memspace, &
-         xfer_prp = plist_id)
-    !---------------!
-    
-    ! Close dataspace and dataset 
-    CALL h5pclose_f(plist_id, error)
-    CALL h5sclose_f(time_filespace, error)
-    CALL h5sclose_f(time_memspace, error)
-    CALL h5dclose_f(time_dset_id, error)
-
-     ! Close the property list, group, file and interface
-    CALL h5gclose_f(wave_group, error)
-    CALL h5gclose_f(wavederiv_group, error)
-    CALL h5gclose_f(field_group, error)
-    CALL h5gclose_f(time_group, error)
-    CALL h5fclose_f(file_id, error)
-    CALL h5close_f(error)
-    
-    
-  END SUBROUTINE write_surface_file2D_parallel
+       cont = wave_dims
+       offset = (/ numthetaoffset * surfacerank, 0 /)
+       
+       ! Select hyperslab in the file.
+       CALL h5dget_space_f(wave_dset_id, wave_filespace, error)
+       CALL h5sselect_hyperslab_f (wave_filespace, H5S_SELECT_SET_F, offset,&
+            cont, error)!, stride, blck)
+       CALL h5dget_space_f(wavederiv_dset_id, wavederiv_filespace, error)
+       CALL h5sselect_hyperslab_f (wavederiv_filespace, H5S_SELECT_SET_F, offset,&
+            cont, error)!, stride, blck)
+#if _COM_MPI    
+       ! Create property list for collective dataset write
+       CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
+       CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
+       ! Write the dataset collectively.
+       CALL h5dwrite_f(wave_dset_id, H5T_NATIVE_DOUBLE, complex_wave, wave_global_dims, &
+            error, file_space_id = wave_filespace, mem_space_id = wave_memspace, &
+            xfer_prp = plist_id)
+       CALL h5dwrite_f(wavederiv_dset_id, H5T_NATIVE_DOUBLE, complex_wavederiv, wave_global_dims, &
+            error, file_space_id = wavederiv_filespace, mem_space_id = wavederiv_memspace, &
+            xfer_prp = plist_id)
 #endif
-  
-  !***************************************************!
-  
-  !***************************************************!
-  
-  SUBROUTINE write_surface_file3D_serial(filename, wave, &
-       wavederiv, time, efield, afield, lmax )
-    IMPLICIT NONE
+       ! Close dataspaces.
+       CALL h5pclose_f(plist_id, error)
+       CALL h5sclose_f(wave_filespace, error)
+       CALL h5sclose_f(wave_memspace, error)
+       CALL h5sclose_f(wavederiv_filespace, error)
+       CALL h5sclose_f(wavederiv_memspace, error)
+    
+       ! Close the dataset.
+       CALL h5dclose_f(wave_dset_id, error)
+       CALL h5dclose_f(wavederiv_dset_id, error)
+       
+       ! Deallocate aux arrays for data
+       DEALLOCATE(complex_wave,complex_wavederiv)
+       
+       ! For the field, only the first processor in the group
+       ! write the field data.
+       
+       ! Create the data space for the dataset.
+       CALL h5screate_simple_f(field_rank, field_dims, field_filespace, error)
+       CALL h5screate_simple_f(field_rank, field_dims, field_memspace, error)
+       IF(surfacerank.NE.1) &
+            CALL h5sselect_none_f(field_memspace,error)
+       
+       ! Create dataset
+       setname = '/field/'// cstep
+       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, field_filespace, &
+            field_dset_id, error)!, plist_id)
+       CALL h5sclose_f(field_filespace, error)
+       
+       cont_field = field_dims
+       offset_field = 0
+       ! Select hyperslab in the file.
+       CALL h5dget_space_f(field_dset_id, field_filespace, error)
+       CALL h5sselect_hyperslab_f (field_filespace, H5S_SELECT_SET_F, offset_field,&
+            cont_field, error)!, stride, blck)
+       IF(surfacerank.NE.1) &
+            CALL h5sselect_none_f(field_filespace,error)
+#if _COM_MPI       
+       ! Create property list for collective dataset write
+       CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
+       CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
+       
+       CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, field_dims, &
+            error, file_space_id = field_filespace, mem_space_id = field_memspace, &
+            xfer_prp = plist_id)
+#endif
+       CALL h5pclose_f(plist_id, error)
+       CALL h5sclose_f(field_filespace, error)
+       CALL h5sclose_f(field_memspace, error)
+       CALL h5dclose_f(field_dset_id, error)
 
-    CHARACTER(LEN=*), INTENT(IN)   :: filename
-    COMPLEX(dp), INTENT(IN)        :: wave(:, :)
-    COMPLEX(dp), INTENT(IN)        :: wavederiv(:, :)
-    REAL(dp), INTENT(IN)           :: time
-    REAL(dp), INTENT(IN)           :: efield(:), afield(:)
-    INTEGER, INTENT(IN)            :: lmax
-    
-    INTEGER                        :: wave_rank, field_rank
-    INTEGER                        :: time_rank
-    REAL(dp), ALLOCATABLE          :: complex_wave(:, :, :)
-    REAL(dp), ALLOCATABLE          :: complex_wavederiv(:, :, :)
-    REAL(dp)                       :: field(3,2)
-    INTEGER                        :: numthetapts, numphipts
-    ! File identifier
-    INTEGER(HID_T)                 :: file_id
-    ! Property list identifier 
-    INTEGER(HID_T)                 :: plist_id
-    ! Group identifiers
-    INTEGER(HID_T)                 :: wave_group
-    INTEGER(HID_T)                 :: wavederiv_group 
-    INTEGER(HID_T)                 :: field_group
-    INTEGER(HID_T)                 :: time_group
-    ! Dataspace identifier
-    INTEGER(HID_T)                 :: wave_dspace_id
-    INTEGER(HID_T)                 :: wavederiv_dspace_id
-    INTEGER(HID_T)                 :: field_dspace_id  
-    INTEGER(HID_T)                 :: time_dspace_id  
-    ! Dataset identifier  
-    INTEGER(HID_T)                 :: wave_dset_id
-    INTEGER(HID_T)                 :: wavederiv_dset_id
-    INTEGER(HID_T)                 :: field_dset_id
-    INTEGER(HID_T)                 :: time_dset_id
-    ! Dataset dimensions 
-    INTEGER(HSIZE_T)               :: wave_dims(3)
-    INTEGER(HSIZE_T)               :: field_dims(2)
-    INTEGER(HSIZE_T)               :: time_dim(1)
-    ! Error flag
-    INTEGER                        :: error
-    CHARACTER(LEN=6)               :: cstep
-    CHARACTER(LEN=100)             :: name
-    CHARACTER(LEN = 100)           :: setname
-    
-    !------------------------------------------------------!
-    
-    ! Increase in 1 the count
-    dataset_count = dataset_count + 1
-    WRITE(cstep,'(I6.6)') dataset_count
-    
-    ! Initialize fortran interface
-    CALL h5open_f(error)
-    
-    ! Open files and groups
-    name = TRIM(filename) // '.h5'
-    CALL h5fopen_f(name, H5F_ACC_RDWR_F, file_id, error)
-    
-    name = '/wave'
-    CALL h5gopen_f(file_id, name, wave_group, error)
-    name = '/wavederiv'
-    CALL h5gopen_f(file_id, name, wavederiv_group, error)
-    name = '/field'
-    CALL h5gopen_f(file_id, name, field_group, error)
-    name = '/time'
-    CALL h5gopen_f(file_id, name, time_group, error)
-    
-    ! Number of theta points in a serial run, its
-    numthetapts = lmax + 1
-    numphipts = lmax + 1
-    !Define rank, in this case 2.
-    wave_rank = 3
-    field_rank = 2
-    time_rank = 1
-    wave_dims = (/numthetapts, numphipts, 2/)
-    field_dims = (/3,2/)
-    time_dim = 1
-    
-    ! Write field array
-    ALLOCATE(complex_wave(numthetapts,numphipts,2))
-    ALLOCATE(complex_wavederiv(numthetapts,numphipts,2))
-    complex_wave(:,:,1) = REAL(wave,dp)
-    complex_wave(:,:,2) = AIMAG(wave)
-    complex_wavederiv(:,:,1) = REAL(wavederiv,dp)
-    complex_wavederiv(:,:,2) = AIMAG(wavederiv)
-    field(:,1) = (/ efield(1), efield(2), efield(3) /)
-    field(:,2) = (/ afield(1), afield(2), afield(3) /)
-    
-    ! Create the data spaces for the  datasets. 
-    CALL h5screate_simple_f(wave_rank, wave_dims, wave_dspace_id, error)
-    CALL h5screate_simple_f(wave_rank, wave_dims, wavederiv_dspace_id, error)
-    CALL h5screate_simple_f(field_rank, field_dims, field_dspace_id, error)
-    CALL h5screate_simple_f(time_rank, time_dim, time_dspace_id, error)
-    
-    setname = '/wave/'// cstep
-    ! Create the dataset.
-    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
-         wave_dspace_id, wave_dset_id, error)
-    CALL h5dwrite_f(wave_dset_id, H5T_NATIVE_DOUBLE, complex_wave, &
-         wave_dims, error)
-    
-    setname = '/wavederiv/'// cstep
-    ! Create the dataset.
-    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
-         wavederiv_dspace_id, wavederiv_dset_id, error)
-    CALL h5dwrite_f(wavederiv_dset_id, H5T_NATIVE_DOUBLE, complex_wavederiv, &
-         wave_dims, error)
-    
-    setname = '/field/'// cstep
-    ! Create the dataset.
-    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
-         field_dspace_id, field_dset_id, error)
-    CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, &
-         field_dims, error)
-    
-    setname = '/time/'// cstep
-    ! Create the dataset.
-    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
-         time_dspace_id, time_dset_id, error)
-    CALL h5dwrite_f(time_dset_id, H5T_NATIVE_DOUBLE, time, &
-         time_dim, error)
+       !-------------------------------------!
 
-    ! End access to the dataset and release 
-    ! resources used by it.
-    CALL h5dclose_f(wave_dset_id, error)
-    CALL h5dclose_f(wavederiv_dset_id, error)
-    CALL h5dclose_f(field_dset_id, error)
-    CALL h5dclose_f(time_dset_id, error)
-    
-    ! Terminate access to the data space.
-    CALL h5sclose_f(wave_dspace_id, error)
-    CALL h5sclose_f(wavederiv_dspace_id, error)
-    CALL h5sclose_f(field_dspace_id, error)
-    CALL h5sclose_f(time_dspace_id, error)
+       ! Create the data space for the dataset.
+       CALL h5screate_simple_f(time_rank, time_dim, time_filespace, error)
+       CALL h5screate_simple_f(time_rank, time_dim, time_memspace, error)
+       IF(surfacerank.NE.1) &
+            CALL h5sselect_none_f(time_memspace,error)
+       
+       ! Create dataset
+       setname = '/time/'// cstep
+       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, time_filespace, &
+            time_dset_id, error)!, plist_id)
+       CALL h5sclose_f(time_filespace, error)
+       
+       cont_time = time_dim
+       offset_time = 0
+       ! Select hyperslab in the file.
+       CALL h5dget_space_f(time_dset_id, time_filespace, error)
+       CALL h5sselect_hyperslab_f (time_filespace, H5S_SELECT_SET_F, offset_time,&
+            cont_time, error)!, stride, blck)
+       IF(surfacerank.NE.1) &
+            CALL h5sselect_none_f(time_filespace,error)
+#if _COM_MPI 
+       ! Create property list for collective dataset write
+       CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
+       CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
+       
+       CALL h5dwrite_f(time_dset_id, H5T_NATIVE_DOUBLE, time, time_dim, &
+            error, file_space_id = time_filespace, mem_space_id = time_memspace, &
+            xfer_prp = plist_id)
+#endif
+       !---------------!
+
+       ! Close dataspace and dataset 
+       CALL h5pclose_f(plist_id, error)
+       CALL h5sclose_f(time_filespace, error)
+       CALL h5sclose_f(time_memspace, error)
+       CALL h5dclose_f(time_dset_id, error)
+       
+    ELSE
+       ! Create the data spaces for the  datasets. 
+       CALL h5screate_simple_f(wave_rank, wave_dims, wave_dspace_id, error)
+       CALL h5screate_simple_f(wave_rank, wave_dims, wavederiv_dspace_id, error)
+       CALL h5screate_simple_f(field_rank, field_dims, field_dspace_id, error)
+       CALL h5screate_simple_f(time_rank, time_dim, time_dspace_id, error)
+       
+       setname = '/wave/'// cstep
+       ! Create the dataset.
+       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
+            wave_dspace_id, wave_dset_id, error)
+       CALL h5dwrite_f(wave_dset_id, H5T_NATIVE_DOUBLE, complex_wave, &
+            wave_dims, error)
+       
+       setname = '/wavederiv/'// cstep
+       ! Create the dataset.
+       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
+            wavederiv_dspace_id, wavederiv_dset_id, error)
+       CALL h5dwrite_f(wavederiv_dset_id, H5T_NATIVE_DOUBLE, complex_wavederiv, &
+            wave_dims, error)
+       
+       setname = '/field/'// cstep
+       ! Create the dataset.
+       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
+            field_dspace_id, field_dset_id, error)
+       CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, &
+            field_dims, error)
+       
+       setname = '/time/'// cstep
+       ! Create the dataset.
+       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
+            time_dspace_id, time_dset_id, error)
+       CALL h5dwrite_f(time_dset_id, H5T_NATIVE_DOUBLE, time, &
+            time_dim, error)
+       
+           ! End access to the dataset and release 
+       ! resources used by it.
+       CALL h5dclose_f(wave_dset_id, error)
+       CALL h5dclose_f(wavederiv_dset_id, error)
+       CALL h5dclose_f(field_dset_id, error)
+       CALL h5dclose_f(time_dset_id, error)
+       
+       ! Terminate access to the data space.
+       CALL h5sclose_f(wave_dspace_id, error)
+       CALL h5sclose_f(wavederiv_dspace_id, error)
+       CALL h5sclose_f(field_dspace_id, error)
+       CALL h5sclose_f(time_dspace_id, error)
+    ENDIF
     
     ! Close the property list, group, file and interface
     CALL h5gclose_f(wave_group, error)
@@ -715,17 +418,15 @@ CONTAINS
     CALL h5fclose_f(file_id, error)
     CALL h5close_f(error)
     
-    ! Deallocate aux arrays for data
-    DEALLOCATE(complex_wave,complex_wavederiv)
-    
-  END SUBROUTINE write_surface_file3D_serial
+  END SUBROUTINE write_surface_file2D
+  
+  !***************************************************!
   
   !******************************************************!
-#if _COM_MPI
-  SUBROUTINE write_surface_file3D_parallel(filename, wave, &
-       wavederiv, time, efield, afield, lmax, &
-       surfacerank,numsurfaceprocs, comm, &
-       numthetaptsperproc, numphiptsperproc )
+  
+  SUBROUTINE write_surface_file3D(filename, wave, &
+       wavederiv, time, efield, afield, surfacerank, comm )
+    
     IMPLICIT NONE
     
     CHARACTER(LEN=*), INTENT(IN)   :: filename
@@ -733,20 +434,16 @@ CONTAINS
     COMPLEX(dp), INTENT(IN)        :: wavederiv(:, :)
     REAL(dp), INTENT(IN)           :: time
     REAL(dp), INTENT(IN)           :: efield(:), afield(:)
-    INTEGER, INTENT(IN)            :: lmax
-    INTEGER, INTENT(IN)            :: surfacerank
-    INTEGER, INTENT(IN)            :: numsurfaceprocs
-    INTEGER, INTENT(IN)            :: comm
-    INTEGER, INTENT(IN)            :: numthetaptsperproc
-    INTEGER, INTENT(IN)            :: numphiptsperproc
+    INTEGER, INTENT(IN), OPTIONAL  :: surfacerank
+    INTEGER, INTENT(IN), OPTIONAL  :: comm
     
     INTEGER                        :: wave_rank, field_rank
     INTEGER                        :: time_rank
     REAL(dp), ALLOCATABLE          :: complex_wave(:, :, :)
     REAL(dp), ALLOCATABLE          :: complex_wavederiv(:, :, :)
     REAL(dp)                       :: field(3,2)
-    INTEGER                        :: numthetapts, numphipts
-    INTEGER                        :: numthetaoffset, numphioffset 
+    INTEGER                        :: numthetaoffset
+    INTEGER                        :: numphioffset
     ! File identifier
     INTEGER(HID_T)                 :: file_id
     ! Property list identifier 
@@ -767,10 +464,10 @@ CONTAINS
     INTEGER(HID_T)                 :: field_memspace
     INTEGER(HID_T)                 :: time_memspace
     ! Dataspace identifier
-    !INTEGER(HID_T)                 :: wave_dspace_id
-    !INTEGER(HID_T)                 :: wavederiv_dspace_id
-    !INTEGER(HID_T)                 :: field_dspace_id  
-    !INTEGER(HID_T)                 :: time_dspace_id  
+    INTEGER(HID_T)                 :: wave_dspace_id
+    INTEGER(HID_T)                 :: wavederiv_dspace_id
+    INTEGER(HID_T)                 :: field_dspace_id  
+    INTEGER(HID_T)                 :: time_dspace_id  
     ! Dataset identifier  
     INTEGER(HID_T)                 :: wave_dset_id
     INTEGER(HID_T)                 :: wavederiv_dset_id
@@ -804,15 +501,22 @@ CONTAINS
     ! Initialize fortran interface
     CALL h5open_f(error)
 
-    ! Setup file access property list with
-    ! parallel I/O access.
-    CALL h5pcreate_f(H5P_FILE_ACCESS_F, plist_id, error)
-    CALL h5pset_fapl_mpio_f(plist_id, comm, MPI_INFO_NULL, error)
-    
-    ! Open files and groups
-    name = TRIM(filename) // '.h5'
-    CALL h5fopen_f(name, H5F_ACC_RDWR_F, file_id, error, access_prp = plist_id)
-    CALL h5pclose_f(plist_id, error)
+    IF(PRESENT(comm)) THEN
+       ! Setup file access property list with
+       ! parallel I/O access.
+#if _COM_MPI
+       CALL h5pcreate_f(H5P_FILE_ACCESS_F, plist_id, error)
+       CALL h5pset_fapl_mpio_f(plist_id, comm, MPI_INFO_NULL, error)
+#endif
+       ! Open files and groups
+       name = TRIM(filename) // '.h5'
+       CALL h5fopen_f(name, H5F_ACC_RDWR_F, file_id, error, access_prp = plist_id)
+       CALL h5pclose_f(plist_id, error)
+    ELSE
+       ! Open files and groups
+       name = TRIM(filename) // '.h5'
+       CALL h5fopen_f(name, H5F_ACC_RDWR_F, file_id, error)
+    ENDIF
     
     name = '/wave'
     CALL h5gopen_f(file_id, name, wave_group, error)
@@ -823,20 +527,25 @@ CONTAINS
     name = '/time'
     CALL h5gopen_f(file_id, name, time_group, error)
     
-    numthetapts = lmax + 1
-    numphipts = lmax + 1
-    numthetaoffset = INT(numthetapts / numsurfaceprocs)
-    numphioffset = INT(numphipts / numsurfaceprocs)
     wave_rank = 3
     field_rank = 2
     time_rank = 1
     field_dims = (/3,2/)
     time_dim = 1
     wave_global_dims = (/numthetapts, numphipts, 2/)
+
+    IF(PRESENT(comm)) THEN
+       wave_dims = (/numthetaptsperproc, numphiptsperproc, 2/)
+       ALLOCATE(complex_wave(numthetaptsperproc,numphiptsperproc,2))
+       ALLOCATE(complex_wavederiv(numthetaptsperproc,numphiptsperproc,2))
+       numthetaoffset = INT(numthetapts / numsurfaceprocs)
+       numphioffset = INT(numphipts / numsurfaceprocs)
+    ELSE
+       wave_dims = (/numthetapts, numphipts, 2/)
+       ALLOCATE(complex_wave(numthetapts,numphipts,2))
+       ALLOCATE(complex_wavederiv(numthetapts,numphipts,2))
+    ENDIF
     
-    wave_dims = (/numthetaptsperproc, numphiptsperproc, 2/)
-    ALLOCATE(complex_wave(numthetaptsperproc,numphiptsperproc,2))
-    ALLOCATE(complex_wavederiv(numthetaptsperproc,numphiptsperproc,2))
     complex_wave(:,:,1) = REAL(wave,dp)
     complex_wave(:,:,2) = AIMAG(wave)
     complex_wavederiv(:,:,1) = REAL(wavederiv,dp)
@@ -845,144 +554,195 @@ CONTAINS
     ! Write field array   
     field(:,1) = (/ efield(1), efield(2), efield(3) /)
     field(:,2) = (/ afield(1), afield(2), afield(3) /)
-    
-    ! Create the data space for the dataset.
-    CALL h5screate_simple_f(wave_rank, wave_global_dims, wave_filespace, error)
-    CALL h5screate_simple_f(wave_rank, wave_dims, wave_memspace, error)
-    CALL h5screate_simple_f(wave_rank, wave_global_dims, wavederiv_filespace, error)
-    CALL h5screate_simple_f(wave_rank, wave_dims, wavederiv_memspace, error)
-    
-    ! Create dataset.
-    setname = '/wave/'// cstep
-    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, wave_filespace, &
-         wave_dset_id, error)!, plist_id)
-    CALL h5sclose_f(wave_filespace, error)
-    setname = '/wavederiv/'// cstep
-    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, wavederiv_filespace, &
-         wavederiv_dset_id, error)!, plist_id)
-    CALL h5sclose_f(wavederiv_filespace, error)
-    
-    cont = wave_dims
-    offset = (/ numthetaoffset * surfacerank, numphioffset * surfacerank, 0 /)
-    
-    ! Select hyperslab in the file.
-    CALL h5dget_space_f(wave_dset_id, wave_filespace, error)
-    CALL h5sselect_hyperslab_f (wave_filespace, H5S_SELECT_SET_F, offset,&
-         cont, error)!, stride, blck)
-    CALL h5dget_space_f(wavederiv_dset_id, wavederiv_filespace, error)
-    CALL h5sselect_hyperslab_f (wavederiv_filespace, H5S_SELECT_SET_F, offset,&
-         cont, error)!, stride, blck)
-    
-    ! Create property list for collective dataset write
-    CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
-    CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
-    ! Write the dataset collectively.
-    CALL h5dwrite_f(wave_dset_id, H5T_NATIVE_DOUBLE, complex_wave, wave_global_dims, &
-         error, file_space_id = wave_filespace, mem_space_id = wave_memspace, &
-         xfer_prp = plist_id)
-    CALL h5dwrite_f(wavederiv_dset_id, H5T_NATIVE_DOUBLE, complex_wavederiv, wave_global_dims, &
-         error, file_space_id = wavederiv_filespace, mem_space_id = wavederiv_memspace, &
-         xfer_prp = plist_id)
-    
-    ! Close dataspaces.
-    CALL h5pclose_f(plist_id, error)
-    CALL h5sclose_f(wave_filespace, error)
-    CALL h5sclose_f(wave_memspace, error)
-    CALL h5sclose_f(wavederiv_filespace, error)
-    CALL h5sclose_f(wavederiv_memspace, error)
-    
-    ! Close the dataset.
-    CALL h5dclose_f(wave_dset_id, error)
-    CALL h5dclose_f(wavederiv_dset_id, error)
-    
-    ! Deallocate aux arrays for data
-    DEALLOCATE(complex_wave,complex_wavederiv)
-    
-    !************!
-    
-    ! For the field, only the first processor in the group
-    ! write the field data.
-    
-    ! Create the data space for the dataset.
-    CALL h5screate_simple_f(field_rank, field_dims, field_filespace, error)
-    CALL h5screate_simple_f(field_rank, field_dims, field_memspace, error)
-    IF(surfacerank.NE.1) &
-         CALL h5sselect_none_f(field_memspace,error)
-    
-    ! Create dataset
-    setname = '/field/'// cstep
-    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, field_filespace, &
-         field_dset_id, error)!, plist_id)
-    CALL h5sclose_f(field_filespace, error)
-    
-    cont_field = field_dims
-    offset_field = 0
-    ! Select hyperslab in the file.
-    CALL h5dget_space_f(field_dset_id, field_filespace, error)
-    CALL h5sselect_hyperslab_f (field_filespace, H5S_SELECT_SET_F, offset_field,&
-         cont_field, error)!, stride, blck)
-    
-    IF(surfacerank.NE.1) &
-         CALL h5sselect_none_f(field_filespace,error)
-    
-    ! Create property list for collective dataset write
-    CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
-    CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
-    
-    !IF (pivot_number(1) .EQ. 1) &
-    CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, field_dims, &
-         error, file_space_id = field_filespace, mem_space_id = field_memspace, &
-         xfer_prp = plist_id)
-    
-    ! Close dataspace and dataset
-    CALL h5pclose_f(plist_id, error)
-    CALL h5sclose_f(field_filespace, error)
-    CALL h5sclose_f(field_memspace, error)
-    CALL h5dclose_f(field_dset_id, error)    
 
-    !----------------------------------------------------!
-
-    ! For the field, only the first processor in the group
-    ! write the field data.
-    
-    ! Create the data space for the dataset.
-    CALL h5screate_simple_f(time_rank, time_dim, time_filespace, error)
-    CALL h5screate_simple_f(time_rank, time_dim, time_memspace, error)
-    IF(surfacerank.NE.1) &
-         CALL h5sselect_none_f(time_memspace,error)
-    
-    ! Create dataset
-    setname = '/time/'// cstep
-    CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, time_filespace, &
-         time_dset_id, error)!, plist_id)
-    CALL h5sclose_f(time_filespace, error)
-    
-    cont_time = time_dim
-    offset_time = 0
-    ! Select hyperslab in the file.
-    CALL h5dget_space_f(time_dset_id, time_filespace, error)
-    CALL h5sselect_hyperslab_f (time_filespace, H5S_SELECT_SET_F, offset_time,&
-         cont_time, error)!, stride, blck)
-    
-    IF(surfacerank.NE.1) &
-         CALL h5sselect_none_f(time_filespace,error)
-    
-    ! Create property list for collective dataset write
-    CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
-    CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
-    
-    !IF (pivot_number(1) .EQ. 1) &
-    CALL h5dwrite_f(time_dset_id, H5T_NATIVE_DOUBLE, time, time_dim, &
-         error, file_space_id = time_filespace, mem_space_id = time_memspace, &
-         xfer_prp = plist_id)
-    
-    ! Close dataspace and dataset
-    CALL h5pclose_f(plist_id, error)
-    CALL h5sclose_f(time_filespace, error)
-    CALL h5sclose_f(time_memspace, error)
-    CALL h5dclose_f(time_dset_id, error)    
-    
-    !------------------------------------!
+    IF(PRESENT(comm)) THEN
+       ! Create the data space for the dataset.
+       CALL h5screate_simple_f(wave_rank, wave_global_dims, wave_filespace, error)
+       CALL h5screate_simple_f(wave_rank, wave_dims, wave_memspace, error)
+       CALL h5screate_simple_f(wave_rank, wave_global_dims, wavederiv_filespace, error)
+       CALL h5screate_simple_f(wave_rank, wave_dims, wavederiv_memspace, error)
+       
+       ! Create dataset.
+       setname = '/wave/'// cstep
+       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, wave_filespace, &
+            wave_dset_id, error)!, plist_id)
+       CALL h5sclose_f(wave_filespace, error)
+       setname = '/wavederiv/'// cstep
+       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, wavederiv_filespace, &
+            wavederiv_dset_id, error)!, plist_id)
+       CALL h5sclose_f(wavederiv_filespace, error)
+       
+       cont = wave_dims
+       offset = (/ numthetaoffset * surfacerank, numphioffset * surfacerank, 0 /)
+       
+       ! Select hyperslab in the file.
+       CALL h5dget_space_f(wave_dset_id, wave_filespace, error)
+       CALL h5sselect_hyperslab_f (wave_filespace, H5S_SELECT_SET_F, offset,&
+            cont, error)!, stride, blck)
+       CALL h5dget_space_f(wavederiv_dset_id, wavederiv_filespace, error)
+       CALL h5sselect_hyperslab_f (wavederiv_filespace, H5S_SELECT_SET_F, offset,&
+            cont, error)!, stride, blck)
+#if _COM_MPI 
+       ! Create property list for collective dataset write
+       CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
+       CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
+       ! Write the dataset collectively.
+       CALL h5dwrite_f(wave_dset_id, H5T_NATIVE_DOUBLE, complex_wave, wave_global_dims, &
+            error, file_space_id = wave_filespace, mem_space_id = wave_memspace, &
+            xfer_prp = plist_id)
+       CALL h5dwrite_f(wavederiv_dset_id, H5T_NATIVE_DOUBLE, complex_wavederiv, wave_global_dims, &
+            error, file_space_id = wavederiv_filespace, mem_space_id = wavederiv_memspace, &
+            xfer_prp = plist_id)
+#endif
+       ! Close dataspaces.
+       CALL h5pclose_f(plist_id, error)
+       CALL h5sclose_f(wave_filespace, error)
+       CALL h5sclose_f(wave_memspace, error)
+       CALL h5sclose_f(wavederiv_filespace, error)
+       CALL h5sclose_f(wavederiv_memspace, error)
+       
+       ! Close the dataset.
+       CALL h5dclose_f(wave_dset_id, error)
+       CALL h5dclose_f(wavederiv_dset_id, error)
+       
+       ! Deallocate aux arrays for data
+       DEALLOCATE(complex_wave,complex_wavederiv)
+       
+       !************!
+       
+       ! For the field, only the first processor in the group
+       ! write the field data.
+       
+       ! Create the data space for the dataset.
+       CALL h5screate_simple_f(field_rank, field_dims, field_filespace, error)
+       CALL h5screate_simple_f(field_rank, field_dims, field_memspace, error)
+       IF(surfacerank.NE.1) &
+            CALL h5sselect_none_f(field_memspace,error)
+       
+       ! Create dataset
+       setname = '/field/'// cstep
+       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, field_filespace, &
+            field_dset_id, error)!, plist_id)
+       CALL h5sclose_f(field_filespace, error)
+       
+       cont_field = field_dims
+       offset_field = 0
+       ! Select hyperslab in the file.
+       CALL h5dget_space_f(field_dset_id, field_filespace, error)
+       CALL h5sselect_hyperslab_f (field_filespace, H5S_SELECT_SET_F, offset_field,&
+            cont_field, error)!, stride, blck)
+       
+       IF(surfacerank.NE.1) &
+            CALL h5sselect_none_f(field_filespace,error)
+#if _COM_MPI 
+       ! Create property list for collective dataset write
+       CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
+       CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
+#endif
+       !IF (pivot_number(1) .EQ. 1) &
+       CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, field_dims, &
+            error, file_space_id = field_filespace, mem_space_id = field_memspace, &
+            xfer_prp = plist_id)
+       
+       ! Close dataspace and dataset
+       CALL h5pclose_f(plist_id, error)
+       CALL h5sclose_f(field_filespace, error)
+       CALL h5sclose_f(field_memspace, error)
+       CALL h5dclose_f(field_dset_id, error)    
+       
+       !----------------------------------------------------!
+       
+       ! For the field, only the first processor in the group
+       ! write the field data.
+       
+       ! Create the data space for the dataset.
+       CALL h5screate_simple_f(time_rank, time_dim, time_filespace, error)
+       CALL h5screate_simple_f(time_rank, time_dim, time_memspace, error)
+       IF(surfacerank.NE.1) &
+            CALL h5sselect_none_f(time_memspace,error)
+       
+       ! Create dataset
+       setname = '/time/'// cstep
+       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, time_filespace, &
+            time_dset_id, error)!, plist_id)
+       CALL h5sclose_f(time_filespace, error)
+       
+       cont_time = time_dim
+       offset_time = 0
+       ! Select hyperslab in the file.
+       CALL h5dget_space_f(time_dset_id, time_filespace, error)
+       CALL h5sselect_hyperslab_f (time_filespace, H5S_SELECT_SET_F, offset_time,&
+            cont_time, error)!, stride, blck)
+       
+       IF(surfacerank.NE.1) &
+            CALL h5sselect_none_f(time_filespace,error)
+#if _COM_MPI
+       ! Create property list for collective dataset write
+       CALL h5pcreate_f(H5P_DATASET_XFER_F, plist_id, error) 
+       CALL h5pset_dxpl_mpio_f(plist_id, H5FD_MPIO_COLLECTIVE_F, error)
+       
+       !IF (pivot_number(1) .EQ. 1) &
+       CALL h5dwrite_f(time_dset_id, H5T_NATIVE_DOUBLE, time, time_dim, &
+            error, file_space_id = time_filespace, mem_space_id = time_memspace, &
+            xfer_prp = plist_id)
+#endif
+       ! Close dataspace and dataset
+       CALL h5pclose_f(plist_id, error)
+       CALL h5sclose_f(time_filespace, error)
+       CALL h5sclose_f(time_memspace, error)
+       CALL h5dclose_f(time_dset_id, error)    
+       
+       !------------------------------------!
+       
+    ELSE
+       ! Create the data spaces for the  datasets. 
+       CALL h5screate_simple_f(wave_rank, wave_dims, wave_dspace_id, error)
+       CALL h5screate_simple_f(wave_rank, wave_dims, wavederiv_dspace_id, error)
+       CALL h5screate_simple_f(field_rank, field_dims, field_dspace_id, error)
+       CALL h5screate_simple_f(time_rank, time_dim, time_dspace_id, error)
+       
+       setname = '/wave/'// cstep
+       ! Create the dataset.
+       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
+            wave_dspace_id, wave_dset_id, error)
+       CALL h5dwrite_f(wave_dset_id, H5T_NATIVE_DOUBLE, complex_wave, &
+            wave_dims, error)
+       
+       setname = '/wavederiv/'// cstep
+       ! Create the dataset.
+       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
+            wavederiv_dspace_id, wavederiv_dset_id, error)
+       CALL h5dwrite_f(wavederiv_dset_id, H5T_NATIVE_DOUBLE, complex_wavederiv, &
+            wave_dims, error)
+       
+       setname = '/field/'// cstep
+       ! Create the dataset.
+       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
+            field_dspace_id, field_dset_id, error)
+       CALL h5dwrite_f(field_dset_id, H5T_NATIVE_DOUBLE, field, &
+            field_dims, error)
+       
+       setname = '/time/'// cstep
+       ! Create the dataset.
+       CALL h5dcreate_f(file_id, setname, H5T_NATIVE_DOUBLE, &
+            time_dspace_id, time_dset_id, error)
+       CALL h5dwrite_f(time_dset_id, H5T_NATIVE_DOUBLE, time, &
+            time_dim, error)
+       
+       ! End access to the dataset and release 
+       ! resources used by it.
+       CALL h5dclose_f(wave_dset_id, error)
+       CALL h5dclose_f(wavederiv_dset_id, error)
+       CALL h5dclose_f(field_dset_id, error)
+       CALL h5dclose_f(time_dset_id, error)
+       
+       ! Terminate access to the data space.
+       CALL h5sclose_f(wave_dspace_id, error)
+       CALL h5sclose_f(wavederiv_dspace_id, error)
+       CALL h5sclose_f(field_dspace_id, error)
+       CALL h5sclose_f(time_dspace_id, error)
+       
+    ENDIF
     
     ! Close the property list, group, file and interface
     CALL h5gclose_f(wave_group, error)
@@ -992,8 +752,7 @@ CONTAINS
     CALL h5fclose_f(file_id, error)
     CALL h5close_f(error)
     
-  END SUBROUTINE write_surface_file3D_parallel
-#endif
+  END SUBROUTINE write_surface_file3D
   
   !***************************************************!
   

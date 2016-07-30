@@ -26,7 +26,6 @@ PROGRAM samplingpt_test2D
   INTEGER                     :: numdetectorpts
   REAL(dp)                    :: timept, numtimesteps
   INTEGER                     :: timesteps
-  INTEGER                     :: numthetapts, numphipts
   INTEGER                     :: no_detectors
   REAL(dp)                    :: rad_detector
   INTEGER                     :: numwpts
@@ -107,7 +106,7 @@ PROGRAM samplingpt_test2D
   CALL initialize_cylindrical_surface(x_ax(halfxpts:numxpts), &
        z_ax(1:numzpts), dims, rad_detector, &
        radius_tolerance=0.5_dp, fd_rule=2, dr=0.1_dp, &
-       lmax=lmax, write_to_file=.TRUE.,filename='./results/detector_data')
+       lmax=lmax, filename='./results/detector_data')
   
   ! Open file for ionised population
   wave_snapshot = .TRUE.
@@ -253,7 +252,7 @@ PROGRAM samplingpt_test2D
 
      CALL get_cylindrical_surface('./results/detector_data', psi(halfxpts:numxpts,:), &
           x_ax(halfxpts:numxpts), z_ax(1:numzpts),dims, 2, timept, efield, afield, &
-          lmax, .TRUE.)
+          lmax)
      
      sumatot = 0.0_dp
      sumaion = 0.0_dp

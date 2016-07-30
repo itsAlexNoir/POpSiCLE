@@ -6,8 +6,6 @@ PROGRAM tsurff_test
   INTEGER                    :: lmax, mmin, mmax
   INTEGER                    :: lmax_total
   INTEGER                    :: numkpts
-  INTEGER                    :: numthetapts
-  INTEGER                    :: numphipts 
   REAL(dp)                   :: dk
   REAL(dp)                   :: k_cutoff
   REAL(dp)                   :: coulomb_exp_energy
@@ -21,6 +19,7 @@ PROGRAM tsurff_test
 
   LOGICAL                    :: desired_gauge_trans
   LOGICAL                    :: desired_mes
+  LOGICAL                    :: desired_mes_angbasis
   LOGICAL                    :: desired_polar
   LOGICAL                    :: desired_amplitude
   
@@ -163,11 +162,34 @@ PROGRAM tsurff_test
      
   ENDIF
 
+    WRITE(*, *) 'Do you want momentum electron in angular basis? (y or n)'
+  WRITE(*, *) '----------------------------------------------------------'
+  READ(*, '(1A1)') answer
+  WRITE(*, *)
+  
+  desired_mes_angbasis = .FALSE.
+  
+  IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
+     
+     WRITE(*, *)
+     WRITE(*, *) 'Yes'
+     WRITE(*, *)
+     
+     desired_mes_angbasis = .TRUE.
+     
+  ELSE
+
+     WRITE(*, *)
+     WRITE(*, *) 'No'
+     WRITE(*, *)
+     
+  ENDIF
+  
   WRITE(*, *) 'Do you want the 3D spherical scattering amplitude? (y or n)'
   WRITE(*, *) '-----------------------------------------------------------'
   READ(*, '(1A1)') answer
   WRITE(*, *)
-
+  
   desired_amplitude = .FALSE.
   
   IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
@@ -226,15 +248,13 @@ PROGRAM tsurff_test
   
   CALL initialize_tsurff(filename_surf, radius_boundary, lmax, &
        dk, k_cutoff, numkpts, numthetapts, numphipts, &
-       lmax_total, mmax, desired_gauge_trans, coulomb_exp_energy )
-  
-  mmin = - mmax
+       lmax_total, desired_gauge_trans, coulomb_exp_energy )
   
   ! Allocate momentum amplitude array
   ALLOCATE(b(1:numkpts,1:numthetapts,1:numphipts))
   
   ! The name is self-explanatory
-  CALL get_flux(filename_surf, lmax, mmax, b )
+  CALL get_flux(filename_surf, lmax, b )
 
   !-------------------!
   !    OUTPUT TIME!   !
@@ -248,8 +268,13 @@ PROGRAM tsurff_test
   IF(desired_amplitude) &
        CALL write_amplitude(b, filename_amplitude)
   
-  IF(desired_mes) &
-       CALL write_mes(b,filename_mes)
+  IF(desired_mes) THEN
+     CALL write_mes(b,filename_mes)
+     CALL write_momwave(b,filename_mes)
+  ENDIF
+  
+  IF(desired_mes_angbasis) &
+       CALL write_mes_angbasis(b,filename_mes, lmax)
   
   ! Deallocate the amplitude
   DEALLOCATE(b)

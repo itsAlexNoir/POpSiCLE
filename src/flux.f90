@@ -17,7 +17,7 @@ MODULE flux
   
   USE constants
   USE gaussleg
-  USE bessel
+  !USE bessel
   USE tools
   USE sht
   USE io_surface
@@ -32,7 +32,7 @@ MODULE flux
   PUBLIC        :: get_volkov_phase
   PUBLIC        :: get_flux
   PUBLIC        :: calculate_time_integrand
-
+  
   !-------------------------------------------------------------!
   
   ! Public variables
@@ -52,6 +52,7 @@ MODULE flux
   COMPLEX(dp), ALLOCATABLE      :: psi_lm(:, :), psip_lm(:, :)
   REAL(dp)                      :: rb, total_time
   REAL(dp), ALLOCATABLE         :: jl(:, :), jlp(:, :)
+  REAL(dp), ALLOCATABLE         :: yl(:), ylp(:)
   REAL(dp), ALLOCATABLE         :: krb_ax(:)
   REAL(dp), ALLOCATABLE         :: xcoupling(:, :, :, :)
   REAL(dp), ALLOCATABLE         :: zcoupling(:, :, :, :)
@@ -59,7 +60,7 @@ MODULE flux
   INTEGER                       :: numpts, numrpts
   INTEGER                       :: numthetapts, numphipts
   LOGICAL                       :: gauge_trans_desired
-  
+
   !-------------------------------------------------------------!
   !-------------------------------------------------------------!
   
@@ -67,7 +68,7 @@ CONTAINS
   
   SUBROUTINE initialize_tsurff(filename, radb, lmax_desired, &
        ddk, kmax_input, maxkpts, maxthetapts, maxphipts, &
-       lmax_total, mmax, gauge_trans_on, coulomb_exp )
+       lmax_total, gauge_trans_on, coulomb_exp )
     
     IMPLICIT NONE
     
@@ -80,16 +81,15 @@ CONTAINS
     INTEGER, INTENT(OUT)             :: maxthetapts
     INTEGER, INTENT(OUT)             :: maxphipts
     INTEGER, INTENT(OUT)             :: lmax_total
-    INTEGER, INTENT(OUT)             :: mmax
     REAL(dp), INTENT(IN), OPTIONAL   :: coulomb_exp
     LOGICAL, INTENT(IN), OPTIONAL    :: gauge_trans_on
 
-    COMPLEX(dp)                      :: suma
-    INTEGER                          :: lmax, mmin
+    REAL(dp)                         :: suma
+    INTEGER                          :: lmax
     INTEGER                          :: iphi, ik
     INTEGER                          :: il, im, ill, imm
     INTEGER                          :: jtheta, jphi
-    INTEGER                          :: max_order
+    INTEGER                          :: ifail
     
     !-------------------------------------------------!
 
@@ -99,7 +99,7 @@ CONTAINS
 
     maxthetapts = numthetapts
     maxphipts = numphipts
-
+    
     ! Create momentum axis
     kmax_th = twopi / dt
     dk = ddk
@@ -156,13 +156,6 @@ CONTAINS
        STOP
     ELSE
        lmax = lmax_desired
-       IF(numphipts.EQ.1) THEN
-          mmax = 0
-          mmin = 0
-       ELSE
-          mmax = lmax
-          mmin = -lmax
-       ENDIF
     ENDIF
     
     ! Allocate wavefunction arrays
@@ -173,9 +166,11 @@ CONTAINS
        ALLOCATE(psi_sph_v(1:numthetapts,1:numphipts))
        ALLOCATE(psip_sph_v(1:numthetapts,1:numphipts))
     ENDIF
-
-    ALLOCATE(psi_lm(mmin:mmax,0:lmax))
-    ALLOCATE(psip_lm(mmin:mmax,0:lmax))
+    
+    ALLOCATE(psi_lm(-lmax:lmax,0:lmax))
+    ALLOCATE(psip_lm(-lmax:lmax,0:lmax))
+    psi_lm  = ZERO
+    psip_lm = ZERO
     
     ! Create spherical coordinates
     ALLOCATE(theta_ax(1:numthetapts),costheta_ax(1:numthetapts))
@@ -187,108 +182,135 @@ CONTAINS
     
     dphi =  twopi / REAL(numphipts,dp)
     DO iphi = 1, numphipts
-       phi_ax(iphi) = REAL(iphi,dp) * dphi
+       phi_ax(iphi) = REAL(iphi-1,dp) * dphi
     ENDDO
     
     ! Create spherical harmonics
     CALL initialize_legendre_stuff(lmax, costheta_ax)
-    CALL initialize_spherical_harmonics(lmax,mmax,costheta_ax,phi_ax)
+    CALL initialize_spherical_harmonics(lmax,costheta_ax,phi_ax)
     
-    ! Initialize Bessel functions
+    IF(numphipts.EQ.1) THEN
+       ALLOCATE(xcoupling(0:0,0:lmax,0:0,0:lmax))
+       ALLOCATE(zcoupling(0:0,0:lmax,0:0,0:lmax))
+       xcoupling = 0.0_dp
+       zcoupling = 0.0_dp     
+       
+       ! Calculate matrix elements for laser-matter couling in
+       ! z direction laser polarisation.
+       
+       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(jtheta,jphi) &
+       !$OMP& PRIVATE(il,ill,suma)
+       
+       !$OMP DO COLLAPSE(2)
+       DO ill = 0, lmax
+          DO il = 0, lmax
+             ! Calculate matrix elements between spherical harmonics
+             suma = 0.0_dp
+             DO jphi = 1, numphipts
+                DO jtheta = 1, numthetapts
+                   suma = suma + REAL(CONJG(sph_harmonics(jphi,jtheta,0,il)) * &
+                        sph_harmonics(jphi,jtheta,0,ill) * &
+                        costheta_ax(jtheta) * &
+                        gauss_th_weights(jtheta),dp)
+                ENDDO
+             ENDDO
+             zcoupling(0,il,0,ill) = suma
+          ENDDO
+       ENDDO
+       !$OMP END DO NOWAIT
+       !$OMP END PARALLEL
+       
+       zcoupling = zcoupling * twopi            
+       
+    ELSE
+       ALLOCATE(xcoupling(-lmax:lmax,0:lmax,-lmax:lmax,0:lmax))
+       ALLOCATE(zcoupling(-lmax:lmax,0:lmax,-lmax:lmax,0:lmax))
+       xcoupling = 0.0_dp
+       zcoupling = 0.0_dp     
+       
+       ! Calculate matrix elements for laser-matter couling in
+       ! x direction laser polarisation.
+       
+       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(jtheta,jphi) &
+       !$OMP& PRIVATE(il,im,ill,imm,suma)
+       
+       !$OMP DO COLLAPSE(4)
+       DO ill = 0, lmax
+          DO imm = -ill, ill
+             DO il = 0, lmax
+                DO im = -il, il
+                   
+                   ! Calculate matrix elements between spherical harmonics
+                   suma = 0.0_dp
+                   DO jphi = 1, numphipts
+                      DO jtheta = 1, numthetapts
+                         suma = suma + REAL(CONJG(sph_harmonics(jphi,jtheta,im,il)) * &
+                              sph_harmonics(jphi,jtheta,imm,ill) * &
+                              SIN(theta_ax(jtheta)) * COS(phi_ax(jphi)) * &
+                              gauss_th_weights(jtheta),dp)
+                      ENDDO
+                   ENDDO
+                   xcoupling(im,il,imm,ill) = suma
+
+                ENDDO
+             ENDDO
+          ENDDO
+       ENDDO
+       !$OMP END DO NOWAIT
+       !$OMP END PARALLEL
+       
+       xcoupling = xcoupling * dphi
+       
+       ! Calculate matrix elements for laser-matter couling in
+       ! z direction laser polarisation.
+       
+       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(jtheta,jphi) &
+       !$OMP& PRIVATE(il,im,ill,imm,suma)
+       
+       !$OMP DO COLLAPSE(4)
+       DO ill = 0, lmax
+          DO imm = -ill, ill
+             DO il = 0, lmax
+                DO im = -il, il
+                   ! Calculate matrix elements between spherical harmonics
+                   suma = 0.0_dp
+                   DO jphi = 1, numphipts
+                      DO jtheta = 1, numthetapts
+                         suma = suma + REAL(CONJG(sph_harmonics(jphi,jtheta,im,il)) * &
+                              sph_harmonics(jphi,jtheta,imm,ill) * &
+                              costheta_ax(jtheta) * &
+                              gauss_th_weights(jtheta),dp)
+                      ENDDO
+                   ENDDO
+                   zcoupling(im,il,imm,ill) = suma
+                ENDDO
+             ENDDO
+          ENDDO
+       ENDDO
+       !$OMP END DO NOWAIT
+       !$OMP END PARALLEL
+       
+       zcoupling = zcoupling * dphi
+       
+    ENDIF
+        
+    ! Initialize spherical Bessel functions
     ALLOCATE(jl(0:lmax,1:numkpts))
     ALLOCATE(jlp(0:lmax,1:numkpts))
+    ALLOCATE(yl(0:lmax))
+    ALLOCATE(ylp(0:lmax))
     ALLOCATE(krb_ax(1:numkpts))
     
     krb_ax = k_ax * rb
-
-    IF(numphipts.EQ.1) THEN
-       ALLOCATE(xcoupling(0:1,0:lmax,0:1,0:lmax))
-       ALLOCATE(zcoupling(0:1,0:lmax,0:1,0:lmax))       
-       xcoupling = 0.0_dp
-       zcoupling = 0.0_dp     
-    ELSE
-       ALLOCATE(xcoupling(mmin:mmax,0:lmax,mmin:mmax,0:lmax))
-       ALLOCATE(zcoupling(mmin:mmax,0:lmax,mmin:mmax,0:lmax))
-       xcoupling = 0.0_dp
-       zcoupling = 0.0_dp     
-    ENDIF
-
-    ! Calculate matrix elements for laser-matter couling in
-    ! x direction laser polarisation.
-    
-    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(jtheta,jphi) &
-    !$OMP& PRIVATE(il,im,ill,imm,suma)
-    
-    !$OMP DO COLLAPSE(4)
-    DO ill = 0, lmax
-       DO imm = mmin, mmax
-          DO il = 0, lmax
-             DO im = mmin, mmax
-                ! Calculate matrix elements between spherical harmonics
-                suma = ZERO
-                DO jphi = 1, numphipts
-                   DO jtheta = 1, numthetapts
-                      suma = suma + CONJG(sph_harmonics(jphi,jtheta,im,il)) * &
-                           SIN(theta_ax(jtheta)) * COS(phi_ax(jphi)) * &
-                           sph_harmonics(jphi,jtheta,imm,ill) * &
-                           gauss_th_weights(jtheta)
-                   ENDDO
-                ENDDO
-                IF(numphipts.EQ.1) THEN
-                   suma = suma * twopi
-                ELSE
-                   suma = suma * dphi
-                ENDIF
-                xcoupling(im,il,imm,ill) = suma
-             ENDDO
-          ENDDO
-       ENDDO
-    ENDDO
-    !$OMP END DO NOWAIT
-    !$OMP END PARALLEL
-    
-    ! Calculate matrix elements for laser-matter couling in
-    ! x direction laser polarisation.
-    
-    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(jtheta,jphi) &
-    !$OMP& PRIVATE(il,im,ill,imm,suma)
-    
-    !$OMP DO COLLAPSE(4)
-    DO ill = 0, lmax
-       DO imm = mmin, mmax
-          DO il = 0, lmax
-             DO im = mmin, mmax
-                ! Calculate matrix elements between spherical harmonics
-                suma = ZERO
-                DO jphi = 1, numphipts
-                   DO jtheta = 1, numthetapts
-                      suma = suma + CONJG(sph_harmonics(jphi,jtheta,im,il)) * &
-                           costheta_ax(jtheta) * &
-                           sph_harmonics(jphi,jtheta,imm,ill) * &
-                           gauss_th_weights(jtheta)
-                   ENDDO
-                ENDDO
-                IF(numphipts.EQ.1) THEN
-                   suma = suma * twopi
-                ELSE
-                   suma = suma * dphi
-                ENDIF
-                zcoupling(im,il,imm,ill) = suma
-             ENDDO
-          ENDDO
-       ENDDO
-    ENDDO
-    !$OMP END DO NOWAIT
-    !$OMP END PARALLEL
-    
     jl  = 0.0_dp
     jlp = 0.0_dp
+    yl  = 0.0_dp
+    ylp = 0.0_dp
     
     DO ik = 1, numkpts
-       CALL sphj(lmax,krb_ax(ik),max_order,jl(:,ik),jlp(:,ik))
+       CALL sbesjy(krb_ax(ik),lmax,jl(:,ik),yl,jlp(:,ik),ylp,ifail)
     ENDDO
-    
-    
+        
   END SUBROUTINE initialize_tsurff
 
   !**************************************!
@@ -327,28 +349,22 @@ CONTAINS
     DO itime = 1, numtimesteps
        IF( (itime.EQ.1) .OR. (itime.EQ.numtimesteps)) THEN
           integralAx = integralAx + &
+               afield(1,itime) * 0.5_dp
+          
+          integralAz = integralAz + &
+               afield(3,itime) * 0.5_dp
+       ELSE
+          integralAx = integralAx + &
                afield(1,itime)
           
           integralAz = integralAz + &
                afield(3,itime)
-       ELSEIF(MOD(itime,2).EQ.0) THEN
-          integralAx = integralAx + &
-               afield(1,itime) * 4.0_dp
-          
-          integralAz = integralAz + &
-               afield(3,itime) * 4.0_dp
-       ELSEIF(MOD(itime,2).NE.0) THEN                
-          integralAx = integralAx + &
-               afield(1,itime) * 2.0_dp
-          
-          integralAz = integralAz + &
-               afield(3,itime) * 2.0_dp
        ENDIF
        
     ENDDO
     
-    integralAx = integralAx * dt / 3.0_dp
-    integralAz = integralAz * dt / 3.0_dp
+    integralAx = integralAx * dt
+    integralAz = integralAz * dt
     
     !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi)
     
@@ -372,12 +388,12 @@ CONTAINS
   
   !****************************************************************!
 
-  SUBROUTINE get_flux(filename, lmax, mmax, bk)
+  SUBROUTINE get_flux(filename, lmax, bk)
 
     IMPLICIT NONE
 
     CHARACTER(LEN=*), INTENT(IN) :: filename
-    INTEGER, INTENT(IN)          :: lmax, mmax
+    INTEGER, INTENT(IN)          :: lmax
     COMPLEX(dp), INTENT(OUT)     :: bk(:, :, :)
     
     REAL(dp), ALLOCATABLE        :: time(:)
@@ -390,7 +406,6 @@ CONTAINS
     
     !----------------------------------------------------!
     
-    mmin = -mmax
     ! Allocate and set to zero
     ALLOCATE(intflux(1:numkpts,1:numthetapts,1:numphipts))
     ALLOCATE(volkov_phase(1:numkpts,1:numthetapts,1:numphipts))
@@ -405,7 +420,7 @@ CONTAINS
     WRITE(*,*)
     WRITE(*,*) '------------------------'
     WRITE(*,*) 'Begin time integral...'
-
+    
     ! We begin the time loop!!
     DO itime = 1, ntime
        !WRITE(*,*) 'Loop number: ',itime
@@ -423,43 +438,38 @@ CONTAINS
        
        ! Decompose into spherical harmonics:
        ! The wavefunction
-       CALL make_sht(psi_sph, lmax, mmax, gauss_th_weights, &
+       CALL make_sht(psi_sph, lmax, gauss_th_weights, &
             psi_lm)
        ! His first derivative
-       CALL make_sht(psip_sph, lmax, mmax, gauss_th_weights, &
+       CALL make_sht(psip_sph, lmax, gauss_th_weights, &
             psip_lm)
-       ! Divide by rb
-       !psi_lm = psi_lm * rb
-       !psip_lm = psip_lm * rb + psi_lm / rb
        
        ! Calculate flux
        intflux = ZERO
        CALL calculate_time_integrand(psi_lm, psip_lm, &
-            lmax, mmax, afield(:,itime), intflux)
+            lmax, afield(:,itime), intflux)
        
        ! Get the Volkov phase (one per time step)
        CALL get_volkov_phase(afield, time, time(itime), &
             volkov_phase, coulomb_exp_ener )
+
        
        !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi)
        
-       !$OMP DO COLLAPSE(3)
+       !$OMP DO COLLAPSE(3)       
        DO iphi = 1, numphipts
           DO itheta = 1, numthetapts
              DO ik = 1, numkpts
                 
                 intflux(ik,itheta,iphi) = intflux(ik,itheta,iphi) * &
                      volkov_phase(ik,itheta,iphi)
-                
+                                
                 IF((itime.EQ.1) .OR. (itime.EQ.ntime)) THEN
                    bk(ik,itheta,iphi) = bk(ik,itheta,iphi) + &
+                        intflux(ik,itheta,iphi) * 0.5
+                ELSE
+                   bk(ik,itheta,iphi) = bk(ik,itheta,iphi) + &
                         intflux(ik,itheta,iphi)
-                ELSEIF(MOD(itime,2).EQ.0) THEN
-                   bk(ik,itheta,iphi) = bk(ik,itheta,iphi) + &
-                        intflux(ik,itheta,iphi) * 4.0_dp                   
-                ELSEIF(MOD(itime,2).NE.0) THEN
-                   bk(ik,itheta,iphi) = bk(ik,itheta,iphi) + &
-                        intflux(ik,itheta,iphi) * 2.0_dp
                 ENDIF
                 
              ENDDO
@@ -476,8 +486,7 @@ CONTAINS
     WRITE(*,*) '------------------------'
     WRITE(*,*)
     
-    bk = bk * ZIMAGONE * SQRT(2.0_dp / pi) * &
-         rb * rb * ( dt / 3.0_dp )
+    bk = bk * ZIMAGONE * dt * SQRT(2.0_dp / pi) * rb * rb
     
     ! Deallocate like no other
     DEALLOCATE(time,efield,afield)
@@ -488,76 +497,121 @@ CONTAINS
   !***************************************!
   
   SUBROUTINE calculate_time_integrand( func_lm, funcp_lm, &
-       lmax, mmax, afield, integrand )
+       lmax, afield, integrand )
     
     IMPLICIT NONE
     
-    COMPLEX(dp), INTENT(IN)       :: func_lm(-mmax:, 0:)
-    COMPLEX(dp), INTENT(IN)       :: funcp_lm(-mmax:, 0:)
-    INTEGER, INTENT(IN)           :: lmax, mmax
+    COMPLEX(dp), INTENT(IN)       :: func_lm(-lmax:, 0:)
+    COMPLEX(dp), INTENT(IN)       :: funcp_lm(-lmax:, 0:)
+    INTEGER, INTENT(IN)           :: lmax
     REAL(dp), INTENT(IN)          :: afield(:)
     COMPLEX(dp), INTENT(OUT)      :: integrand(:, :, :)
     
     COMPLEX(dp)                   :: term1, term2
     COMPLEX(dp)                   :: fieldterm, suma
-    INTEGER                       :: mmin
     INTEGER                       :: il, im
     INTEGER                       :: ill, imm
     INTEGER                       :: ik, itheta, iphi
     
     !---------------------------------------------------!
-
-    mmin = -mmax
     
-    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
-    !$OMP& PRIVATE(term1,term2,fieldterm) &
-    !$OMP& PRIVATE(il,im,ill,imm)
-    
-    !$OMP DO COLLAPSE(3)
-    DO iphi = 1, numphipts
-       DO itheta = 1, numthetapts
-          DO ik = 1, numkpts
-             suma = ZERO
-             DO il = 0, lmax
+    IF(numphipts.EQ.1) THEN
+       
+       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
+       !$OMP& PRIVATE(term1,term2,fieldterm,suma) &
+       !$OMP& PRIVATE(il,ill)
+       
+       !$OMP DO COLLAPSE(3)
+       DO iphi = 1, numphipts
+          DO itheta = 1, numthetapts
+             DO ik = 1, numkpts
                 
-                DO im = mmin, mmax
+                suma = ZERO
+                
+                DO il = 0, lmax
+                   
+                   term1 = func_lm(0,il) * &
+                        sph_harmonics(iphi,itheta,0,il)
+                   term2 = funcp_lm(0,il) * &
+                        sph_harmonics(iphi,itheta,0,il)
+                   
+                   fieldterm = ZERO
+                   DO ill = 0, lmax
+                      fieldterm = fieldterm + &
+                           xcoupling(0,il,0,ill) * afield(1) * func_lm(0,ill) + &
+                           zcoupling(0,il,0,ill) * afield(3) * func_lm(0,ill)
+                   ENDDO
+                   
+                   fieldterm = ZIMAGONE * sph_harmonics(iphi,itheta,0,il) * fieldterm
+                   
+                   suma = suma + ((-ZIMAGONE)**il) * &
+                        ( ( 0.5_dp * k_ax(ik) * jlp(il,ik) * term1 ) &
+                        - ( 0.5_dp * jl(il,ik) * term2) &
+                        - (jl(il,ik) * fieldterm) )
+                   
+                ENDDO
+                integrand(ik,itheta,iphi) = suma
+             ENDDO
+          ENDDO
+       ENDDO
+       !$OMP END DO NOWAIT
+       !$OMP END PARALLEL
+       
+    ELSE
+       
+       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
+       !$OMP& PRIVATE(term1,term2,fieldterm,suma) &
+       !$OMP& PRIVATE(il,im,ill,imm)
+       
+       !$OMP DO COLLAPSE(3)
+       DO iphi = 1, numphipts
+          DO itheta = 1, numthetapts
+             DO ik = 1, numkpts
+                
+                suma = ZERO
+                
+                DO il = 0, lmax
+                   
                    term1 = ZERO
                    term2 = ZERO
                    
-                   term1 = term1 + func_lm(im,il) * &
-                        sph_harmonics(iphi,itheta,im,il)
-                   term2 = term2 + funcp_lm(im,il) * &
-                        sph_harmonics(iphi,itheta,im,il)
-                   
-                   DO ill = 0, lmax
-                      DO imm = mmin, mmax
-                         fieldterm = ZERO
-                         fieldterm = fieldterm + &
-                              xcoupling(im,il,imm,ill) * afield(1) * func_lm(imm,ill) + &
-                              zcoupling(im,il,imm,ill) * afield(3) * func_lm(imm,ill)
-                         
+                   DO im = -il, il
+                      
+                      term1 = term1 + func_lm(im,il) * &
+                           sph_harmonics(iphi,itheta,im,il)
+                      term2 = term2 + funcp_lm(im,il) * &
+                           sph_harmonics(iphi,itheta,im,il)
+                      
+                      fieldterm = ZERO
+                      DO ill = 0, lmax
+                         DO imm = -ill, ill
+                            fieldterm = fieldterm + &
+                                 xcoupling(im,il,imm,ill) * afield(1) * func_lm(imm,ill) + &
+                                 zcoupling(im,il,imm,ill) * afield(3) * func_lm(imm,ill)
+                         ENDDO
                       ENDDO
+                      
+                      fieldterm = ZIMAGONE * sph_harmonics(iphi,itheta,im,il) * fieldterm
+                      
                    ENDDO
                    
-                   fieldterm = fieldterm * ZIMAGONE * sph_harmonics(iphi,itheta,im,il)
+                suma = suma + (-ZIMAGONE)**il * &
+                     ( ( 0.5_dp * k_ax(ik) * jlp(il,ik) * term1 ) &
+                     - (0.5_dp * jl(il,ik) * term2) &
+                     - (jl(il,ik) * fieldterm) )                   
                    
                 ENDDO
-                
-                suma = suma + (-ZIMAGONE)**il * &
-                     (0.5_dp * k_ax(ik) * jlp(il,ik) * term1 &
-                     - 0.5_dp * jl(il,ik) * term2 &
-                     - jl(il,ik) * fieldterm )
-                
+                integrand(ik,itheta,iphi) = suma
              ENDDO
-             integrand(ik,itheta,iphi) = suma
           ENDDO
        ENDDO
-    ENDDO
-    !$OMP END DO NOWAIT
-    !$OMP END PARALLEL
-   
+       !$OMP END DO NOWAIT
+       !$OMP END PARALLEL
+       
+    ENDIF
+    
   END SUBROUTINE calculate_time_integrand
-
+  
   !***********************************************************!
   
   SUBROUTINE gauge_transform_l2v(psi_length,psi_vel,afield)
@@ -578,7 +632,10 @@ CONTAINS
     dims = shape(psi_length)
     numthetapts = dims(1)
     numphipts   = dims(2)
+
+    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(itheta,iphi)
     
+    !$OMP DO COLLAPSE(2)
     DO iphi = 1, numphipts
        DO itheta = 1, numthetapts
           psi_vel(itheta,iphi) = psi_length(itheta,iphi) * &
@@ -588,6 +645,8 @@ CONTAINS
                afield(3) * rb * costheta_ax(itheta) ))
        ENDDO
     ENDDO
+    !$OMP END DO NOWAIT
+    !$OMP END PARALLEL
     
   END SUBROUTINE gauge_transform_l2v
   

@@ -6,8 +6,6 @@ PROGRAM tsurff_test
   INTEGER                    :: lmax, mmin, mmax
   INTEGER                    :: lmax_total
   INTEGER                    :: numkpts
-  INTEGER                    :: numthetapts
-  INTEGER                    :: numphipts 
   REAL(dp)                   :: k_cutoff, dk
   REAL(dp)                   :: coulomb_exp
   COMPLEX(dp), ALLOCATABLE   :: b(:, :, :)
@@ -30,7 +28,7 @@ PROGRAM tsurff_test
   WRITE(*,*)
   
   
-  k_cutoff = 3.0_dp
+  k_cutoff = 2.5_dp
   dk = 0.005_dp
   radius_boundary = 50.0_dp
   lmax = 10
@@ -41,13 +39,11 @@ PROGRAM tsurff_test
   
   CALL initialize_tsurff(filename, radius_boundary, lmax, dk, &
        k_cutoff, numkpts, numthetapts, numphipts, &
-       lmax_total, mmax ,desired_gauge, coulomb_exp )
-  
-  mmin = - mmax
+       lmax_total ,desired_gauge, coulomb_exp )
   
   ALLOCATE(b(1:numkpts,1:numthetapts,1:numphipts))
   
-  CALL get_flux(filename, lmax, mmax, b )
+  CALL get_flux(filename, lmax, b )
   
   CALL write_polar_amplitude(b,'results/probkrktheta',&
        'probkrtheta')

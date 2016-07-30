@@ -138,7 +138,7 @@ PROGRAM cy2sph_ex3
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL cpu_time(start_time)
   CALL initialize_cylindrical_surface(gpts, hpts, dims, &
-       Rboundary, tolerance, fdrule, deltar, lmax, .TRUE., filename)
+       Rboundary, tolerance, fdrule, deltar, lmax, filename)
   CALL cpu_time(end_time)
   
   comp_time = end_time - start_time
@@ -212,8 +212,7 @@ PROGRAM cy2sph_ex3
   
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL get_cylindrical_surface(filename, psi, gpts, hpts, dims, &
-       fdrule, 0.0_dp , &
-       efield, afield, lmax, .TRUE. )
+       fdrule, 0.0_dp , efield, afield, lmax)
   
   CALL cpu_time(end_time)
 

@@ -7,10 +7,6 @@ PROGRAM cyl2sph_ex1
   INTEGER                    :: maxrhopts, maxzpts
   INTEGER                    :: maxrho, minrho
   INTEGER                    :: maxz, minz
-  INTEGER                    :: numrpts
-  INTEGER                    :: numthetapts
-  INTEGER                    :: numthetaptsperproc
-  INTEGER                    :: numpts
   REAL(dp), ALLOCATABLE      :: rho_ax(:)
   REAL(dp)                   :: rhoalpha, rhobeta
   REAL(dp)                   :: sqrtrho, sqrt1rho
@@ -27,7 +23,7 @@ PROGRAM cyl2sph_ex1
   COMPLEX(dp), ALLOCATABLE   :: sphfunc_dth(:, :)
   COMPLEX(dp)                :: ref_value
   REAL(dp)                   :: dr, dtheta
-  INTEGER                    :: lmax
+  INTEGER                    :: lmax, fdrule
   REAL(dp)                   :: Rboundary, tolerance
   REAL(dp)                   :: rpt, thetapt
   REAL(dp)                   :: start_time, end_time
@@ -36,6 +32,9 @@ PROGRAM cyl2sph_ex1
   INTEGER                    :: irho,iz
   INTEGER                    :: ir, itheta
   INTEGER                    :: iter
+  REAL(dp)                   :: efield(3), afield(3)
+  CHARACTER(LEN=100)         :: filename
+
   
   !------------------------------------------------------------
   
@@ -103,9 +102,10 @@ PROGRAM cyl2sph_ex1
         Y_lm(irho,iz) = 0.5_dp * SQRT(3.0_dp / pi ) * COS(thetapt)
         R_nl(irho,iz) = 1.0_dp
         
-        cylfunc(irho,iz) = EXP(-rpt / 2.0_dp) * R_nl(irho, iz) * &
-             Y_lm(irho,iz)
-        
+!!$        cylfunc(irho,iz) = EXP(-rpt / 2.0_dp) * R_nl(irho, iz) * &
+!!$             Y_lm(irho,iz)
+
+        cylfunc(irho,iz) = EXP( ZIMAGONE * 2.0_dp * rpt) * Y_lm(irho,iz)
      ENDDO
   ENDDO
   
@@ -114,8 +114,10 @@ PROGRAM cyl2sph_ex1
   tolerance = 0.3_dp !0.15_dp
   dr = 0.1_dp
   lmax = 10 !8
+  fdrule = 6
   dtheta = 0.1_dp
   dims      = (/maxrhopts, maxzpts/)
+  filename    = 'results/cyl2sph'
   
   WRITE(*,*) 'Number of points in rho: ',maxrhopts
   WRITE(*,*) 'Number of points in z: ',maxzpts
@@ -138,12 +140,15 @@ PROGRAM cyl2sph_ex1
   
   !! For scattered interpolation uncomment the subroutine below
   !CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
-  !     Rboundary, tolerance, 2, dr, lmax,  &
-  !     numpts, numrpts, numthetapts)
+  !     Rboundary, tolerance, 2, dr, lmax )
   
   CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
-       Rboundary, 2, dr, lmax, numrpts, numthetapts)
-  
+       Rboundary, 2, dr, lmax )
+
+!!$  CALL initialize_cylindrical_surface(rho_ax(1:maxrhopts+1), &
+!!$       z_ax(1:maxzpts+1),(/maxrhopts+1,maxzpts+1/), Rboundary, &
+!!$       tolerance, fdrule, dr, lmax, filename )
+    
   CALL cpu_time(end_time)
   
   interp_time = end_time - start_time
@@ -171,6 +176,9 @@ PROGRAM cyl2sph_ex1
   ! Interpolate!!
   WRITE(*,*) 'Interpolating boundary...'
 
+  efield = (/0.0_dp, 0.0_dp, 0.0_dp /)
+  afield = (/0.0_dp, 0.0_dp, 0.0_dp /)
+  
   DO iter = 1, 10
      
      CALL cpu_time(start_time)
@@ -179,8 +187,14 @@ PROGRAM cyl2sph_ex1
      !CALL get_cylindrical_boundary(cylfunc, sphfunc, sphfunc_dr, &
      !     sphfunc_dth, 'quadratic')
      
-     CALL get_cylindrical_boundary(rho_ax, z_ax, dims, cylfunc, &
-          6, sphfunc, sphfunc_dr, sphfunc_dth)
+!!$     CALL get_cylindrical_boundary(rho_ax, z_ax, dims, cylfunc, &
+!!$          6, sphfunc, sphfunc_dr, sphfunc_dth)
+
+!!$     CALL get_cylindrical_surface(filename, &
+!!$          cylfunc(1:maxrhopts+1,1:maxzpts+1), &
+!!$          rho_ax(1:maxrhopts+1),z_ax(1:maxzpts+1), &
+!!$          (/maxrhopts+1,maxzpts+1/), fdrule, 0.0_dp , &
+!!$          efield, afield, lmax )
      
      CALL cpu_time(end_time)
      

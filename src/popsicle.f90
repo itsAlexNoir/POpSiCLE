@@ -12,7 +12,7 @@ MODULE POPSICLE
   ! Here the list of modules of the library
   USE constants
   USE tools
-  USE bessel
+  !USE bessel
   USE gaussleg
   USE scatt_interp
   USE cubic_interp

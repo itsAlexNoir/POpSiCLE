@@ -18,22 +18,14 @@ MODULE boundary
   
   
   INTERFACE initialize_cylindrical_boundary
-     MODULE PROCEDURE initialize_scatt_cylindrical_boundary2D_serial
-     MODULE PROCEDURE initialize_bicubic_cylindrical_boundary2D_serial
-#if _COM_MPI
-     MODULE PROCEDURE initialize_scatt_cylindrical_boundary2D_parallel
-     MODULE PROCEDURE initialize_bicubic_cylindrical_boundary2D_parallel
-#endif
+     MODULE PROCEDURE initialize_scatt_cylindrical_boundary2D
+     MODULE PROCEDURE initialize_bicubic_cylindrical_boundary2D
   END INTERFACE initialize_cylindrical_boundary
   
   INTERFACE initialize_cartesian_boundary
      MODULE PROCEDURE initialize_scatt_cartesian_boundary2D
-     MODULE PROCEDURE initialize_scatt_cartesian_boundary3D_serial
-     MODULE PROCEDURE initialize_tricubic_cartesian_boundary3D_serial
-#if _COM_MPI
-     MODULE PROCEDURE initialize_scatt_cartesian_boundary3D_parallel
-     MODULE PROCEDURE initialize_tricubic_cartesian_boundary3D_parallel
-#endif
+     MODULE PROCEDURE initialize_scatt_cartesian_boundary3D
+     MODULE PROCEDURE initialize_tricubic_cartesian_boundary3D
   END INTERFACE initialize_cartesian_boundary
   
   INTERFACE get_cylindrical_boundary

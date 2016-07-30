@@ -14,12 +14,6 @@ PROGRAM cart2sph_ex2
   INTEGER                    :: maxx, minx
   INTEGER                    :: maxy, miny
   INTEGER                    :: maxz, minz
-  INTEGER                    :: numrpts
-  INTEGER                    :: numthetapts
-  INTEGER                    :: numphipts
-  INTEGER                    :: numthetaptsperproc
-  INTEGER                    :: numphiptsperproc
-  INTEGER                    :: numpts
   REAL(dp), ALLOCATABLE      :: x_ax(:)
   REAL(dp), ALLOCATABLE      :: y_ax(:)
   REAL(dp), ALLOCATABLE      :: z_ax(:)
@@ -34,7 +28,7 @@ PROGRAM cart2sph_ex2
   COMPLEX(dp), ALLOCATABLE   :: sphfunc_dth(:, :, :)
   COMPLEX(dp), ALLOCATABLE   :: sphfunc_dphi(:, :, :)
   COMPLEX(dp)                :: ref_value
-  REAL(dp)                   :: dr, dtheta, dphi
+  REAL(dp)                   :: dr
   INTEGER                    :: lmax
   REAL(dp)                   :: Rboundary, tolerance
   REAL(dp)                   :: rpt, thetapt, phipt
@@ -46,7 +40,7 @@ PROGRAM cart2sph_ex2
   
   INTEGER                    :: size, rank, comm
   INTEGER                    :: maxprocessor, ierror
-  INTEGER                    :: surfacerank, maxsurfprocs, newcomm
+  INTEGER                    :: newcomm
 
   !------------------------------------------------------------
 
@@ -152,8 +146,6 @@ PROGRAM cart2sph_ex2
   tolerance = 0.15_dp
   dr = 0.1_dp
   lmax = 8
-  dtheta = 0.1_dp
-  dphi = 0.1_dp
   local_dims      = (/maxxpts, maxypts, maxzpts/)
   global_dims      = (/numxpts, numypts, numzpts/)
   
@@ -185,9 +177,7 @@ PROGRAM cart2sph_ex2
   CALL cpu_time(start_time)
   
   CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, local_dims, &
-       Rboundary, 2, dr, lmax, rank, size, MPI_COMM_WORLD,  &
-       numrpts, numthetapts, numphipts, surfacerank, maxsurfprocs, &
-       newcomm, numthetaptsperproc, numphiptsperproc )
+       Rboundary, 2, dr, lmax, rank, size, MPI_COMM_WORLD )
   
   CALL cpu_time(end_time)
   
@@ -197,12 +187,12 @@ PROGRAM cart2sph_ex2
   WRITE(*,*) 'Interpolant time (seconds): ', interp_time
   WRITE(*,*) 
   
-  WRITE(*,*) 'Total number of points to be interpolated: ',numpts
+  !WRITE(*,*) 'Total number of points to be interpolated: ',numpts
   
   WRITE(*,*) 'Number of radial boundary points: ',numrpts
   WRITE(*,*) 'Number of polar boundary points: ',numthetapts
   WRITE(*,*) 'Number of azimuthal boundary points: ',numphipts
-  WRITE(*,*) 'Number of proccessors involved: ',maxsurfprocs
+  WRITE(*,*) 'Number of proccessors involved: ',numsurfaceprocs
   
   WRITE(*,*) 'Grid spacing in r: ',dr
   WRITE(*,*) 'Maximum angular momenta: ',lmax
