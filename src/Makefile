@@ -57,7 +57,7 @@ endif
 #####################
 
 ifeq (${compiler},intel)
-OMPLIBS = -qopenmp
+OMPLIBS = -openmp
 else ifeq (${compiler},gnu)
 OMPLIBS = -fopenmp
 else ifeq (${compiler},cray)
@@ -70,8 +70,10 @@ ifndef LIBTOOL
 UNAME := $(shell uname)
 ifeq (${UNAME},Linux)
 LIBTOOL = libtool
+RANLIB	= ranlib
 else ifeq (${UNAME},Darwin)
 LIBTOOL = glibtool
+RANLIB	= ranlib -c
 endif
 endif
 
@@ -244,7 +246,7 @@ lib: check_paths ${POPSICLE_OBJS}
 	@echo 'Creating static library...'
 	ar ${ARFLAGS} libpopsicle_${PLIB}.a ${POPSICLE_OBJS} \
 	${SHEPPACK_OBJS}; \
-	ranlib -c libpopsicle_${PLIB}.a
+	${RANLIB} libpopsicle_${PLIB}.a
 	cp -rf libpopsicle_${PLIB}.a ${POPSICLE_LIB}
 	cp -rf *.mod ${POPSICLE_INCL}
 	rm -rf libpopsicle_${PLIB}.a
