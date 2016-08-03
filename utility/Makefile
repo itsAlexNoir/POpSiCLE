@@ -24,7 +24,7 @@ POPSICLE_INCL=${POPSICLE_ROOT}/include
 MKL_LIBS = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -qopenmp
 
 ifeq (${compiler},intel)
-OMPLIBS = -qopenmp
+OMPLIBS = -openmp
 else ifeq (${compiler},gnu)
 OMPLIBS = -fopenmp
 endif
