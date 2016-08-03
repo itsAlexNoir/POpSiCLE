@@ -373,7 +373,7 @@ CONTAINS
        DO itheta = 1, numthetapts
           DO ik = 1, numkpts
              bk_real(ik,itheta,iphi) = bk_real(ik,itheta,iphi) + &
-                  REAL(CONJG(bk(ik,itheta,iphi) * bk(ik,itheta,iphi)),dp)
+                  REAL(CONJG(bk(ik,itheta,iphi)) * bk(ik,itheta,iphi),dp)
           ENDDO
        ENDDO
     ENDDO
