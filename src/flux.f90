@@ -234,10 +234,10 @@ CONTAINS
        !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(jtheta,jphi) &
        !$OMP& PRIVATE(il,im,ill,imm,suma)
        
-       !$OMP DO COLLAPSE(4)
+       !$OMP DO COLLAPSE(2)
        DO ill = 0, lmax
-          DO imm = -ill, ill
-             DO il = 0, lmax
+          DO il = 0, lmax
+             DO imm = -ill, ill
                 DO im = -il, il
                    
                    ! Calculate matrix elements between spherical harmonics
@@ -267,10 +267,10 @@ CONTAINS
        !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(jtheta,jphi) &
        !$OMP& PRIVATE(il,im,ill,imm,suma)
        
-       !$OMP DO COLLAPSE(4)
+       !$OMP DO COLLAPSE(2)
        DO ill = 0, lmax
-          DO imm = -ill, ill
-             DO il = 0, lmax
+          DO il = 0, lmax
+             DO imm = -ill, ill
                 DO im = -il, il
                    ! Calculate matrix elements between spherical harmonics
                    suma = 0.0_dp

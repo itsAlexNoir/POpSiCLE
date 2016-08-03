@@ -547,10 +547,10 @@ CONTAINS
     
     !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,il,im)
     
-    !$OMP DO COLLAPSE(3)
+    !$OMP DO COLLAPSE(2)
     DO il = 0, lmax
-       DO im = -il, il
-          DO ik = 1, numkpts
+       DO ik = 1, numkpts
+          DO im = -il, il
              b_lm(ik,im,il) = REAL(CONJG(cb_lm(ik,im,il)) * &
                   cb_lm(ik,im,il),dp)
           ENDDO
