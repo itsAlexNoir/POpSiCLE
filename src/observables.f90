@@ -42,23 +42,21 @@ MODULE observables
   
 CONTAINS
   
-  SUBROUTINE get_angular_resolution(b_lm, dPomega, lmax, mmax)
+  SUBROUTINE get_angular_resolution(b_lm, dPomega, lmax )
     
     IMPLICIT NONE
     
-    COMPLEX(dp), INTENT(IN)       :: b_lm(:, -mmax:, 0:)
+    COMPLEX(dp), INTENT(IN)       :: b_lm(:, -lmax:, 0:)
     COMPLEX(dp), INTENT(OUT)      :: dPomega(:, :, :)
-    INTEGER, INTENT(IN)           :: lmax,mmax
+    INTEGER, INTENT(IN)           :: lmax
     
-    INTEGER                       :: mmin, dims(3)
+    INTEGER                       :: dims(3)
     INTEGER                       :: numkpts, numthetapts
     INTEGER                       :: numphipts
     INTEGER                       :: ik,il,im,itheta,iphi
     
     !---------------------------------------------------------!
 
-    mmin = -mmax
-   
     dims = SHAPE(dPomega)
     
     numkpts     = dims(1)
@@ -67,35 +65,24 @@ CONTAINS
     
     dPomega = ZERO
     
-    DO ik = 1, numkpts
-       DO il = 0, lmax
-          DO im = mmin, mmax
-             IF(im.LT.0) THEN
-                DO iphi = 1, numphipts
-                   DO itheta = 1, numthetapts
-                      dPomega(ik,itheta,iphi) = b_lm(ik,im,il) * &
-                           1.0_dp / k_ax(ik) * (-1.0_dp)**ABS(im) * &
-                           normfact(ABS(im),il) * legenpl(itheta-1,ABS(im),il) * &
-                           EXP(ZIMAGONE * im * phi_ax(iphi))
-                   ENDDO
+    DO iphi = 1, numphipts
+       DO itheta = 1, numthetapts
+          DO ik = 1, numkpts
+             DO il = 0, lmax
+                DO im = -il, il
+                   
+                   dPomega(ik,itheta,iphi) = b_lm(ik,im,il) * &
+                        sph_harmonics(im,il,iphi,itheta)
+                   
                 ENDDO
-             ELSE
-                DO iphi = 1, numphipts
-                   DO itheta = 1, numthetapts
-                      dPomega(ik,itheta,iphi) = b_lm(ik,im,il) * &
-                           1.0_dp / k_ax(ik) * &
-                           normfact(im,il) * legenpl(itheta-1,im,il) * &
-                           EXP(ZIMAGONE * im * phi_ax(iphi))
-                   ENDDO
-                ENDDO
-             ENDIF
+             ENDDO
           ENDDO
        ENDDO
     ENDDO
-
-
+    
+    
   END SUBROUTINE get_angular_resolution
-
+  
   !***********************************************************!
 
   SUBROUTINE get_mes(bk, bk_rad)
@@ -104,7 +91,7 @@ CONTAINS
     COMPLEX(dp), INTENT(IN)    :: bk(:, :, :)
     REAL(dp), INTENT(OUT)      :: bk_rad(:)
 
-    REAL(dp)                   :: dphi, suma
+    REAL(dp)                   :: suma
     INTEGER                    :: numkpts, numthetapts
     INTEGER                    :: numphipts, dims(3)
     INTEGER                    :: ik, itheta, iphi
@@ -115,12 +102,6 @@ CONTAINS
     numkpts     = dims(1)
     numthetapts = dims(2)
     numphipts   = dims(3)
-    
-    IF(numphipts.EQ.1) THEN
-       dphi = 1.0_dp
-    ELSE
-       dphi = phi_ax(2) - phi_ax(1)
-    ENDIF
     
     bk_rad = 0.0_dp
     
@@ -133,8 +114,10 @@ CONTAINS
        DO iphi = 1, numphipts
           DO itheta = 1, numthetapts
              suma = suma + &
-                  REAL(CONJG(bk(ik,itheta,iphi)) * bk(ik,itheta,iphi),dp) * &
-                  gauss_th_weights(itheta)
+                  REAL(CONJG(bk(ik,itheta,iphi)) * &
+                  bk(ik,itheta,iphi),dp) * &
+                  gauss_th_weights(itheta) * &
+                  gauss_phi_weights(iphi)
           ENDDO
        ENDDO
        bk_rad(ik) = suma
@@ -142,12 +125,7 @@ CONTAINS
     !$OMP END DO NOWAIT
     !$OMP END PARALLEL
     
-    IF(numphipts.EQ.1) THEN
-       bk_rad = bk_rad * twopi
-    ELSE
-       bk_rad = bk_rad * dphi
-    ENDIF
-        
+    
   END SUBROUTINE get_mes
 
   !***********************************************************!
@@ -274,7 +252,6 @@ CONTAINS
     COMPLEX(dp), INTENT(IN)    :: bk(:, :, :)
     REAL(dp), INTENT(OUT)      :: bk_polar(:, :)
 
-    REAL(dp)                   :: dphi
     INTEGER                    :: numkpts, numthetapts
     INTEGER                    :: numphipts, dims(3)
     INTEGER                    :: ik, itheta, iphi
@@ -285,30 +262,21 @@ CONTAINS
     numkpts     = dims(1)
     numthetapts = dims(2)
     numphipts   = dims(3)
-
+    
     bk_polar = 0.0_dp
-    IF(numphipts.EQ.1) THEN
-       dphi = 1.0_dp
-    ELSE
-       dphi = phi_ax(2) - phi_ax(1)
-    ENDIF
-
+    
     DO iphi = 1, numphipts
        DO itheta = 1, numthetapts
           DO ik = 1, numkpts
              bk_polar(ik,itheta) = bk_polar(ik,itheta) + &
-                  REAL(CONJG(bk(ik,itheta,iphi) * bk(ik,itheta,iphi)),dp)
+                  REAL(CONJG(bk(ik,itheta,iphi) * &
+                  bk(ik,itheta,iphi)),dp) * &
+                  gauss_phi_weights(iphi)
           ENDDO
        ENDDO
     ENDDO
-
     
-    IF(numphipts.EQ.1) THEN
-       bk_polar = bk_polar * twopi
-    ELSE
-       bk_polar = bk_polar * dphi
-    ENDIF
-    
+        
   END SUBROUTINE get_polar_amplitude
   
   !***********************************************************!
@@ -336,13 +304,16 @@ CONTAINS
     CALL get_polar_amplitude(bk,probk2D)
 
     IF(PRESENT(groupname)) THEN
-       CALL write_wave(RESHAPE(probk2D,(/numkpts*numthetapts/)),2,&
-            (/numkpts,numthetapts/),filename,groupname,groupname)
+       CALL write_wave(RESHAPE(probk2D, &
+            (/numkpts*numthetapts/)),2,&
+            (/numkpts,numthetapts/), &
+            filename,groupname,groupname)
     ELSE
-       CALL write_wave(RESHAPE(probk2D,(/numkpts*numthetapts/)),2,&
+       CALL write_wave(RESHAPE(probk2D, &
+            (/numkpts*numthetapts/)),2,&
             (/numkpts,numthetapts/),filename)
     ENDIF
-
+    
     DEALLOCATE(probk2D)
 
   END SUBROUTINE write_polar_amplitude
@@ -368,18 +339,19 @@ CONTAINS
     numphipts   = dims(3)
 
     bk_real = 0.0_dp
-
+    
     DO iphi = 1, numphipts
        DO itheta = 1, numthetapts
           DO ik = 1, numkpts
              bk_real(ik,itheta,iphi) = bk_real(ik,itheta,iphi) + &
-                  REAL(CONJG(bk(ik,itheta,iphi)) * bk(ik,itheta,iphi),dp)
+                  REAL(CONJG(bk(ik,itheta,iphi)) * &
+                  bk(ik,itheta,iphi),dp)
           ENDDO
        ENDDO
     ENDDO
-
+    
   END SUBROUTINE get_amplitude
-
+  
   !***********************************************************!
   
   SUBROUTINE write_amplitude(bk, filename, groupname)
@@ -407,17 +379,21 @@ CONTAINS
     CALL get_amplitude(bk,probk3D)
     
     IF(PRESENT(groupname)) THEN
-       CALL write_wave(RESHAPE(probk3D,(/numkpts*numthetapts*numphipts/)),3,&
-            (/numkpts,numthetapts,numphipts/),filename,groupname,groupname)
+       CALL write_wave(RESHAPE(probk3D, &
+            (/numkpts*numthetapts*numphipts/)),3,&
+            (/numkpts,numthetapts,numphipts/), &
+            filename,groupname,groupname)
     ELSE
-       CALL write_wave(RESHAPE(probk3D,(/numkpts*numthetapts*numphipts/)),3,&
-            (/numkpts,numthetapts,numphipts/),filename)
+       CALL write_wave(RESHAPE(probk3D, &
+            (/numkpts*numthetapts*numphipts/)),3,&
+            (/numkpts,numthetapts,numphipts/), &
+            filename)
     ENDIF
     
     DEALLOCATE(probk3D)
     
   END SUBROUTINE write_amplitude
-
+  
   !***********************************************************!
   
   SUBROUTINE get_momwave(bk, cbk_rad)
@@ -426,7 +402,6 @@ CONTAINS
     COMPLEX(dp), INTENT(IN)    :: bk(:, :, :)
     COMPLEX(dp), INTENT(OUT)   :: cbk_rad(:)
 
-    REAL(dp)                   :: dphi
     COMPLEX(dp)                :: csuma
     INTEGER                    :: numkpts, numthetapts
     INTEGER                    :: numphipts, dims(3)
@@ -439,12 +414,6 @@ CONTAINS
     numthetapts = dims(2)
     numphipts   = dims(3)
     
-    IF(numphipts.EQ.1) THEN
-       dphi = 1.0_dp
-    ELSE
-       dphi = phi_ax(2) - phi_ax(1)
-    ENDIF
-    
     cbk_rad = ZERO
     
     !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik) &
@@ -456,20 +425,16 @@ CONTAINS
        DO iphi = 1, numphipts
           DO itheta = 1, numthetapts
              csuma = csuma + &
-                  bk(ik,itheta,iphi) * gauss_th_weights(itheta)
+                  bk(ik,itheta,iphi) * &
+                  gauss_th_weights(itheta) * &
+                  gauss_phi_weights(iphi)
           ENDDO
        ENDDO
        cbk_rad(ik) = csuma
     ENDDO
     !$OMP END DO NOWAIT
     !$OMP END PARALLEL
-    
-    IF(numphipts.EQ.1) THEN
-       cbk_rad = cbk_rad * twopi
-    ELSE
-       cbk_rad = cbk_rad * dphi
-    ENDIF
-        
+            
     
   END SUBROUTINE get_momwave
   
@@ -505,7 +470,7 @@ CONTAINS
 !!$    DO ik = 1, numkpts
 !!$       WRITE(55,*) k_ax(ik), REAL(probk1D(ik),dp),AIMAG(probk1D(ik))
 !!$    ENDDO
-
+    
     DO ik = 1, numkpts
        WRITE(55,*) k_ax(ik), REAL(bk(ik,1,1),dp),AIMAG(bk(ik,1,1))
     ENDDO
@@ -537,19 +502,21 @@ CONTAINS
     numkpts     = dims(1)
     numthetapts = dims(2)
     numphipts   = dims(3)    
-        
+    
     ALLOCATE(cb_lm(1:numkpts,-lmax:lmax,0:lmax))
-
+    b_lm  = ZERO
+    cb_lm = ZERO
+    
     DO ik = 1, numkpts
        CALL make_sht(bk(ik,:,:),lmax,gauss_th_weights,&
-            cb_lm(ik,:,:))
+            gauss_phi_weights, cb_lm(ik,:,:))
     ENDDO
     
     !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,il,im)
     
-    !$OMP DO COLLAPSE(2)
-    DO il = 0, lmax
-       DO ik = 1, numkpts
+    !$OMP DO
+    DO ik = 1, numkpts
+       DO il = 0, lmax
           DO im = -il, il
              b_lm(ik,im,il) = REAL(CONJG(cb_lm(ik,im,il)) * &
                   cb_lm(ik,im,il),dp)

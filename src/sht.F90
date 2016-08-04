@@ -208,13 +208,14 @@ CONTAINS
   !=======================================================================
   !=======================================================================
   
-  SUBROUTINE make_sht(func, lmax, weights, func_lm)
+  SUBROUTINE make_sht(func, lmax, th_weights, phi_weights, func_lm)
     
     IMPLICIT NONE
     
     COMPLEX(dp), INTENT(IN)        :: func(:, :)
     INTEGER, INTENT(IN)            :: lmax
-    REAL(dp), INTENT(IN)           :: weights(:)
+    REAL(dp), INTENT(IN)           :: th_weights(:)
+    REAL(dp), INTENT(IN)           :: phi_weights(:)
     COMPLEX(dp), INTENT(OUT)       :: func_lm(-lmax:, 0:)
     
     INTEGER                        :: dims(2)
@@ -244,12 +245,12 @@ CONTAINS
           DO itheta = 1, maxthetapts
              sum = sum + func(itheta,1) * &
                   normfact(0,il) * &
-                  legenpl(itheta-1,0,il) * weights(itheta)
+                  legenpl(itheta-1,0,il) * &
+                  th_weights(itheta) * &
+                  phi_weights(iphi)
           ENDDO
           func_lm(0,il) = sum
        ENDDO
-       
-       func_lm = func_lm * twopi
        
     ELSE
        
@@ -265,12 +266,10 @@ CONTAINS
                    
                    sum = sum + func(itheta, iphi) *                               &
                         CONJG(sph_harmonics(iphi, itheta, im, il)) *             &
-                        weights(itheta)
+                        th_weights(itheta) * phi_weights(iphi)
                    
                 ENDDO
              ENDDO
-	     
-             func_lm(im, il) = sum * dphi
              
           ENDDO
        ENDDO
