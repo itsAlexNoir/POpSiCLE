@@ -172,7 +172,7 @@ CONTAINS
     dphi =  twopi / REAL(numphipts,dp)
     DO iphi = 1, numphipts
        phi_ax(iphi) = REAL(iphi-1,dp) * dphi
-       gauss_phi_weights(jphi) = dphi
+       gauss_phi_weights(iphi) = dphi
     ENDDO
     
     ! Create spherical harmonics
