@@ -8,7 +8,6 @@ PROGRAM tsurff_test
   INTEGER                    :: numkpts
   REAL(dp)                   :: dk
   REAL(dp)                   :: k_cutoff
-  REAL(dp)                   :: coulomb_exp_energy
   COMPLEX(dp), ALLOCATABLE   :: b(:, :, :)
   CHARACTER(LEN=100)         :: filename_surf
   CHARACTER(LEN=100)         :: filename_pes
@@ -75,34 +74,7 @@ PROGRAM tsurff_test
   WRITE(*, *)
   WRITE(*, *) 'lmax :',lmax
   WRITE(*, *)
-    
-  WRITE(*, *) 'Do you want to add the Coulomb explosion energy? (y or n)'
-  WRITE(*, *) '---------------------------------------------------------'
-  READ(*, '(1A1)') answer
-  WRITE(*, *)
   
-  coulomb_exp_energy = 0.0_dp
-  
-  IF ((answer .EQ. 'Y') .OR. (answer .EQ. 'y')) THEN
-
-     WRITE(*, *)
-     WRITE(*, *) 'Yes'
-     WRITE(*, *)
-     WRITE(*, *) 'Coulomb explosion energy (a.u.):'
-     WRITE(*, *) '--------------------------------'
-     READ(*, *) coulomb_exp_energy
-     WRITE(*, *)
-     WRITE(*, '(A,F9.6)') 'Coulomb explosion energy :',coulomb_exp_energy
-     WRITE(*, *)
-     
-  ELSE
-     
-     WRITE(*, *)
-     WRITE(*, *) 'No'
-     WRITE(*, *)
-     
-  ENDIF
-
   WRITE(*, *) 'Do you want to gauge transform from length to velocity (y or n)'
   WRITE(*, *) '---------------------------------------------------------------'
   READ(*, '(1A1)') answer
@@ -248,7 +220,7 @@ PROGRAM tsurff_test
   
   CALL initialize_tsurff(filename_surf, radius_boundary, lmax, &
        dk, k_cutoff, numkpts, numthetapts, numphipts, &
-       lmax_total, desired_gauge_trans, coulomb_exp_energy )
+       lmax_total, desired_gauge_trans  )
   
   ! Allocate momentum amplitude array
   ALLOCATE(b(1:numkpts,1:numthetapts,1:numphipts))
