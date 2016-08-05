@@ -21,7 +21,7 @@ POPSICLE_SRC=${POPSICLE_ROOT}/src
 POPSICLE_LIB=${POPSICLE_ROOT}/lib
 POPSICLE_INCL=${POPSICLE_ROOT}/include
 
-MKL_LIBS = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -qopenmp
+MKL_LIBS = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -openmp
 
 ifeq (${compiler},intel)
 OMPLIBS = -openmp
