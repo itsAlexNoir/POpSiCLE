@@ -84,6 +84,7 @@ CONTAINS
     LOGICAL, INTENT(IN), OPTIONAL    :: gauge_trans_on
 
     COMPLEX(dp)                      :: suma
+    COMPLEX(dp)                      :: sumb    
     REAL(dp)                         :: dphi 
     INTEGER                          :: lmax
     INTEGER                          :: iphi, ik
@@ -221,7 +222,7 @@ CONTAINS
        zcoupling = 0.0_dp     
        
        ! Calculate matrix elements for laser-matter couling in
-       ! x direction laser polarisation.
+       ! x and y direction laser polarisation.
        
        DO ill = 0, lmax
           DO imm = -ill, ill
@@ -233,6 +234,7 @@ CONTAINS
                       
                       ! Calculate matrix elements between spherical harmonics
                       suma = ZERO
+                      sumb = ZERO
                       
                       DO jphi = 1, numphipts
                          DO jtheta = 1, numthetapts
@@ -243,48 +245,19 @@ CONTAINS
                                  SIN(theta_ax(jtheta)) * COS(phi_ax(jphi)) * &
                                  gauss_th_weights(jtheta) * &
                                  gauss_phi_weights(jphi)
-                         ENDDO
-                      ENDDO
-                      
-                      xcoupling(im,il,imm,ill) = suma
-                      
-                   ENDIF
-                   
-                ENDDO
-             ENDDO
-          ENDDO
-       ENDDO
-       
-       
-       ! Calculate matrix elements for laser-matter couling in
-       ! y direction laser polarisation.
-       
-       DO ill = 0, lmax
-          DO imm = -ill, ill
-             
-             DO il = 0, lmax
-                DO im = -il, il
-                   
-                   IF (ABS(il - ill).EQ.1 .AND. ABS(im - imm).EQ.1) THEN
-                      
-                      ! Calculate matrix elements between spherical harmonics
-                      
-                      suma = ZERO
-                      
-                      DO jphi = 1, numphipts
-                         DO jtheta = 1, numthetapts
-                            
-                            suma = suma +				       &
-                                 CONJG(sph_harmonics(jtheta, jphi, im, il)) * &
-                                 SIN(theta_ax(jtheta)) * SIN(phi_ax(jphi)) *  &
-                                 sph_harmonics(jtheta, jphi, imm, ill) *      &
-                                 gauss_th_weights(jtheta) *                   &
+
+                            sumb = sumb + &
+                                 CONJG(sph_harmonics(jphi,jtheta,im,il)) * &
+                                 sph_harmonics(jphi,jtheta,imm,ill) * &
+                                 SIN(theta_ax(jtheta)) * SIN(phi_ax(jphi)) * &
+                                 gauss_th_weights(jtheta) * &
                                  gauss_phi_weights(jphi)
                             
                          ENDDO
                       ENDDO
                       
-                      ycoupling(im, il, imm, ill) = IMAG(suma)
+                      xcoupling(im,il,imm,ill) = suma
+                      ycoupling(im,il,imm,ill) = AIMAG(sumb)
                       
                    ENDIF
                    
