@@ -221,7 +221,6 @@ CONTAINS
     INTEGER                        :: dims(2)
     COMPLEX(dp), ALLOCATABLE       :: coeffm(:), gm(:, :)
     COMPLEX(dp)                    :: sum
-    REAL(dp)                       :: dphi
     INTEGER                        :: maxthetapts, maxphipts
     INTEGER                        :: il, im, itheta, iphi
     
@@ -247,14 +246,12 @@ CONTAINS
                   normfact(0,il) * &
                   legenpl(itheta-1,0,il) * &
                   th_weights(itheta) * &
-                  phi_weights(iphi)
+                  phi_weights(1)
           ENDDO
           func_lm(0,il) = sum
        ENDDO
        
     ELSE
-       
-       dphi = twopi / REAL(maxphipts,dp)
        
        DO il = 0, lmax
           DO im = -il, il
@@ -270,7 +267,7 @@ CONTAINS
                    
                 ENDDO
              ENDDO
-             
+             func_lm(im,il) = sum
           ENDDO
        ENDDO
        
