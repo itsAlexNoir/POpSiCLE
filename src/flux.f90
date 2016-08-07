@@ -302,7 +302,7 @@ CONTAINS
        ENDDO
        
     ENDIF
-    
+
     ! Initialize spherical Bessel functions
     ALLOCATE(jl(0:lmax,1:numkpts))
     ALLOCATE(jlp(0:lmax,1:numkpts))
@@ -336,6 +336,7 @@ CONTAINS
     REAL(dp)                       :: integralAx
     REAL(dp)                       :: integralAy
     REAL(dp)                       :: integralAz
+    REAL(dp)                       :: kdota
     INTEGER                        :: ik, itheta, iphi
     INTEGER                        :: itime, numtimesteps
     
@@ -382,18 +383,22 @@ CONTAINS
     DO ik = 1, numkpts
        DO iphi = 1, numphipts
           DO itheta = 1, numthetapts
-             phase(ik,itheta,iphi) = EXP( ZIMAGONE * &
-                  ( 0.5_dp * k_ax(ik) * k_ax(ik) * maxtime ) + &
-                  ( k_ax(ik) * integralAx * SIN(theta_ax(itheta)) * COS(phi_ax(iphi)) ) + &
-                  ( k_ax(ik) * integralAy * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi)) ) + &
-                  ( k_ax(ik) * integralAz * costheta_ax(itheta) ) )
+             
+             kdota = k_ax(ik) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi)) *  &
+                  integralAx + &
+                  k_ax(ik) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi)) * &
+                  integralAy + &
+                  k_ax(ik) * costheta_ax(itheta) * integralAz
+             
+             phase(ik,itheta,iphi) = EXP(ZIMAGONE *                          &
+                  (0.5_dp * k_ax(ik) * k_ax(ik) * maxtime + kdota ) )
+             
           ENDDO
        ENDDO
     ENDDO
     !$OMP END DO NOWAIT
     !$OMP END PARALLEL
-    
-    
+      
   END SUBROUTINE get_volkov_phase
   
   !****************************************************************!
@@ -414,7 +419,7 @@ CONTAINS
     COMPLEX(dp), ALLOCATABLE     :: volkov_phase(:, :, :)
     INTEGER                      :: itime, il, im
     INTEGER                      :: ik, itheta, iphi
-     
+    
     !----------------------------------------------------!
     
     ! Allocate and set to zero
@@ -478,8 +483,7 @@ CONTAINS
        ! Get the Volkov phase (one per time step)
        CALL get_volkov_phase(afield, time, time(itime), &
             volkov_phase )
-
-       
+              
        !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi)
        
        !$OMP DO COLLAPSE(3)       
