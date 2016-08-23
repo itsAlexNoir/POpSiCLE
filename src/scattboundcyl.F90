@@ -30,7 +30,6 @@ MODULE scattboundcyl
   INTEGER, ALLOCATABLE, PUBLIC     :: surface_members(:)
   INTEGER, ALLOCATABLE, PUBLIC     :: i_am_in_local2D(:, :)
   INTEGER, ALLOCATABLE, PUBLIC     :: i_am_in_global2D(:, :)
-  INTEGER, ALLOCATABLE, PUBLIC     :: i_am_io_local(:) 
   INTEGER, ALLOCATABLE, PUBLIC     :: i_am_io(:) 
   INTEGER, ALLOCATABLE, PUBLIC     :: io_members(:)
   
@@ -284,26 +283,22 @@ CONTAINS
             numioprocs, numthetaptsperproc )
        
        ALLOCATE(io_members(0:numioprocs-1))
-       ALLOCATE(i_am_io_local(0:mpi_size-1))
        ALLOCATE(i_am_io(0:mpi_size-1))
        
        io_members = surface_members(0:numioprocs-1)
+       i_am_io       = 0
        
-       IF(surfacerank.LE.numioprocs-1) &
-            i_am_io_local(mpi_rank) = 1
+       DO ii = 0, numioprocs - 1
+          i_am_io(surface_members(ii)) = 1
+       ENDDO
        
-       ! Communicate to all processors if they are I/O
-       CALL MPI_ALLREDUCE(i_am_io_local, i_am_io, mpi_size, &
-            MPI_INTEGER, MPI_SUM, comm, ierror )
-       
-       
-       CALL MPI_GROUP_INCL(surfacegroup, numioprocs, io_members, &
+       CALL MPI_GROUP_INCL(simgroup, numioprocs, io_members, &
             iogroup, ierror)
        ! The i/o comm
        CALL MPI_COMM_CREATE(comm, iogroup, iocomm, ierror)
        
        !Assign ranks for those who are on I/O
-       IF(i_am_io_local(mpi_rank).EQ.1) &
+       IF(i_am_io(mpi_rank).EQ.1) &
             CALL MPI_COMM_RANK( iocomm, iorank, ierror)
        
               
