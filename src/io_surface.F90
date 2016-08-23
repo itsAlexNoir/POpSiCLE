@@ -249,7 +249,7 @@ CONTAINS
        
        cont = wave_dims
        offset = (/ numthetaptsperproc * rank, 0 /)
-       
+
        ! Select hyperslab in the file.
        CALL h5dget_space_f(wave_dset_id, wave_filespace, error)
        CALL h5sselect_hyperslab_f (wave_filespace, H5S_SELECT_SET_F, offset,&

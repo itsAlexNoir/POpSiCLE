@@ -103,15 +103,16 @@ CONTAINS
           ALLOCATE(spherical_wave2D_dr(1:numrpts,1:numthetapts))
           ALLOCATE(spherical_wave2D_dtheta(1:numrpts,1:numthetapts))
 
-          IF(i_am_io(mpi_rank) .EQ. 1) THEN
-             ALLOCATE(spherical_wave2D(1:numrpts,1:numthetaptsperproc))
-             ALLOCATE(spherical_wave2D_deriv(1:numthetaptsperproc))
-          ENDIF
-          
           spherical_wave2D_local  = ZERO
           spherical_wave2D_global = ZERO
           
-          CALL create_surface_file(filename, surfacecomm)
+          IF(i_am_io(mpi_rank) .EQ. 1) THEN
+             ALLOCATE(spherical_wave2D(1:numrpts,1:numthetaptsperproc))
+             ALLOCATE(spherical_wave2D_deriv(1:numthetaptsperproc))
+             
+             CALL create_surface_file(filename, iocomm)
+          ENDIF
+          
        ENDIF
     ELSE
        
@@ -186,17 +187,17 @@ CONTAINS
           ALLOCATE(spherical_wave3D_dtheta(1:numrpts,1:numthetapts,1:numphipts))
           ALLOCATE(spherical_wave3D_dphi(1:numrpts,1:numthetapts,1:numphipts))
           
+          spherical_wave3D_local  = ZERO
+          spherical_wave3D_global = ZERO
+          
           IF(i_am_io(mpi_rank) .EQ. 1) THEN
              ALLOCATE(spherical_wave3D(1:numrpts,1:numthetaptsperproc,&
                   1:numphiptsperproc))
              ALLOCATE(spherical_wave3D_deriv(1:numthetaptsperproc,&
                   1:numphiptsperproc))
+             
+             CALL create_surface_file(filename, iocomm)
           ENDIF
-          
-          spherical_wave3D_local  = ZERO
-          spherical_wave3D_global = ZERO
-          
-          CALL create_surface_file(filename, surfacecomm)
           
        ENDIF
     ELSE
@@ -432,9 +433,11 @@ CONTAINS
     IF(PRESENT(mpi_rank)) THEN
        IF(i_am_surface(mpi_rank) .EQ. 1) THEN  
           DEALLOCATE(spherical_wave2D_local,spherical_wave2D_global)
-          DEALLOCATE(spherical_wave2D,spherical_wave2D_deriv)
           DEALLOCATE(spherical_wave2D_dr,spherical_wave2D_dtheta)
        ENDIF
+       IF(i_am_io(mpi_rank) .EQ. 1) &
+            DEALLOCATE(spherical_wave2D,spherical_wave2D_deriv)
+       
     ELSE
        DEALLOCATE(spherical_wave2D,spherical_wave2D_deriv)
        DEALLOCATE(spherical_wave2D_dr,spherical_wave2D_dtheta)
@@ -452,15 +455,17 @@ CONTAINS
     
     ! Deallocate fd coeffs
     CALL delete_fd_coeffs()
-
+    
     IF(PRESENT(mpi_rank)) THEN
        IF(i_am_surface(mpi_rank) .EQ. 1) THEN
           DEALLOCATE(spherical_wave3D_local,spherical_wave3D_global)
-          DEALLOCATE(spherical_wave3D,spherical_wave3D_deriv)
           DEALLOCATE(spherical_wave3D_dr)
           DEALLOCATE(spherical_wave3D_dtheta)
           DEALLOCATE(spherical_wave3D_dphi)
        ENDIF
+       IF(i_am_io(mpi_rank) .EQ. 1) &
+            DEALLOCATE(spherical_wave3D,spherical_wave3D_deriv)
+       
     ELSE
        DEALLOCATE(spherical_wave3D,spherical_wave3D_deriv)
        DEALLOCATE(spherical_wave3D_dr)
