@@ -3,6 +3,7 @@ MODULE scattboundcart
   USE constants
   USE gaussleg
   USE scatt_interp
+  USE tools
   USE scattboundcyl
 #if _COM_MPI
   USE MPI
