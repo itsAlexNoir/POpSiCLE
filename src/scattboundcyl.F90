@@ -29,13 +29,19 @@ MODULE scattboundcyl
   INTEGER, ALLOCATABLE, PUBLIC     :: surface_members(:)
   INTEGER, ALLOCATABLE, PUBLIC     :: i_am_in_local2D(:, :)
   INTEGER, ALLOCATABLE, PUBLIC     :: i_am_in_global2D(:, :)
+  INTEGER, ALLOCATABLE, PUBLIC     :: i_am_io_local(:) 
+  INTEGER, ALLOCATABLE, PUBLIC     :: i_am_io(:) 
+  INTEGER, ALLOCATABLE, PUBLIC     :: io_members(:)
   
   INTEGER, PUBLIC                  :: numrpts
   INTEGER, PUBLIC                  :: numthetapts
   INTEGER, PUBLIC                  :: numthetaptsperproc
   INTEGER, PUBLIC                  :: numsurfaceprocs
+  INTEGER, PUBLIC                  :: numioprocs
   INTEGER, PUBLIC                  :: surfacerank
   INTEGER, PUBLIC                  :: surfacecomm
+  INTEGER, PUBLIC                  :: iorank
+  INTEGER, PUBLIC                  :: iocomm
   
   INTEGER                          :: numpts
   REAL(dp), ALLOCATABLE            :: rhopts_scatt(:)
@@ -71,7 +77,9 @@ CONTAINS
     INTEGER, INTENT(IN), OPTIONAL   :: mpi_rank, mpi_size
     INTEGER, INTENT(IN), OPTIONAL   :: comm
     
-    INTEGER                   :: simgroup, surfacegroup
+    INTEGER                   :: simgroup
+    INTEGER                   :: surfacegroup
+    INTEGER                   :: iogroup
     INTEGER                   :: ierror
     REAL(dp)                  :: minrho, maxrho
     REAL(dp)                  :: minz, maxz
@@ -268,21 +276,36 @@ CONTAINS
        IF(i_am_surface_local(mpi_rank).EQ.1) &
             CALL MPI_COMM_RANK( surfacecomm, surfacerank, ierror)
        
+
+       ! Set mpi group and comm for io
+       ! Also, the number of points per proc
+       CALL reshape_numptsperproc( numthetapts, numsurfaceprocs, &
+            numioprocs, numthetaptsperproc )
        
-       ! Set number of points per proc
-       ! Take into account if the number of points is not
-       ! a multiplier of the number of processors
-       numthetaptsperproc = INT(numthetapts / numsurfaceprocs)
+       ALLOCATE(io_members(0:numioprocs-1))
+       ALLOCATE(i_am_io_local(0:mpi_size-1))
+       ALLOCATE(i_am_io(0:mpi_size-1))
        
-       IF(MOD(numthetapts,numsurfaceprocs).NE.0) THEN
-          
-          IF(surfacerank.EQ.(numsurfaceprocs-1)) THEN
-             numthetaptsperproc = numthetapts / numsurfaceprocs + &
-                  MOD(numthetapts,numsurfaceprocs)
-          ENDIF
-          
-       ENDIF
+       io_members = surface_members(0:numioprocs-1)
        
+       IF(surfacerank.LE.numioprocs-1) &
+            i_am_io_local(mpi_rank) = 1
+       
+       ! Communicate to all processors if they are I/O
+       CALL MPI_ALLREDUCE(i_am_io_local, i_am_io, mpi_size, &
+            MPI_INTEGER, MPI_SUM, comm, ierror )
+       
+       
+       CALL MPI_GROUP_INCL(surfacegroup, numioprocs, io_members, &
+            iogroup, ierror)
+       ! The i/o comm
+       CALL MPI_COMM_CREATE(comm, iogroup, iocomm, ierror)
+       
+       !Assign ranks for those who are on I/O
+       IF(i_am_io_local(mpi_rank).EQ.1) &
+            CALL MPI_COMM_RANK( iocomm, iorank, ierror)
+       
+              
     ENDIF
 #endif
     
@@ -343,12 +366,10 @@ CONTAINS
                numthetapts
           WRITE(*,'(A,I3)')    ' Number of processors on the surface:          ',&
                numsurfaceprocs
+          WRITE(*,'(A,I3)')    ' Number of I/O processors                      ',&
+               numioprocs
           WRITE(*,'(A,I3)')    ' Number of theta points per processors:        ',&
                numthetaptsperproc
-          IF(MOD(numthetapts,numsurfaceprocs).NE.0) THEN
-             WRITE(*,'(A,I3)') ' Number of theta points on the last processor: ',&
-                  numthetaptsperproc + MOD(numthetapts,numsurfaceprocs)
-          ENDIF
           WRITE(*,*)
           WRITE(*,*)
        ENDIF

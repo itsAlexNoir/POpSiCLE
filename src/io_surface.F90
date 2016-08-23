@@ -104,7 +104,7 @@ CONTAINS
   !******************************************************!
   
   SUBROUTINE write_surface_file2D(filename, wave, &
-       wavederiv, time, efield, afield, surfacerank, comm )
+       wavederiv, time, efield, afield, rank, comm )
     
     IMPLICIT NONE
     
@@ -113,7 +113,7 @@ CONTAINS
     COMPLEX(dp), INTENT(IN)        :: wavederiv(:)
     REAL(dp), INTENT(IN)           :: time
     REAL(dp), INTENT(IN)           :: efield(:), afield(:)
-    INTEGER, INTENT(IN), OPTIONAL  :: surfacerank
+    INTEGER, INTENT(IN), OPTIONAL  :: rank
     INTEGER, INTENT(IN), OPTIONAL  :: comm
     
     INTEGER                        :: wave_rank, field_rank
@@ -121,7 +121,6 @@ CONTAINS
     REAL(dp), ALLOCATABLE          :: complex_wave(:, :)
     REAL(dp), ALLOCATABLE          :: complex_wavederiv(:, :)
     REAL(dp)                       :: field(3,2)
-    INTEGER                        :: numthetaoffset
     
     ! File identifier
     INTEGER(HID_T)                 :: file_id
@@ -217,7 +216,6 @@ CONTAINS
        wave_dims = (/numthetaptsperproc, 2/)
        ALLOCATE(complex_wave(numthetaptsperproc,2))
        ALLOCATE(complex_wavederiv(numthetaptsperproc,2))
-       numthetaoffset = INT(numthetapts / numsurfaceprocs)
     ELSE
        wave_dims = (/numthetapts, 2/)
        ALLOCATE(complex_wave(numthetapts,2))
@@ -250,7 +248,7 @@ CONTAINS
        CALL h5sclose_f(wavederiv_filespace, error)
        
        cont = wave_dims
-       offset = (/ numthetaoffset * surfacerank, 0 /)
+       offset = (/ numthetaptsperproc * rank, 0 /)
        
        ! Select hyperslab in the file.
        CALL h5dget_space_f(wave_dset_id, wave_filespace, error)
@@ -291,7 +289,7 @@ CONTAINS
        ! Create the data space for the dataset.
        CALL h5screate_simple_f(field_rank, field_dims, field_filespace, error)
        CALL h5screate_simple_f(field_rank, field_dims, field_memspace, error)
-       IF(surfacerank.NE.1) &
+       IF(rank.NE.1) &
             CALL h5sselect_none_f(field_memspace,error)
        
        ! Create dataset
@@ -306,7 +304,7 @@ CONTAINS
        CALL h5dget_space_f(field_dset_id, field_filespace, error)
        CALL h5sselect_hyperslab_f (field_filespace, H5S_SELECT_SET_F, offset_field,&
             cont_field, error)!, stride, blck)
-       IF(surfacerank.NE.1) &
+       IF(rank.NE.1) &
             CALL h5sselect_none_f(field_filespace,error)
 #if _COM_MPI       
        ! Create property list for collective dataset write
@@ -327,7 +325,7 @@ CONTAINS
        ! Create the data space for the dataset.
        CALL h5screate_simple_f(time_rank, time_dim, time_filespace, error)
        CALL h5screate_simple_f(time_rank, time_dim, time_memspace, error)
-       IF(surfacerank.NE.1) &
+       IF(rank.NE.1) &
             CALL h5sselect_none_f(time_memspace,error)
        
        ! Create dataset
@@ -342,7 +340,7 @@ CONTAINS
        CALL h5dget_space_f(time_dset_id, time_filespace, error)
        CALL h5sselect_hyperslab_f (time_filespace, H5S_SELECT_SET_F, offset_time,&
             cont_time, error)!, stride, blck)
-       IF(surfacerank.NE.1) &
+       IF(rank.NE.1) &
             CALL h5sselect_none_f(time_filespace,error)
 #if _COM_MPI 
        ! Create property list for collective dataset write
@@ -425,7 +423,7 @@ CONTAINS
   !******************************************************!
   
   SUBROUTINE write_surface_file3D(filename, wave, &
-       wavederiv, time, efield, afield, surfacerank, comm )
+       wavederiv, time, efield, afield, rank, comm )
     
     IMPLICIT NONE
     
@@ -434,7 +432,7 @@ CONTAINS
     COMPLEX(dp), INTENT(IN)        :: wavederiv(:, :)
     REAL(dp), INTENT(IN)           :: time
     REAL(dp), INTENT(IN)           :: efield(:), afield(:)
-    INTEGER, INTENT(IN), OPTIONAL  :: surfacerank
+    INTEGER, INTENT(IN), OPTIONAL  :: rank
     INTEGER, INTENT(IN), OPTIONAL  :: comm
     
     INTEGER                        :: wave_rank, field_rank
@@ -442,8 +440,6 @@ CONTAINS
     REAL(dp), ALLOCATABLE          :: complex_wave(:, :, :)
     REAL(dp), ALLOCATABLE          :: complex_wavederiv(:, :, :)
     REAL(dp)                       :: field(3,2)
-    INTEGER                        :: numthetaoffset
-    INTEGER                        :: numphioffset
     ! File identifier
     INTEGER(HID_T)                 :: file_id
     ! Property list identifier 
@@ -533,13 +529,11 @@ CONTAINS
     field_dims = (/3,2/)
     time_dim = 1
     wave_global_dims = (/numthetapts, numphipts, 2/)
-
+    
     IF(PRESENT(comm)) THEN
        wave_dims = (/numthetaptsperproc, numphiptsperproc, 2/)
        ALLOCATE(complex_wave(numthetaptsperproc,numphiptsperproc,2))
        ALLOCATE(complex_wavederiv(numthetaptsperproc,numphiptsperproc,2))
-       numthetaoffset = INT(numthetapts / numsurfaceprocs)
-       numphioffset = INT(numphipts / numsurfaceprocs)
     ELSE
        wave_dims = (/numthetapts, numphipts, 2/)
        ALLOCATE(complex_wave(numthetapts,numphipts,2))
@@ -573,7 +567,8 @@ CONTAINS
        CALL h5sclose_f(wavederiv_filespace, error)
        
        cont = wave_dims
-       offset = (/ numthetaoffset * surfacerank, numphioffset * surfacerank, 0 /)
+       offset = (/ numthetaptsperproc * rank, &
+            numphiptsperproc * rank, 0 /)
        
        ! Select hyperslab in the file.
        CALL h5dget_space_f(wave_dset_id, wave_filespace, error)
@@ -616,7 +611,7 @@ CONTAINS
        ! Create the data space for the dataset.
        CALL h5screate_simple_f(field_rank, field_dims, field_filespace, error)
        CALL h5screate_simple_f(field_rank, field_dims, field_memspace, error)
-       IF(surfacerank.NE.1) &
+       IF(rank.NE.1) &
             CALL h5sselect_none_f(field_memspace,error)
        
        ! Create dataset
@@ -632,7 +627,7 @@ CONTAINS
        CALL h5sselect_hyperslab_f (field_filespace, H5S_SELECT_SET_F, offset_field,&
             cont_field, error)!, stride, blck)
        
-       IF(surfacerank.NE.1) &
+       IF(rank.NE.1) &
             CALL h5sselect_none_f(field_filespace,error)
 #if _COM_MPI 
        ! Create property list for collective dataset write
@@ -658,7 +653,7 @@ CONTAINS
        ! Create the data space for the dataset.
        CALL h5screate_simple_f(time_rank, time_dim, time_filespace, error)
        CALL h5screate_simple_f(time_rank, time_dim, time_memspace, error)
-       IF(surfacerank.NE.1) &
+       IF(rank.NE.1) &
             CALL h5sselect_none_f(time_memspace,error)
        
        ! Create dataset
@@ -674,7 +669,7 @@ CONTAINS
        CALL h5sselect_hyperslab_f (time_filespace, H5S_SELECT_SET_F, offset_time,&
             cont_time, error)!, stride, blck)
        
-       IF(surfacerank.NE.1) &
+       IF(rank.NE.1) &
             CALL h5sselect_none_f(time_filespace,error)
 #if _COM_MPI
        ! Create property list for collective dataset write

@@ -79,8 +79,6 @@ CONTAINS
     INTEGER, INTENT(IN), OPTIONAL   :: mpi_rank, mpi_size
     INTEGER, INTENT(IN), OPTIONAL   :: comm
     
-    INTEGER                         :: numthetaoffset
-    
     !------------------------------------------------------------!
     
     ! Initilize finite-difference coefficients
@@ -99,17 +97,13 @@ CONTAINS
        CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, Rboundary, &
             fd_rule, dr, lmax, mpi_rank, mpi_size, comm )
        
-       numthetaoffset = INT(numthetapts / numsurfaceprocs)
-       
        IF(i_am_surface(mpi_rank).EQ.1) THEN
           ALLOCATE(spherical_wave2D_local(1:numrpts,1:numthetapts))
           ALLOCATE(spherical_wave2D_global(1:numrpts,1:numthetapts))
           ALLOCATE(spherical_wave2D_dr(1:numrpts,1:numthetapts))
           ALLOCATE(spherical_wave2D_dtheta(1:numrpts,1:numthetapts))
-          IF(numthetaoffset .EQ. 0) THEN
-             ALLOCATE(spherical_wave2D(1:numrpts,1:numthetapts))
-             ALLOCATE(spherical_wave2D_deriv(1:numthetapts))
-          ELSE
+
+          IF(i_am_io(mpi_rank) .EQ. 1) THEN
              ALLOCATE(spherical_wave2D(1:numrpts,1:numthetaptsperproc))
              ALLOCATE(spherical_wave2D_deriv(1:numthetaptsperproc))
           ENDIF
@@ -165,9 +159,7 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN)   :: filename
     INTEGER, INTENT(IN), OPTIONAL  :: mpi_rank, mpi_size
     INTEGER, INTENT(IN), OPTIONAL  :: comm
-    
-    INTEGER                        :: numthetaoffset, numphioffset
-    
+       
     !------------------------------------------------------------!
     
     ! Initilize finite-difference coefficients
@@ -186,22 +178,15 @@ CONTAINS
        CALL initialize_cartesian_boundary(x_ax, y_ax, z_ax, dims, &
             Rboundary, fd_rule, dr, lmax, &
             mpi_rank, mpi_size, comm )
-       
-       numthetaoffset = INT(numthetapts / numsurfaceprocs)
-       numphioffset = INT(numphipts / numsurfaceprocs) 
-       
+              
        IF(i_am_surface(mpi_rank) .EQ. 1) THEN
           ALLOCATE(spherical_wave3D_local(1:numrpts,1:numthetapts,1:numphipts))
           ALLOCATE(spherical_wave3D_global(1:numrpts,1:numthetapts,1:numphipts))
           ALLOCATE(spherical_wave3D_dr(1:numrpts,1:numthetapts,1:numphipts))
           ALLOCATE(spherical_wave3D_dtheta(1:numrpts,1:numthetapts,1:numphipts))
           ALLOCATE(spherical_wave3D_dphi(1:numrpts,1:numthetapts,1:numphipts))
-          IF((numthetaoffset.EQ.0) .OR. (numphioffset.EQ.0)) THEN
-             ALLOCATE(spherical_wave3D(1:numrpts,1:numthetapts,&
-                  1:numphipts))
-             ALLOCATE(spherical_wave3D_deriv(1:numthetapts,&
-                  1:numphipts))
-          ELSE
+          
+          IF(i_am_io(mpi_rank) .EQ. 1) THEN
              ALLOCATE(spherical_wave3D(1:numrpts,1:numthetaptsperproc,&
                   1:numphiptsperproc))
              ALLOCATE(spherical_wave3D_deriv(1:numthetaptsperproc,&
@@ -265,7 +250,6 @@ CONTAINS
     INTEGER, INTENT(IN), OPTIONAL :: mpi_rank, mpi_size
     
     INTEGER                      :: numtotalpts
-    INTEGER                      :: numthetaoffset
     INTEGER                      :: middle_pt, offset
     INTEGER                      :: ir, itheta, ierror
     
@@ -289,24 +273,11 @@ CONTAINS
           CALL MPI_ALLREDUCE(spherical_wave2D_local, spherical_wave2D_global, &
                numtotalpts, MPI_DOUBLE_COMPLEX, MPI_SUM, surfacecomm, ierror)
 #endif
-          middle_pt = fd_rule + 1
-          numthetaoffset = INT(numthetapts / numsurfaceprocs)
           
-          IF(numthetaoffset.EQ.0) THEN
+          IF(i_am_io(mpi_rank).EQ.1) THEN
              
-             spherical_wave2D = spherical_wave2D_global
-             
-             CALL make_wave_boundary_derivative(spherical_wave2D,&
-                  spherical_wave2D_deriv,fd_rule,deltar,&
-                  numrpts,numthetapts)
-             
-             ! Write boundary points to a HDF5 file
-             IF (surfacerank.EQ.0) &
-                  CALL write_surface_file(filename, spherical_wave2D(middle_pt,:), &
-                  spherical_wave2D_deriv, time, efield, afield, lmax)
-             
-          ELSE
-             offset = numthetaoffset * surfacerank       
+             middle_pt = fd_rule + 1    
+             offset = numthetaptsperproc * iorank       
              
              DO itheta = 1, numthetaptsperproc
                 DO ir = 1, numrpts
@@ -322,9 +293,10 @@ CONTAINS
              ! Write boundary points to a HDF5 file
              CALL write_surface_file(filename, spherical_wave2D(middle_pt,:), &
                   spherical_wave2D_deriv, time, efield, afield, &
-                  surfacerank, surfacecomm )
+                  iorank, iocomm )
           ENDIF
        ENDIF
+       
     ELSE
        ! For scattered interpolation
        !CALL get_cylindrical_boundary( wavefunc, spherical_wave2D, &
@@ -370,7 +342,6 @@ CONTAINS
     INTEGER                      :: numtotalpts
     INTEGER                      :: middle_pt
     INTEGER                      :: thetaoffset, phioffset
-    INTEGER                      :: numthetaoffset, numphioffset
     INTEGER                      :: ir, itheta, iphi, ierror
     
     !----------------------------------------------------------!
@@ -396,24 +367,10 @@ CONTAINS
                numtotalpts, MPI_DOUBLE_COMPLEX, MPI_SUM, surfacecomm, ierror)
 #endif
           middle_pt = fd_rule + 1
-          numthetaoffset = INT(numthetapts / numsurfaceprocs)
-          numphioffset = INT(numphipts / numsurfaceprocs)
           
-          IF((numthetaoffset.EQ.0) .OR. (numphioffset.EQ.0)) THEN
-             
-             spherical_wave3D =  spherical_wave3D_global
-             CALL make_wave_boundary_derivative(spherical_wave3D,&
-                  spherical_wave3D_deriv,fd_rule,deltar,&
-                  numrpts,numthetapts,numphipts)
-             
-             ! Write boundary points to a HDF5 file
-             IF (surfacerank.EQ.0) &
-                  CALL write_surface_file(filename, spherical_wave3D(middle_pt,:, :), &
-                  spherical_wave3D_deriv, time, efield, afield, lmax)
-             
-          ELSE
-             thetaoffset = numthetaoffset * surfacerank       
-             phioffset = numphioffset * surfacerank       
+          IF(i_am_io(mpi_rank) .EQ. 1) THEN
+             thetaoffset = numthetaptsperproc * iorank       
+             phioffset   = numphiptsperproc   * iorank       
              
              DO iphi = 1, numphiptsperproc
                 DO itheta = 1, numthetaptsperproc
@@ -431,9 +388,10 @@ CONTAINS
              ! Write boundary points to a HDF5 file
              CALL write_surface_file(filename, spherical_wave3D(middle_pt,:, :), &
                   spherical_wave3D_deriv, time, efield, afield, &
-                  surfacerank, surfacecomm )
+                  iorank, iocomm )
           ENDIF
        ENDIF
+       
     ELSE
        
        ! For scattered interpolation
