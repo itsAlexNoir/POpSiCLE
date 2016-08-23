@@ -50,7 +50,9 @@ CONTAINS
     INTEGER, INTENT(IN), OPTIONAL   :: mpi_rank, mpi_size
     INTEGER, INTENT(IN), OPTIONAL   :: comm
     
-    INTEGER                   :: simgroup, surfacegroup
+    INTEGER                   :: simgroup
+    INTEGER                   :: surfacegroup
+    INTEGER                   :: iogroup    
     INTEGER                   :: ierror
     REAL(dp)                  :: minx, maxx
     REAL(dp)                  :: miny, maxy 
