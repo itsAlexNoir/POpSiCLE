@@ -16,6 +16,9 @@ MODULE tools
   PUBLIC        :: make_cross_derivative
   PUBLIC        :: fdweights
   PUBLIC        :: interv
+  PUBLIC        :: prime_sieve
+  PUBLIC        :: trial_division
+  PUBLIC        :: reshape_numptsperproc
 
   ! Interfaces
   INTERFACE make_wave_boundary_derivative
@@ -853,6 +856,196 @@ CONTAINS
     ENDIF
     
   END SUBROUTINE interv
+
+  !********************************************************!
+  
+  SUBROUTINE prime_sieve(last_number, number_of_primes, &
+       numbers )
+    
+    !  Find prime numbers using array processing.
+    !  We use the sieve of Eratosthenes to calculate
+    !  the first prime numbers.
+    
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)              :: last_number
+    INTEGER, INTENT(INOUT)           :: number_of_primes
+    INTEGER, INTENT(OUT)             :: numbers(:)
+    
+    INTEGER                          :: i, ac
+  
+    !--------------------------------------------------!
+    
+    ! Check dimensions for the output array
+    IF(SIZE(numbers).ne.last_number) THEN
+       WRITE(*,*) 'Error in prime sieve. The dimension '&
+            &'of output array is not equal to last number.'
+       STOP
+    ENDIF
+    
+    !
+    !  Initialize numbers array to 0, 2, 3, ..., last_number--
+    !  Zero instead of 1 because 1 is a special case.
+    numbers = (/ 0, (ac, ac = 2, last_number) /)
+    
+    DO i = 2, last_number
+       
+       ! if this number is prime
+       ! eliminate all multiples
+       
+       IF (numbers(i) /= 0) THEN
+          numbers(2*i : last_number : i) = 0
+       ENDIF
+    ENDDO
+    
+    !  Count the primes.
+    number_of_primes = COUNT (numbers /= 0)
+    
+    !  Gather them into the front of the array.
+    numbers(1:number_of_primes) = PACK(numbers, numbers /= 0)
+    
+    !  Sample output:
+    ! There are   25 prime numbers less than   100
+    !     2      3      5      7     11
+    !    13     17     19     23     29
+    !    31     37     41     43     47
+    !    53     59     61     67     71
+    !    73     79     83     89     97
+    
+  END SUBROUTINE prime_sieve
+
+  !********************************************************!
+  
+  ! Return a list of the prime factors for 
+  ! a natural number.
+  
+  SUBROUTINE trial_division(nn, numfactors, &
+       prime_factors )
+    
+    IMPLICIT NONE
+    
+    integer, intent(in)        :: nn
+    integer, intent(inout)     :: numfactors
+    integer, intent(out)       :: prime_factors(:)
+    
+    integer                    :: sqrtn, n, p
+    integer, allocatable       :: prime_list(:)
+    integer                    :: numprimes
+    integer                    :: ip
+    
+    !------------------------------------------------!
+    
+    ! First make sure you are not dealing with one.
+    IF (nn .LT. 2) return
+    
+    ! Get list of primes
+    n = nn
+    sqrtn = INT(SQRT(REAL(n,dp)))
+    
+    ALLOCATE(prime_list(1:sqrtn))
+    
+    
+    CALL prime_sieve(sqrtn, numprimes, &
+         prime_list )
+    
+    numfactors    = 0
+    prime_factors = 0
+    
+    DO ip = 1, numprimes
+       
+       p = prime_list(ip)
+       
+       IF( p*p .GT. n) EXIT
+       
+       DO
+          
+          IF( MOD(n,p) .EQ. 0) THEN
+             numfactors = numfactors + 1
+             prime_factors(numfactors) = p
+             n = n / p
+          ELSE
+             EXIT
+          ENDIF
+       ENDDO
+       
+    ENDDO
+    
+    ! Check if the number from last division
+    ! is a prime number
+    IF ( n .GT. 1) THEN
+       numfactors = numfactors + 1
+       prime_factors(numfactors) = n
+    ENDIF
+
+  END SUBROUTINE trial_division
+  
+  !********************************************************!
+  
+  SUBROUTINE reshape_numptsperproc(numxpts, numprocs, &
+       numprocsio, numxptsperproc, numypts, numyptsperproc)
+    
+    IMPLICIT NONE
+    
+    INTEGER, INTENT(IN)              :: numxpts
+    INTEGER, INTENT(IN)              :: numprocs
+    INTEGER, INTENT(INOUT)           :: numprocsio
+    INTEGER, INTENT(INOUT)           :: numxptsperproc
+    INTEGER, INTENT(IN), OPTIONAL    :: numypts
+    INTEGER, INTENT(INOUT), OPTIONAL :: numyptsperproc
+    
+    INTEGER                          :: numfactx
+    INTEGER                          :: numfacty
+    INTEGER, ALLOCATABLE             :: factorsx(:)
+    INTEGER, ALLOCATABLE             :: factorsy(:)
+    INTEGER                          :: aux, ix, iy
+    
+    !-------------------------------------------------!
+    
+    ! First, allocate arrays for prime factors of x
+    ALLOCATE(factorsx(1:numxpts))
+    
+    ! Find out the prime factors that decompose both x
+    CALL trial_division(numxpts, numfactx, factorsx)
+
+    ix = numfactx + 1
+    numxptsperproc = numxpts
+
+    ! We repeat the same if we have a second dimension
+    IF(PRESENT(numypts)) THEN
+       ALLOCATE(factorsy(1:numypts))
+       
+       CALL trial_division(numypts, numfacty, factorsy)
+       iy = numfacty + 1
+       numyptsperproc = numypts
+       
+    ENDIF
+    
+    aux = 1
+    DO
+       ix = ix - 1
+       iy = ix - 1
+       
+       aux = aux * factorsx(ix)
+       IF(aux.GT.numprocs) EXIT
+       
+       numprocsio = aux
+       numxptsperproc = numxptsperproc / factorsx(ix)
+       
+       IF(PRESENT(numypts)) THEN
+          aux = aux * factorsy(iy)
+          IF(aux.GT.numprocs) EXIT
+          
+          numprocsio = aux
+          numyptsperproc = numyptsperproc / factorsy(iy)
+       ENDIF
+       
+    ENDDO
+
+    ! Deallocate 
+    DEALLOCATE(factorsx)
+    IF(PRESENT(numypts)) DEALLOCATE(factorsy)
+    
+  END SUBROUTINE reshape_numptsperproc
   
   !********************************************************!
   !********************************************************!
