@@ -1020,6 +1020,7 @@ CONTAINS
        
     ENDIF
     
+    numprocsio = 1
     aux = 1
     DO
        ix = ix - 1
