@@ -417,14 +417,14 @@ CONTAINS
     
     ! Deallocate fd coeffs
     CALL delete_fd_coeffs()
-    
+
     IF(PRESENT(mpi_rank)) THEN
        IF(i_am_surface(mpi_rank) .EQ. 1) THEN  
           DEALLOCATE(spherical_wave2D_local,spherical_wave2D)
           DEALLOCATE(spherical_wave2D_dr,spherical_wave2D_dtheta)
+          IF(surfacerank .EQ. 0) &
+               DEALLOCATE(spherical_wave2D_deriv)
        ENDIF
-       IF(surfacerank .EQ. 0) &
-            DEALLOCATE(spherical_wave2D_deriv)
        
     ELSE
        DEALLOCATE(spherical_wave2D,spherical_wave2D_deriv)
@@ -450,9 +450,9 @@ CONTAINS
           DEALLOCATE(spherical_wave3D_dr)
           DEALLOCATE(spherical_wave3D_dtheta)
           DEALLOCATE(spherical_wave3D_dphi)
+          IF(surfacerank .EQ. 0) &
+               DEALLOCATE(spherical_wave3D_deriv)
        ENDIF
-       IF(surfacerank .EQ. 0) &
-            DEALLOCATE(spherical_wave3D_deriv)
        
     ELSE
        DEALLOCATE(spherical_wave3D,spherical_wave3D_deriv)

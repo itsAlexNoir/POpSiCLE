@@ -114,6 +114,8 @@ CONTAINS
     REAL(dp), ALLOCATABLE          :: complex_wavederiv(:)
     
     !-------------------------------------------------!
+
+    wave_rank = 2
     
     IF(PRESENT(comm)) THEN
        numtotalpts = numthetaptsperproc * 2
@@ -325,12 +327,12 @@ CONTAINS
        wave_global_dims = (/numthetapts, 2/)
        IF(PRESENT(comm)) THEN
           wave_dims = (/numthetaptsperproc, 2/)
+          cont = wave_dims
+          offset = (/ numthetaptsperproc * rank, 0 /)
        ELSE
           wave_dims = (/numthetapts, 2/)
        ENDIF
-
-       cont = wave_dims
-       offset = (/ numthetaptsperproc * rank, 0 /)
+       
        
     ELSEIF( wave_rank .EQ. 3) THEN
        
@@ -338,13 +340,13 @@ CONTAINS
        IF(PRESENT(comm)) THEN
           wave_dims = (/numthetaptsperproc, &
                numphiptsperproc, 2/)
+          cont = wave_dims
+          offset = (/ numthetaptsperproc * rank, &
+               numphiptsperproc * rank, 0 /)
        ELSE
           wave_dims = (/numthetapts, numphipts, 2/)
        ENDIF
        
-       cont = wave_dims
-       offset = (/ numthetaptsperproc * rank, &
-            numphiptsperproc * rank, 0 /)
        
     ELSE
        WRITE(*,*) 'No dimension implemented to write HFD5 files.'
