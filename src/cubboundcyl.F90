@@ -50,7 +50,6 @@ CONTAINS
     
     INTEGER                   :: simgroup
     INTEGER                   :: surfacegroup
-    INTEGER                   :: iogroup    
     INTEGER                   :: ierror
     REAL(dp)                  :: minrho, maxrho
     REAL(dp)                  :: minz, maxz
@@ -249,31 +248,6 @@ CONTAINS
        !Assign ranks for those who are on the surface
        IF(i_am_surface_local(mpi_rank).EQ.1) &
             CALL MPI_COMM_RANK( surfacecomm, surfacerank, ierror)
-
-       ! Set mpi group and comm for io
-       ! Also, the number of points per proc
-       CALL reshape_numptsperproc( numthetapts, numsurfaceprocs, &
-            numioprocs, numthetaptsperproc )
-
-       ALLOCATE(io_members(0:numioprocs-1))
-       ALLOCATE(i_am_io(0:mpi_size-1))
-       
-       io_members    = surface_members(0:numioprocs-1)
-       i_am_io       = 0
-       
-       DO ii = 0, numioprocs - 1
-          i_am_io(surface_members(ii)) = 1
-       ENDDO
-       
-       CALL MPI_GROUP_INCL(simgroup, numioprocs, io_members, &
-            iogroup, ierror)
-       ! The i/o comm
-       CALL MPI_COMM_CREATE(comm, iogroup, iocomm, ierror)
-       
-       !Assign ranks for those who are on I/O
-       IF(i_am_io(mpi_rank).EQ.1) &
-            CALL MPI_COMM_RANK( iocomm, iorank, ierror)
-       
        
     ENDIF
 #endif
@@ -297,10 +271,6 @@ CONTAINS
                numthetapts
           WRITE(*,'(A,I3)')    ' Number of processors on the surface:          ',&
                numsurfaceprocs
-          WRITE(*,'(A,I3)')    ' Number of I/O processors                      ',&
-               numioprocs
-          WRITE(*,'(A,I3)')    ' Number of theta points per processors:        ',&
-               numthetaptsperproc
           WRITE(*,*)
           WRITE(*,*)
        ENDIF
