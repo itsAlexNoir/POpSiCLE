@@ -38,14 +38,12 @@ MODULE surface
   !-------------------------------------------!
   
   COMPLEX(dp), ALLOCATABLE  :: spherical_wave2D_local(:, :)
-  COMPLEX(dp), ALLOCATABLE  :: spherical_wave2D_global(:, :)
   COMPLEX(dp), ALLOCATABLE  :: spherical_wave2D(:, :)
   COMPLEX(dp), ALLOCATABLE  :: spherical_wave2D_dr(:, :)
   COMPLEX(dp), ALLOCATABLE  :: spherical_wave2D_dtheta(:, :)
   COMPLEX(dp), ALLOCATABLE  :: spherical_wave2D_deriv(:)
   
   COMPLEX(dp), ALLOCATABLE  :: spherical_wave3D_local(:, :, :)
-  COMPLEX(dp), ALLOCATABLE  :: spherical_wave3D_global(:, :, :)
   COMPLEX(dp), ALLOCATABLE  :: spherical_wave3D(:, :, :)
   COMPLEX(dp), ALLOCATABLE  :: spherical_wave3D_dr(:, :, :)
   COMPLEX(dp), ALLOCATABLE  :: spherical_wave3D_dtheta(:, :, :)
@@ -64,7 +62,7 @@ CONTAINS
   
   SUBROUTINE initialize_cylindrical_surface(rho_ax, z_ax, dims, &
        Rboundary, radius_tolerance, fd_rule, dr, lmax, &
-       filename, mpi_rank, mpi_size, comm)
+       filename, itime, mpi_rank, mpi_size, comm)
     
     IMPLICIT NONE
     
@@ -76,6 +74,7 @@ CONTAINS
     REAL(dp), INTENT(IN)            :: dr
     INTEGER, INTENT(IN)             :: lmax
     CHARACTER(LEN=*), INTENT(IN)    :: filename
+    INTEGER, INTENT(IN)             :: itime
     INTEGER, INTENT(IN), OPTIONAL   :: mpi_rank, mpi_size
     INTEGER, INTENT(IN), OPTIONAL   :: comm
     
@@ -99,18 +98,18 @@ CONTAINS
        
        IF(i_am_surface(mpi_rank).EQ.1) THEN
           ALLOCATE(spherical_wave2D_local(1:numrpts,1:numthetapts))
-          ALLOCATE(spherical_wave2D_global(1:numrpts,1:numthetapts))
+          ALLOCATE(spherical_wave2D(1:numrpts,1:numthetapts))
           ALLOCATE(spherical_wave2D_dr(1:numrpts,1:numthetapts))
           ALLOCATE(spherical_wave2D_dtheta(1:numrpts,1:numthetapts))
 
           spherical_wave2D_local  = ZERO
-          spherical_wave2D_global = ZERO
+          spherical_wave2D        = ZERO
           
-          IF(i_am_io(mpi_rank) .EQ. 1) THEN
-             ALLOCATE(spherical_wave2D(1:numrpts,1:numthetaptsperproc))
-             ALLOCATE(spherical_wave2D_deriv(1:numthetaptsperproc))
+          IF(surfacerank .EQ. 0) THEN
+             ALLOCATE(spherical_wave2D_deriv(1:numthetapts))
              
-             CALL create_surface_file(filename, iocomm)
+             IF(itime .EQ. 0) &
+                  CALL create_surface_file(filename)
           ENDIF
           
        ENDIF
@@ -130,7 +129,8 @@ CONTAINS
        ALLOCATE(spherical_wave2D_dtheta(1:numrpts,1:numthetapts))
        ALLOCATE(spherical_wave2D_deriv(1:numthetapts))
        
-       CALL create_surface_file(filename)
+       IF(itime .EQ. 0) &
+            CALL create_surface_file(filename)
     ENDIF
     
     spherical_wave2D        = ZERO
@@ -145,8 +145,8 @@ CONTAINS
   !****************************************************************!
   
   SUBROUTINE initialize_cartesian_surface(x_ax, y_ax, z_ax, &
-       dims, Rboundary, radius_tolerance, fd_rule, dr, lmax, filename, &
-       mpi_rank, mpi_size, comm )
+       dims, Rboundary, radius_tolerance, fd_rule, dr, lmax, &
+       filename, itime, mpi_rank, mpi_size, comm )
     
     IMPLICIT NONE
     
@@ -158,6 +158,7 @@ CONTAINS
     REAL(dp), INTENT(IN)           :: dr
     INTEGER, INTENT(IN)            :: lmax
     CHARACTER(LEN=*), INTENT(IN)   :: filename
+    INTEGER, INTENT(IN)            :: itime
     INTEGER, INTENT(IN), OPTIONAL  :: mpi_rank, mpi_size
     INTEGER, INTENT(IN), OPTIONAL  :: comm
        
@@ -182,21 +183,20 @@ CONTAINS
               
        IF(i_am_surface(mpi_rank) .EQ. 1) THEN
           ALLOCATE(spherical_wave3D_local(1:numrpts,1:numthetapts,1:numphipts))
-          ALLOCATE(spherical_wave3D_global(1:numrpts,1:numthetapts,1:numphipts))
+          ALLOCATE(spherical_wave3D(1:numrpts,1:numthetapts,1:numphipts))
           ALLOCATE(spherical_wave3D_dr(1:numrpts,1:numthetapts,1:numphipts))
           ALLOCATE(spherical_wave3D_dtheta(1:numrpts,1:numthetapts,1:numphipts))
           ALLOCATE(spherical_wave3D_dphi(1:numrpts,1:numthetapts,1:numphipts))
           
           spherical_wave3D_local  = ZERO
-          spherical_wave3D_global = ZERO
+          spherical_wave3D        = ZERO
           
-          IF(i_am_io(mpi_rank) .EQ. 1) THEN
-             ALLOCATE(spherical_wave3D(1:numrpts,1:numthetaptsperproc,&
-                  1:numphiptsperproc))
-             ALLOCATE(spherical_wave3D_deriv(1:numthetaptsperproc,&
-                  1:numphiptsperproc))
+          IF(surfacerank .EQ. 0) THEN
+             ALLOCATE(spherical_wave3D_deriv(1:numthetapts,&
+                  1:numphipts))
              
-             CALL create_surface_file(filename, iocomm)
+             IF(itime .EQ. 0) &
+                  CALL create_surface_file(filename)
           ENDIF
           
        ENDIF
@@ -217,8 +217,8 @@ CONTAINS
        ALLOCATE(spherical_wave3D_dphi(1:numrpts,1:numthetapts,1:numphipts))
        ALLOCATE(spherical_wave3D_deriv(1:numthetapts,1:numphipts))
        
-       
-       CALL create_surface_file(filename)
+       IF(itime .EQ. 0) &
+            CALL create_surface_file(filename)
     ENDIF
     
     spherical_wave3D        = ZERO
@@ -234,13 +234,14 @@ CONTAINS
   
   !**********************************************************************!
 
-  SUBROUTINE get_cylindrical_surface(filename, wavefunc, &
+  SUBROUTINE get_cylindrical_surface(filename, itime, wavefunc, &
        rho_ax, z_ax, dims, fd_rule, time, efield, afield, &
        lmax, mpi_rank, mpi_size)
     
     IMPLICIT NONE
     
     CHARACTER(LEN=*), INTENT(IN)  :: filename
+    INTEGER, INTENT(IN)           :: itime
     COMPLEX(dp), INTENT(IN)       :: wavefunc(:, :)
     REAL(dp), INTENT(IN)          :: rho_ax(:), z_ax(:)
     INTEGER, INTENT(IN)           :: dims(:)
@@ -251,7 +252,7 @@ CONTAINS
     INTEGER, INTENT(IN), OPTIONAL :: mpi_rank, mpi_size
     
     INTEGER                      :: numtotalpts
-    INTEGER                      :: middle_pt, offset
+    INTEGER                      :: middle_pt
     INTEGER                      :: ir, itheta, ierror
     
     !----------------------------------------------------------!
@@ -269,32 +270,26 @@ CONTAINS
           
           ! Communicate the spherical wavefunction
           numtotalpts = numrpts * numthetapts
-          spherical_wave2D_global = ZERO
+          spherical_wave2D        = ZERO
+          
 #if _COM_MPI
-          CALL MPI_ALLREDUCE(spherical_wave2D_local, spherical_wave2D_global, &
+          CALL MPI_ALLREDUCE(spherical_wave2D_local, spherical_wave2D, &
                numtotalpts, MPI_DOUBLE_COMPLEX, MPI_SUM, surfacecomm, ierror)
 #endif
           
-          IF(i_am_io(mpi_rank).EQ.1) THEN
+          IF(surfacerank.EQ.0) THEN
              
              middle_pt = fd_rule + 1    
-             offset = numthetaptsperproc * iorank       
-             
-             DO itheta = 1, numthetaptsperproc
-                DO ir = 1, numrpts
-                   spherical_wave2D(ir,itheta) = &
-                        spherical_wave2D_global(ir,offset+itheta)
-                ENDDO
-             ENDDO
              
              CALL make_wave_boundary_derivative(spherical_wave2D,&
                   spherical_wave2D_deriv,fd_rule,deltar,&
-                  numrpts,numthetaptsperproc)
+                  numrpts,numthetapts)
              
              ! Write boundary points to a HDF5 file
-             CALL write_surface_file(filename, spherical_wave2D(middle_pt,:), &
-                  spherical_wave2D_deriv, time, efield, afield, &
-                  iorank, iocomm )
+             CALL write_surface_file(filename, itime, &
+                  spherical_wave2D(middle_pt,:), &
+                  spherical_wave2D_deriv, time, efield, afield  )
+
           ENDIF
        ENDIF
        
@@ -315,7 +310,8 @@ CONTAINS
             numrpts,numthetapts)
        
        ! Write boundary points to a HDF5 file
-       CALL write_surface_file(filename, spherical_wave2D(middle_pt,:), &
+       CALL write_surface_file(filename, itime, &
+            spherical_wave2D(middle_pt,:), &
             spherical_wave2D_deriv, time, efield, afield )
     ENDIF
     
@@ -324,13 +320,14 @@ CONTAINS
   !**********************************************************************!
   !**********************************************************************!
   
-  SUBROUTINE get_cartesian_surface(filename, wavefunc, &
+  SUBROUTINE get_cartesian_surface(filename, itime, wavefunc, &
        x_ax, y_ax, z_ax, dims, fd_rule, time, efield, afield, &
        lmax, mpi_rank, mpi_size)
     
     IMPLICIT NONE
     
     CHARACTER(LEN=*), INTENT(IN) :: filename
+    INTEGER, INTENT(IN)          :: itime
     COMPLEX(dp), INTENT(IN)      :: wavefunc(:, :, :)
     REAL(dp), INTENT(IN)         :: x_ax(:), y_ax(:), z_ax(:)
     INTEGER, INTENT(IN)          :: dims(:)
@@ -342,7 +339,6 @@ CONTAINS
     
     INTEGER                      :: numtotalpts
     INTEGER                      :: middle_pt
-    INTEGER                      :: thetaoffset, phioffset
     INTEGER                      :: ir, itheta, iphi, ierror
     
     !----------------------------------------------------------!
@@ -362,34 +358,25 @@ CONTAINS
           
           ! Communicate the spherical wavefunction
           numtotalpts = numrpts * numthetapts * numphipts
-          spherical_wave3D_global = ZERO
+          spherical_wave3D = ZERO
+
 #if _COM_MPI
-          CALL MPI_ALLREDUCE(spherical_wave3D_local, spherical_wave3D_global, &
+          CALL MPI_ALLREDUCE(spherical_wave3D_local, spherical_wave3D, &
                numtotalpts, MPI_DOUBLE_COMPLEX, MPI_SUM, surfacecomm, ierror)
 #endif
-          middle_pt = fd_rule + 1
           
-          IF(i_am_io(mpi_rank) .EQ. 1) THEN
-             thetaoffset = numthetaptsperproc * iorank       
-             phioffset   = numphiptsperproc   * iorank       
+          IF(surfacerank .EQ. 0) THEN
              
-             DO iphi = 1, numphiptsperproc
-                DO itheta = 1, numthetaptsperproc
-                   DO ir = 1, numrpts
-                      spherical_wave3D(ir,itheta, iphi) = &
-                           spherical_wave3D_global(ir,thetaoffset+itheta, phioffset+iphi)
-                   ENDDO
-                ENDDO
-             ENDDO
+             middle_pt = fd_rule + 1
              
              CALL make_wave_boundary_derivative(spherical_wave3D,&
                   spherical_wave3D_deriv,fd_rule,deltar,&
-                  numrpts,numthetaptsperproc,numphiptsperproc)
+                  numrpts,numthetapts,numphipts)
              
              ! Write boundary points to a HDF5 file
-             CALL write_surface_file(filename, spherical_wave3D(middle_pt,:, :), &
-                  spherical_wave3D_deriv, time, efield, afield, &
-                  iorank, iocomm )
+             CALL write_surface_file(filename, itime, spherical_wave3D(middle_pt,:, :), &
+                  spherical_wave3D_deriv, time, efield, afield )
+             
           ENDIF
        ENDIF
        
@@ -412,7 +399,8 @@ CONTAINS
             numrpts,numthetapts,numphipts)
        
        ! Write boundary points to a HDF5 file
-       CALL write_surface_file(filename, spherical_wave3D(middle_pt,:, :), &
+       CALL write_surface_file(filename, itime, &
+            spherical_wave3D(middle_pt,:, :), &
             spherical_wave3D_deriv, time, efield, afield)
     ENDIF
     
@@ -432,11 +420,11 @@ CONTAINS
     
     IF(PRESENT(mpi_rank)) THEN
        IF(i_am_surface(mpi_rank) .EQ. 1) THEN  
-          DEALLOCATE(spherical_wave2D_local,spherical_wave2D_global)
+          DEALLOCATE(spherical_wave2D_local,spherical_wave2D)
           DEALLOCATE(spherical_wave2D_dr,spherical_wave2D_dtheta)
        ENDIF
-       IF(i_am_io(mpi_rank) .EQ. 1) &
-            DEALLOCATE(spherical_wave2D,spherical_wave2D_deriv)
+       IF(surfacerank .EQ. 0) &
+            DEALLOCATE(spherical_wave2D_deriv)
        
     ELSE
        DEALLOCATE(spherical_wave2D,spherical_wave2D_deriv)
@@ -458,13 +446,13 @@ CONTAINS
     
     IF(PRESENT(mpi_rank)) THEN
        IF(i_am_surface(mpi_rank) .EQ. 1) THEN
-          DEALLOCATE(spherical_wave3D_local,spherical_wave3D_global)
+          DEALLOCATE(spherical_wave3D_local,spherical_wave3D)
           DEALLOCATE(spherical_wave3D_dr)
           DEALLOCATE(spherical_wave3D_dtheta)
           DEALLOCATE(spherical_wave3D_dphi)
        ENDIF
-       IF(i_am_io(mpi_rank) .EQ. 1) &
-            DEALLOCATE(spherical_wave3D,spherical_wave3D_deriv)
+       IF(surfacerank .EQ. 0) &
+            DEALLOCATE(spherical_wave3D_deriv)
        
     ELSE
        DEALLOCATE(spherical_wave3D,spherical_wave3D_deriv)
