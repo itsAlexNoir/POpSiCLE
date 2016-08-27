@@ -129,8 +129,8 @@ CONTAINS
     complex_wave = RESHAPE( (/ REAL(wave,dp), &
          AIMAG(wave) /) ,(/ numtotalpts /))
     
-    complex_wavederiv = RESHAPE( (/ REAL(wave,dp), &
-         AIMAG(wave) /) ,(/ numtotalpts /))
+    complex_wavederiv = RESHAPE( (/ REAL(wavederiv,dp), &
+         AIMAG(wavederiv) /) ,(/ numtotalpts /))
     
     IF(PRESENT(comm)) THEN
        CALL write_surface_file_ndim(filename, itime,  &
@@ -185,8 +185,8 @@ CONTAINS
     complex_wave = RESHAPE( (/ REAL(wave,dp), &
          AIMAG(wave) /) ,(/ numtotalpts /))
     
-    complex_wavederiv = RESHAPE( (/ REAL(wave,dp), &
-         AIMAG(wave) /) ,(/ numtotalpts /))
+    complex_wavederiv = RESHAPE( (/ REAL(wavederiv,dp), &
+         AIMAG(wavederiv) /) ,(/ numtotalpts /))
     
     IF(PRESENT(comm)) THEN
        CALL write_surface_file_ndim(filename, itime,  &
