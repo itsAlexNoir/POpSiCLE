@@ -15,7 +15,7 @@
 !------------------------------------------------------------------------------
 MODULE spline_interp
   
-  USE constants
+  USE constants_pop
   USE tools
   
   IMPLICIT NONE

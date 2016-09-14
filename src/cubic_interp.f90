@@ -17,7 +17,7 @@
 !------------------------------------------------------------------------------
 MODULE cubic_interp
   
-  USE constants
+  USE constants_pop
   
   IMPLICIT NONE
   

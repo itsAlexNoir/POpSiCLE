@@ -1,6 +1,6 @@
 MODULE scattboundcyl
   
-  USE constants
+  USE constants_pop
   USE gaussleg
   USE scatt_interp
   USE tools

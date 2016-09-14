@@ -1,7 +1,7 @@
 MODULE io_pop
   
   USE HDF5
-  USE constants
+  USE constants_pop
   USE tools
 #if _COM_MPI
   USE MPI

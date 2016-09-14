@@ -18,7 +18,7 @@
 
 MODULE cubcoords
   
-  USE constants
+  USE constants_pop
   USE tools
   USE cubic_interp
   

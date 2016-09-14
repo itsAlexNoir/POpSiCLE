@@ -15,7 +15,7 @@
 ! 
 !------------------------------------------------------------------------------!
 
-MODULE constants
+MODULE constants_pop
   
   IMPLICIT NONE
   
@@ -90,4 +90,4 @@ MODULE constants
   !> Mass factor for the field term. In atomis units
   REAL(dp), PARAMETER         :: massfacfield        = 1.0D0
   
-END MODULE constants
+END MODULE constants_pop

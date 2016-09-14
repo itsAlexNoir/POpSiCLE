@@ -5,7 +5,7 @@ MODULE fourier
 #endif
   
   USE omp_lib
-  USE constants
+  USE constants_pop
   USE tools
   
   IMPLICIT NONE

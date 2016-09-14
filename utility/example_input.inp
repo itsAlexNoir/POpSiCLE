@@ -1,0 +1,33 @@
+## PES calculator input file
+## Data directory
+.
+## Surface file
+sphfunc.rb50.00.lmax100
+## Scattering amplitude file
+pes_new
+## Number of points per processor: maxkpts, maxthetapts, maxphipts
+100 101 1
+## Number of processors: numprock, numproctheta, numprocphi
+4 1 1
+## Energy grid spacing
+0.005
+## Surface radius
+50.0
+## Maximum angular momentum
+10
+## Number of orbitals
+1
+## Minimum orbital
+1
+## Maximum orbital
+1
+## Transform from length to velocity gauge
+.FALSE.
+## Truncate time integration
+.FALSE.
+## Maximum time integration
+1.0
+## Average amplitude to suppress Rydberg states
+.FALSE.
+## Averaging time
+1.0

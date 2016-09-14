@@ -129,6 +129,7 @@ LIBS	+= -lsz -lz -ldl -lm ${OMPLIBS}
 #####################################################
 
 tools.o: constants.o
+comm_surff.o: constants.o
 bessel.o: constants.o
 gaussleg.o: constants.o
 scatt_interp.o: constants.o ${SHEPPACK_OBJS}
@@ -149,10 +150,8 @@ boundary.o: scattboundcyl.o scattboundcart.o \
 	cubboundcyl.o cubboundcart.o
 ifeq (${FFT_LIB},mkl)
 fourier.o: ${MKL_DFTI_OBJS} constants.o tools.o
-#sht.o: ${MKL_DFTI_OBJS} constants.o gaussleg.o fourier.o
 else ifeq (${FFT_LIB},fftw)
 fourier.o: constants.o tools.o fftw.o
-#sht.lo: constants.o gaussleg.o fourier.o
 endif
 sht.o: constants.o gaussleg.o
 patchwork.o: constants.o tools.o
@@ -165,26 +164,26 @@ corrtools.o: constants.o
 corrsurface.o: constants.o tools.o corrtools.o \
 	boundary.o io_surface.o io_corrsurface.o
 io_corrsurface.o: constants.o boundary.o
-flux.o: constants.o gaussleg.o bessel.o sht.o \
-	tools.o io_surface.o io_pop.o
-observables.o: constants.o sht.o flux.o io_pop.o
+flux.o: constants.o comm_surff.o gaussleg.o bessel.o \
+	sharmonics.o tools.o io_surface.o io_pop.o
+#observables.o: constants.o sharmonics.o flux.o io_pop.o
 samplingpt.o: constants.o gaussleg.o fourier.o \
 	io_surface.o io_pop.o
-popsicle.o : constants.o fourier.o \
+popsicle.o : constants.o fourier.o comm_surff.o \
 	cubic_interp.o spline_interp.o \
 	scattboundcyl.o scattboundcart.o \
 	cubboundcyl.o  cubboundcart.o \
 	scattcoords.o cubcoords.o coords.o \
 	io_pop.o io_subset.o io_surface.o \
 	corrtools.o corrsurface.o io_corrsurface.o \
-	sht.o bessel.o gaussleg.o \
-	patchwork.o surface.o observables.o \
-	samplingpt.o
+	sharmonics.o bessel.o gaussleg.o \
+	patchwork.o surface.o samplingpt.o
 
 
 ########################################################
 
 tools.lo: constants.lo
+comm_surf.lo: constants.lo
 scatt_interp.lo: constants.lo ${SHEPPACK_LO}
 cubic_interp.lo: constants.lo
 spline_interp.lo: constants.lo tools.lo
@@ -208,10 +207,8 @@ io_subset.lo: constants.lo tools.lo patchwork.lo
 io_surface.lo: constants.lo boundary.lo
 ifeq (${FFT_LIB},mkl)
 fourier.lo: ${MKL_DFTI_LO} constants.lo tools.lo
-#sht.lo: ${MKL_DFTI_LO} constants.lo gaussleg.lo fourier.lo
 else ifeq (${FFT_LIB},fftw)
 fourier.lo: constants.lo tools.lo fftw.lo
-#sht.lo: constants.lo gaussleg.lo fftw.lo fourier.lo
 endif
 sht.lo: constants.lo gaussleg.lo
 patchwork.lo: constants.lo tools.lo
@@ -221,20 +218,20 @@ corrtools.lo: constants.lo
 corrsurface.lo: constants.lo tools.lo corrtools.lo \
 	boundary.lo io_surface.lo io_corrsurface.lo
 io_corrsurface.lo: constants.lo boundary.lo
-flux.lo: constants.lo gaussleg.lo bessel.lo sht.lo \
-	tools.lo io_surface.lo io_pop.lo
-observables.lo: constants.lo sht.lo flux.lo io_pop.lo
+flux.lo: constants.lo comm_surff.lo gaussleg.lo bessel.lo \
+	sharmonics.lo tools.lo io_surface.lo io_pop.lo	
+#observables.lo: constants.lo sharmonics.lo flux.lo io_pop.lo
 samplingpt.lo: constants.lo gaussleg.lo fourier.lo \
 	io_surface.lo io_pop.lo
-popsicle.lo : constants.lo fourier.lo \
+popsicle.lo : constants.lo fourier.lo comm_surff.lo \
 	cubic_interp.lo spline_interp.lo \
 	scattboundcyl.lo scattboundcart.lo \
 	cubboundcyl.lo  cubboundcart.lo \
 	scattcoords.lo cubcoords.lo coords.lo \
 	io_pop.lo io_subset.lo io_surface.lo \
 	corrtools.lo corrsurface.lo io_corrsurface.lo \
-	sht.lo bessel.lo gaussleg.lo \
-	patchwork.lo observables.lo samplingpt.lo
+	sharmonics.lo bessel.lo gaussleg.lo \
+	patchwork.lo samplingpt.lo #observables.lo
 
 #################################################################
 ##                                                             ##

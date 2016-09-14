@@ -17,7 +17,7 @@
 
 MODULE scatt_interp
   
-  USE constants
+  USE constants_pop
   USE sheppack
   
   IMPLICIT NONE
