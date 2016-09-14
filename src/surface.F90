@@ -15,7 +15,7 @@
 !------------------------------------------------------------------------------
 MODULE surface
   
-  USE constants
+  USE constants_pop
   USE tools
   USE boundary
   USE io_surface

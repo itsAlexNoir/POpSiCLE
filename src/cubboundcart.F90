@@ -1,6 +1,6 @@
 MODULE cubboundcart
   
-  USE constants
+  USE constants_pop
   USE tools
   USE gaussleg
   USE cubic_interp

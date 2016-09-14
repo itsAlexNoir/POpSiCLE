@@ -15,7 +15,7 @@
 !------------------------------------------------------------------------------
 MODULE observables
   
-  USE constants
+  USE constants_pop
   USE gaussleg
   USE sht
   USE flux

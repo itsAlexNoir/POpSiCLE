@@ -18,7 +18,7 @@
 
 MODULE scattcoords
 
-  USE constants
+  USE constants_pop
   USE scatt_interp
 
   IMPLICIT NONE

@@ -16,7 +16,7 @@
 !------------------------------------------------------------------------------
 MODULE corrsurface
   
-  USE constants
+  USE constants_pop
   USE tools
   USE corrtools
   USE boundary

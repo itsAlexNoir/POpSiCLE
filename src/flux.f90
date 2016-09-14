@@ -15,719 +15,786 @@
 !------------------------------------------------------------------------------
 MODULE flux
   
-  USE constants
+  USE comm_surff
+  USE constants_pop
   USE gaussleg
   !USE bessel
   USE tools
-  USE sht
+  USE sharmonics
   USE io_surface
-  USE omp_lib
   
   IMPLICIT NONE
   
   PRIVATE
   
   ! Public routines
+  
   PUBLIC        :: initialize_tsurff
   PUBLIC        :: get_volkov_phase
   PUBLIC        :: get_flux
   PUBLIC        :: calculate_time_integrand
+  PUBLIC        :: make_kpoints
   
   !-------------------------------------------------------------!
   
   ! Public variables
-  REAL(dp), PUBLIC, ALLOCATABLE :: k_ax(:)
-  REAL(dp), PUBLIC, ALLOCATABLE :: theta_ax(:), costheta_ax(:)
-  REAL(dp), PUBLIC, ALLOCATABLE :: phi_ax(:)
-  REAL(dp), PUBLIC, ALLOCATABLE :: gauss_th_weights(:)
-  REAL(dp), PUBLIC, ALLOCATABLE :: gauss_phi_weights(:)
   
   ! Private variables
-  INTEGER                       :: numkpts
-  REAL(dp)                      :: dt, dk, kmax, kmax_th
-  INTEGER                       :: ntime
-  COMPLEX(dp), ALLOCATABLE      :: psi_sph(:, :), psip_sph(:, :)
-  COMPLEX(dp), ALLOCATABLE      :: psi_sph_v(:, :), psip_sph_v(:, :)
-  COMPLEX(dp), ALLOCATABLE      :: psi_lm(:, :), psip_lm(:, :)
-  REAL(dp)                      :: rb, total_time
-  REAL(dp), ALLOCATABLE         :: jl(:, :), jlp(:, :)
-  REAL(dp), ALLOCATABLE         :: yl(:), ylp(:)
-  REAL(dp), ALLOCATABLE         :: krb_ax(:)
-  REAL(dp), ALLOCATABLE         :: xcoupling(:, :, :, :)
-  REAL(dp), ALLOCATABLE         :: ycoupling(:, :, :, :)
-  REAL(dp), ALLOCATABLE         :: zcoupling(:, :, :, :)
-  INTEGER                       :: lmax_total
-  INTEGER                       :: numpts, numrpts
-  INTEGER                       :: numthetapts, numphipts
-  LOGICAL                       :: gauge_trans_desired
   
-  !-------------------------------------------------------------!
-  !-------------------------------------------------------------!
+  REAL(dp), ALLOCATABLE, PUBLIC    :: probk3D(:, :, :)
+  COMPLEX(dp), ALLOCATABLE, PUBLIC :: bktime(:, :, :)
+  COMPLEX(dp), ALLOCATABLE, PUBLIC :: bktimeold(:, :, :)
+  COMPLEX(dp), ALLOCATABLE, PUBLIC :: bk(:, :, :, :)
+  COMPLEX(dp), ALLOCATABLE, PUBLIC :: bkaverage(:, :, :)
+  
+  COMPLEX(dp), ALLOCATABLE         :: sph_harmonics(:, :, :, :)
+  COMPLEX(dp), ALLOCATABLE         :: sph_harmonicsk(:, :, :, :)
+  
+  COMPLEX(dp), ALLOCATABLE         :: psi_sph(:, :)
+  COMPLEX(dp), ALLOCATABLE         :: psip_sph(:, :)
+  
+  COMPLEX(dp), ALLOCATABLE         :: psi_lm(:, :)
+  COMPLEX(dp), ALLOCATABLE         :: psip_lm(:, :)
+  
+  REAL(dp), ALLOCATABLE	           :: krspts(:)
+  REAL(dp), ALLOCATABLE            :: jl(:, :)
+  REAL(dp), ALLOCATABLE            :: jlp(:, :)
+  REAL(dp), ALLOCATABLE            :: yl(:)
+  REAL(dp), ALLOCATABLE            :: ylp(:)
+  
+  REAL(dp), ALLOCATABLE            :: xcoupling(:, :, :, :)
+  REAL(dp), ALLOCATABLE            :: ycoupling(:, :, :, :)
+  REAL(dp), ALLOCATABLE            :: zcoupling(:, :, :, :)
+  
+  REAL(dp), ALLOCATABLE	           :: efield(:, :)
+  REAL(dp), ALLOCATABLE	           :: afield(:, :)
+  REAL(dp), ALLOCATABLE	           :: quiver(:, :)
+  REAL(dp), ALLOCATABLE	           :: asqintegral(:)
+  
+  LOGICAL, PUBLIC                  :: timeaverageforrydberg
+  REAL(dp), PUBLIC                 :: timetoaverageover
+  
   
 CONTAINS
   
-  SUBROUTINE initialize_tsurff(filename, radb, lmax_desired, &
-       ddk, kmax_input, maxkpts, maxthetapts, maxphipts, &
-       lmax_total, gauge_trans_on )
+  
+  SUBROUTINE initialize_tsurff( filename )
     
     IMPLICIT NONE
     
-    CHARACTER(LEN=*), INTENT(IN)     :: filename
-    INTEGER, INTENT(IN)              :: lmax_desired
-    REAL(dp), INTENT(IN)             :: radb
-    REAL(dp), INTENT(IN)             :: ddk
-    REAL(dp), INTENT(IN)             :: kmax_input
-    INTEGER, INTENT(OUT)             :: maxkpts
-    INTEGER, INTENT(OUT)             :: maxthetapts
-    INTEGER, INTENT(OUT)             :: maxphipts
-    INTEGER, INTENT(OUT)             :: lmax_total
-    LOGICAL, INTENT(IN), OPTIONAL    :: gauge_trans_on
-
-    COMPLEX(dp)                      :: suma
-    COMPLEX(dp)                      :: sumb    
-    REAL(dp)                         :: dphi 
-    INTEGER                          :: lmax
-    INTEGER                          :: iphi, ik
-    INTEGER                          :: il, im, ill, imm
-    INTEGER                          :: jtheta, jphi
-    INTEGER                          :: ifail
+    !------------------------------------------------------------------------!
     
-    !-------------------------------------------------!
+    CHARACTER(LEN = *), INTENT(IN)   :: filename
 
+    INTEGER                          :: ik, itheta, iphi
+    INTEGER                          :: il, im, ill, imm
+    INTEGER                          :: jmaxorder, ifail
+    INTEGER                          :: itime
+    REAL(dp)                         :: t1, a1, a2, a3
+    
+    !------------------------------------------------------------------------!
+    
     ! Find out the number of time steps in the file
-    CALL get_surface_dims(filename, ntime, dt, &
-         numthetapts, numphipts, lmax_total)
-
-    maxthetapts = numthetapts
-    maxphipts = numphipts
+    CALL get_surface_dims(filename, tmesh%numtimes, tmesh%deltat, &
+         rmesh%numthetapts, rmesh%numphipts, rmesh%lmax)
+    
+    ALLOCATE(tmesh%timepts(1:tmesh%numtimes))
+    ALLOCATE(efield(1:3, tmesh%numtimes))
+    ALLOCATE(afield(1:3, tmesh%numtimes))
+        
+    IF (.NOT. tmesh%truncate_time_integration) THEN
+       
+       tmesh%maxtime_integrate = tmesh%numtimes
+       
+    ELSE
+       
+       IF (tmesh%maxtime_integrate.GT.tmesh%numtimes) THEN
+          
+          tmesh%maxtime_integrate = tmesh%numtimes
+          
+       ENDIF
+       
+    ENDIF
+    
+    IF (commsurff%iprocessor.EQ.0) THEN
+       
+       WRITE(*, *)					                       &
+            '--t-SURFF Surface File Information------------------------------'
+       
+       WRITE(*, *) 
+       
+       WRITE(*,'(A46, I9)')                                                  &
+	    ' Number of time steps in the file:           ', tmesh%numtimes
+       WRITE(*,'(A46, F9.3)')                                                &
+	    ' Deltat:                                     ', tmesh%deltat 
+       WRITE(*,'(A46, I9)')                                                  &
+	    ' Number of theta points:                     ', rmesh%numthetapts
+       WRITE(*,'(A46, I9)')                                                  &
+	    ' Number of phi points:                       ', rmesh%numphipts
+       WRITE(*, *) 
+       
+       WRITE(*, *)					                       &
+            '----------------------------------------------------------------'
+       
+       WRITE(*, *) 
+       
+    ENDIF
     
     ! Create momentum axis
-    kmax_th = twopi / dt
-    dk = ddk
     
-    ! If this option is on, we will transform
-    ! from length to velocity gauge the wavefunction
-    IF(gauge_trans_on) THEN
-       gauge_trans_desired = .TRUE.
-    ELSE
-       gauge_trans_desired = .FALSE.
+    kmesh%emax_theoretical = 0.5_dp * twopi * twopi / (tmesh%deltat *        &
+         tmesh%deltat)
+    
+    IF (kmesh%emax.GT.kmesh%emax_theoretical) THEN
+       
+       CALL tsurff_stop( 'Maximum momentum desired too large.' )
+       
     ENDIF
     
-    kmax = kmax_input
-    if(kmax.GT.kmax_th) THEN
-       WRITE(*,*) 'Kmax desired large than the theoretical.'
-       STOP
-    ENDIF
-    
-    WRITE(*,'(A,F10.6)')  'Theoretical kmax:                ',kmax_th
-    WRITE(*,'(A,F9.6)')  'Desired kmax:                     ',kmax
-    WRITE(*,'(A,F9.6)')  'dk:                               ',dk
-    WRITE(*,'(A,F0.6)')  'Time in the file (a.u.):          ', ntime * dt
-    WRITE(*,'(A,F0.6)')  'Time in the file (fs):            ', ntime * dt * autime_fs
-    
-    WRITE(*,*)
-    
-    numkpts = INT( kmax / dk) + 1
-    maxkpts = numkpts
-    
-    ALLOCATE(k_ax(1:numkpts))
-    
-    DO ik = 1, numkpts
-       k_ax(ik) = REAL(ik-1,dp) * dk
-    ENDDO
-    
-    ! Assign  surface radius
-    rb = radb
-    ! Assign angular momenta
-    IF(lmax_total.LT.lmax_desired) THEN
-       WRITE(*,*) 'Maximum angular momenta desired is greater than&
-            & the one on the file. '
-       STOP
-    ELSE
-       lmax = lmax_desired
+    IF (commsurff%iprocessor.EQ.0) THEN
+       
+       WRITE(*, *)					                       &
+            '--t-SURFF Miscellaneous Information-----------------------------'
+       
+       WRITE(*, *)
+       
+       WRITE(*, '(A46, F9.3)')                                               &
+	    ' Theoretical emax:                           ',                   &
+            kmesh%emax_theoretical
+       
+       WRITE(*, '(A46, F9.3)')                                               &
+	    ' Time in the file (a.u.):                    ',                   &
+            tmesh%numtimes * tmesh%deltat
+       WRITE(*, '(A46, F9.3)')                                               &
+	    ' Time in the file (fs):                      ',                   &
+            tmesh%numtimes * tmesh%deltat * autime_fs
+       
+       WRITE(*, '(A46, F9.3)')                                               &
+	    ' Time to propagate (a.u.):                   ',                   &
+            tmesh%maxtime_integrate * tmesh%deltat
+       WRITE(*, '(A46, F9.3)')                                               &
+	    ' Time to propagate (fs):                     ',                   &
+            tmesh%maxtime_integrate * tmesh%deltat * autime_fs
+       
+       WRITE(*, *) 
+       
+       WRITE(*, *)					                       &
+            '----------------------------------------------------------------'
+       
     ENDIF
     
     ! Allocate wavefunction arrays
-    ALLOCATE(psi_sph(1:numthetapts,1:numphipts))
-    ALLOCATE(psip_sph(1:numthetapts,1:numphipts))
     
-    IF(gauge_trans_desired) THEN
-       ALLOCATE(psi_sph_v(1:numthetapts,1:numphipts))
-       ALLOCATE(psip_sph_v(1:numthetapts,1:numphipts))
-    ENDIF
-    
-    ALLOCATE(psi_lm(-lmax:lmax,0:lmax))
-    ALLOCATE(psip_lm(-lmax:lmax,0:lmax))
-    psi_lm  = ZERO
-    psip_lm = ZERO
+    ALLOCATE(psi_sph(1:rmesh%numthetapts, 1:rmesh%numphipts))
+    ALLOCATE(psip_sph(1:rmesh%numthetapts, 1:rmesh%numphipts))
+
+    ALLOCATE(psi_lm(-rmesh%lmax:rmesh%lmax,0:rmesh%lmax))
+    ALLOCATE(psip_lm(-rmesh%lmax:rmesh%lmax,0:rmesh%lmax))
     
     ! Create spherical coordinates
-    ALLOCATE(theta_ax(1:numthetapts),costheta_ax(1:numthetapts))
-    ALLOCATE(gauss_th_weights(1:numthetapts))
-    ALLOCATE(phi_ax(1:numphipts))
-    ALLOCATE(gauss_phi_weights(1:numphipts))
     
-    CALL get_gauss_stuff(-1.0_dp, 1.0_dp, costheta_ax, gauss_th_weights)
-    theta_ax = ACOS(costheta_ax)
+    ALLOCATE(rmesh%thetapts(1:rmesh%numthetapts))
+    ALLOCATE(rmesh%sinthetapts(1:rmesh%numthetapts))
+    ALLOCATE(rmesh%costhetapts(1:rmesh%numthetapts))
+    ALLOCATE(rmesh%wtheta(1:rmesh%numthetapts))
+    ALLOCATE(rmesh%phipts(1:rmesh%numphipts))
+    ALLOCATE(rmesh%sinphipts(1:rmesh%numphipts))
+    ALLOCATE(rmesh%cosphipts(1:rmesh%numphipts))
+    ALLOCATE(rmesh%wphi(1:rmesh%numphipts))
     
-    dphi =  twopi / REAL(numphipts,dp)
-    DO iphi = 1, numphipts
-       phi_ax(iphi) = REAL(iphi-1,dp) * dphi
-       gauss_phi_weights(iphi) = dphi
+    CALL get_gauss_stuff( -1.0_dp, 1.0_dp, rmesh%costhetapts, rmesh%wtheta )
+    
+    rmesh%thetapts    = ACOS(rmesh%costhetapts)
+    rmesh%sinthetapts = SIN(rmesh%thetapts)
+    rmesh%deltaphi    = twopi / REAL(rmesh%numphipts, dp)
+    
+    DO iphi = 1, rmesh%numphipts
+       
+       rmesh%phipts(iphi)    = REAL(iphi - 1, dp) * rmesh%deltaphi 
+       rmesh%sinphipts(iphi) = SIN(rmesh%phipts(iphi))
+       rmesh%cosphipts(iphi) = COS(rmesh%phipts(iphi))
+       rmesh%wphi(iphi)      = rmesh%deltaphi
+       
     ENDDO
     
     ! Create spherical harmonics
-    CALL initialize_legendre_stuff(lmax, costheta_ax)
-    CALL initialize_spherical_harmonics(lmax,costheta_ax,phi_ax)
+    ALLOCATE(sph_harmonics(1:rmesh%numphipts, 1:rmesh%numthetapts,          &
+         -rmesh%lmax:rmesh%lmax,0:rmesh%lmax))
+    ALLOCATE(sph_harmonicsk(1:kmesh%numphipts, 1:kmesh%numthetapts,          &
+         -kmesh%lmax:kmesh%lmax,0:kmesh%lmax))
     
-    IF(numphipts.EQ.1) THEN
-       ALLOCATE(xcoupling(0:0,0:lmax,0:0,0:lmax))
-       ALLOCATE(ycoupling(0:0,0:lmax,0:0,0:lmax))
-       ALLOCATE(zcoupling(0:0,0:lmax,0:0,0:lmax))
-       xcoupling = 0.0_dp
-       ycoupling = 0.0_dp
-       zcoupling = 0.0_dp     
-       
-       ! Calculate matrix elements for laser-matter couling in
-       ! z direction laser polarisation.
-       
-       DO ill = 0, lmax
-          DO il = 0, lmax
-             
-             IF (ABS(il - ill).EQ.1) THEN
-                ! Calculate matrix elements between spherical harmonics
-                suma = ZERO
-                DO jphi = 1, numphipts
-                   DO jtheta = 1, numthetapts
-                      suma = suma + &
-                           CONJG(sph_harmonics(jphi,jtheta,0,il)) * &
-                           sph_harmonics(jphi,jtheta,0,ill) * &
-                           costheta_ax(jtheta) * &
-                           gauss_th_weights(jtheta) * &
-                           gauss_phi_weights(jphi)
-                   ENDDO
-                ENDDO
-                zcoupling(0,il,0,ill) = suma
-             ENDIF
-             
-          ENDDO
-       ENDDO
-       
-    ELSE
-       ALLOCATE(xcoupling(-lmax:lmax,0:lmax,-lmax:lmax,0:lmax))
-       ALLOCATE(ycoupling(-lmax:lmax,0:lmax,-lmax:lmax,0:lmax))
-       ALLOCATE(zcoupling(-lmax:lmax,0:lmax,-lmax:lmax,0:lmax))
-       xcoupling = 0.0_dp
-       ycoupling = 0.0_dp
-       zcoupling = 0.0_dp     
-       
-       ! Calculate matrix elements for laser-matter couling in
-       ! x and y direction laser polarisation.
-       
-       DO ill = 0, lmax
-          DO imm = -ill, ill
-             
-             DO il = 0, lmax
-                DO im = -il, il
+    CALL create_spherical_harmonics( sph_harmonics, kmesh%lmax, &
+         rmesh%costhetapts, rmesh%phipts )
+    CALL create_spherical_harmonics( sph_harmonicsk, kmesh%lmax, &
+         kmesh%costhetapts, kmesh%phipts )
 
-                   IF (ABS(il - ill).EQ.1 .AND. ABS(im - imm).EQ.1) THEN
-                      
-                      ! Calculate matrix elements between spherical harmonics
-                      suma = ZERO
-                      sumb = ZERO
-                      
-                      DO jphi = 1, numphipts
-                         DO jtheta = 1, numthetapts
-                            
-                            suma = suma + &
-                                 CONJG(sph_harmonics(jphi,jtheta,im,il)) * &
-                                 sph_harmonics(jphi,jtheta,imm,ill) * &
-                                 SIN(theta_ax(jtheta)) * COS(phi_ax(jphi)) * &
-                                 gauss_th_weights(jtheta) * &
-                                 gauss_phi_weights(jphi)
+    ALLOCATE(xcoupling(-kmesh%lmax:kmesh%lmax,0:kmesh%lmax,&
+         -kmesh%lmax:kmesh%lmax,0:kmesh%lmax))
+    ALLOCATE(ycoupling(-kmesh%lmax:kmesh%lmax,0:kmesh%lmax,&
+         -kmesh%lmax:kmesh%lmax,0:kmesh%lmax))
+    ALLOCATE(zcoupling(-kmesh%lmax:kmesh%lmax,0:kmesh%lmax,&
+         -kmesh%lmax:kmesh%lmax,0:kmesh%lmax))
 
-                            sumb = sumb + &
-                                 CONJG(sph_harmonics(jphi,jtheta,im,il)) * &
-                                 sph_harmonics(jphi,jtheta,imm,ill) * &
-                                 SIN(theta_ax(jtheta)) * SIN(phi_ax(jphi)) * &
-                                 gauss_th_weights(jtheta) * &
-                                 gauss_phi_weights(jphi)
-                            
-                         ENDDO
-                      ENDDO
-                      
-                      xcoupling(im,il,imm,ill) = suma
-                      ycoupling(im,il,imm,ill) = AIMAG(sumb)
-                      
-                   ENDIF
-                   
-                ENDDO
-             ENDDO
-          ENDDO
-       ENDDO
-       
-       ! Calculate matrix elements for laser-matter couling in
-       ! z direction laser polarisation.
-       
-       DO ill = 0, lmax
-          DO imm = -ill, ill
-             DO il = 0, lmax
-                DO im = -il, il
-                   
-                   IF (ABS(il - ill).EQ.1 .AND. ABS(im - imm).EQ.0) THEN
-                      ! Calculate matrix elements between spherical harmonics
-                      
-                      suma = ZERO
-                      
-                      DO jphi = 1, numphipts
-                         DO jtheta = 1, numthetapts
-                            
-                            suma = suma + &
-                                 CONJG(sph_harmonics(jphi,jtheta,im,il)) * &
-                                 sph_harmonics(jphi,jtheta,imm,ill) * &
-                                 costheta_ax(jtheta) * &
-                                 gauss_th_weights(jtheta) * &
-                                 gauss_phi_weights(jphi)
-                            
-                         ENDDO
-                      ENDDO
-                      
-                      zcoupling(im,il,imm,ill) = suma
-                      
-                   ENDIF
-                   
-                ENDDO
-             ENDDO
-          ENDDO
-       ENDDO
-       
-    ENDIF
-
-    ! Initialize spherical Bessel functions
-    ALLOCATE(jl(0:lmax,1:numkpts))
-    ALLOCATE(jlp(0:lmax,1:numkpts))
-    ALLOCATE(yl(0:lmax))
-    ALLOCATE(ylp(0:lmax))
-    ALLOCATE(krb_ax(1:numkpts))
+    CALL create_spherical_harmonics_couplings( xcoupling, ycoupling, zcoupling, &
+         sph_harmonics, kmesh%lmax, rmesh%thetapts, rmesh%phipts, &
+         rmesh%wtheta, rmesh%wphi )
+        
+    ! Initialize Bessel functions
     
-    krb_ax = k_ax * rb
+    ALLOCATE(jl(0:kmesh%lmax, 1:kmesh%maxkpts))
+    ALLOCATE(jlp(0:kmesh%lmax, 1:kmesh%maxkpts))
+    ALLOCATE(yl(0:kmesh%lmax))
+    ALLOCATE(ylp(0:kmesh%lmax))
+    ALLOCATE(krspts(1:kmesh%maxkpts))
+    
+    krspts = kmesh%kpts * rmesh%rsurface
+    
     jl  = 0.0_dp
     jlp = 0.0_dp
     yl  = 0.0_dp
     ylp = 0.0_dp
-    
-    DO ik = 1, numkpts
-       CALL sbesjy(krb_ax(ik),lmax,jl(:,ik),yl,jlp(:,ik),ylp,ifail)
-    ENDDO
-    
-  END SUBROUTINE initialize_tsurff
-
-  !**************************************!
-  
-  SUBROUTINE get_volkov_phase(afield, time, maxtime, phase)
-    
-    IMPLICIT NONE
-    
-    REAL(dp), INTENT(IN)           :: afield(:, :)
-    REAL(dp), INTENT(IN)           :: time(:)
-    REAL(dp), INTENT(IN)           :: maxtime
-    COMPLEX(dp), INTENT(OUT)       :: phase(:, :, :)
-    
-    REAL(dp)                       :: integralAx
-    REAL(dp)                       :: integralAy
-    REAL(dp)                       :: integralAz
-    REAL(dp)                       :: kdota
-    INTEGER                        :: ik, itheta, iphi
-    INTEGER                        :: itime, numtimesteps
-    
-    !-------------------------------------------------!
-    
-    phase = ZERO
-    
-    numtimesteps = MAXLOC(time,DIM=1,MASK=(time.LE.maxtime))
-    
-    integralAx = 0.0_dp
-    integralAy = 0.0_dp
-    integralAz = 0.0_dp
-    
-    DO itime = 1, numtimesteps
-       IF( (itime.EQ.1) .OR. (itime.EQ.numtimesteps)) THEN
-          integralAx = integralAx + &
-               afield(1,itime) * 0.5_dp
-          
-          integralAy = integralAy + &
-               afield(2,itime) * 0.5_dp
-          
-          integralAz = integralAz + &
-               afield(3,itime) * 0.5_dp
-       ELSE
-          integralAx = integralAx + &
-               afield(1,itime)
-          
-          integralAy = integralAy + &
-               afield(2,itime)
-          
-          integralAz = integralAz + &
-               afield(3,itime)
-       ENDIF
+      
+    DO ik = 1, kmesh%maxkpts
+       
+       CALL sbesjy( krspts(ik), kmesh%lmax, jl(0:kmesh%lmax, ik), yl,        &
+            jlp(0:kmesh%lmax, ik), ylp, ifail )
        
     ENDDO
     
-    integralAx = integralAx * dt
-    integralAy = integralAy * dt
-    integralAz = integralAz * dt
+    ! Allocate momentum amplitude array
     
-    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi)
-    
-    !$OMP DO COLLAPSE(3)    
-    DO ik = 1, numkpts
-       DO iphi = 1, numphipts
-          DO itheta = 1, numthetapts
-             
-             kdota = k_ax(ik) * SIN(theta_ax(itheta)) * COS(phi_ax(iphi)) *  &
-                  integralAx + &
-                  k_ax(ik) * SIN(theta_ax(itheta)) * SIN(phi_ax(iphi)) * &
-                  integralAy + &
-                  k_ax(ik) * costheta_ax(itheta) * integralAz
-             
-             phase(ik,itheta,iphi) = EXP(ZIMAGONE *                          &
-                  (0.5_dp * k_ax(ik) * k_ax(ik) * maxtime + kdota ) )
-             
-          ENDDO
-       ENDDO
-    ENDDO
-    !$OMP END DO NOWAIT
-    !$OMP END PARALLEL
-      
-  END SUBROUTINE get_volkov_phase
-  
-  !****************************************************************!
-
-  SUBROUTINE get_flux(filename, lmax, bk)
-
-    IMPLICIT NONE
-    
-    CHARACTER(LEN=*), INTENT(IN) :: filename
-    INTEGER, INTENT(IN)          :: lmax
-    COMPLEX(dp), INTENT(OUT)     :: bk(:, :, :)
-
-    REAL(dp)                     :: popsurface
-    REAL(dp), ALLOCATABLE        :: time(:)
-    REAL(dp), ALLOCATABLE        :: efield(:, :)
-    REAL(dp), ALLOCATABLE        :: afield(:, :)
-    COMPLEX(dp), ALLOCATABLE     :: intflux(:, :, :)
-    COMPLEX(dp), ALLOCATABLE     :: volkov_phase(:, :, :)
-    INTEGER                      :: itime, il, im
-    INTEGER                      :: ik, itheta, iphi
-    
-    !----------------------------------------------------!
+    ALLOCATE(bktime(1:kmesh%maxkpts, 1:kmesh%maxthetapts,                    &
+         1:kmesh%maxphipts))
+    ALLOCATE(bktimeold(1:kmesh%maxkpts, 1:kmesh%maxthetapts,                 &
+         1:kmesh%maxphipts))
+    ALLOCATE(bk(1:kmesh%maxkpts, 1:kmesh%maxthetapts, 1:kmesh%maxphipts,     &
+         1:tmesh%numtimes))
+    ALLOCATE(bkaverage(1:kmesh%maxkpts, 1:kmesh%maxthetapts,                 &
+         1:kmesh%maxphipts))
+    ALLOCATE(probk3D(1:kmesh%maxkpts, 1:kmesh%maxthetapts,                   &
+         1:kmesh%maxphipts))
     
     ! Allocate and set to zero
-    ALLOCATE(intflux(1:numkpts,1:numthetapts,1:numphipts))
-    ALLOCATE(volkov_phase(1:numkpts,1:numthetapts,1:numphipts))
-    ALLOCATE(time(ntime))
-    ALLOCATE(efield(3,ntime),afield(3,ntime))
     
-    intflux = ZERO
+    ALLOCATE(quiver(1:3, tmesh%numtimes))
+    ALLOCATE(asqintegral(tmesh%numtimes))
+
+    CALL read_field_surface( filename, tmesh%timepts, efield, afield )
+    
+    CALL make_field_integral_terms(  )
+    
+    
+    
+  END SUBROUTINE initialize_tsurff
+  
+  !-----------------------------------------------------------------------------!
+  !-----------------------------------------------------------------------------!
+  
+  SUBROUTINE make_kpoints( lmax, maxkpts, maxthetapts, maxphipts, deltaenergy )
+    
+    IMPLICIT NONE
+
+    !------------------------------------------------------------------------!
+
+    INTEGER, INTENT(IN)     :: lmax
+    INTEGER, INTENT(IN)     :: maxkpts
+    INTEGER, INTENT(IN)     :: maxthetapts
+    INTEGER, INTENT(IN)     :: maxphipts
+    REAL(dp), INTENT(IN)    :: deltaenergy
+    
+    !------------------------------------------------------------------------!
+    
+    INTEGER                 :: ik, itheta, iphi
+    INTEGER                 :: ithetag
+    REAL(dp), ALLOCATABLE   :: costheta_global(:)
+    REAL(dp), ALLOCATABLE   :: wtheta_global(:)
+    REAL(dp), ALLOCATABLE   :: costheta_gauss(:)
+    REAL(dp), ALLOCATABLE   :: wtheta_gauss(:)
+    
+    !------------------------------------------------------------------------!
+
+    kmesh%lmax         = lmax
+    kmesh%maxkpts      = maxkpts
+    kmesh%maxthetapts  = maxthetapts
+    kmesh%maxphipts    = maxphipts
+    kmesh%deltaenergy  = deltaenergy
+    
+    kmesh%numkpts      = commsurff%numproc1dk * kmesh%maxkpts
+    kmesh%numthetapts  = commsurff%numproc1dt * kmesh%maxthetapts
+    kmesh%numphipts    = commsurff%numproc1dp * kmesh%maxphipts
+    
+    kmesh%emax         = REAL(kmesh%numkpts - 1, dp) * kmesh%deltaenergy
+      
+    ALLOCATE(kmesh%kpts(1:kmesh%maxkpts))
+    ALLOCATE(kmesh%energypts(1:kmesh%maxkpts))
+    ALLOCATE(kmesh%thetapts(1:kmesh%maxthetapts))
+    ALLOCATE(kmesh%sinthetapts(1:kmesh%maxthetapts))
+    ALLOCATE(kmesh%costhetapts(1:kmesh%maxthetapts))
+    ALLOCATE(kmesh%wtheta(1:kmesh%maxthetapts))
+    ALLOCATE(kmesh%phipts(1:kmesh%maxphipts))
+    ALLOCATE(kmesh%sinphipts(1:kmesh%maxphipts))
+    ALLOCATE(kmesh%cosphipts(1:kmesh%maxphipts))
+    
+    DO ik = 1, kmesh%maxkpts 
+       
+       kmesh%energypts(ik) = REAL(kmesh%maxkpts * commsurff%ipk +            &
+            ik, dp) * kmesh%deltaenergy
+       kmesh%kpts(ik)      = SQRT(2.0_dp * kmesh%energypts(ik))
+       
+    ENDDO
+    
+    ! We want to plot the whole range of theta going from 0 to 2pi
+    ! These end points are not included in the gauss quadrature so 
+    ! we add them as additional points but with zero weighting for
+    ! any subsequent integration.
+    
+    ALLOCATE(costheta_global(1:kmesh%numthetapts))
+    ALLOCATE(wtheta_global(1:kmesh%numthetapts))
+    
+    ALLOCATE(costheta_gauss(2:(kmesh%numthetapts - 1)))
+    ALLOCATE(wtheta_gauss(2:(kmesh%numthetapts - 1)))
+    
+    CALL get_gauss_stuff( -1.0_dp, 1.0_dp, costheta_gauss, wtheta_gauss )
+    
+    costheta_global(1) = -1.0_dp
+    wtheta_global(1)   =  0.0_dp
+    
+    DO itheta = 2, kmesh%numthetapts - 1
+       
+       costheta_global(itheta) = costheta_gauss(itheta)
+       wtheta_global(itheta)   = wtheta_gauss(itheta)
+       
+    ENDDO
+    
+    costheta_global(kmesh%numthetapts) = 1.0_dp
+    wtheta_global(kmesh%numthetapts)   = 0.0_dp
+    
+    DO itheta = 1, kmesh%maxthetapts
+       
+       ithetag                   = kmesh%maxthetapts * commsurff%ipt +       &
+            itheta
+       
+       kmesh%costhetapts(itheta) = costheta_global(ithetag)
+       
+       kmesh%wtheta(itheta)      = wtheta_global(ithetag)
+       
+       kmesh%thetapts(itheta)    = ACOS(kmesh%costhetapts(itheta))
+       
+       kmesh%sinthetapts(itheta) = SIN(kmesh%thetapts(itheta))
+       
+    ENDDO
+    
+    DEALLOCATE(costheta_gauss)
+    DEALLOCATE(wtheta_gauss)
+    DEALLOCATE(costheta_global)
+    DEALLOCATE(wtheta_global)
+    
+    kmesh%deltaphi = twopi / REAL(kmesh%numphipts, dp)
+    
+    DO iphi = 1, kmesh%maxphipts 
+       
+       kmesh%phipts(iphi) =                                                  &
+            REAL(kmesh%maxphipts * commsurff%ipp + iphi - 1, dp) *                &
+            kmesh%deltaphi
+       
+       kmesh%sinphipts(iphi) = SIN(kmesh%phipts(iphi))
+       
+       kmesh%cosphipts(iphi) = COS(kmesh%phipts(iphi))
+       
+    ENDDO
+    
+  END SUBROUTINE make_kpoints
+  
+  !------------------------------------------------------------------------!
+  !------------------------------------------------------------------------!
+  
+  SUBROUTINE get_flux( filename, iorbital )
+    
+    IMPLICIT NONE
+    
+    !------------------------------------------------------------------------!
+    
+    CHARACTER(LEN = *), INTENT(IN) :: filename
+    INTEGER, INTENT(IN)	           :: iorbital
+    
+    !------------------------------------------------------------------------!
+    
+    INTEGER	                     :: ik, itheta, iphi, itime
+    INTEGER	                     :: itimeaveragemin
+    REAL(dp)	                     :: tfac, tintfac
+    COMPLEX(dp)	                     :: fluxintegral
+    COMPLEX(dp)	                     :: volkov_phase
+    
+    !------------------------------------------------------------------------!
+    
     bk = ZERO
-    volkov_phase = ZONE
     
-    WRITE(*,*)
-    WRITE(*,*)
-    WRITE(*,*) '------------------------'
-    WRITE(*,*) 'Begin time integral...'
+    itimeaveragemin = tmesh%maxtime_integrate -                              &
+         INT(timetoaverageover / tmesh%deltat)
     
-    ! We begin the time loop!!
-    DO itime = 1, ntime
+    IF (commsurff%iprocessor.EQ.0) THEN
        
-       ! Read wavefunction at Rb from file
-       CALL read_surface(filename, itime - 1, numthetapts, numphipts, &
-            psi_sph, psip_sph, time(itime), efield(:,itime), afield(:,itime) )
+       WRITE(*, *)
        
-       popsurface = 0.0_dp
+       WRITE(*, *)					                       &
+            '--Begin time integral-------------------------------------------'
        
-       DO iphi = 1, numphipts
-          DO itheta = 1, numthetapts 
+       WRITE(*, *)
+       
+       WRITE(*, '(A46, I9)')                                                 &
+	    ' Orbital number:                             ', iorbital
+       WRITE(*, *)
+       
+    ENDIF
+
+    itime = 1
+    
+    CALL read_wave_surface( filename, itime - 1 , psi_sph, psip_sph )
+    
+    IF (commsurff%iprocessor.EQ.0) THEN
+       
+       WRITE(*, '(1X, A8, 1X, I6, 1X, A2, 1X, I6)')                          &
+            'Timestep', itime, 'of', tmesh%maxtime_integrate
+       
+    ENDIF
+    
+    IF (rmesh%gauge_transform) THEN
+       
+       CALL gauge_transform_l2v( itime )
+       
+    ENDIF
+    
+    ! Decompose into spherical harmonics:
+    
+    CALL make_sht( psi_sph, sph_harmonics, kmesh%lmax, &
+         rmesh%wtheta, rmesh%wphi, psi_lm)
+    CALL make_sht( psip_sph, sph_harmonics, kmesh%lmax, &
+         rmesh%wtheta, rmesh%wphi, psip_lm)
+    
+    ! Calculate flux
+    
+    DO iphi = 1, kmesh%maxphipts
+       DO itheta = 1, kmesh%maxthetapts
+          DO ik = 1, kmesh%maxkpts
              
-             popsurface = popsurface +                        &
-                  REAL(CONJG(psi_sph(itheta, iphi)) *         &
-                  psi_sph(itheta, iphi), dp) *                &
-                  gauss_th_weights(itheta) * gauss_phi_weights(iphi)
+             CALL calculate_time_integrand( fluxintegral, ik, itheta,        &
+                  iphi, itime )
+             
+             CALL get_volkov_phase( volkov_phase, ik, itheta, iphi,	       &
+                  itime )
+             
+             bktimeold(ik, itheta, iphi) = fluxintegral * volkov_phase
              
           ENDDO
        ENDDO
+    ENDDO
+    
+    DO itime = 2, tmesh%maxtime_integrate
        
-       WRITE(*,'(A14, I6,A14, F20.16)' ) ' Loop number =', itime,  &
-            ' Popsurface =', popsurface
+       IF (commsurff%iprocessor.EQ.0) THEN
+          
+          WRITE(*, '(1X, A8, 1X, I6, 1X, A2, 1X, I6)')                       &
+	       'Timestep', itime, 'of', tmesh%maxtime_integrate
+          
+       ENDIF
        
-       IF(gauge_trans_desired) THEN
-          CALL gauge_transform_l2v(psi_sph, psi_sph_v, afield, itime)
-          CALL gauge_transform_l2v(psip_sph, psip_sph_v, afield, itime)
-          psi_sph  = psi_sph_v
-          psip_sph = psip_sph_v 
+       ! Read wavefunction at Rb from file
+       CALL read_wave_surface( filename, itime - 1, psi_sph, psip_sph )
+       
+       IF (rmesh%gauge_transform) THEN
+          
+          CALL gauge_transform_l2v( itime )
+          
        ENDIF
        
        ! Decompose into spherical harmonics:
-       ! The wavefunction
-       CALL make_sht(psi_sph, lmax, gauss_th_weights, &
-            gauss_phi_weights, psi_lm)
-       ! His first derivative
-       CALL make_sht(psip_sph, lmax, gauss_th_weights, &
-            gauss_phi_weights, psip_lm)
+       
+       CALL make_sht( psi_sph, sph_harmonics, &
+            kmesh%lmax, rmesh%wtheta, rmesh%wphi, psi_lm)
+       CALL make_sht( psip_sph, sph_harmonics, &
+            kmesh%lmax, rmesh%wtheta, rmesh%wphi, psip_lm)
        
        ! Calculate flux
-       intflux = ZERO
-       CALL calculate_time_integrand(psi_lm, psip_lm, &
-            lmax, afield(:,itime), intflux)
        
-       ! Get the Volkov phase (one per time step)
-       CALL get_volkov_phase(afield, time, time(itime), &
-            volkov_phase )
-              
-       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi)
-       
-       !$OMP DO COLLAPSE(3)       
-       DO iphi = 1, numphipts
-          DO itheta = 1, numthetapts
-             DO ik = 1, numkpts
+       DO iphi = 1, kmesh%maxphipts
+          DO itheta = 1, kmesh%maxthetapts
+             DO ik = 1, kmesh%maxkpts
                 
-                intflux(ik,itheta,iphi) = intflux(ik,itheta,iphi) * &
-                     volkov_phase(ik,itheta,iphi)
-                                
-                IF((itime.EQ.1) .OR. (itime.EQ.ntime)) THEN
-                   bk(ik,itheta,iphi) = bk(ik,itheta,iphi) + &
-                        intflux(ik,itheta,iphi) * 0.5
-                ELSE
-                   bk(ik,itheta,iphi) = bk(ik,itheta,iphi) + &
-                        intflux(ik,itheta,iphi)
+                CALL calculate_time_integrand( fluxintegral, ik, itheta,     &
+                     iphi, itime )
+                
+                CALL get_volkov_phase( volkov_phase, ik, itheta, iphi,       &
+                     itime )
+                
+                bktime(ik, itheta, iphi)    = fluxintegral * volkov_phase
+                
+                bk(ik, itheta, iphi, itime) =                                &
+                     bk(ik, itheta, iphi, itime - 1) +                       &
+                     bktime(ik, itheta, iphi) + bktimeold(ik, itheta, iphi)
+                
+                bktimeold(ik, itheta, iphi) = bktime(ik, itheta, iphi)
+                
+             ENDDO
+          ENDDO
+       ENDDO
+       
+    ENDDO
+    
+    IF (timeaverageforrydberg) THEN
+       
+       bkaverage = ZERO
+       
+       DO itime = itimeaveragemin, tmesh%maxtime_integrate
+          
+          tfac = 2.0_dp
+          
+          IF (itime.EQ.itimeaveragemin .OR.                                  &
+               itime.EQ.tmesh%maxtime_integrate) THEN
+             
+             tfac = 1.0_dp
+             
+          ENDIF
+          
+          DO iphi = 1, kmesh%maxphipts
+             DO itheta = 1, kmesh%maxthetapts
+                DO ik = 1, kmesh%maxkpts
+                   
+                   bkaverage(ik, itheta, iphi) =                             &
+                        bkaverage(ik, itheta, iphi) +                             &
+                        tfac * bk(ik, itheta, iphi, itime)
+                   
+                ENDDO
+             ENDDO
+          ENDDO
+          
+       ENDDO
+       
+       tintfac = 0.25_dp * tmesh%deltat * tmesh%deltat /                     &
+            (tmesh%timepts(tmesh%maxtime_integrate) -                   &
+            tmesh%timepts(itimeaveragemin))
+       
+    ELSE
+       
+       tintfac   = 0.5_dp * tmesh%deltat
+       bkaverage =  bk(ik, itheta, iphi, tmesh%maxtime_integrate)
+       
+    ENDIF
+    
+    IF (commsurff%iprocessor.EQ.0) THEN
+       
+       WRITE(*, *)
+       
+       WRITE(*, *)					                       &
+            '--End time integral---------------------------------------------'
+       
+       WRITE(*, *)
+       
+    ENDIF
+    
+    bk = bk * ZIMAGONE * SQRT(2.0_dp / pi) * rmesh%rsurface *                &
+         rmesh%rsurface * tintfac
+    
+    
+  END SUBROUTINE get_flux
+  
+  !------------------------------------------------------------------------!
+  !------------------------------------------------------------------------!
+  
+  SUBROUTINE calculate_time_integrand( fluxintegral, ik, itheta, iphi,     &
+       itime )
+    
+    IMPLICIT NONE
+    
+    !------------------------------------------------------------------------!
+    
+    INTEGER, INTENT(IN)               :: ik, itheta, iphi, itime
+    COMPLEX(dp), INTENT(OUT)	      :: fluxintegral
+    
+    !------------------------------------------------------------------------!
+    
+    INTEGER                           :: il, im, ill, imm
+    COMPLEX(dp)	                      :: term1, term2
+    COMPLEX(dp)                       :: suma, fieldterm
+    
+    !------------------------------------------------------------------------!
+    
+    suma = ZERO
+    
+    DO il = 0, kmesh%lmax
+       
+       term1 = ZERO
+       term2 = ZERO
+       
+       DO im = -il, il
+          
+          term1 = term1 + psi_lm(im, il) *			               &
+               sph_harmonicsk(iphi, itheta, im, il)
+          term2 = term2 + psip_lm(im, il) *			               &
+               sph_harmonicsk(iphi, itheta, im, il)
+          
+          fieldterm = ZERO
+          
+          DO ill = 0, kmesh%lmax
+             DO imm = -ill, ill
+                
+                IF (ABS(il - ill).EQ.1 .AND.  		               &
+                     ABS(im - imm).EQ.1) THEN
+                   
+                   fieldterm = fieldterm +			               &
+                        (xcoupling(im, il, imm, ill) *                      &
+                        afield(1, itime) +  		               &
+                        ycoupling(im, il, imm, ill) *                      &
+                        ZIMAGONE * afield(2, itime)) *	       &
+                        psi_lm(imm, ill)
+                   
+                ENDIF
+                
+                IF (ABS(il - ill).EQ.1 .AND.  		               &
+                     ABS(im - imm).EQ.0) THEN
+                   
+                   fieldterm = fieldterm +			               &
+                        zcoupling(im, il, imm, ill) *                       &
+                        afield(3, itime) * psi_lm(imm, ill)
+                   
                 ENDIF
                 
              ENDDO
           ENDDO
+          
+          fieldterm = ZIMAGONE * fieldterm *  		               &
+               sph_harmonicsk(iphi, itheta, im, il)
+          
        ENDDO
-       !$OMP END DO NOWAIT
-       !$OMP END PARALLEL
-       ! End loop over coordinates
        
-    ENDDO ! End time loop
-    
-    WRITE(*,*) '-------------------------'
-    WRITE(*,*) '                         '
-    WRITE(*,*) '    End time integral    '
-    WRITE(*,*) '                         '
-    WRITE(*,*) '-------------------------'
-    
-    bk = bk * ZIMAGONE * dt * SQRT(2.0_dp / pi) * rb * rb
-    
-    ! Deallocate like no other
-    DEALLOCATE(time,efield,afield)
-    DEALLOCATE(intflux,volkov_phase)
-    
-  END SUBROUTINE get_flux
-  
-  !***************************************!
-  
-  SUBROUTINE calculate_time_integrand( func_lm, funcp_lm, &
-       lmax, afield, integrand )
-    
-    IMPLICIT NONE
-    
-    COMPLEX(dp), INTENT(IN)       :: func_lm(-lmax:, 0:)
-    COMPLEX(dp), INTENT(IN)       :: funcp_lm(-lmax:, 0:)
-    INTEGER, INTENT(IN)           :: lmax
-    REAL(dp), INTENT(IN)          :: afield(:)
-    COMPLEX(dp), INTENT(OUT)      :: integrand(:, :, :)
-    
-    COMPLEX(dp)                   :: term1, term2
-    COMPLEX(dp)                   :: fieldterm, suma
-    INTEGER                       :: il, im
-    INTEGER                       :: ill, imm
-    INTEGER                       :: ik, itheta, iphi
-    
-    !---------------------------------------------------!
-    
-    IF(numphipts.EQ.1) THEN
+       suma = suma + ((-ZIMAGONE) ** il) *			               &
+            (0.5_dp * kmesh%kpts(ik) * jlp(il, ik) * term1 -	       &
+            0.5_dp * jl(il, ik) * term2 - jl(il, ik) * fieldterm)
        
-       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
-       !$OMP& PRIVATE(term1,term2,fieldterm,suma) &
-       !$OMP& PRIVATE(il,ill)
-       
-       !$OMP DO COLLAPSE(3)
-       DO iphi = 1, numphipts
-          DO itheta = 1, numthetapts
-             DO ik = 1, numkpts
-                
-                suma = ZERO
-                
-                DO il = 0, lmax
-                   
-                   term1 = func_lm(0,il) * &
-                        sph_harmonics(iphi,itheta,0,il)
-                   term2 = funcp_lm(0,il) * &
-                        sph_harmonics(iphi,itheta,0,il)
-                   
-                   fieldterm = ZERO
-                   DO ill = 0, lmax
-                      
-                      IF (ABS(il - ill).EQ.1 ) THEN   
-                         fieldterm = fieldterm + &
-                              zcoupling(0,il,0,ill) * &
-                              afield(3) * func_lm(0,ill)
-                      ENDIF
-                   ENDDO
-                   
-                   fieldterm = ZIMAGONE * sph_harmonics(iphi,itheta,0,il) * fieldterm
-                   
-                   suma = suma + ((-ZIMAGONE)**il) * &
-                        (  0.5_dp * k_ax(ik) * jlp(il,ik) * term1 - &
-                        0.5_dp * jl(il,ik) * term2 -&
-                        jl(il,ik) * fieldterm )
-                   
-                ENDDO
-                integrand(ik,itheta,iphi) = suma
-             ENDDO
-          ENDDO
-       ENDDO
-       !$OMP END DO NOWAIT
-       !$OMP END PARALLEL
-       
-    ELSE
-       
-       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ik,itheta,iphi) &
-       !$OMP& PRIVATE(term1,term2,fieldterm,suma) &
-       !$OMP& PRIVATE(il,im,ill,imm)
-       
-       !$OMP DO COLLAPSE(3)
-       DO iphi = 1, numphipts
-          DO itheta = 1, numthetapts
-             DO ik = 1, numkpts
-                
-                suma = ZERO
-                
-                DO il = 0, lmax
-                   
-                   term1 = ZERO
-                   term2 = ZERO
-                   
-                   DO im = -il, il
-                      
-                      term1 = term1 + func_lm(im,il) * &
-                           sph_harmonics(iphi,itheta,im,il)
-                      term2 = term2 + funcp_lm(im,il) * &
-                           sph_harmonics(iphi,itheta,im,il)
-                      
-                      fieldterm = ZERO
-                      DO ill = 0, lmax
-                         DO imm = -ill, ill
-                            
-                            IF (ABS(il - ill).EQ.1 .AND.   &
-                                 ABS(im - imm).EQ.1) THEN
-                               
-                               fieldterm = fieldterm +  &
-                                    (xcoupling(im, il, imm, ill) * &
-                                    afield(1) + &
-                                    ycoupling(im, il, imm, ill) * &
-                                    ZIMAGONE * afield(2)) * &
-                                    func_lm(imm, ill)
-                               
-                            ENDIF
-                            
-                            IF (ABS(il - ill).EQ.1 .AND.  &
-                                 ABS(im - imm).EQ.0) THEN
-                               
-                               fieldterm = fieldterm + &
-                                    zcoupling(im, il, imm, ill) * &
-                                    afield(3) * func_lm(imm, ill)
-                               
-                            ENDIF
-                            
-                         ENDDO
-                      ENDDO
-                      
-                      fieldterm = ZIMAGONE * sph_harmonics(iphi,itheta,im,il) * fieldterm
-                      
-                   ENDDO
-                   
-                   suma = suma + ( (-ZIMAGONE)**il) * &
-                        (  0.5_dp * k_ax(ik) * jlp(il,ik) * term1 - &
-                        0.5_dp * jl(il,ik) * term2 - &
-                        jl(il,ik) * fieldterm )                   
-                   
-                ENDDO
-                integrand(ik,itheta,iphi) = suma
-             ENDDO
-          ENDDO
-       ENDDO
-       !$OMP END DO NOWAIT
-       !$OMP END PARALLEL
-       
-    ENDIF
+    ENDDO
+    
+    fluxintegral = suma
+    
     
   END SUBROUTINE calculate_time_integrand
   
-  !***********************************************************!
+  !------------------------------------------------------------------------!
+  !------------------------------------------------------------------------!
   
-  SUBROUTINE gauge_transform_l2v(psi_length,psi_vel,afield, currtime )
+  SUBROUTINE get_volkov_phase( volkov_phase, ik, itheta, iphi, itime )
     
     IMPLICIT NONE
     
-    COMPLEX(dp), INTENT(IN)   :: psi_length(:, :)
-    COMPLEX(dp), INTENT(OUT)  :: psi_vel(:, :)
-    REAL(dp), INTENT(IN)      :: afield(:, :)
-    INTEGER, INTENT(IN)       :: currtime
+    !------------------------------------------------------------------------!
     
-    INTEGER                   :: itheta, iphi, itime
-    REAL(dp)                  :: adotr, tfac, asq, expfac
+    INTEGER, INTENT(IN)               :: ik, itheta, iphi, itime
+    COMPLEX(dp), INTENT(OUT)          :: volkov_phase
     
-    !--------------------------------------!
+    !------------------------------------------------------------------------!
     
-    DO itime = 1, currtime
+    REAL(dp)                          :: kdota, kene
+    
+    !------------------------------------------------------------------------!
+    
+    
+    kdota = kmesh%kpts(ik) * kmesh%sinthetapts(itheta) *                     &
+         kmesh%cosphipts(iphi) * quiver(1, itime) +		       &
+         kmesh%kpts(ik) * kmesh%sinthetapts(itheta) *                     &
+         kmesh%sinphipts(iphi) * quiver(2, itime) +		       &
+         kmesh%kpts(ik) * kmesh%costhetapts(itheta) *                     &
+         quiver(3, itime)
+    kene  = kmesh%energypts(ik) 
+    
+    
+    volkov_phase = EXP(ZIMAGONE * (kene * tmesh%timepts(itime) + kdota))
+    
+    
+  END SUBROUTINE get_volkov_phase
+  
+  !------------------------------------------------------------------------!
+  !------------------------------------------------------------------------!
+  
+  SUBROUTINE make_field_integral_terms( )
+    
+    IMPLICIT NONE
+    
+    !------------------------------------------------------------------------!
+    
+    INTEGER                   :: icoord, itime
+    REAL(dp)                  :: asq, asqold
+    
+    !------------------------------------------------------------------------!
+    
+    quiver      = 0.0_dp
+    asqintegral = 0.0_dp
+    
+    
+    asqold = afield(1, 1) * afield(1, 1) + afield(2, 1) * afield(2, 1) +     &
+         afield(3, 1) * afield(3, 1)
+    
+    DO itime = 2, tmesh%numtimes
+       DO icoord = 1, 3
+          
+          quiver(icoord, itime) = quiver(icoord, itime - 1) +                &
+               afield(icoord, itime - 1) +                &
+               afield(icoord, itime)
+          
+       ENDDO
        
-       asq  = afield(1, itime) * afield(1, itime) +  &
-            afield(2, itime) * afield(2, itime) + &
+       asq = afield(1, itime) * afield(1, itime) +                           &
+            afield(2, itime) * afield(2, itime) +                           &
             afield(3, itime) * afield(3, itime)
        
-       asq = 0.5_dp * asq
+       asqintegral(itime) = asqintegral(itime - 1) + asqold + asq
        
-       tfac = 2.0_dp
-       
-       IF ((itime.EQ.1) .OR. (itime.EQ.currtime)) THEN
-          
-          tfac = 1.0_dp
-          
-       ENDIF
-       
-       expfac = expfac + asq * tfac
+       asqold = asq
        
     ENDDO
     
-    expfac = 0.5_dp * expfac
+    quiver      = 0.5_dp * quiver * tmesh%deltat
+    asqintegral = 0.5_dp * asqintegral * tmesh%deltat
     
-    !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(itheta,iphi, adotr)
     
-    !$OMP DO COLLAPSE(2)
-    DO iphi = 1, numphipts
-       DO itheta = 1, numthetapts
+  END SUBROUTINE make_field_integral_terms
+  
+  !------------------------------------------------------------------------!
+  !------------------------------------------------------------------------!
+  
+  SUBROUTINE gauge_transform_l2v( itime )
+    
+    IMPLICIT NONE
+    
+    !------------------------------------------------------------------------!
+    
+    INTEGER, INTENT(IN)       :: itime
+    
+    INTEGER                   :: itheta, iphi
+    REAL(dp)                  :: adotr, gterm
+    
+    !------------------------------------------------------------------------!
+      
+    DO iphi = 1, rmesh%numphipts
+       DO itheta = 1, rmesh%numthetapts
           
-          adotr = afield(1, currtime) * SIN(theta_ax(itheta)) *              &
-               COS(phi_ax(iphi)) +                                        &
-               afield(2, currtime) * SIN(theta_ax(itheta)) *              &
-               SIN(phi_ax(iphi)) +                                        &
-               afield(3, currtime) * costheta_ax(itheta) 
+          adotr = afield(1, itime) * rmesh%sinthetapts(itheta) *             &
+               rmesh%cosphipts(iphi) +                 &
+               afield(2, itime) * rmesh%sinthetapts(itheta) *             &
+               rmesh%sinphipts(iphi) +                 &
+               afield(3, itime) * rmesh%costhetapts(itheta) 
           
-          adotr = adotr * rb
+          adotr = adotr * rmesh%rsurface
           
-          psi_vel(itheta, iphi) = psi_length(itheta, iphi) *                 &
-               EXP(ZIMAGONE * (expfac - adotr))
+          gterm = EXP(-ZIMAGONE * (adotr + asqintegral(itime)))
+          
+          psi_sph(itheta, iphi)  = psi_sph(itheta, iphi) * gterm
+          psip_sph(itheta, iphi) = psip_sph(itheta, iphi) * gterm
           
        ENDDO
     ENDDO
-    !$OMP END DO NOWAIT
-    !$OMP END PARALLEL
     
   END SUBROUTINE gauge_transform_l2v
   
-  !***********************************************************!
-  !***********************************************************!
+  !------------------------------------------------------------------------!
+  !------------------------------------------------------------------------!
+  !------------------------------------------------------------------------!
   
 END MODULE flux

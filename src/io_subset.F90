@@ -1,7 +1,7 @@
 MODULE io_subset
 
   USE HDF5
-  USE constants
+  USE constants_pop
   USE tools
   USE patchwork
 #if _COM_MPI

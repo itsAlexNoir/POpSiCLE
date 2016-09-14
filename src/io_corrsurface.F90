@@ -1,7 +1,7 @@
 MODULE io_corrsurface
   
   USE HDF5
-  USE constants
+  USE constants_pop
   USE boundary
 #if _COM_MPI
   USE MPI

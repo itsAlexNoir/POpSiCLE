@@ -16,7 +16,7 @@
 !------------------------------------------------------------------------------!
 MODULE corrtools
 
-  USE constants
+  USE constants_pop
   
   IMPLICIT NONE
   

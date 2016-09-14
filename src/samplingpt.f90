@@ -1,6 +1,6 @@
 MODULE samplingpt
 
-  USE constants
+  USE constants_pop
   USE gaussleg
   USE fourier
   USE io_surface
