@@ -21,7 +21,7 @@ POPSICLE_SRC=${POPSICLE_ROOT}/src
 POPSICLE_LIB=${POPSICLE_ROOT}/lib
 POPSICLE_INCL=${POPSICLE_ROOT}/include
 
-MKL_LIBS = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -qopenmp
+MKL_LIBS = -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -openmp
 
 ifeq (${compiler},intel)
 OMPLIBS = -openmp
@@ -71,7 +71,7 @@ tsurff_grid: ${POPSICLE_LIB_PAR}
 	${FC} ${F90FLAGS} tsurff_grid.F90 -o ../bin/tsurff_grid.exec \
 	-I${POPSICLE_INCL} ${HDF5_INCLUDE} ${FFT_INCLUDE} \
 	${POPSICLE_LIB}/libpopsicle_parallel.a ${HDF5_LIB} \
-	${FFT_LIBS} ${OMPLIBS}
+	${FFT_LIBS}
 
 
 tsurff_calculator: ${POPSICLE_LIB_PAR}
