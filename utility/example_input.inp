@@ -4,7 +4,7 @@
 ## Surface file
 sphfunc.rb50.00.lmax100
 ## Scattering amplitude file
-pes_new
+amplitudes
 ## Number of points per processor: maxkpts, maxthetapts, maxphipts
 100 101 1
 ## Number of processors: numprock, numproctheta, numprocphi
@@ -21,6 +21,8 @@ pes_new
 1
 ## Maximum orbital
 1
+## Orbital Offset
+0
 ## Transform from length to velocity gauge
 .FALSE.
 ## Truncate time integration
@@ -31,3 +33,11 @@ pes_new
 .FALSE.
 ## Averaging time
 1.0
+## Radial amplitude filename
+.TRUE. mes
+## PES filename
+.TRUE. pes
+## Polar amplitude filename
+.FALSE. probktheta
+## Radial amplitude in angular basis
+.FALSE. mes_ang

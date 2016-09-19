@@ -38,7 +38,7 @@ MODULE POPSICLE
   USE corrsurface
   USE io_corrsurface
   USE flux
-  !USE observables
+  USE observables
   USE samplingpt
 
   IMPLICIT NONE

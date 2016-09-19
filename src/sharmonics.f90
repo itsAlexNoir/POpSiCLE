@@ -154,7 +154,7 @@ CONTAINS
     
     ! Calculate the Legendre polynomial
     CALL make_legendre(legendre_polynomial, costheta_axis, lmax, maxthetapts-1)
-    
+
     ! Calculate the factorials needed for the normalization
     ! factors.
     CALL make_factlog(factlog, maxfactlog)
@@ -369,24 +369,43 @@ CONTAINS
     ! Initialize array to zero
     func_lm = ZERO
     
-    DO il = 0, lmax
-       DO im = -il, il
+    IF(maxphipts.EQ.1) THEN
+       
+       ! Since mmax=0, only Gauss-Legendre quadrature
+       DO il = 0, lmax
           
           sum = ZERO
           
-          DO iphi = 1, maxphipts
-             DO itheta = 1, maxthetapts
-                
-                sum = sum + func(itheta, iphi) *                               &
-                     CONJG(sph_harmonics(iphi, itheta, im, il)) *             &
-                     th_weights(itheta) * phi_weights(iphi)
-                
-             ENDDO
+          DO itheta = 1, maxthetapts
+             
+             sum = sum + func(itheta, 1) *                             &
+                  CONJG(sph_harmonics(1, itheta, 0, il)) *             &
+                  th_weights(itheta) * phi_weights(1)
+             
           ENDDO
-          func_lm(im,il) = sum
+          func_lm(0,il) = sum
        ENDDO
-    ENDDO
-    
+       
+    ELSE
+       
+       DO il = 0, lmax
+          DO im = -il, il
+             
+             sum = ZERO
+             
+             DO iphi = 1, maxphipts
+                DO itheta = 1, maxthetapts
+                   
+                   sum = sum + func(itheta, iphi) *                      &
+                        CONJG(sph_harmonics(iphi, itheta, im, il)) *     &
+                        th_weights(itheta) * phi_weights(iphi)
+                   
+                ENDDO
+             ENDDO
+             func_lm(im,il) = sum
+          ENDDO
+       ENDDO
+       
        
 !!$       ALLOCATE(coeffm(-lmax:lmax))
 !!$       ALLOCATE(gm(1:maxthetapts,-lmax:lmax))
@@ -423,7 +442,7 @@ CONTAINS
 !!$       DEALLOCATE(gm)
 !!$       DEALLOCATE(coeffm)
 !!$       
-       
+    ENDIF
    
   END SUBROUTINE make_sht
   
