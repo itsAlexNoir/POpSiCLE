@@ -28,7 +28,8 @@
 ##
 ##-------------------------------------------------------------------
 
-.PHONY: clean lib plib dylib dyplib pes_calculator help
+.PHONY: clean lib plib dylib dyplib help \
+	tsurff_calculator sampling_calculator tsurff_grid
 
 include src/popsicle.lst
 
@@ -39,7 +40,7 @@ POPSICLE_DYPLIB = lib/libpopsicle_parallel.la
 POPSICLE_MOD = ${addprefix include/,${addsuffix .mod,${POPSICLE_LIST}}}
 
 
-default: lib
+default: plib
 
 lib:
 	cd src; ${MAKE} lib "FC=${FC}" "PLIB=serial" \
@@ -80,6 +81,15 @@ tsurff_calculator:
 sampling_calculator:
 	cd utility; ${MAKE} sampling_calculator "FC=${FC}" \
 		"compiler=${compiler}" "POPSICLE_ROOT=${PWD}" \
+		"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
+		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
+		"HDF5_PATH=${HDF5_PATH}" "SZIP_PATH=${SZIP_PATH}" \
+		"ZLIB_PATH=${ZLIB_PATH}"
+
+tsurff_grid:
+	cd utility; ${MAKE} tsurff_grid "FC=${FC}" \
+		"compiler=${compiler}" "POPSICLE_ROOT=${PWD}" \
+		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
 		"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
 		"HDF5_PATH=${HDF5_PATH}" "SZIP_PATH=${SZIP_PATH}" \

@@ -8,7 +8,8 @@ PROGRAM tsurff_calculator
   INTEGER                     :: numprock, numproctheta, numprocphi
   INTEGER                     :: maxkpts, maxthetapts, maxphipts
   REAL(dp)                    :: deltaenergy
-  INTEGER                     :: minorbital, maxorbital, numorbitals
+  INTEGER                     :: numorbitals, iorbitaloffset
+  INTEGER                     :: minorbital, maxorbital
   INTEGER                     :: iorbital, itime, ios
   INTEGER                     :: lmax
   
@@ -63,15 +64,17 @@ PROGRAM tsurff_calculator
   READ(12, *)
   READ(12, *) maxorbital
   READ(12, *)
+  READ(12, *) iorbitaloffset
+  READ(12, *)
   READ(12, *) rmesh%gauge_transform
   READ(12, *)
   READ(12, *) tmesh%truncate_time_integration
   READ(12, *)
   READ(12, *) tmesh%maxtime_integrate
   READ(12, *)
-  READ(12, *) timeaverageforrydberg
+  READ(12, *) tmesh%timeaverageforrydberg
   READ(12, *)
-  READ(12, *) timetoaverageover
+  READ(12, *) tmesh%timetoaverageover
   
   CLOSE( UNIT = 12 )
   
@@ -174,7 +177,7 @@ PROGRAM tsurff_calculator
        corbital // '.d'
   
   CALL initialize_tsurff( filename_surf  )
-  
+
   DO iorbital = minorbital, maxorbital
      
      WRITE(corbital, '(I3.3)') iorbital

@@ -71,9 +71,6 @@ MODULE flux
   REAL(dp), ALLOCATABLE	           :: quiver(:, :)
   REAL(dp), ALLOCATABLE	           :: asqintegral(:)
   
-  LOGICAL, PUBLIC                  :: timeaverageforrydberg
-  REAL(dp), PUBLIC                 :: timetoaverageover
-  
   
 CONTAINS
   
@@ -188,8 +185,8 @@ CONTAINS
     ALLOCATE(psi_sph(1:rmesh%numthetapts, 1:rmesh%numphipts))
     ALLOCATE(psip_sph(1:rmesh%numthetapts, 1:rmesh%numphipts))
 
-    ALLOCATE(psi_lm(-rmesh%lmax:rmesh%lmax,0:rmesh%lmax))
-    ALLOCATE(psip_lm(-rmesh%lmax:rmesh%lmax,0:rmesh%lmax))
+    ALLOCATE(psi_lm(-kmesh%lmax:kmesh%lmax,0:kmesh%lmax))
+    ALLOCATE(psip_lm(-kmesh%lmax:kmesh%lmax,0:kmesh%lmax))
     
     ! Create spherical coordinates
     
@@ -219,7 +216,7 @@ CONTAINS
     
     ! Create spherical harmonics
     ALLOCATE(sph_harmonics(1:rmesh%numphipts, 1:rmesh%numthetapts,          &
-         -rmesh%lmax:rmesh%lmax,0:rmesh%lmax))
+         -kmesh%lmax:kmesh%lmax,0:kmesh%lmax))
     ALLOCATE(sph_harmonicsk(1:kmesh%numphipts, 1:kmesh%numthetapts,          &
          -kmesh%lmax:kmesh%lmax,0:kmesh%lmax))
     
@@ -227,7 +224,7 @@ CONTAINS
          rmesh%costhetapts, rmesh%phipts )
     CALL create_spherical_harmonics( sph_harmonicsk, kmesh%lmax, &
          kmesh%costhetapts, kmesh%phipts )
-
+    
     ALLOCATE(xcoupling(-kmesh%lmax:kmesh%lmax,0:kmesh%lmax,&
          -kmesh%lmax:kmesh%lmax,0:kmesh%lmax))
     ALLOCATE(ycoupling(-kmesh%lmax:kmesh%lmax,0:kmesh%lmax,&
@@ -280,11 +277,9 @@ CONTAINS
     ALLOCATE(asqintegral(tmesh%numtimes))
 
     CALL read_field_surface( filename, tmesh%timepts, efield, afield )
-    
+
     CALL make_field_integral_terms(  )
-    
-    
-    
+        
   END SUBROUTINE initialize_tsurff
   
   !-----------------------------------------------------------------------------!
@@ -334,6 +329,7 @@ CONTAINS
     ALLOCATE(kmesh%phipts(1:kmesh%maxphipts))
     ALLOCATE(kmesh%sinphipts(1:kmesh%maxphipts))
     ALLOCATE(kmesh%cosphipts(1:kmesh%maxphipts))
+    ALLOCATE(kmesh%wphi(1:kmesh%maxphipts))
     
     DO ik = 1, kmesh%maxkpts 
        
@@ -400,6 +396,8 @@ CONTAINS
        kmesh%sinphipts(iphi) = SIN(kmesh%phipts(iphi))
        
        kmesh%cosphipts(iphi) = COS(kmesh%phipts(iphi))
+
+       kmesh%wphi(iphi)      = kmesh%deltaphi
        
     ENDDO
     
@@ -430,7 +428,7 @@ CONTAINS
     bk = ZERO
     
     itimeaveragemin = tmesh%maxtime_integrate -                              &
-         INT(timetoaverageover / tmesh%deltat)
+         INT(tmesh%timetoaverageover / tmesh%deltat)
     
     IF (commsurff%iprocessor.EQ.0) THEN
        
@@ -470,7 +468,7 @@ CONTAINS
          rmesh%wtheta, rmesh%wphi, psi_lm)
     CALL make_sht( psip_sph, sph_harmonics, kmesh%lmax, &
          rmesh%wtheta, rmesh%wphi, psip_lm)
-    
+        
     ! Calculate flux
     
     DO iphi = 1, kmesh%maxphipts
@@ -525,7 +523,7 @@ CONTAINS
                 
                 CALL get_volkov_phase( volkov_phase, ik, itheta, iphi,       &
                      itime )
-                
+
                 bktime(ik, itheta, iphi)    = fluxintegral * volkov_phase
                 
                 bk(ik, itheta, iphi, itime) =                                &
@@ -540,20 +538,20 @@ CONTAINS
        
     ENDDO
     
-    IF (timeaverageforrydberg) THEN
+    IF (tmesh%timeaverageforrydberg) THEN
        
-       bkaverage = ZERO
+       DO iphi = 1, kmesh%maxphipts
+          DO itheta = 1, kmesh%maxthetapts
+             DO ik = 1, kmesh%maxkpts
+                
+                bkaverage(ik, itheta, iphi) = bk(ik, itheta, iphi,           &
+                     itimeaveragemin)
+                
+             ENDDO
+          ENDDO
+       ENDDO
        
-       DO itime = itimeaveragemin, tmesh%maxtime_integrate
-          
-          tfac = 2.0_dp
-          
-          IF (itime.EQ.itimeaveragemin .OR.                                  &
-               itime.EQ.tmesh%maxtime_integrate) THEN
-             
-             tfac = 1.0_dp
-             
-          ENDIF
+       DO itime = itimeaveragemin + 1, tmesh%maxtime_integrate
           
           DO iphi = 1, kmesh%maxphipts
              DO itheta = 1, kmesh%maxthetapts
@@ -561,8 +559,9 @@ CONTAINS
                    
                    bkaverage(ik, itheta, iphi) =                             &
                         bkaverage(ik, itheta, iphi) +                             &
-                        tfac * bk(ik, itheta, iphi, itime)
-                   
+                        bk(ik, itheta, iphi, itime - 1) +                         &
+                        bk(ik, itheta, iphi, itime)
+		  
                 ENDDO
              ENDDO
           ENDDO
@@ -573,10 +572,21 @@ CONTAINS
             (tmesh%timepts(tmesh%maxtime_integrate) -                   &
             tmesh%timepts(itimeaveragemin))
        
-    ELSE
+    ELSE   
        
        tintfac   = 0.5_dp * tmesh%deltat
-       bkaverage =  bk(ik, itheta, iphi, tmesh%maxtime_integrate)
+       
+       DO iphi = 1, kmesh%maxphipts
+          DO itheta = 1, kmesh%maxthetapts
+             DO ik = 1, kmesh%maxkpts
+                
+                bkaverage(ik, itheta, iphi) =  bk(ik, itheta, iphi,          &
+                     tmesh%maxtime_integrate)
+                
+             ENDDO
+          ENDDO
+       ENDDO
+       
        
     ENDIF
     
@@ -591,7 +601,7 @@ CONTAINS
        
     ENDIF
     
-    bk = bk * ZIMAGONE * SQRT(2.0_dp / pi) * rmesh%rsurface *                &
+    bkaverage = bkaverage * ZIMAGONE * SQRT(2.0_dp / pi) * rmesh%rsurface *     &
          rmesh%rsurface * tintfac
     
     
@@ -618,62 +628,113 @@ CONTAINS
     
     !------------------------------------------------------------------------!
     
-    suma = ZERO
-    
-    DO il = 0, kmesh%lmax
+    IF ( rmesh%numphipts .EQ. 1 ) THEN
        
-       term1 = ZERO
-       term2 = ZERO
+       suma = ZERO
        
-       DO im = -il, il
+       DO il = 0, kmesh%lmax
           
-          term1 = term1 + psi_lm(im, il) *			               &
-               sph_harmonicsk(iphi, itheta, im, il)
-          term2 = term2 + psip_lm(im, il) *			               &
-               sph_harmonicsk(iphi, itheta, im, il)
+          term1 = psi_lm(0, il) *			               &
+               sph_harmonicsk(iphi, itheta, 0, il)
+          term2 = psip_lm(0, il) *			               &
+               sph_harmonicsk(iphi, itheta, 0, il)
           
           fieldterm = ZERO
           
           DO ill = 0, kmesh%lmax
-             DO imm = -ill, ill
+             
+             IF (ABS(il - ill).EQ.1) THEN
                 
-                IF (ABS(il - ill).EQ.1 .AND.  		               &
-                     ABS(im - imm).EQ.1) THEN
-                   
-                   fieldterm = fieldterm +			               &
-                        (xcoupling(im, il, imm, ill) *                      &
-                        afield(1, itime) +  		               &
-                        ycoupling(im, il, imm, ill) *                      &
-                        ZIMAGONE * afield(2, itime)) *	       &
-                        psi_lm(imm, ill)
-                   
-                ENDIF
+                fieldterm = fieldterm +			               &
+                     (xcoupling(0, il, 0, ill) *                       &
+                     afield(1, itime) +  		               &
+                     ycoupling(0, il, 0, ill) *                        &
+                     ZIMAGONE * afield(2, itime)) *	               &
+                     psi_lm(0, ill)
                 
-                IF (ABS(il - ill).EQ.1 .AND.  		               &
-                     ABS(im - imm).EQ.0) THEN
-                   
-                   fieldterm = fieldterm +			               &
-                        zcoupling(im, il, imm, ill) *                       &
-                        afield(3, itime) * psi_lm(imm, ill)
-                   
-                ENDIF
+             ENDIF
+             
+             IF (ABS(il - ill).EQ.1) THEN
                 
-             ENDDO
+                fieldterm = fieldterm +			               &
+                     zcoupling(0, il, 0, ill) *                        &
+                     afield(3, itime) * psi_lm(0, ill)
+                
+             ENDIF
+             
           ENDDO
           
           fieldterm = ZIMAGONE * fieldterm *  		               &
-               sph_harmonicsk(iphi, itheta, im, il)
+               sph_harmonicsk(iphi, itheta, 0, il)
+          
+          
+          suma = suma + ((-ZIMAGONE) ** il) *			       &
+               (0.5_dp * kmesh%kpts(ik) * jlp(il, ik) * term1 -	       &
+               0.5_dp * jl(il, ik) * term2 - jl(il, ik) * fieldterm)
+          
+       ENDDO
+
+       fluxintegral = suma
+       
+    ELSE
+       
+       suma = ZERO
+       
+       DO il = 0, kmesh%lmax
+          
+          term1 = ZERO
+          term2 = ZERO
+          
+          DO im = -il, il
+             
+             term1 = term1 + psi_lm(im, il) *	                      &
+                  sph_harmonicsk(iphi, itheta, im, il)
+             term2 = term2 + psip_lm(im, il) *			      &
+                  sph_harmonicsk(iphi, itheta, im, il)
+             
+             fieldterm = ZERO
+             
+             DO ill = 0, kmesh%lmax
+                DO imm = -ill, ill
+                   
+                   IF (ABS(il - ill).EQ.1 .AND.  		      &
+                        ABS(im - imm).EQ.1) THEN
+                      
+                      fieldterm = fieldterm +			      &
+                           (xcoupling(im, il, imm, ill) *             &
+                           afield(1, itime) +  		              &
+                           ycoupling(im, il, imm, ill) *              &
+                           ZIMAGONE * afield(2, itime)) *	      &
+                           psi_lm(imm, ill)
+                      
+                   ENDIF
+                   
+                   IF (ABS(il - ill).EQ.1 .AND.  		      &
+                        ABS(im - imm).EQ.0) THEN
+                      
+                      fieldterm = fieldterm +			      &
+                           zcoupling(im, il, imm, ill) *              &
+                           afield(3, itime) * psi_lm(imm, ill)
+                      
+                   ENDIF
+                   
+                ENDDO
+             ENDDO
+             
+             fieldterm = ZIMAGONE * fieldterm *  		      &
+                  sph_harmonicsk(iphi, itheta, im, il)
+             
+          ENDDO
+          
+          suma = suma + ((-ZIMAGONE) ** il) *			      &
+               (0.5_dp * kmesh%kpts(ik) * jlp(il, ik) * term1 -	      &
+               0.5_dp * jl(il, ik) * term2 - jl(il, ik) * fieldterm)
           
        ENDDO
        
-       suma = suma + ((-ZIMAGONE) ** il) *			               &
-            (0.5_dp * kmesh%kpts(ik) * jlp(il, ik) * term1 -	       &
-            0.5_dp * jl(il, ik) * term2 - jl(il, ik) * fieldterm)
+       fluxintegral = suma
        
-    ENDDO
-    
-    fluxintegral = suma
-    
+    ENDIF
     
   END SUBROUTINE calculate_time_integrand
   

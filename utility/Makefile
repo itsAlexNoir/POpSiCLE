@@ -67,24 +67,31 @@ sampling_calculator: ${POPSICLE_LIB_SER}
 	${POPSICLE_LIB}/libpopsicle_serial.a ${HDF5_LIB} \
 	${FFT_LIBS} ${OMPLIBS}
 
-tsurff_calculator: ${POPSICLE_LIB_SER}
-	${FC} ${F90FLAGS} tsurff_calculator.f90 -o ../bin/tsurff_calculator.exec \
+tsurff_grid: ${POPSICLE_LIB_PAR}
+	${FC} ${F90FLAGS} tsurff_grid.F90 -o ../bin/tsurff_grid.exec \
 	-I${POPSICLE_INCL} ${HDF5_INCLUDE} ${FFT_INCLUDE} \
-	${POPSICLE_LIB}/libpopsicle_serial.a ${HDF5_LIB} \
-	${FFT_LIBS} ${OMPLIBS}	
+	${POPSICLE_LIB}/libpopsicle_parallel.a ${HDF5_LIB} \
+	${FFT_LIBS} ${OMPLIBS}
+
+
+tsurff_calculator: ${POPSICLE_LIB_PAR}
+	${FC} ${F90FLAGS} tsurff_calculator.F90 -o ../bin/tsurff_calculator.exec \
+	-I${POPSICLE_INCL} ${HDF5_INCLUDE} ${FFT_INCLUDE} \
+	${POPSICLE_LIB}/libpopsicle_parallel.a ${HDF5_LIB} \
+	${FFT_LIBS}
 
 ${POPSICLE_LIB_SER}:
 	cd ${POPSICLE_ROOT}; ${MAKE} lib "FC=${FC}" "compiler=${compiler}" \
 	"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 	"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
-	"HDF5_PATH=${HDF5ROOT}" "SZIP_PATH=${SZIP_PATH}" \
+	"HDF5_PATH=${HDF5_PATH}" "SZIP_PATH=${SZIP_PATH}" \
 	"ZLIB_PATH=${ZLIB_PATH}"
 
 ${POPSICLE_LIB_PAR}:
-	cd ${POPSICLE_ROOT}; ${MAKE} plib "FC=${PFC}" "compiler=${compiler}" \
+	cd ${POPSICLE_ROOT}; ${MAKE} plib "FC=${FC}" "compiler=${compiler}" \
 	"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 	"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
-	"HDF5_PATH=${PHDF5ROOT}" "SZIP_PATH=${SZIP_PATH}" \
+	"HDF5_PATH=${HDF5_PATH}" "SZIP_PATH=${SZIP_PATH}" \
 	"ZLIB_PATH=${ZLIB_PATH}"
 
 clean: clean_app

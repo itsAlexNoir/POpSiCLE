@@ -1257,7 +1257,9 @@ CONTAINS
     ! Open field group. 
     name = '/time'
     CALL h5gopen_f(file_id, name, time_group_id, error)
-    
+
+    time = 0.0_dp
+  
     ! Open dataset
     DO itime = 1, ntime
        
@@ -1269,7 +1271,6 @@ CONTAINS
        
        time_dim = 1
        time_offset = 0
-       time = 0.0_dp
        
        CALL h5sselect_hyperslab_f(time_dspace_id, H5S_SELECT_SET_F, &
             time_offset, time_dim, error)
@@ -1282,7 +1283,7 @@ CONTAINS
        CALL h5sclose_f(time_dspace_id, error)
        CALL h5sclose_f(time_memspace, error)
        CALL h5dclose_f(time_dset_id, error)
-
+       
     ENDDO
     
     CALL h5gclose_f(time_group_id, error)
@@ -1292,7 +1293,7 @@ CONTAINS
     
     ! Close HDF5 fortran interface
     CALL h5close_f(error)
-    
+
   END SUBROUTINE read_field_surface
 
   !***************************************************!

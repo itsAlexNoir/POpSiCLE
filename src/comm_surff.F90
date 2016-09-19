@@ -51,6 +51,7 @@ MODULE comm_surff
       REAL(dp), ALLOCATABLE	    :: phipts(:)
       REAL(dp), ALLOCATABLE	    :: sinphipts(:)
       REAL(dp), ALLOCATABLE	    :: cosphipts(:)
+      REAL(dp), ALLOCATABLE	    :: wphi(:)      
    
    END TYPE KGRID
    
@@ -81,6 +82,9 @@ MODULE comm_surff
       REAL(dp), ALLOCATABLE	    :: timepts(:)
       REAL(dp)                      :: deltat
       LOGICAL                       :: truncate_time_integration
+      LOGICAL, PUBLIC               :: timeaverageforrydberg
+      REAL(dp), PUBLIC              :: timetoaverageover
+      
    
    END TYPE TGRID
        

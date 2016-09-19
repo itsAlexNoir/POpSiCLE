@@ -166,7 +166,8 @@ corrsurface.o: constants.o tools.o corrtools.o \
 io_corrsurface.o: constants.o boundary.o
 flux.o: constants.o comm_surff.o gaussleg.o bessel.o \
 	sharmonics.o tools.o io_surface.o io_pop.o
-#observables.o: constants.o sharmonics.o flux.o io_pop.o
+observables.o: constants.o comm_surff.o gaussleg.o \
+	sharmonics.o flux.o io_pop.o
 samplingpt.o: constants.o gaussleg.o fourier.o \
 	io_surface.o io_pop.o
 popsicle.o : constants.o fourier.o comm_surff.o \
@@ -220,7 +221,8 @@ corrsurface.lo: constants.lo tools.lo corrtools.lo \
 io_corrsurface.lo: constants.lo boundary.lo
 flux.lo: constants.lo comm_surff.lo gaussleg.lo bessel.lo \
 	sharmonics.lo tools.lo io_surface.lo io_pop.lo	
-#observables.lo: constants.lo sharmonics.lo flux.lo io_pop.lo
+observables.lo: constants.lo comm_surff.lo gaussleg.lo \
+	sharmonics.lo flux.lo io_pop.lo
 samplingpt.lo: constants.lo gaussleg.lo fourier.lo \
 	io_surface.lo io_pop.lo
 popsicle.lo : constants.lo fourier.lo comm_surff.lo \
@@ -314,11 +316,11 @@ clean_slatec:
 
 ## Fortran90
 %.o:%.f90
-	$(FC) ${F90FLAGS} -c  $< ${OMPLIBS}
+	$(FC) ${F90FLAGS} -c  $<
 
 %.lo:%.f90
 	${LIBTOOL} --tag=FC --mode=compile \
-	${FC} ${F90FLAGS} -c $< ${OMPLIBS}
+	${FC} ${F90FLAGS} -c $<
 
 ## Fortran77
 %.o:%.f
