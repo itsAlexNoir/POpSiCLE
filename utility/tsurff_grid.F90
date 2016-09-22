@@ -233,7 +233,7 @@ PROGRAM tsurffgrid
 
   IF (radamp_desired) THEN
      filename = TRIM(data_directory) // '/' // TRIM(radamp_filename) // '.' //  &
-          corbital // '.dat' 
+          corbital
      
      CALL write_radial_amplitude(amplitude, filename)
 
@@ -250,7 +250,7 @@ PROGRAM tsurffgrid
           kmesh%costhetapts, kmesh%phipts)
      
      filename = TRIM(data_directory) // '/' // TRIM(radamp_angbasis_filename) // '.' //  &
-          corbital // '.dat' 
+          corbital
      
      CALL write_radial_amp_lm(amplitude, filename, sph_harmonics)
 
@@ -260,7 +260,7 @@ PROGRAM tsurffgrid
 
   IF (pes_desired) THEN
      filename = TRIM(data_directory) // '/' // TRIM(pes_filename) // '.' //  &
-          corbital // '.dat' 
+          corbital
      
      CALL write_pes(amplitude, filename)
      
@@ -268,7 +268,7 @@ PROGRAM tsurffgrid
   
   IF (polar_desired) THEN
      filename = TRIM(data_directory) // '/' // TRIM(polar_filename) // '.' //  &
-          corbital // '.dat' 
+          corbital 
      
      CALL write_polar_amplitude(amplitude, filename)
      
