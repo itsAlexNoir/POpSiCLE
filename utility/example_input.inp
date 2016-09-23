@@ -28,7 +28,7 @@ amplitudes
 ## Truncate time integration
 .FALSE.
 ## Maximum time integration
-1.0
+1
 ## Average amplitude to suppress Rydberg states
 .FALSE.
 ## Averaging time
