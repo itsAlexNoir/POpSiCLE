@@ -693,6 +693,7 @@ CONTAINS
 
     CALL h5dget_space_f(dset_id, dspace_id, error)
     
+    dspace_dims = 0
     CALL h5sget_simple_extent_dims_f(dspace_id, dspace_dims, &
          dspace_maxdims, error)
     

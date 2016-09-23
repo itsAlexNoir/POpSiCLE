@@ -78,12 +78,12 @@ MODULE comm_surff
    TYPE, PUBLIC :: TGRID
    
       INTEGER                       :: numtimes
-      INTEGER                       :: maxtime_integrate
       REAL(dp), ALLOCATABLE	    :: timepts(:)
       REAL(dp)                      :: deltat
       LOGICAL                       :: truncate_time_integration
-      LOGICAL, PUBLIC               :: timeaverageforrydberg
-      REAL(dp), PUBLIC              :: timetoaverageover
+      INTEGER                       :: maxtime_integrate
+      LOGICAL                       :: timeaverageforrydberg
+      REAL(dp)                      :: timetoaverageover
       
    
    END TYPE TGRID
