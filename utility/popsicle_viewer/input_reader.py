@@ -22,27 +22,23 @@ def read_input(parameters,filepath):
 
 class parameters:
     def __init__(self,inparams):
-        self.dke = float(inparams['dke'])
-        self.kemax = float(inparams['kemax'])
+
         self.lmax = int(inparams['lmax'])
         self.mmax = int(inparams['mmax'])
+
         self.dEe = float(inparams['dEe'])
-        self.Eemax = float(inparams['Eemax'])
-        self.dk  = float(inparams['dk'])
-        self.kmax = float(inparams['kmax'])
+        self.Eemaxpts = float(inparams['Eemaxpts'])
+
+        self.dEn = float(inparams['dEn'])
+        self.Enmaxpts = float(inparams['Enmaxpts'])
+
+        self.dE  = float(inparams['dE'])
+        self.Emax = float(inparams['Emax'])
         
         if(int(inparams['fixed_nuclei']) == 1):
             self.fixed_nuclei = True
         else:
             self.fixed_nuclei = False
-
-        if(self.fixed_nuclei == False):
-            self.dkn = float(inparams['dkn'])
-            self.knmax = float(inparams['knmax'])
-            self.dEn = float(inparams['dEn'])
-            self.dE = float(inparams['dE'])
-            self.Enmax = float(inparams['Enmax'])
-            self.Emax  = float(inparams['Emax'])
             
         # Mass factors
         if(self.fixed_nuclei):
@@ -86,6 +82,7 @@ class parameters:
         self.draw_wavetime = int(inparams['draw_wavetime'])
 
         self.makeframe = int(inparams['makeframe'])
+        self.showframe = int(inparams['showframe'])        
         self.polar_filename = inparams['polar_filename']
         self.spherical_filename = inparams['spherical_filename']
         self.mes_filename = inparams['mes_filename']

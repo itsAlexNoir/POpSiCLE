@@ -231,8 +231,8 @@ CONTAINS
        DO itheta = 1, kmesh%maxthetapts
           DO ik = 1, kmesh%maxkpts
              bk_polar(ik,itheta) = bk_polar(ik,itheta) + &
-                  REAL(CONJG(bk(ik,itheta,iphi) * &
-                  bk(ik,itheta,iphi)),dp) * &
+                  REAL(CONJG(bk(ik,itheta,iphi)) * &
+                  bk(ik,itheta,iphi),dp) * &
                   kmesh%wphi(iphi)
           ENDDO
        ENDDO
