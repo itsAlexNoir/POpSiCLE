@@ -26,13 +26,14 @@ params = inp.parameters(inp_params)
 print('Creating axis...')
 # For coordinate space
 ax = axes.axes(params.dEe, params.Eemaxpts,
-               params.lmax,params.mmax,
+               params.maxthetapts,params.maxphipts,
                params.fixed_nuclei,
                params.dEn,params.Enmaxpts,
                params.dE,params.Emax)
 
 # Load data from disk
-if(params.draw_polar_amplitude):
+if(params.draw_polar_amplitude or params.draw_pad
+   or params.draw_semipolar_pad or params.sph_polar_amplitude):
     polar_prob, ntime = data.load_h5series(params.polar_filename)
 
 
@@ -85,7 +86,7 @@ if(params.draw_polar_amplitude):
     xticks = None #np.arange(0,25,0.2)
     yticks = None #np.arange(-15.,16.,0.2)
     graph.oneframe_surf(polar_prob,ax.ke_ax,ax.theta_ax,clamp,True,
-                        [min(ax.theta_ax),max(ax.theta_ax)],[0.0,3.0],
+                        [min(ax.theta_ax),max(ax.theta_ax)],[ax.dke,2.0],
                         xticks,yticks,
                         r'$\theta$(rad)',r'$k_e$(a.u.)',
                         r'$\log_{10}|\Psi(k_e,\theta)|^2$',
@@ -106,6 +107,47 @@ if(params.draw_sph_polar_amplitude):
                              r'$\log_{10}|\Psi(k_e,\theta)|^2$',
                              logplot,params.makeframe,'prob_sphpolarPAD',
                              params.showframe)
+
+
+if(params.draw_pad):
+    print('Plotting t-surff PAD...')
+    logplot = 1
+    clamp = [-7,-3]
+    xticks = None #np.arange(0,25,0.2)
+    yticks = None #np.arange(-15.,16.,0.2)
+    PAD    = polar_prob * ax.ke_ax[None,:]
+    graph.oneframe_surf(PAD,ax.Ee_ax,ax.theta_ax,clamp,True,
+                        [min(ax.theta_ax),max(ax.theta_ax)],
+                        [ax.dEe,2.0],
+                        xticks,yticks,
+                        r'$\theta$(rad)',r'$E_e$ (au)',
+                        r'$\log_{10}|\Psi(E_e,\theta)|^2$',
+                        logplot,params.makeframe,'tsurff_PAD',
+                        params.showframe)
+
+    graph.oneframe_surf(PAD,ax.Ee_ax*const.energy_au_ev,ax.theta_ax,clamp,True,
+                        [min(ax.theta_ax),max(ax.theta_ax)],
+                        [ax.dEe*const.energy_au_ev,60.0],
+                        xticks,yticks,
+                        r'$\theta$(rad)',r'$E_e$ (eV)',
+                        r'$\log_{10}|\Psi(E_e,\theta)|^2$',
+                        logplot,params.makeframe,'tsurff_PAD_eV',
+                        params.showframe)
+
+if(params.draw_semipolar_pad):
+    print('Plotting semipolar t-surff PAD...')
+    logplot = 1
+    clamp = [-7,-3]
+    xticks = None #np.arange(0,25,0.2)
+    yticks = np.arange(0.,2.1,0.3)
+    PAD    = polar_prob * ax.ke_ax[None,:]
+    graph.semipolar_surf(PAD,ax.theta_ax,ax.Ee_ax,clamp,
+                        [ax.dEe,2.0],
+                        xticks,yticks,
+                        r'$\theta$(rad)',r'$E_e$(a.u.)',
+                        r'$\log_{10}|\Psi(E_e,\theta)|^2$',
+                        logplot,params.makeframe,'semipolar_PAD',
+                        params.showframe)
 
     
 if(params.draw_mes):

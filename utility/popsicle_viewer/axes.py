@@ -13,7 +13,8 @@ import numpy as np
 import numba as nb
 
 class axes():
-    def __init__(self,dEe,Eemaxpts,lmax,mmax,fixed_nuclei=False,
+    def __init__(self,dEe,Eemaxpts,maxthetapts,maxphipts,
+                 fixed_nuclei=False,
                  dEn=1.0,Enmaxpts=1,mufac=0.5,Mfac=1.0,
                  dE=1.0,Emax=1.0):
 
@@ -22,9 +23,6 @@ class axes():
         self.Eemaxpts = Eemaxpts
         self.dEn      = dEn
         self.Enmaxpts = Enmaxpts
-        self.lmax     = lmax
-        self.mmax     = mmax
-        self.mmin     = -mmax
 
         self.dE       = dE
         self.Emax     = Emax
@@ -37,10 +35,11 @@ class axes():
         self.kemax = np.sqrt(2.0 * self.Eemax)
 
         self.kemaxpts = Eemaxpts
-        self.maxthetapts = self.lmax + 1
-        self.maxphipts = self.mmax + 1
-        self.dphi = 2.0 * np.pi / float(self.maxphipts + 1)
-        self.Eemaxpts = int(self.Eemax / self.dEe)+ 1
+        self.maxthetapts = maxthetapts
+        self.maxphipts = maxphipts
+        #self.maxthetapts = self.lmax + 1
+        #self.maxphipts = self.mmax + 1
+        self.dphi = 2.0 * np.pi / float(self.maxphipts)
         self.kmaxpts  = int(self.kmax / self.dk) + 1
 
         if(fixed_nuclei == False):
@@ -57,14 +56,28 @@ class axes():
 
         ######################################################
 
-        self.costheta_ax , self.theta_weights = \
-        np.polynomial.legendre.leggauss(self.maxthetapts)
+        self.costheta_ax = np.zeros(self.maxthetapts)
+        self.theta_weights = np.zeros(self.maxthetapts)
+        
+        costh, th_w = \
+        np.polynomial.legendre.leggauss(self.maxthetapts-2)
 
+        self.costheta_ax[0] = -1.0
+        self.theta_weights[0] = 0.0
+        
+        self.costheta_ax[maxthetapts-1] = 1.0
+        self.theta_weights[maxthetapts-1] = 0.0
+        
+        self.costheta_ax[1:maxthetapts-1] = costh
+        self.theta_weights[1:maxthetapts-1] = th_w
+        
         self.theta_ax = np.arccos(self.costheta_ax)
 
         ######################################################
 
         self.phi_ax = np.linspace(0.0,2.0*np.pi,self.maxphipts)
+        self.phi_weights = np.zeros(maxphipts)
+        self.phi_weights = self.dphi
 
         ######################################################
 

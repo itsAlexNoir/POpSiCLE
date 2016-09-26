@@ -26,6 +26,9 @@ class parameters:
         self.lmax = int(inparams['lmax'])
         self.mmax = int(inparams['mmax'])
 
+        self.maxthetapts = int(inparams['maxthetapts'])
+        self.maxphipts   = int(inparams['maxphipts'])
+        
         self.dEe = float(inparams['dEe'])
         self.Eemaxpts = float(inparams['Eemaxpts'])
 
@@ -72,6 +75,8 @@ class parameters:
         self.draw_spherical_amplitude = int(inparams['draw_spherical_amplitude'])
         self.draw_polar_amplitude = int(inparams['draw_polar_amplitude'])
         self.draw_sph_polar_amplitude = int(inparams['draw_sph_polar_amplitude'])
+        self.draw_pad = int(inparams['draw_pad'])
+        self.draw_semipolar_pad = int(inparams['draw_semipolar_pad'])
         self.draw_mes = int(inparams['draw_mes'])
         self.draw_pes = int(inparams['draw_pes'])
         # self.draw_Etotal = int(inparams['draw_Etotal'])
@@ -84,7 +89,7 @@ class parameters:
         self.makeframe = int(inparams['makeframe'])
         self.showframe = int(inparams['showframe'])        
         self.polar_filename = inparams['polar_filename']
-        self.spherical_filename = inparams['spherical_filename']
+        self.spherical_filename = inparams['spherical_filename']        
         self.mes_filename = inparams['mes_filename']
         self.pes_filename = inparams['pes_filename']
         self.samp_pes_filename = inparams['samp_pes_filename']
