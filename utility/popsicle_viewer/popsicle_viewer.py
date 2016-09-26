@@ -25,10 +25,11 @@ params = inp.parameters(inp_params)
 ### Create axes for simulation
 print('Creating axis...')
 # For coordinate space
-ax = axes.axes(params.dke, params.kemax,
+ax = axes.axes(params.dEe, params.Eemaxpts,
                params.lmax,params.mmax,
-               params.dk,params.kmax,
-               params.dEe,params.Eemax)
+               params.fixed_nuclei,
+               params.dEn,params.Enmaxpts,
+               params.dE,params.Emax)
 
 # Load data from disk
 if(params.draw_polar_amplitude):
@@ -80,7 +81,7 @@ print('Plotting selected frames...')
 if(params.draw_polar_amplitude):
     print('Plotting polar amplitude...')
     logplot = 1
-    clamp = [-6,-4]
+    clamp = [-7,-3]
     xticks = None #np.arange(0,25,0.2)
     yticks = None #np.arange(-15.,16.,0.2)
     graph.oneframe_surf(polar_prob,ax.ke_ax,ax.theta_ax,clamp,True,
