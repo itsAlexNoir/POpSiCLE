@@ -5,12 +5,12 @@ scattboundcyl scattboundcart cubboundcyl cubboundcart \
 boundary scatt_interp cubic_interp spline_interp \
 io_pop io_subset io_surface patchwork surface \
 corrsurface corrtools io_corrsurface flux observables \
-comm_surff samplingpt popsicle
+comm_surff samplingpt popsicle_aux popsicle
 
 POPSICLE_MONO_LIST = constants tools bessel gaussleg \
 scatt_interp cubic_interp spline_interp scattcoords  \
 cubcoords coords waveduplicate sharmonics observables \
-samplingpt boundary popsicle
+samplingpt boundary popsicle_aux popsicle
 
 POPSICLE_HYBRID_LIST = scattboundcyl scattboundcart \
 cubboundcyl cubboundcart boundary fourier patchwork \

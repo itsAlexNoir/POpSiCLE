@@ -170,7 +170,7 @@ observables.o: constants.o comm_surff.o gaussleg.o \
 	sharmonics.o flux.o io_pop.o
 samplingpt.o: constants.o gaussleg.o fourier.o \
 	io_surface.o io_pop.o
-popsicle.o : constants.o fourier.o comm_surff.o \
+popsicle_aux.o : constants.o fourier.o comm_surff.o \
 	cubic_interp.o spline_interp.o \
 	scattboundcyl.o scattboundcart.o \
 	cubboundcyl.o  cubboundcart.o \
@@ -178,8 +178,9 @@ popsicle.o : constants.o fourier.o comm_surff.o \
 	io_pop.o io_subset.o io_surface.o \
 	corrtools.o corrsurface.o io_corrsurface.o \
 	sharmonics.o bessel.o gaussleg.o \
-	patchwork.o surface.o samplingpt.o
-
+	patchwork.o surface.o samplingpt.o observables.o
+popsicle.lo : io_pop.lo surface.lo corrsurface.lo \
+	flux.lo observables.lo samplingpt.lo
 
 ########################################################
 
@@ -225,7 +226,7 @@ observables.lo: constants.lo comm_surff.lo gaussleg.lo \
 	sharmonics.lo flux.lo io_pop.lo
 samplingpt.lo: constants.lo gaussleg.lo fourier.lo \
 	io_surface.lo io_pop.lo
-popsicle.lo : constants.lo fourier.lo comm_surff.lo \
+popsicle_aux.lo : constants.lo fourier.lo comm_surff.lo \
 	cubic_interp.lo spline_interp.lo \
 	scattboundcyl.lo scattboundcart.lo \
 	cubboundcyl.lo  cubboundcart.lo \
@@ -233,7 +234,9 @@ popsicle.lo : constants.lo fourier.lo comm_surff.lo \
 	io_pop.lo io_subset.lo io_surface.lo \
 	corrtools.lo corrsurface.lo io_corrsurface.lo \
 	sharmonics.lo bessel.lo gaussleg.lo \
-	patchwork.lo samplingpt.lo #observables.lo
+	patchwork.lo samplingpt.lo observables.lo
+popsicle.lo : io_pop.lo surface.lo corrsurface.lo \
+	flux.lo observables.lo samplingpt.lo
 
 #################################################################
 ##                                                             ##

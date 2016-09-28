@@ -9,34 +9,9 @@
 
 MODULE POPSICLE
 
-  ! Here the list of modules of the library
-  USE constants_pop
-  USE tools
-  USE comm_surff
-  !USE bessel
-  USE gaussleg
-  USE scatt_interp
-  USE cubic_interp
-  USE spline_interp
-  USE scattcoords
-  USE cubcoords
-  USE coords
-  USE waveduplicate
-  USE scattboundcyl
-  USE scattboundcart
-  USE cubboundcyl
-  USE cubboundcart
-  USE boundary
-  USE fourier
-  USE sharmonics
-  USE patchwork
   USE io_pop
-  USE io_subset
-  USE io_surface
   USE surface
-  USE corrtools
   USE corrsurface
-  USE io_corrsurface
   USE flux
   USE observables
   USE samplingpt
