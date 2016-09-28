@@ -1,19 +1,11 @@
-PROGRAM tsurffgrid
+PROGRAM tsurff_grid
 
-  USE popsicle
+  USE popsicle_aux
   USE MPI
   
   IMPLICIT NONE
   
   !--Program variables-----------------------------------------------------!
-  
-!!$  TYPE :: COMMTYPE
-!!$     
-!!$     INTEGER                       :: iprocessor
-!!$     INTEGER                       :: numprocessors
-!!$     INTEGER                       :: maxprocessor
-!!$     
-!!$  END TYPE COMMTYPE
   
   TYPE(COMMTYPE)             :: communicator      
   
@@ -285,6 +277,6 @@ PROGRAM tsurffgrid
   
   CALL MPI_finalize( ierror )
   
-END PROGRAM tsurffgrid
+END PROGRAM tsurff_grid
 
 

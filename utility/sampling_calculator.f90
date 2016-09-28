@@ -1,6 +1,6 @@
 PROGRAM sampling_calculator
   
-  USE popsicle
+  USE popsicle_aux
   
   REAL(dp)                   :: radius_boundary
   INTEGER                    :: numwpts

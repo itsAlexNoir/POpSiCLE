@@ -1,6 +1,6 @@
 PROGRAM tsurff_calculator
   
-  USE popsicle
+  USE popsicle_aux
   USE MPI
   
   IMPLICIT NONE
