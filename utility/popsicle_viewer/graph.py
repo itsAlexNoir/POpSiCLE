@@ -16,6 +16,15 @@ import palettable as brew
 import matplotlib.gridspec as gridspec
 import matplotlib.patches as pat
 
+from matplotlib.transforms import Affine2D
+
+import mpl_toolkits.axisartist.floating_axes as floating_axes
+
+import numpy as np
+import  mpl_toolkits.axisartist.angle_helper as angle_helper
+from matplotlib.projections import PolarAxes
+from mpl_toolkits.axisartist.grid_finder import MaxNLocator
+
 plt.rcParams['font.family']='sans-serif'
 plt.ioff()
 
@@ -26,6 +35,8 @@ greycol = brew.colorbrewer.sequential.Greys_6.mpl_colors
 #quacol = brew.colorbrewer.qualitative.Paired_8.mpl_colors
 quacol = brew.colorbrewer.qualitative.Dark2_8.mpl_colors
 quacol2 = brew.colorbrewer.qualitative.Set3_3.mpl_colors
+
+################################################################
 
 ################################################################
 
@@ -85,6 +96,7 @@ def oneframe_surf(matrix,ax1,ax2,clamp,rotated=False,
                            shading='gouraud',rasterized='True')
     cb1 = fig.colorbar(surf1,ax=ax1,use_gridspec=True)
     cb1.set_ticks(np.arange(clamp[1],clamp[0]-1,-1))
+    cb1.ax.tick_params(labelsize=18)
     if(barlabel is not None):
         cb1.set_label(barlabel,rotation=90,fontsize=20)
     #ax1.set_aspect('equal')
@@ -131,6 +143,7 @@ def twoframe_surf(matrix1,ax1,ax2,clamp1,matrix2,ax3,ax4,clamp2,
                            shading='gouraud',rasterized='True')
     cb1 = fig.colorbar(surf1,ax=ax1,use_gridspec=True)
     cb1.set_ticks(np.arange(clamp1[1],clamp1[0]-1,-1))
+    cb1.ax.tick_params(labelsize=18)
     if(barlabel1 is not None):
         cb1.set_label(barlabel1,rotation=90,fontsize=20)
     ax1.set_aspect('equal')
@@ -155,6 +168,7 @@ def twoframe_surf(matrix1,ax1,ax2,clamp1,matrix2,ax3,ax4,clamp2,
                            shading='gouraud',rasterized='True')
     cb2 = fig.colorbar(surf2,ax=ax2,use_gridspec=True)
     cb2.set_ticks(np.arange(clamp2[1],clamp2[0]-1,-1))
+    cb2.ax.tick_params(labelsize=18)
     if(barlabel2 is not None):
         cb1.set_label(barlabel2,rotation=90,fontsize=20)
     ax2.set_aspect('equal')
@@ -206,6 +220,7 @@ def threeframe_surf(matrix1,ax1,ax2,clamp1,matrix2,ax3,ax4,clamp2,
                            shading='gouraud',rasterized='True')
     cb1 = fig.colorbar(surf1,ax=ax1,use_gridspec=True)
     cb1.set_ticks(np.arange(clamp1[1],clamp1[0]-1,-1))
+    cb1.ax.tick_params(labelsize=18)
     if(barlabel1 is not None):
         cb1.set_label(barlabel1,rotation=90,fontsize=20)
     ax1.set_aspect('equal')
@@ -230,6 +245,7 @@ def threeframe_surf(matrix1,ax1,ax2,clamp1,matrix2,ax3,ax4,clamp2,
                            shading='gouraud',rasterized='True')
     cb2 = fig.colorbar(surf2,ax=ax2,use_gridspec=True)
     cb2.set_ticks(np.arange(clamp2[1],clamp2[0]-1,-1))
+    cb2.ax.tick_params(labelsize=18)
     if(barlabel2 is not None):
         cb2.set_label(barlabel2,rotation=90,fontsize=20)
     ax2.set_aspect('equal')
@@ -255,6 +271,7 @@ def threeframe_surf(matrix1,ax1,ax2,clamp1,matrix2,ax3,ax4,clamp2,
                            shading='gouraud',rasterized='True')
     cb3 = fig.colorbar(surf3,ax=ax3,use_gridspec=True)
     cb3.set_ticks(np.arange(clamp3[1],clamp3[0]-1,-1))
+    cb3.ax.tick_params(labelsize=18)
     if(barlabel3 is not None):
         cb3.set_label(barlabel3,rotation=90,fontsize=20)
     ax3.set_aspect('equal')
@@ -311,6 +328,7 @@ def fourframe_surf(matrix1,ax1,ax2,clamp1,matrix2,ax3,ax4,clamp2,
                            shading='gouraud',rasterized='True')
     cb1 = fig.colorbar(surf1,ax=ax1,use_gridspec=True)
     cb1.set_ticks(np.arange(clamp1[1],clamp1[0]-1,-1))
+    cb1.ax.tick_params(labelsize=18)
     if(barlabel1 is not None):
         cb1.set_label(barlabel1,rotation=90,fontsize=20)
     ax1.set_aspect('equal')
@@ -335,6 +353,7 @@ def fourframe_surf(matrix1,ax1,ax2,clamp1,matrix2,ax3,ax4,clamp2,
                            shading='gouraud',rasterized='True')
     cb2 = fig.colorbar(surf2,ax=ax2,use_gridspec=True)
     cb2.set_ticks(np.arange(clamp2[1],clamp2[0]-1,-1))
+    cb2.ax.tick_params(labelsize=18)    
     if(barlabel2 is not None):
         cb2.set_label(barlabel2,rotation=90,fontsize=20)
     ax2.set_aspect('equal')
@@ -360,6 +379,7 @@ def fourframe_surf(matrix1,ax1,ax2,clamp1,matrix2,ax3,ax4,clamp2,
                            shading='gouraud',rasterized='True')
     cb3 = fig.colorbar(surf3,ax=ax3,use_gridspec=True)
     cb3.set_ticks(np.arange(clamp3[1],clamp3[0]-1,-1))
+    cb3.ax.tick_params(labelsize=18)
     if(barlabel3 is not None):
         cb3.set_label(barlabel3,rotation=90,fontsize=20)
     ax3.set_aspect('equal')
@@ -384,6 +404,7 @@ def fourframe_surf(matrix1,ax1,ax2,clamp1,matrix2,ax3,ax4,clamp2,
                            shading='gouraud',rasterized='True')
     cb4 = fig.colorbar(surf4,ax=ax4,use_gridspec=True)
     cb4.set_ticks(np.arange(clamp4[1],clamp4[0]-1,-1))
+    cb4.ax.tick_params(labelsize=18)
     if(barlabel4 is not None):
         cb4.set_label(barlabel4,rotation=90,fontsize=20)
     #ax4.set_aspect('equal')
@@ -431,6 +452,7 @@ def oneframe_polarsurf(matrix,ax1,ax2,clamp,axes_aspect=True,
                                shading='gouraud',rasterized='True')
     cb1 = fig.colorbar(surf1,ax=ax1,use_gridspec=True,pad=0.1)
     cb1.set_ticks(np.arange(clamp[1],clamp[0]-1,-1))
+    cb1.ax.tick_params(labelsize=18)
     if(barlabel is not None):
         cb1.set_label(barlabel,rotation=90,fontsize=20)
     if(axes_aspect is True):
@@ -454,5 +476,133 @@ def oneframe_polarsurf(matrix,ax1,ax2,clamp,axes_aspect=True,
         fig.savefig(filename+'.pdf',format='pdf',rasterized=True)
     if(showframe):
         plt.show()
+
+################################################################
+
+def setup_axes3(fig, rect,r,theta,rticks):
+    """
+    Sometimes, things like axis_direction need to be adjusted.
+    """
+
+    # rotate a bit for better orientation
+    tr_rotate = Affine2D().translate(-90, 0)
+
+    # scale degree to radians
+    tr_scale = Affine2D().scale(-np.pi/180., 1.)
+
+    tr = tr_rotate + tr_scale + PolarAxes.PolarTransform()
+
+    #grid_locator1 = angle_helper.LocatorHMS(4)
+    tick_formatter1 = angle_helper.FormatterHMS()
+
+    numticks = len(rticks)
+    grid_locator2 = MaxNLocator(numticks)
+
+    ra0, ra1 = 0, 180
+    cz0, cz1 = 0, max(r)
+    grid_helper = floating_axes.GridHelperCurveLinear(tr,
+                                        extremes=(ra0, ra1, cz0, cz1),
+                                        #grid_locator1=grid_locator1,
+                                        grid_locator2=grid_locator2,
+                                        #tick_formatter1=tick_formatter1,
+                                        #tick_formatter2=None,
+                                       )
+
+    ax1 = floating_axes.FloatingSubplot(fig, rect, grid_helper=grid_helper)
+    fig.add_subplot(ax1)
+
+    # adjust axis
+    ax1.axis["right"].set_axis_direction("bottom")
+    ax1.axis["left"].set_axis_direction("top")
+    ax1.axis["right"].toggle(ticklabels=True, label=True)
+    ax1.axis["left"].toggle(ticklabels=True, label=True)
+    ax1.axis["left"].major_ticklabels.set_axis_direction("left")
+    ax1.axis["right"].major_ticklabels.set_axis_direction("left")    
+    ax1.axis["right"].major_ticklabels.set_size(18)
+    ax1.axis["left"].major_ticklabels.set_size(18)
+    
+    ax1.axis["bottom"].set_visible(False)
+    ax1.axis["top"].set_axis_direction("top")
+    ax1.axis["top"].toggle(ticklabels=True, label=True)
+    ax1.axis["top"].major_ticklabels.set_axis_direction("bottom")
+    ax1.axis["top"].label.set_axis_direction("bottom")
+    ax1.axis["top"].major_ticklabels.set_size(18)
+    
+    
+    #ax1.axis["right"].label.set_fontsize(18)
+    ax1.axis["left"].label.set_fontsize(18)
+    ax1.axis["top"].label.set_fontsize(18)
+    
+    ax1.axis["left"].label.set_text(r"$E_e$ (au)")
+    ax1.axis["top"].label.set_text(r"$\theta$ (deg)")
+
+    # create a parasite axes whose transData in RA, cz
+    aux_ax = ax1.get_aux_axes(tr)
+
+    aux_ax.patch = ax1.patch # for aux_ax to have a clip path as in ax
+    ax1.patch.zorder=0.9 # but this has a side effect that the patch is
+                        # drawn twice, and possibly over some other
+                        # artists. So, we decrease the zorder a bit to
+                        # prevent this.
+
+    return ax1, aux_ax
+
+################################################################
+
+def setup_pcolormesh_semipolar(aux_ax, aux_X, aux_Y, Z, **kwargs):
+    ax = aux_ax._parent_axes
+    shape_orig = aux_X.shape
+    TR = np.array([aux_X, aux_Y]).reshape((2, -1)).transpose() # coordinates in aux_ax
+    XY = aux_ax.transAux.transform(TR) # coordinates in ax
+    X, Y = XY.transpose().reshape((2, shape_orig[0], shape_orig[1]))
+
+    CS = ax.pcolormesh(X, Y, Z, **kwargs)
+
+
+    return CS
+
+
+################################################################
+
+def semipolar_surf(matrix,ax1,ax2,clamp,
+                       ylim=None,xticks=None,yticks=None,
+                       xlabel=None,ylabel=None,barlabel=None,logplot=0,
+                       makeframe=0,filename='none',showframe=True):
+
+    ax1 = ax1 * 180. / np.pi
+    maxindx = np.argmin(np.abs(ax2-ylim[1])) + 1
+    ax2_red = ax2[:maxindx]
+    AX1, AX2 = np.meshgrid(ax1,ax2_red)
+    #AX1, AX2 = np.meshgrid(ax2_red,ax1)
+
+    matrix = matrix[:,:maxindx]
+
+    if(logplot):
+        matrix = np.log10(matrix)
+        
+    matrix = np.transpose(matrix)
+
+    # Create frame
+    fig = plt.figure(figsize=(10,12),facecolor='white')
+
+    # Create axis
+    ax3, aux_ax3 = setup_axes3(fig,111,ax2_red,ax1,yticks)
+
+    # Create actual plot
+    surf1 = setup_pcolormesh_semipolar(aux_ax3,AX1,AX2,matrix,
+                         vmax=clamp[1],vmin=clamp[0],
+                         shading='gouraud',rasterized='True')
+
+    cb1 = fig.colorbar(surf1,ax=ax3,use_gridspec=True,pad=0.15)
+    cb1.set_ticks(np.arange(clamp[1],clamp[0]-1,-1))
+    cb1.ax.tick_params(labelsize=18)
+    if(barlabel is not None):
+        cb1.set_label(barlabel,rotation=90,fontsize=20)
+
+    if(makeframe):
+        fig.savefig(filename+'.pdf',format='pdf',rasterized=True)
+    if(showframe):
+        plt.show()
+
 
 ################################################################
