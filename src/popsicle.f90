@@ -9,13 +9,18 @@
 
 MODULE POPSICLE
 
+  USE gaussleg
   USE io_pop
+  USE io_subset
+  USE patchwork
+  USE coords
   USE surface
   USE corrsurface
   USE flux
   USE observables
   USE samplingpt
-
+  USE fourier
+  
   IMPLICIT NONE
 
 
