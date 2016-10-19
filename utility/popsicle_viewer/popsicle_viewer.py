@@ -244,7 +244,7 @@ if(params.draw_semipolar_samp_pad):
                         [dEe*const.energy_au_ev,ylimit],
                         xticks,yticks,
                          r'$\theta$ (rad)',r'$E_e$ (eV)',
-                        r'$\log_{10}|\Psi(E_e,\theta)|^2$',
+                         r'$\log_{10} |\Psi(E_e,\theta)|^2\ (2 \times 10^{3})$',
                         logplot,params.makeframe,'semipolar_PAD',
                         params.showframe)
 
