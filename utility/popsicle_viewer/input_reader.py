@@ -84,6 +84,7 @@ class parameters:
         self.draw_total_cross = int(inparams['draw_total_cross'])
         self.draw_sampling_pes = int(inparams['draw_sampling_pes'])
         self.draw_sampling_pad = int(inparams['draw_sampling_pad'])
+        self.draw_semipolar_samp_pad = int(inparams['draw_semipolar_samp_pad'])
         self.draw_wavetime = int(inparams['draw_wavetime'])
 
         self.makeframe = int(inparams['makeframe'])

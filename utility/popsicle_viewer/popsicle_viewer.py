@@ -33,7 +33,7 @@ ax = axes.axes(params.dEe, params.Eemaxpts,
 
 # Load data from disk
 if(params.draw_polar_amplitude or params.draw_pad
-   or params.draw_semipolar_pad or params.sph_polar_amplitude):
+   or params.draw_semipolar_pad or params.draw_sph_polar_amplitude):
     polar_prob, ntime = data.load_h5series(params.polar_filename)
 
 
@@ -64,10 +64,10 @@ if(params.draw_total_cross):
     # diff_cross = cross.get_diff_cross(w,wki,probketheta,kax.ke_ax,params.pulse_duration,
     #                             params.A0)
 
-if(params.draw_sampling_pes):
+if(params.draw_sampling_pes or params.draw_semipolar_samp_pad):
     params.samp_pes_filename+='.dat'
     samp_pes = np.loadtxt(params.samp_pes_filename)
-if(params.draw_sampling_pad):
+if(params.draw_sampling_pad or params.draw_semipolar_samp_pad):
     samp_pad, ntime = data.load_h5series(params.samp_pad_filename)
 if(params.draw_wavetime):
     params.samp_wavetime_filename+='.dat'
@@ -137,14 +137,21 @@ if(params.draw_pad):
 if(params.draw_semipolar_pad):
     print('Plotting semipolar t-surff PAD...')
     logplot = 1
-    clamp = [-7,-3]
+    #clamp = [-12,-4]
+    #clamp = [-4,2]
+    clamp = [-6,-3]
+    #ylimit = 130.0
+    ylimit = 40.0
     xticks = None #np.arange(0,25,0.2)
-    yticks = np.arange(0.,2.1,0.3)
+    #yticks = np.arange(0.,5.1,0.6) # Para au
+    #yticks = np.arange(0,ylimit,20.) # Para eV
+    yticks = np.arange(0,ylimit,5.) # Para eV    
     PAD    = polar_prob * ax.ke_ax[None,:]
-    graph.semipolar_surf(PAD,ax.theta_ax,ax.Ee_ax,clamp,
-                        [ax.dEe,2.0],
+    dEe = ax.dE
+    graph.semipolar_surf(PAD,ax.theta_ax,ax.Ee_ax*const.energy_au_ev,clamp,
+                        [dEe*const.energy_au_ev,ylimit],
                         xticks,yticks,
-                        r'$\theta$(rad)',r'$E_e$(a.u.)',
+                         r'$\theta$ (rad)',r'$E_e$ (eV)',
                         r'$\log_{10}|\Psi(E_e,\theta)|^2$',
                         logplot,params.makeframe,'semipolar_PAD',
                         params.showframe)
@@ -219,6 +226,28 @@ if(params.draw_sampling_pad):
                         r'$\log_{10}|\Psi(E_e,\theta)|^2$',
                         logplot,params.makeframe,'prob_SPAD',
                         params.showframe)
+
+if(params.draw_semipolar_samp_pad):
+    print('Plotting semipolar sampling PAD...')
+    logplot = 1
+    #clamp = [-12,-4]
+    clamp = [-6,-3]
+    #ylimit = 130.0
+    ylimit = 40.0
+    xticks = None #np.arange(0,25,0.2)
+    #yticks = np.arange(0.,5.1,0.6) # Para au
+    #yticks = np.arange(0,ylimit,20.) # Para eV
+    yticks = np.arange(0,ylimit,5.) # Para eV    
+    PAD    = np.transpose(samp_pad)
+    dEe = samp_pes[1,0]-samp_pes[0,0]
+    graph.semipolar_surf(PAD*2.0e3,ax.theta_ax,samp_pes[:,0]*const.energy_au_ev,clamp,
+                        [dEe*const.energy_au_ev,ylimit],
+                        xticks,yticks,
+                         r'$\theta$ (rad)',r'$E_e$ (eV)',
+                        r'$\log_{10}|\Psi(E_e,\theta)|^2$',
+                        logplot,params.makeframe,'semipolar_PAD',
+                        params.showframe)
+
 
 # if(params.draw_Etotal):
 #     xlim = [0.0,2.0]
