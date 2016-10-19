@@ -479,7 +479,7 @@ def oneframe_polarsurf(matrix,ax1,ax2,clamp,axes_aspect=True,
 
 ################################################################
 
-def setup_axes3(fig, rect,r,theta,rticks):
+def setup_axes3(fig, rect,r,theta,rticks,rlabel,thetalabel):
     """
     Sometimes, things like axis_direction need to be adjusted.
     """
@@ -533,8 +533,8 @@ def setup_axes3(fig, rect,r,theta,rticks):
     ax1.axis["left"].label.set_fontsize(18)
     ax1.axis["top"].label.set_fontsize(18)
     
-    ax1.axis["left"].label.set_text(r"$E_e$ (au)")
-    ax1.axis["top"].label.set_text(r"$\theta$ (deg)")
+    ax1.axis["left"].label.set_text(rlabel)
+    ax1.axis["top"].label.set_text(thetalabel)
 
     # create a parasite axes whose transData in RA, cz
     aux_ax = ax1.get_aux_axes(tr)
@@ -586,7 +586,8 @@ def semipolar_surf(matrix,ax1,ax2,clamp,
     fig = plt.figure(figsize=(10,12),facecolor='white')
 
     # Create axis
-    ax3, aux_ax3 = setup_axes3(fig,111,ax2_red,ax1,yticks)
+    ax3, aux_ax3 = setup_axes3(fig,111,ax2_red,ax1,yticks,
+                               ylabel, xlabel)
 
     # Create actual plot
     surf1 = setup_pcolormesh_semipolar(aux_ax3,AX1,AX2,matrix,
