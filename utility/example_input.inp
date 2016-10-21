@@ -39,5 +39,7 @@ amplitudes
 .TRUE. pes
 ## Polar amplitude filename
 .FALSE. probketheta
+## 3D amplitude filename
+.FALSE. probkethetaphi
 ## Radial amplitude in angular basis
 .FALSE. mes_ang
