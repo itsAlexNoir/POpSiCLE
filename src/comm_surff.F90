@@ -1,169 +1,169 @@
 MODULE comm_surff
-   
-   USE constants_pop
-   USE MPI
-
-   IMPLICIT NONE
-   
-   PRIVATE
-   
-   !---------------------------------------------------------------------------!
-   !                                                                           !
-   ! Public types                                                              !
-   !                                                                           !
-   !---------------------------------------------------------------------------!
-   
-   TYPE, PUBLIC :: COMMTYPE
-   
-      INTEGER                       :: iprocessor
-      INTEGER                       :: ipk, ipt, ipp
-      INTEGER                       :: numproc1dk	  
-      INTEGER                       :: numproc1dt	  
-      INTEGER                       :: numproc1dp	  
-      INTEGER                       :: maxproc1dk	  
-      INTEGER                       :: maxproc1dt	  
-      INTEGER                       :: maxproc1dp	  
-      INTEGER                       :: numprocessors
-      INTEGER                       :: numprocessorsglobal
-      INTEGER                       :: commsimulation  
-      CHARACTER(LEN = 4)            :: cprocessor
-      INTEGER, ALLOCATABLE          :: iparray(:, :, :)
-      INTEGER, ALLOCATABLE          :: iparrayk(:)
-      INTEGER, ALLOCATABLE          :: iparrayt(:)
-      INTEGER, ALLOCATABLE          :: iparrayp(:)
-   
-   END TYPE COMMTYPE
-   
-   TYPE, PUBLIC :: KGRID
-   
-      INTEGER                       :: maxkpts, maxthetapts, maxphipts
-      INTEGER                       :: numkpts, numthetapts, numphipts
-      INTEGER                       :: lmax
-      REAL(dp)           	    :: emax
-      REAL(dp)           	    :: emax_theoretical
-      REAL(dp)           	    :: deltaenergy, deltaphi
-      REAL(dp), ALLOCATABLE	    :: energypts(:)
-      REAL(dp), ALLOCATABLE	    :: kpts(:)
-      REAL(dp), ALLOCATABLE	    :: thetapts(:)
-      REAL(dp), ALLOCATABLE	    :: sinthetapts(:)
-      REAL(dp), ALLOCATABLE	    :: costhetapts(:)
-      REAL(dp), ALLOCATABLE	    :: wtheta(:)
-      REAL(dp), ALLOCATABLE	    :: phipts(:)
-      REAL(dp), ALLOCATABLE	    :: sinphipts(:)
-      REAL(dp), ALLOCATABLE	    :: cosphipts(:)
-      REAL(dp), ALLOCATABLE	    :: wphi(:)      
-   
-   END TYPE KGRID
-   
-   TYPE, PUBLIC :: RGRID
-   
-      INTEGER                       :: numthetapts, numphipts
-      INTEGER                       :: lmax
-      INTEGER                       :: numlm
-      INTEGER                       :: numlmplus
-      REAL(dp)           	    :: rsurface
-      REAL(dp)           	    :: deltaphi
-      REAL(dp), ALLOCATABLE	    :: thetapts(:)
-      REAL(dp), ALLOCATABLE	    :: sinthetapts(:)
-      REAL(dp), ALLOCATABLE	    :: costhetapts(:)
-      REAL(dp), ALLOCATABLE	    :: wtheta(:)
-      REAL(dp), ALLOCATABLE	    :: phipts(:)
-      REAL(dp), ALLOCATABLE	    :: sinphipts(:)
-      REAL(dp), ALLOCATABLE	    :: cosphipts(:)
-      REAL(dp), ALLOCATABLE	    :: wphi(:)
-      LOGICAL                       :: gauge_transform
-   
-   END TYPE RGRID
-   
-   TYPE, PUBLIC :: TGRID
-   
-      INTEGER                       :: numtimes
-      REAL(dp), ALLOCATABLE	    :: timepts(:)
-      REAL(dp)                      :: deltat
-      LOGICAL                       :: truncate_time_integration
-      INTEGER                       :: maxtime_integrate
-      LOGICAL                       :: timeaverageforrydberg
-      REAL(dp)                      :: timetoaverageover
-      
-   
-   END TYPE TGRID
-       
-   !---------------------------------------------------------------------------!
-   !                                                                           !
-   ! Public variables                                                          !
-   !                                                                           !
-   !---------------------------------------------------------------------------!
-
-   TYPE(COMMTYPE), PUBLIC :: commsurff
-   TYPE(KGRID), PUBLIC    :: kmesh
-   TYPE(RGRID), PUBLIC    :: rmesh
-   TYPE(TGRID), PUBLIC    :: tmesh
-   
-   !---------------------------------------------------------------------------!
-   !                                                                           !
-   ! Public subroutines                                                        !
-   !                                                                           !
-   !---------------------------------------------------------------------------!
-   
-   PUBLIC             :: initialize_communications
-   PUBLIC             :: output_communications
-   PUBLIC             :: finalize_communications
-   PUBLIC             :: check_processor_count
-   PUBLIC             :: initialize_ip_addresses
-   PUBLIC             :: timing
-   PUBLIC             :: all_processor_barrier
-   PUBLIC             :: tsurff_stop
-   PUBLIC             :: error
-   PUBLIC             :: stopping
-   PUBLIC             :: print_debug
-   
-   !---------------------------------------------------------------------------!
-   !                                                                           !
-   ! Interfaces                                                                !
-   !                                                                           !
-   !---------------------------------------------------------------------------!
-   
-   !---------------------------------------------------------------------------!
-   !                                                                           !
-   ! Private variables                                                         !
-   !                                                                           !
-   !---------------------------------------------------------------------------!
-   
-   CONTAINS
-        
-      
-      
-      !------------------------------------------------------------------------!
-      !                                                                        !
-      ! Initializes the communications.                                        !
-      !                                                                        !
-      !------------------------------------------------------------------------!
-
-
-
-      SUBROUTINE initialize_communications( numprock, numproct, numprocp )
-
-      IMPLICIT NONE
-      
-      !--subroutine name-------------------------------------------------------!   
-      
+  
+  USE constants_pop
+#if _COM_MPI
+  USE MPI
+#endif
+  
+  IMPLICIT NONE
+  
+  PRIVATE
+  
+  !---------------------------------------------------------------------------!
+  !                                                                           !
+  ! Public types                                                              !
+  !                                                                           !
+  !---------------------------------------------------------------------------!
+  
+  TYPE, PUBLIC :: COMMTYPE
+     
+     INTEGER                       :: iprocessor
+     INTEGER                       :: ipk, ipt, ipp
+     INTEGER                       :: numproc1dk	  
+     INTEGER                       :: numproc1dt	  
+     INTEGER                       :: numproc1dp	  
+     INTEGER                       :: maxproc1dk	  
+     INTEGER                       :: maxproc1dt	  
+     INTEGER                       :: maxproc1dp	  
+     INTEGER                       :: numprocessors
+     INTEGER                       :: numprocessorsglobal
+     INTEGER                       :: commsimulation  
+     CHARACTER(LEN = 4)            :: cprocessor
+     INTEGER, ALLOCATABLE          :: iparray(:, :, :)
+     INTEGER, ALLOCATABLE          :: iparrayk(:)
+     INTEGER, ALLOCATABLE          :: iparrayt(:)
+     INTEGER, ALLOCATABLE          :: iparrayp(:)
+     
+  END TYPE COMMTYPE
+  
+  TYPE, PUBLIC :: KGRID
+     
+     INTEGER                       :: maxkpts, maxthetapts, maxphipts
+     INTEGER                       :: numkpts, numthetapts, numphipts
+     INTEGER                       :: lmax
+     REAL(dp)           	    :: emax
+     REAL(dp)           	    :: emax_theoretical
+     REAL(dp)           	    :: deltaenergy, deltaphi
+     REAL(dp), ALLOCATABLE	    :: energypts(:)
+     REAL(dp), ALLOCATABLE	    :: kpts(:)
+     REAL(dp), ALLOCATABLE	    :: thetapts(:)
+     REAL(dp), ALLOCATABLE	    :: sinthetapts(:)
+     REAL(dp), ALLOCATABLE	    :: costhetapts(:)
+     REAL(dp), ALLOCATABLE	    :: wtheta(:)
+     REAL(dp), ALLOCATABLE	    :: phipts(:)
+     REAL(dp), ALLOCATABLE	    :: sinphipts(:)
+     REAL(dp), ALLOCATABLE	    :: cosphipts(:)
+     REAL(dp), ALLOCATABLE	    :: wphi(:)      
+     
+  END TYPE KGRID
+  
+  TYPE, PUBLIC :: RGRID
+     
+     INTEGER                       :: numthetapts, numphipts
+     INTEGER                       :: lmax
+     INTEGER                       :: numlm
+     INTEGER                       :: numlmplus
+     REAL(dp)           	   :: rsurface
+     REAL(dp)           	   :: deltaphi
+     REAL(dp), ALLOCATABLE	   :: thetapts(:)
+     REAL(dp), ALLOCATABLE	   :: sinthetapts(:)
+     REAL(dp), ALLOCATABLE	   :: costhetapts(:)
+     REAL(dp), ALLOCATABLE         :: wtheta(:)
+     REAL(dp), ALLOCATABLE         :: phipts(:)
+     REAL(dp), ALLOCATABLE         :: sinphipts(:)
+     REAL(dp), ALLOCATABLE         :: cosphipts(:)
+     REAL(dp), ALLOCATABLE         :: wphi(:)
+     LOGICAL                       :: gauge_transform
+     
+  END TYPE RGRID
+  
+  TYPE, PUBLIC :: TGRID
+     
+     INTEGER                       :: numtimes
+     REAL(dp), ALLOCATABLE	   :: timepts(:)
+     REAL(dp)                      :: deltat
+     LOGICAL                       :: truncate_time_integration
+     INTEGER                       :: maxtime_integrate
+     LOGICAL                       :: timeaverageforrydberg
+     REAL(dp)                      :: timetoaverageover
+     
+  END TYPE TGRID
+  
+  !---------------------------------------------------------------------------!
+  !                                                                           !
+  ! Public variables                                                          !
+  !                                                                           !
+  !---------------------------------------------------------------------------!
+  
+  TYPE(COMMTYPE), PUBLIC :: commsurff
+  TYPE(KGRID), PUBLIC    :: kmesh
+  TYPE(RGRID), PUBLIC    :: rmesh
+  TYPE(TGRID), PUBLIC    :: tmesh
+  
+  !---------------------------------------------------------------------------!
+  !                                                                           !
+  ! Public subroutines                                                        !
+  !                                                                           !
+  !---------------------------------------------------------------------------!
+  
+  PUBLIC             :: initialize_communications
+  PUBLIC             :: output_communications
+  PUBLIC             :: finalize_communications
+  PUBLIC             :: check_processor_count
+  PUBLIC             :: initialize_ip_addresses
+  PUBLIC             :: timing
+  PUBLIC             :: all_processor_barrier
+  PUBLIC             :: tsurff_stop
+  PUBLIC             :: error
+  PUBLIC             :: stopping
+  PUBLIC             :: print_debug
+  
+  !---------------------------------------------------------------------------!
+  !                                                                           !
+  ! Interfaces                                                                !
+  !                                                                           !
+  !---------------------------------------------------------------------------!
+  
+  !---------------------------------------------------------------------------!
+  !                                                                           !
+  ! Private variables                                                         !
+  !                                                                           !
+  !---------------------------------------------------------------------------!
+  
+CONTAINS
+  
+  !------------------------------------------------------------------------!
+  !                                                                        !
+  ! Initializes the communications.                                        !
+  !                                                                        !
+  !------------------------------------------------------------------------!
+  
+  SUBROUTINE initialize_communications( numprock, numproct, numprocp )
+    
+    IMPLICIT NONE
+    
+    !--subroutine name-------------------------------------------------------!   
+    
       CHARACTER(LEN = *), PARAMETER :: myname = 'initialize_communications'
       
       !--subroutine parameters-------------------------------------------------!
-
+      
       INTEGER, INTENT(IN)           :: numprock
       INTEGER, INTENT(IN)           :: numproct
       INTEGER, INTENT(IN)           :: numprocp
       
       !--internal variables----------------------------------------------------!   
-
+      
+#if _COM_MPI
       INTEGER                       :: ip, isim, inum, myid, mysim, ierror
-
+#endif
+      
       !------------------------------------------------------------------------!
       
-
+#if _COM_MPI
+      
       ! Start up MPI
-
+      
       CALL MPI_init( ierror )
 
       ! Find out number of processors.
@@ -187,7 +187,23 @@ MODULE comm_surff
 				 commsurff%numproc1dp
       commsurff%maxproc1dk     = commsurff%numproc1dk - 1
       commsurff%maxproc1dt     = commsurff%numproc1dt - 1
-      commsurff%maxproc1dp     = commsurff%numproc1dp - 1 
+      commsurff%maxproc1dp     = commsurff%numproc1dp - 1
+
+#else
+      
+      commsurff%numproc1dk     = 1
+      commsurff%numproc1dt     = 1
+      commsurff%numproc1dp     = 1
+      
+      commsurff%numprocessors  = commsurff%numproc1dk *		               &
+           commsurff%numproc1dt *		                               &
+           commsurff%numproc1dp
+      commsurff%maxproc1dk     = commsurff%numproc1dk - 1
+      commsurff%maxproc1dt     = commsurff%numproc1dt - 1
+      commsurff%maxproc1dp     = commsurff%numproc1dp - 1
+      
+#endif
+
       
       WRITE(commsurff%cprocessor, '(I4.4)') commsurff%iprocessor
 
@@ -265,11 +281,7 @@ MODULE comm_surff
       ! Initializes the communications.                                        !
       !                                                                        !
       !------------------------------------------------------------------------!
-
-
-      
-      
-      
+  
       SUBROUTINE finalize_communications( )
       
       IMPLICIT NONE
@@ -281,18 +293,19 @@ MODULE comm_surff
       !--subroutine parameters-------------------------------------------------!
       
       !--internal variables----------------------------------------------------!   
-
+#if _COM_MPI
       INTEGER       :: ierror
       
       !------------------------------------------------------------------------!
-
-
-
-!     Stop MPI.      
+      
+      !     Stop MPI.      
       
       CALL MPI_finalize( ierror )
       
+#else
+      STOP
 
+#endif
 
       END SUBROUTINE finalize_communications
       
@@ -312,20 +325,19 @@ MODULE comm_surff
       !--internal variables----------------------------------------------------!   
 
       !------------------------------------------------------------------------!
-
-
-
-!     Stop MPI.      
+      
+#if _COM_MPI
+      !     Stop MPI.      
       
       timing = MPI_WTIME( )
-       
       
+#endif
       
-      END FUNCTION timing
-      
-      
-      
-      SUBROUTINE check_processor_count( )
+    END FUNCTION timing
+    
+    
+    
+    SUBROUTINE check_processor_count( )
       
       IMPLICIT NONE   
    
@@ -430,13 +442,13 @@ MODULE comm_surff
    
       INTEGER       :: ierror
       
-      
+#if _COM_MPI 
       
       ! The MPI barrier routine.
 
       CALL MPI_barrier( commsurff%commsimulation, ierror )
      
-     
+#endif
       
       END SUBROUTINE all_processor_barrier
 

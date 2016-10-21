@@ -1,8 +1,9 @@
 PROGRAM tsurff_calculator
   
   USE popsicle_aux
+#if _COM_MPI
   USE MPI
-  
+#endif
   IMPLICIT NONE
   
   INTEGER                     :: numprock, numproctheta, numprocphi

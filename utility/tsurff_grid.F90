@@ -1,7 +1,9 @@
 PROGRAM tsurff_grid
 
   USE popsicle_aux
+#if _COM_MPI
   USE MPI
+#endif
   
   IMPLICIT NONE
   
@@ -35,6 +37,7 @@ PROGRAM tsurff_grid
   LOGICAL                    :: radamp_desired
   LOGICAL                    :: pes_desired
   LOGICAL                    :: polar_desired
+  LOGICAL                    :: amplitude3D_desired
   LOGICAL                    :: radamp_angbasis_desired
   CHARACTER(LEN = 3)         :: corbital
   CHARACTER(LEN = 4)         :: cprocessor
@@ -45,9 +48,11 @@ PROGRAM tsurff_grid
   CHARACTER(LEN = 100)       :: radamp_filename
   CHARACTER(LEN = 100)       :: pes_filename
   CHARACTER(LEN = 100)       :: polar_filename
+  CHARACTER(LEN = 100)       :: amplitude3D_filename  
   CHARACTER(LEN = 100)       :: radamp_angbasis_filename
   
   !------------------------------------------------------------------------!
+#if _COM_MPI
   
   ! Start up MPI
   
@@ -63,7 +68,13 @@ PROGRAM tsurff_grid
   ! Find out number of the processor we are working on.
   
   CALL MPI_COMM_RANK( MPI_COMM_WORLD, communicator%iprocessor, ierror )
-  
+
+#else
+
+  communicator%numprocessors = 1
+  communicator%iprocessor    = 0
+
+#endif
   !-----------------------------------------------------------------------!
   !
   ! Read input file
@@ -74,8 +85,11 @@ PROGRAM tsurff_grid
   IF (LEN_TRIM(inputfile) == 0) THEN
      IF(communicator%iprocessor .EQ. 0) &
           WRITE(*, *) 'No input file specified.'
-     
+#if _COM_MPI 
      CALL MPI_ABORT( MPI_COMM_WORLD, errorcode, ierror )
+#else
+     STOP
+#endif
   ENDIF
   
   ! Open input file
@@ -84,8 +98,11 @@ PROGRAM tsurff_grid
   IF(ios .NE. 0) THEN
      IF(communicator%iprocessor .EQ. 0) &
           WRITE(*, *) 'Error opening input file.'
-     
+#if _COM_MPI
      CALL MPI_ABORT( MPI_COMM_WORLD, errorcode, ierror )
+#else
+     STOP
+#endif
   ENDIF
   
   READ(12, *)
@@ -129,6 +146,8 @@ PROGRAM tsurff_grid
   READ(12, *) pes_desired, pes_filename
   READ(12, *)
   READ(12, *) polar_desired, polar_filename
+  READ(12, *)
+  READ(12, *) amplitude3D_desired, amplitude3D_filename
   READ(12, *)
   READ(12, *) radamp_angbasis_desired, radamp_angbasis_filename
   
@@ -265,7 +284,15 @@ PROGRAM tsurff_grid
      CALL write_polar_amplitude(amplitude, filename)
      
   ENDIF
-    
+  
+  IF (polar_desired) THEN
+     filename = TRIM(data_directory) // '/' // TRIM(amplitude3D_filename) // '.' //  &
+          corbital 
+     
+     CALL write_amplitude3D(amplitude, filename)
+     
+  ENDIF
+  
   !--------------------------!
   ! Release resources
   
@@ -274,9 +301,9 @@ PROGRAM tsurff_grid
   DEALLOCATE(probktpr)
   DEALLOCATE(probktpi)
   DEALLOCATE(amplitude)
-  
+#if _COM_MPI
   CALL MPI_finalize( ierror )
-  
+#endif
 END PROGRAM tsurff_grid
 
 
