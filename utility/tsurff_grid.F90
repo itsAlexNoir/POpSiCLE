@@ -39,6 +39,8 @@ PROGRAM tsurff_grid
   LOGICAL                    :: polar_desired
   LOGICAL                    :: amplitude3D_desired
   LOGICAL                    :: radamp_angbasis_desired
+  LOGICAL                    :: polar_silo_desired
+  LOGICAL                    :: amp3D_silo_desired
   CHARACTER(LEN = 3)         :: corbital
   CHARACTER(LEN = 4)         :: cprocessor
   CHARACTER(LEN = 100)       :: data_directory
@@ -145,9 +147,9 @@ PROGRAM tsurff_grid
   READ(12, *)
   READ(12, *) pes_desired, pes_filename
   READ(12, *)
-  READ(12, *) polar_desired, polar_filename
+  READ(12, *) polar_desired, polar_filename, polar_silo_desired
   READ(12, *)
-  READ(12, *) amplitude3D_desired, amplitude3D_filename
+  READ(12, *) amplitude3D_desired, amplitude3D_filename, amp3D_silo_desired
   READ(12, *)
   READ(12, *) radamp_angbasis_desired, radamp_angbasis_filename
   
@@ -281,7 +283,7 @@ PROGRAM tsurff_grid
      filename = TRIM(data_directory) // '/' // TRIM(polar_filename) // '.' //  &
           corbital 
      
-     CALL write_polar_amplitude(amplitude, filename)
+     CALL write_polar_amplitude(amplitude, filename, polar_silo_desired)
      
   ENDIF
   
@@ -289,7 +291,7 @@ PROGRAM tsurff_grid
      filename = TRIM(data_directory) // '/' // TRIM(amplitude3D_filename) // '.' //  &
           corbital 
      
-     CALL write_amplitude3D(amplitude, filename)
+     CALL write_amplitude3D(amplitude, filename, amp3D_silo_desired)
      
   ENDIF
   

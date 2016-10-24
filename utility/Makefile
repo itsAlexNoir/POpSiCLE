@@ -57,6 +57,10 @@ FFT_LIBS = ${MKL_LIBS}
 FFT_INCLUDE =
 endif
 
+ifdef SILO_PATH
+SILO_LIB = -L${SILO_PATH}/lib -lsiloh5
+SILO_INCL = -I${SILO_PATH}/include
+endif
 
 POPSICLE_LIB_SER = ${POPSICLE_LIB}/libpopsicle_serial.a
 POPSICLE_LIB_PAR = ${POPSICLE_LIB}/libpopsicle_parallel.a
@@ -69,9 +73,9 @@ sampling_calculator: ${POPSICLE_LIB_SER}
 
 tsurff_grid: ${POPSICLE_LIB_PAR}
 	${FC} ${F90FLAGS} tsurff_grid.F90 -o ../bin/tsurff_grid.exec \
-	-I${POPSICLE_INCL} ${HDF5_INCLUDE} ${FFT_INCLUDE} \
+	-I${POPSICLE_INCL} ${HDF5_INCLUDE} ${FFT_INCLUDE} ${SILO_INCL} \
 	${POPSICLE_LIB}/libpopsicle_parallel.a ${HDF5_LIB} \
-	${FFT_LIBS}
+	${FFT_LIBS} ${SILO_LIB}
 
 
 tsurff_calculator: ${POPSICLE_LIB_PAR}
@@ -85,14 +89,14 @@ ${POPSICLE_LIB_SER}:
 	"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 	"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
 	"HDF5_PATH=${HDF5_PATH}" "SZIP_PATH=${SZIP_PATH}" \
-	"ZLIB_PATH=${ZLIB_PATH}"
+	"ZLIB_PATH=${ZLIB_PATH}" "SILO_PATH=${SILO_PATH}"
 
 ${POPSICLE_LIB_PAR}:
 	cd ${POPSICLE_ROOT}; ${MAKE} plib "FC=${FC}" "compiler=${compiler}" \
 	"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 	"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
 	"HDF5_PATH=${HDF5_PATH}" "SZIP_PATH=${SZIP_PATH}" \
-	"ZLIB_PATH=${ZLIB_PATH}"
+	"ZLIB_PATH=${ZLIB_PATH}" "SILO_PATH=${SILO_PATH}"
 
 clean: clean_app
 
