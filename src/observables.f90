@@ -243,20 +243,31 @@ CONTAINS
   
   !***********************************************************!
   
-  SUBROUTINE write_polar_amplitude(bk, filename, groupname)
+  SUBROUTINE write_polar_amplitude(bk, filename, silofile, groupname)
     IMPLICIT NONE
-
+    
     COMPLEX(dp), INTENT(IN)                :: bk(:, :, :)
     CHARACTER(LEN=*), INTENT(IN)           :: filename
+    LOGICAL, OPTIONAL                      :: silofile
     CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: groupname
-
+    
     REAL(dp), ALLOCATABLE                  :: probk2D(:, :)
-
+    INTEGER                                :: dims(2)
+    
     !--------------------------------------------------!
     
     ALLOCATE(probk2D(1:kmesh%maxkpts,1:kmesh%maxthetapts))
     
     CALL get_polar_amplitude(bk,probk2D)
+    
+    dims = (/ kmesh%maxkpts, kmesh%maxthetapts /)
+    
+    IF(silofile) THEN
+       CALL create_silo_file(filename)
+       CALL write_silo_rectilinear_mesh2D(filename,dims, &
+            kmesh%kpts, kmesh%thetapts )
+       CALL write_silo_function2D(filename, dims, probk2D)
+    ENDIF
     
     IF(PRESENT(groupname)) THEN
        CALL write_wave(RESHAPE(probk2D, &
@@ -304,14 +315,16 @@ CONTAINS
   
   !***********************************************************!
   
-  SUBROUTINE write_amplitude3D(bk, filename, groupname)
+  SUBROUTINE write_amplitude3D(bk, filename, silofile, groupname)
     IMPLICIT NONE
     
     COMPLEX(dp), INTENT(IN)                :: bk(:, :, :)
     CHARACTER(LEN=*), INTENT(IN)           :: filename
+    LOGICAL, OPTIONAL                      :: silofile
     CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: groupname
 
     REAL(dp), ALLOCATABLE                  :: probk3D(:, :, :)
+    INTEGER                                :: dims(3)
     
     !--------------------------------------------------!
     
@@ -319,6 +332,15 @@ CONTAINS
          1:kmesh%maxphipts))
     
     CALL get_amplitude3D(bk,probk3D)
+    
+    dims = (/ kmesh%maxkpts, kmesh%maxthetapts, kmesh%maxphipts /)
+    
+    IF(silofile) THEN
+       CALL create_silo_file(filename)
+       CALL write_silo_rectilinear_mesh3D(filename,dims, &
+            kmesh%kpts, kmesh%thetapts, kmesh%phipts)
+       CALL write_silo_function3D(filename, dims, probk3D)
+    ENDIF
     
     IF(PRESENT(groupname)) THEN
        CALL write_wave(RESHAPE(probk3D, &
@@ -333,7 +355,7 @@ CONTAINS
             (/kmesh%maxkpts,kmesh%maxthetapts,kmesh%maxphipts/), &
             filename)
     ENDIF
-    
+
     DEALLOCATE(probk3D)
     
   END SUBROUTINE write_amplitude3D

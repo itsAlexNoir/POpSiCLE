@@ -47,28 +47,28 @@ lib:
 		"compiler=${compiler}" "POPSICLE_ROOT=${PWD}" \
 		"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
-		"HDF5_PATH=${HDF5_PATH}"
+		"HDF5_PATH=${HDF5_PATH}" "SILO_PATH=${SILO_PATH}"
 
 plib:
 	cd src; ${MAKE} lib "FC=${FC}" "PLIB=parallel" \
 		"compiler=${compiler}" "POPSICLE_ROOT=${PWD}" \
 		"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
-		"HDF5_PATH=${HDF5_PATH}"
+		"HDF5_PATH=${HDF5_PATH}" "SILO_PATH=${SILO_PATH}"
 
 dylib:
 	cd src; ${MAKE} dylib "FC=${FC}" "PLIB=serial" \
 		"compiler=${compiler}" "POPSICLE_ROOT=${PWD}" \
 		"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
-		"HDF5_PATH=${HDF5_PATH}"
+		"HDF5_PATH=${HDF5_PATH}" "SILO_PATH=${SILO_PATH}"
 
 dyplib:
 	cd src; ${MAKE} dylib "FC=${FC}" "PLIB=parallel" \
 		"compiler=${compiler}" "POPSICLE_ROOT=${PWD}" \
 		"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
-		"HDF5_PATH=${HDF5_PATH}"
+		"HDF5_PATH=${HDF5_PATH}" "SILO_PATH=${SILO_PATH}"
 
 tsurff_calculator:
 	cd utility; ${MAKE} tsurff_calculator "FC=${FC}" \
@@ -93,7 +93,7 @@ tsurff_grid:
 		"FFT_LIB=${FFT_LIB}" "FFT_PATH=${FFT_PATH}" \
 		"F90FLAGS=${F90FLAGS}" "F77FLAGS=${F77FLAGS}" \
 		"HDF5_PATH=${HDF5_PATH}" "SZIP_PATH=${SZIP_PATH}" \
-		"ZLIB_PATH=${ZLIB_PATH}"
+		"ZLIB_PATH=${ZLIB_PATH}" "SILO_PATH=${SILO_PATH}"
 
 clean:
 	cd src; ${MAKE} clean

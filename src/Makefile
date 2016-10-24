@@ -45,6 +45,10 @@ POPSICLE_OBJS += ${FFTW_OBJ}
 POPSICLE_LO   += ${FFTW_LO}
 endif
 
+ifdef SILO_PATH
+POPSICLE_OBJS += silo_aux.o
+POPSICLE_LO   += silo_aux.lo
+endif
 
 ########################################################
 ########################################################
@@ -112,6 +116,15 @@ endif
 endif
 
 #######################################
+##      Set Silo path
+##  The specific libs will depend on
+##  the communication choosen
+########################################
+
+INCL    += -I${SILO_PATH}/include
+LIBS    += -L${SILO_PATH}/lib -lsiloh5 
+
+#######################################
 ##      Set HDF5
 ##  The specific libs will depend on
 ##  the communication choosen
@@ -166,8 +179,13 @@ corrsurface.o: constants.o tools.o corrtools.o \
 io_corrsurface.o: constants.o boundary.o
 flux.o: constants.o comm_surff.o gaussleg.o bessel.o \
 	sharmonics.o tools.o io_surface.o io_pop.o
+ifdef SILO_PATH
+observables.o: constants.o comm_surff.o gaussleg.o \
+	sharmonics.o flux.o io_pop.o silo_aux.o
+else
 observables.o: constants.o comm_surff.o gaussleg.o \
 	sharmonics.o flux.o io_pop.o
+endif
 samplingpt.o: constants.o gaussleg.o fourier.o \
 	io_surface.o io_pop.o
 popsicle_aux.o : constants.o fourier.o comm_surff.o \
@@ -179,8 +197,8 @@ popsicle_aux.o : constants.o fourier.o comm_surff.o \
 	corrtools.o corrsurface.o io_corrsurface.o \
 	sharmonics.o bessel.o gaussleg.o \
 	patchwork.o surface.o samplingpt.o observables.o
-popsicle.lo : io_pop.lo surface.lo corrsurface.lo \
-	flux.lo observables.lo samplingpt.lo
+popsicle.o : io_pop.o surface.o corrsurface.o \
+	flux.o observables.o samplingpt.o
 
 ########################################################
 
@@ -221,9 +239,14 @@ corrsurface.lo: constants.lo tools.lo corrtools.lo \
 	boundary.lo io_surface.lo io_corrsurface.lo
 io_corrsurface.lo: constants.lo boundary.lo
 flux.lo: constants.lo comm_surff.lo gaussleg.lo bessel.lo \
-	sharmonics.lo tools.lo io_surface.lo io_pop.lo	
+	sharmonics.lo tools.lo io_surface.lo io_pop.lo
+ifdef SILO_PATH
+observables.lo: constants.lo comm_surff.lo gaussleg.lo \
+	sharmonics.lo flux.lo io_pop.lo silo_aux.lo
+else
 observables.lo: constants.lo comm_surff.lo gaussleg.lo \
 	sharmonics.lo flux.lo io_pop.lo
+endif
 samplingpt.lo: constants.lo gaussleg.lo fourier.lo \
 	io_surface.lo io_pop.lo
 popsicle_aux.lo : constants.lo fourier.lo comm_surff.lo \
@@ -332,6 +355,10 @@ clean_slatec:
 %.lo:%.f
 	${LIBTOOL} --tag=F77 --mode=compile \
 	${FC} ${F77FLAGS} -c $<
+
+silo_aux.o: silo_aux.f
+	${FC} ${F77FLAGS} -c $< -L${SILO_PATH}/lib \
+	-I${SILO_PATH}/include -lsiloh5
 
 # Pre-Processed Fortran90
 %.o:%.F90
