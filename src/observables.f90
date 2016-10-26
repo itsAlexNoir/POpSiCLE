@@ -252,7 +252,10 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN), OPTIONAL :: groupname
     
     REAL(dp), ALLOCATABLE                  :: probk2D(:, :)
+    REAL(dp), ALLOCATABLE                  :: xax(:, :)
+    REAL(dp), ALLOCATABLE                  :: yax(:, :)    
     INTEGER                                :: dims(2)
+    INTEGER                                :: ik, itheta
     
     !--------------------------------------------------!
     
@@ -264,11 +267,29 @@ CONTAINS
     
     IF(silofile) THEN
        CALL create_silo_file(filename)
-       CALL write_silo_rectilinear_mesh2D(filename,dims, &
-            kmesh%kpts, kmesh%thetapts )
-       CALL write_silo_function2D(filename, dims, probk2D)
+       CALL write_silo_rectilinear_mesh2D(filename, dims, &
+            'ketheta',kmesh%kpts, kmesh%thetapts )
+       CALL write_silo_function2D(filename, dims, 'ketheta', &
+            probk2D, 'rectangularketheta')
+       
+       ALLOCATE(xax(kmesh%maxkpts,kmesh%maxthetapts))
+       ALLOCATE(yax(kmesh%maxkpts,kmesh%maxthetapts))
+       
+       DO itheta = 1, kmesh%maxthetapts
+          DO ik = 1, kmesh%maxkpts
+             xax(ik,itheta) = kmesh%kpts(ik) * kmesh%costhetapts(itheta)
+             yax(ik,itheta) = kmesh%kpts(ik) * SIN(kmesh%thetapts(itheta))
+          ENDDO
+       ENDDO
+       
+       CALL write_silo_curvilinear_mesh2D(filename, dims, &
+            'xy', xax, yax )
+       CALL write_silo_function2D(filename, dims, 'xy', &
+            probk2D, 'polarketheta')
+       
+       DEALLOCATE(xax, yax)
     ENDIF
-    
+          
     IF(PRESENT(groupname)) THEN
        CALL write_wave(RESHAPE(probk2D, &
             (/kmesh%maxkpts*kmesh%maxthetapts/)),2,&
@@ -338,8 +359,9 @@ CONTAINS
     IF(silofile) THEN
        CALL create_silo_file(filename)
        CALL write_silo_rectilinear_mesh3D(filename,dims, &
-            kmesh%kpts, kmesh%thetapts, kmesh%phipts)
-       CALL write_silo_function3D(filename, dims, probk3D)
+            'kethetaphi',kmesh%kpts, kmesh%thetapts, kmesh%phipts)
+       CALL write_silo_function3D(filename, dims, 'kethetaphi', &
+            probk3D, 'PES_3D')
     ENDIF
     
     IF(PRESENT(groupname)) THEN
