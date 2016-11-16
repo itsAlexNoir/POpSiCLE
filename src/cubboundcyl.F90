@@ -112,7 +112,7 @@ CONTAINS
     ENDDO
     
     numrpts = 2 * fdpts + 1
-    numthetapts = lmax + 1
+    numthetapts = lmax + 3
     
     ALLOCATE(rpts_boundary(1:numrpts))
     ALLOCATE(theta_boundary(1:numthetapts))
@@ -132,7 +132,7 @@ CONTAINS
     ENDDO
     
     ! Now theta axis
-    CALL get_gauss_stuff(-1.0_dp, 1.0_dp, &
+    CALL make_gauss_lobatto(-1.0_dp, 1.0_dp, &
          costheta_boundary, theta_weights)
     
     theta_boundary = ACOS(costheta_boundary)

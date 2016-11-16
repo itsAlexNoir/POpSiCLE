@@ -199,7 +199,7 @@ CONTAINS
     ALLOCATE(rmesh%cosphipts(1:rmesh%numphipts))
     ALLOCATE(rmesh%wphi(1:rmesh%numphipts))
     
-    CALL get_gauss_stuff( -1.0_dp, 1.0_dp, rmesh%costhetapts, rmesh%wtheta )
+    CALL make_gauss_lobatto( -1.0_dp, 1.0_dp, rmesh%costhetapts, rmesh%wtheta )
     
     rmesh%thetapts    = ACOS(rmesh%costhetapts)
     rmesh%sinthetapts = SIN(rmesh%thetapts)
@@ -285,7 +285,8 @@ CONTAINS
   !-----------------------------------------------------------------------------!
   !-----------------------------------------------------------------------------!
   
-  SUBROUTINE make_kpoints( lmax, maxkpts, maxthetapts, maxphipts, deltaenergy )
+  SUBROUTINE make_kpoints( lmax, maxkpts, maxthetapts, maxphipts, deltaenergy, &
+       eneoffset )
     
     IMPLICIT NONE
 
@@ -296,6 +297,7 @@ CONTAINS
     INTEGER, INTENT(IN)     :: maxthetapts
     INTEGER, INTENT(IN)     :: maxphipts
     REAL(dp), INTENT(IN)    :: deltaenergy
+    REAL(dp), INTENT(IN), OPTIONAL :: eneoffset
     
     !------------------------------------------------------------------------!
     
@@ -303,8 +305,6 @@ CONTAINS
     INTEGER                 :: ithetag
     REAL(dp), ALLOCATABLE   :: costheta_global(:)
     REAL(dp), ALLOCATABLE   :: wtheta_global(:)
-    REAL(dp), ALLOCATABLE   :: costheta_gauss(:)
-    REAL(dp), ALLOCATABLE   :: wtheta_gauss(:)
     
     !------------------------------------------------------------------------!
 
@@ -313,12 +313,15 @@ CONTAINS
     kmesh%maxthetapts  = maxthetapts
     kmesh%maxphipts    = maxphipts
     kmesh%deltaenergy  = deltaenergy
+    IF(PRESENT(eneoffset)) THEN
+       kmesh%eneoffset    = eneoffset
+    ELSE
+       kmesh%eneoffset    = 0.0_dp
+    ENDIF
     
     kmesh%numkpts      = commsurff%numproc1dk * kmesh%maxkpts
     kmesh%numthetapts  = commsurff%numproc1dt * kmesh%maxthetapts
     kmesh%numphipts    = commsurff%numproc1dp * kmesh%maxphipts
-    
-    kmesh%emax         = REAL(kmesh%numkpts - 1, dp) * kmesh%deltaenergy
       
     ALLOCATE(kmesh%kpts(1:kmesh%maxkpts))
     ALLOCATE(kmesh%energypts(1:kmesh%maxkpts))
@@ -333,37 +336,22 @@ CONTAINS
     
     DO ik = 1, kmesh%maxkpts 
        
-       kmesh%energypts(ik) = REAL(kmesh%maxkpts * commsurff%ipk +            &
-            ik, dp) * kmesh%deltaenergy
+       kmesh%energypts(ik) = kmesh%eneoffset +             &
+            REAL(kmesh%maxkpts * commsurff%ipk + ik, dp) * &
+            kmesh%deltaenergy
        kmesh%kpts(ik)      = SQRT(2.0_dp * kmesh%energypts(ik))
        
     ENDDO
     
-    ! We want to plot the whole range of theta going from 0 to 2pi
-    ! These end points are not included in the gauss quadrature so 
-    ! we add them as additional points but with zero weighting for
-    ! any subsequent integration.
+    kmesh%emin         = kmesh%energypts(1)
+    kmesh%emax         = kmesh%energypts(kmesh%maxkpts)
+    
+    ! Prepare Gauss nodes and weights with a Gauss-Lobatto subroutine
     
     ALLOCATE(costheta_global(1:kmesh%numthetapts))
     ALLOCATE(wtheta_global(1:kmesh%numthetapts))
     
-    ALLOCATE(costheta_gauss(2:(kmesh%numthetapts - 1)))
-    ALLOCATE(wtheta_gauss(2:(kmesh%numthetapts - 1)))
-    
-    CALL get_gauss_stuff( -1.0_dp, 1.0_dp, costheta_gauss, wtheta_gauss )
-    
-    costheta_global(1) = -1.0_dp
-    wtheta_global(1)   =  0.0_dp
-    
-    DO itheta = 2, kmesh%numthetapts - 1
-       
-       costheta_global(itheta) = costheta_gauss(itheta)
-       wtheta_global(itheta)   = wtheta_gauss(itheta)
-       
-    ENDDO
-    
-    costheta_global(kmesh%numthetapts) = 1.0_dp
-    wtheta_global(kmesh%numthetapts)   = 0.0_dp
+    CALL make_gauss_lobatto( -1.0_dp, 1.0_dp, costheta_global, wtheta_global )
     
     DO itheta = 1, kmesh%maxthetapts
        
@@ -380,8 +368,6 @@ CONTAINS
        
     ENDDO
     
-    DEALLOCATE(costheta_gauss)
-    DEALLOCATE(wtheta_gauss)
     DEALLOCATE(costheta_global)
     DEALLOCATE(wtheta_global)
     
