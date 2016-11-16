@@ -815,25 +815,27 @@ CONTAINS
     INTEGER, INTENT(IN)       :: itime
     
     INTEGER                   :: itheta, iphi
-    REAL(dp)                  :: adotr, gterm
+    REAL(dp)                  :: adotr, adotrhat, gterm
     
     !------------------------------------------------------------------------!
-      
+    
     DO iphi = 1, rmesh%numphipts
        DO itheta = 1, rmesh%numthetapts
           
-          adotr = afield(1, itime) * rmesh%sinthetapts(itheta) *             &
-               rmesh%cosphipts(iphi) +                 &
+          adotrhat = afield(1, itime) * rmesh%sinthetapts(itheta) *       &
+               rmesh%cosphipts(iphi) +                                    &
                afield(2, itime) * rmesh%sinthetapts(itheta) *             &
-               rmesh%sinphipts(iphi) +                 &
+               rmesh%sinphipts(iphi) +                                    &
                afield(3, itime) * rmesh%costhetapts(itheta) 
           
-          adotr = adotr * rmesh%rsurface
+          adotr = adotrhat * rmesh%rsurface
           
-          gterm = EXP(-ZIMAGONE * (adotr + asqintegral(itime)))
+          gterm = EXP(ZIMAGONE * (0.5_dp * asqintegral(itime) - adotr))
           
+          psip_sph(itheta, iphi) = gterm * (psip_sph(itheta, iphi) -      &
+               ZIMAGONE * adotrhat *                                      &
+               psi_sph(itheta, iphi))
           psi_sph(itheta, iphi)  = psi_sph(itheta, iphi) * gterm
-          psip_sph(itheta, iphi) = psip_sph(itheta, iphi) * gterm
           
        ENDDO
     ENDDO
