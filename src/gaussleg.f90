@@ -23,6 +23,7 @@ MODULE gaussleg
   PRIVATE
 
   PUBLIC      :: get_gauss_stuff
+  PUBLIC      :: make_gauss_lobatto
   PUBLIC      :: make_rnormal
   PUBLIC      :: make_legendre
   PUBLIC      :: plgndr
@@ -120,7 +121,106 @@ CONTAINS
   END SUBROUTINE get_gauss_stuff
 
   !------------------------------------------------------------------------------!
-
+  
+  !=======================================================================
+  !=======================================================================
+  !
+  !   SUBROUTINE make_gauss_lobatto
+  !
+  !>  \brief This subroutine returns the axis and weights for
+  !   a Gauss-Lobatto quadrature. It is similar to the normal Gauss
+  !   quadrature, but it includes the two end points as quadrature points.
+  !
+  !======================SUBROUTINE ARGUMENTS=============================
+  !
+  !> \param[in] lb Minimum value of the passed array
+  !> \param[in] ub Maximum value of the passed array
+  !> \param[out] x Returned axis with gaussian nodes.
+  !> \param[out] w Returned weights array.
+  !
+  !=======================================================================
+  !=======================================================================
+  
+  SUBROUTINE make_gauss_lobatto(lb, ub, x, w)
+    
+    IMPLICIT NONE
+    
+    REAL(dp), INTENT(IN) 	:: lb, ub
+    REAL(dp), INTENT(OUT)	:: x(:)
+    REAL(dp), INTENT(OUT)	:: w(:)
+    
+    INTEGER			:: n, nm1, iter, ix, iorder
+    REAL(dp), ALLOCATABLE	:: leg(:, :)
+    REAL(dp), ALLOCATABLE	:: xold(:)
+    INTEGER, PARAMETER           :: maxiterations = 100000000
+    REAL, PARAMETER              :: eps = 1.0e-15_dp
+    
+    ! Check the size of the arrays. They must be equal
+    IF (SIZE(x).NE.SIZE(w)) THEN
+       WRITE(*,*) 'Axis and weights arrays have not equal length.'
+       STOP
+    ENDIF
+    
+    n   = SIZE(x)
+    nm1 = n - 1
+    
+    DO ix = 1, n
+       x(ix) = COS(pi * REAL(nm1 + ix - 1, dp) / REAL(nm1, dp))
+    ENDDO
+    
+    ALLOCATE(leg(1:n, 1:n))
+    ALLOCATE(xold(1:n))
+    
+    leg  = 0.0
+    xold = 2.0
+    
+    DO iter = 1, maxiterations
+       
+       IF (MAXVAL(ABS(x - xold)).LE.eps) EXIT
+       
+       xold = x;
+       
+       leg(:, 1) = 1.0_dp
+       leg(:, 2) = x
+       
+       DO iorder = 2, nm1
+          DO ix = 1, n
+             
+             leg(ix, iorder + 1) = (REAL(2 * iorder - 1, dp) * x(ix) *          &
+                  leg(ix, iorder) -                           &
+                  REAL(iorder - 1, dp) *                      &
+                  leg(ix, iorder - 1)) / REAL(iorder, dp)
+             
+          ENDDO
+       ENDDO
+       
+       DO ix = 1, n
+          
+          x(ix) = xold(ix) - (x(ix) * leg(ix, n) - leg(ix, nm1)) /             &
+               (REAL(n, dp) * leg(ix, n))
+          
+       ENDDO
+       
+    ENDDO
+    
+    DO ix = 1, n   
+       
+       w(ix) = 2.0_dp / (REAL(nm1 * n, dp) * leg(ix, n) * leg(ix, n))
+       
+       x(ix) = 0.5_dp * x(ix) * (ub - lb) + 0.5_dp * (ub + lb)
+       w(ix) = 0.5_dp * w(ix) * (ub - lb)
+       
+       WRITE(*, '(1X, I3, 2(1X, F20.16))') ix, x(ix), w(ix)
+       
+    ENDDO
+    
+    DEALLOCATE(leg)
+    DEALLOCATE(xold)
+    
+  END SUBROUTINE make_gauss_lobatto
+  
+  !------------------------------------------------------------------------------!
+  
   !=======================================================================
   !=======================================================================
   !

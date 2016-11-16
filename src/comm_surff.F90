@@ -41,9 +41,11 @@ MODULE comm_surff
      INTEGER                       :: maxkpts, maxthetapts, maxphipts
      INTEGER                       :: numkpts, numthetapts, numphipts
      INTEGER                       :: lmax
+     REAL(dp)           	    :: emin
      REAL(dp)           	    :: emax
      REAL(dp)           	    :: emax_theoretical
      REAL(dp)           	    :: deltaenergy, deltaphi
+     REAL(dp)                       :: eneoffset
      REAL(dp), ALLOCATABLE	    :: energypts(:)
      REAL(dp), ALLOCATABLE	    :: kpts(:)
      REAL(dp), ALLOCATABLE	    :: thetapts(:)

@@ -157,8 +157,8 @@ CONTAINS
 #endif
     
     numrpts = 2 * fdpts + 1
-    numthetapts = lmax + 1
-    numphipts = 2 * lmax + 1
+    numthetapts = lmax + 3
+    numphipts = 2 * lmax + 3
     deltaphi = (max_angles_global(2) - min_angles_global(2)) / REAL(numphipts, dp)
     
     ALLOCATE(rpts_boundary(1:numrpts))
@@ -180,7 +180,7 @@ CONTAINS
     ENDDO
     
     ! Now theta axis
-    CALL get_gauss_stuff(-1.0_dp, 1.0_dp, &
+    CALL make_gauss_lobatto(-1.0_dp, 1.0_dp, &
          costheta_boundary, theta_weights)
     
     theta_boundary = ACOS(costheta_boundary)

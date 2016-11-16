@@ -171,7 +171,7 @@ CONTAINS
     ALLOCATE(gauss_th_weights(1:numthetapts))
     ALLOCATE(phi_ax(1:numphipts))
     
-    CALL get_gauss_stuff(-1.0_dp, 1.0_dp, costheta_ax, gauss_th_weights)
+    CALL make_gauss_lobatto(-1.0_dp, 1.0_dp, costheta_ax, gauss_th_weights)
     theta_ax = ACOS(costheta_ax)
     
     DO iphi = 1, numphipts
