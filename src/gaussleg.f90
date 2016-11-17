@@ -210,7 +210,7 @@ CONTAINS
        x(ix) = 0.5_dp * x(ix) * (ub - lb) + 0.5_dp * (ub + lb)
        w(ix) = 0.5_dp * w(ix) * (ub - lb)
        
-       WRITE(*, '(1X, I3, 2(1X, F20.16))') ix, x(ix), w(ix)
+       !WRITE(*, '(1X, I3, 2(1X, F20.16))') ix, x(ix), w(ix)
        
     ENDDO
     
