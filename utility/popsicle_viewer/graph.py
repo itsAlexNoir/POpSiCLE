@@ -431,7 +431,7 @@ def fourframe_surf(matrix1,ax1,ax2,clamp1,matrix2,ax3,ax4,clamp2,
 def oneframe_polarsurf(matrix,ax1,ax2,clamp,axes_aspect=True,
                        ylim=None,xticks=None,yticks=None,
                        xlabel=None,ylabel=None,barlabel=None,logplot=0,
-                       makeframe=0,filename='none',showframe=True):
+                       makeframe=0,filename='none',showframe=True,Up=0.0):
 
     matrix_twice = np.concatenate((matrix,matrix[::-1,:],matrix[0:1,:]),axis=0)
     ax1_twice = np.concatenate((ax1,2.0*np.pi - ax1[::-1],ax1[0:1]),axis=0)
@@ -447,6 +447,14 @@ def oneframe_polarsurf(matrix,ax1,ax2,clamp,axes_aspect=True,
     ax1 = plt.subplot(gs[0,0],polar=True)
     surf1 = ax1.pcolormesh(AX2,AX1,matrix_twice,vmax=clamp[1],vmin=clamp[0],
                                shading='gouraud',rasterized='True')
+    ax1.plot(np.linspace(0, 2*np.pi, 100), np.ones(100)*2.0*Up,
+            lw=2,color='white', linestyle='-')
+    ax1.plot(np.linspace(0, 2*np.pi, 100), np.ones(100)*10.0*Up,
+            lw=2,color='white', linestyle='-')
+    #ax1.text(np.pi/1.9, 2.8*Up, r'$2U_p$', fontsize=20,color='white')
+    ax1.text(np.pi/1.9, 4.5*Up, r'$2U_p$', fontsize=20,color='white')
+    ax1.text(np.pi/2.0, 9.2*Up, r'$10U_p$', fontsize=20,color='white')
+
     cb1 = fig.colorbar(surf1,ax=ax1,use_gridspec=True,pad=0.1)
     cb1.set_ticks(np.arange(clamp[1],clamp[0]-1,-1))
     cb1.ax.tick_params(labelsize=18)
@@ -458,9 +466,10 @@ def oneframe_polarsurf(matrix,ax1,ax2,clamp,axes_aspect=True,
     ax1.set_theta_offset(np.pi/2.0)
     if(xticks is not None):
         ax1.set_xticks(xticks)
-    ax1.set_rlabel_position(-50)
+    ax1.set_rlabel_position(0)
     if(yticks is not None):        
-        ax1.set_yticks(yticks)
+        ax1.set_yticks([])
+        #ax1.set_yticks(yticks)
     ax1.tick_params(axis='both',labelsize=16)
     ax1.tick_params(axis='y',colors='white')
     if(ylim is not None):

@@ -76,6 +76,7 @@ class parameters:
         self.draw_polar_amplitude = int(inparams['draw_polar_amplitude'])
         self.draw_sph_polar_amplitude = int(inparams['draw_sph_polar_amplitude'])
         self.draw_pad = int(inparams['draw_pad'])
+        self.draw_polar_pad = int(inparams['draw_polar_pad'])
         self.draw_semipolar_pad = int(inparams['draw_semipolar_pad'])
         self.draw_mes = int(inparams['draw_mes'])
         self.draw_pes = int(inparams['draw_pes'])
