@@ -700,11 +700,11 @@ CONTAINS
     IF(dspace_dims(3).EQ.0) THEN
        numthetapts = dspace_dims(1)
        numphipts = 1
-       lmax = numthetapts - 3
+       lmax = numthetapts - 1
     ELSE
        numthetapts = dspace_dims(1)
        numphipts = dspace_dims(2)
-       lmax = numthetapts - 3
+       lmax = numthetapts - 1
     ENDIF
     
     ! Close dataspaces and sets opened so far.

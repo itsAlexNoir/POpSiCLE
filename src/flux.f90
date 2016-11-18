@@ -199,7 +199,7 @@ CONTAINS
     ALLOCATE(rmesh%cosphipts(1:rmesh%numphipts))
     ALLOCATE(rmesh%wphi(1:rmesh%numphipts))
     
-    CALL make_gauss_lobatto( -1.0_dp, 1.0_dp, rmesh%costhetapts, rmesh%wtheta )
+    CALL get_gauss_stuff( -1.0_dp, 1.0_dp, rmesh%costhetapts, rmesh%wtheta )
     
     rmesh%thetapts    = ACOS(rmesh%costhetapts)
     rmesh%sinthetapts = SIN(rmesh%thetapts)
