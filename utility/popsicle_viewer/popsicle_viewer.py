@@ -138,19 +138,19 @@ if(params.draw_pad):
 if(params.draw_polar_pad):
     print('Plotting polar PAD...')
     logplot = 1
-    #clamp = [-12,-4]
-    #clamp = [-7,2]
-    #clamp = [-10,-1]
-    clamp = [-4,3]
-    #ylimit = 130.0
-    ylimit = 40.0
+    #clamp = [-10,-5]
+    #clamp = [-8,-3]
+    clamp = [-6,-1]
+    #clamp = [-4,3]
+    ylimit = 130.0
+    #ylimit = 40.0
     xticks = None #np.arange(0,25,0.2)
     #yticks = np.arange(0.,5.1,0.6) # Para au
     yticks = np.arange(0,ylimit,20.) # Para eV
     #yticks = np.arange(0,ylimit,5.) # Para eV    
     PAD    = polar_prob * ax.ke_ax[None,:]
     dEe = ax.dE
-    graph.oneframe_polarsurf(PAD,np.fliplr([ax.theta_ax])[0],
+    graph.oneframe_polarsurf(PAD,ax.theta_ax,
                              ax.Ee_ax*const.energy_au_ev,
                              clamp,True,
                              [0.0,ylimit],
@@ -161,18 +161,18 @@ if(params.draw_polar_pad):
                              params.showframe,
                              params.Up*const.energy_au_ev)
     
-   
 if(params.draw_semipolar_pad):
     print('Plotting semipolar t-surff PAD...')
     logplot = 1
-    clamp = [-12,-4]
+    clamp = [-10,-5]
+    #clamp = [-8,-3]
+    #clamp = [-6,-1]
     #clamp = [-4,2]
-    #clamp = [-6,-3]
     ylimit = 130.0
     #ylimit = 40.0
     xticks = None #np.arange(0,25,0.2)
     #yticks = np.arange(0.,5.1,0.6) # Para au
-    #yticks = np.arange(0,ylimit,20.) # Para eV
+    yticks = np.arange(0,ylimit,20.) # Para eV
     #yticks = np.arange(0,ylimit,5.) # Para eV    
     PAD    = polar_prob * ax.ke_ax[None,:]
     dEe = ax.dE

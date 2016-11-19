@@ -287,7 +287,7 @@ PROGRAM tsurff_grid
      
   ENDIF
   
-  IF (polar_desired) THEN
+  IF (amplitude3D_desired) THEN
      filename = TRIM(data_directory) // '/' // TRIM(amplitude3D_filename) // '.' //  &
           corbital 
      
