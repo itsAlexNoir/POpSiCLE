@@ -1,6 +1,7 @@
 EXAMPLE_SER_LIST = \
 sheppack_usage_example \
 legendre_test \
+legendre_test_I \
 cyl2sph_ex1 \
 cyl2sph_ex3 \
 cart2sph_ex1 \

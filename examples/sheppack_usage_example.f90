@@ -17,7 +17,7 @@
 
 PROGRAM interp1d_test
   
-  USE constants
+  USE constants_pop
   USE sheppack
 
   IMPLICIT NONE
