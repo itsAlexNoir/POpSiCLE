@@ -518,17 +518,12 @@ CONTAINS
              
              ct1 = CONJG(sph_harmonics(1, itheta, 0, il)) *             &
                   rmesh%wtheta(itheta) * rmesh%wphi(1)
-             ct2 = func(itheta,iphi) * ct1
+             ct2 = func(itheta,1) * ct1
              
              func_lm(0,il) = func_lm(0,il) + ct2
-             funcx_lm(0,il) = funcx_lm(0,il) + ct2 *                    &
-                  rmesh%sinthetapts(itheta) * rmesh%cosphipts(iphi)
-             funcy_lm(0,il) = funcy_lm(0,il) + ct2 *                    &
-                  rmesh%sinthetapts(itheta) *                           &
-                  rmesh%sinphipts(iphi)
              funcz_lm(0,il) = funcz_lm(0,il) + ct2 *                    &
                   rmesh%costhetapts(itheta)
-             funcp_lm(0,il) = funcp_lm(0,il) + ct1 * funcp(itheta, iphi)
+             funcp_lm(0,il) = funcp_lm(0,il) + ct1 * funcp(itheta, 1)
              
              
           ENDDO
@@ -537,7 +532,7 @@ CONTAINS
     ELSE
        
        DO il = 0, lmax
-          DO im = -il, il
+          DO im = -il, il             
              
              DO iphi = 1, maxphipts
                 DO itheta = 1, maxthetapts
@@ -546,15 +541,19 @@ CONTAINS
                         rmesh%wtheta(itheta) * rmesh%wphi(iphi)
                    ct2 = func(itheta,iphi) * ct1
                    
-                   func_lm(0,il) = func_lm(0,il) + ct2
-                   funcx_lm(0,il) = funcx_lm(0,il) + ct2 *               &
+                   func_lm(im,il) = func_lm(im,il) + ct2
+                   
+                   funcx_lm(im,il) = funcx_lm(im,il) + ct2 *               &
                         rmesh%sinthetapts(itheta) * rmesh%cosphipts(iphi)
-                   funcy_lm(0,il) = funcy_lm(0,il) + ct2 *               &
+                   
+                   funcy_lm(im,il) = funcy_lm(im,il) + ct2 *               &
                         rmesh%sinthetapts(itheta) *                      &
                         rmesh%sinphipts(iphi)
-                   funcz_lm(0,il) = funcz_lm(0,il) + ct2 *               &
+                   
+                   funcz_lm(im,il) = funcz_lm(im,il) + ct2 *               &
                         rmesh%costhetapts(itheta)
-                   funcp_lm(0,il) = funcp_lm(0,il) + ct1 * funcp(itheta, iphi)
+
+                   funcp_lm(im,il) = funcp_lm(im,il) + ct1 * funcp(itheta, iphi)
                    
                 ENDDO
              ENDDO
