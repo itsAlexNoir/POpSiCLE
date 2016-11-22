@@ -18,6 +18,7 @@
 MODULE sharmonics
   
   USE constants_pop
+  USE comm_surff
   USE gaussleg
   !USE fourier
   
@@ -29,6 +30,11 @@ MODULE sharmonics
   PUBLIC       :: create_spherical_harmonics
   PUBLIC       :: create_spherical_harmonics_couplings
   PUBLIC       :: make_sht
+
+  INTERFACE make_sht
+     MODULE PROCEDURE make_sht_single
+     MODULE PROCEDURE make_sht_group
+  END INTERFACE make_sht
   
   ! Public variables
   
@@ -324,7 +330,7 @@ CONTAINS
   !=======================================================================
   !=======================================================================
   !
-  !   SUBROUTINE make_sht
+  !   SUBROUTINE make_sht_single
   !
   !>  \brief This subroutine performs the (fast) Spherical
   !>    Harmonics Transform (SHT). It uses a FFT to decompose
@@ -340,25 +346,155 @@ CONTAINS
   !
   !=======================================================================
   !=======================================================================
-  
-  SUBROUTINE make_sht(func, sph_harmonics, lmax, th_weights, phi_weights, func_lm)
-    
+
+ SUBROUTINE make_sht_single(func, sph_harmonics, lmax, th_weights, phi_weights, func_lm)
+
     IMPLICIT NONE
-    
+
     COMPLEX(dp), INTENT(IN)        :: func(:, :)
     INTEGER, INTENT(IN)            :: lmax
     COMPLEX(dp), INTENT(IN)        :: sph_harmonics(:, :, -lmax:, 0:)
     REAL(dp), INTENT(IN)           :: th_weights(:)
     REAL(dp), INTENT(IN)           :: phi_weights(:)
     COMPLEX(dp), INTENT(OUT)       :: func_lm(-lmax:, 0:)
-    
+
     INTEGER                        :: dims(2)
     COMPLEX(dp), ALLOCATABLE       :: coeffm(:), gm(:, :)
     COMPLEX(dp)                    :: sum
     INTEGER                        :: maxthetapts, maxphipts
     INTEGER                        :: il, im, itheta, iphi
-    
+
     !----------------------------------------------------!
+
+    ! What is the maximum number of theta and phi points?
+    !numthetapts = SIZE(axis)
+    dims = SHAPE(func)
+    maxthetapts = dims(1)
+    maxphipts   = dims(2)
+
+    ! Initialize array to zero
+    func_lm = ZERO
+
+    IF(maxphipts.EQ.1) THEN
+
+       ! Since mmax=0, only Gauss-Legendre quadrature
+       DO il = 0, lmax
+
+          sum = ZERO
+
+          DO itheta = 1, maxthetapts
+
+             sum = sum + func(itheta, 1) *                             &
+                  CONJG(sph_harmonics(1, itheta, 0, il)) *             &
+                  th_weights(itheta) * phi_weights(1)
+
+          ENDDO
+          func_lm(0,il) = sum
+       ENDDO
+
+    ELSE
+
+       DO il = 0, lmax
+          DO im = -il, il
+
+             sum = ZERO
+
+             DO iphi = 1, maxphipts
+                DO itheta = 1, maxthetapts
+
+                   sum = sum + func(itheta, iphi) *                      &
+                        CONJG(sph_harmonics(iphi, itheta, im, il)) *     &
+                        th_weights(itheta) * phi_weights(iphi)
+
+                ENDDO
+             ENDDO
+             func_lm(im,il) = sum
+          ENDDO
+       ENDDO
+
+
+!!$       ALLOCATE(coeffm(-lmax:lmax))
+!!$       ALLOCATE(gm(1:maxthetapts,-lmax:lmax))
+!!$       coeffm = ZERO
+!!$       gm     = ZERO
+!!$       dphi = twopi / REAL(maxphipts,dp)
+!!$
+!!$       DO itheta = 1, maxthetapts
+!!$          coeffm = ZERO
+!!$          CALL FourierTransform(func(itheta,:),coeffm,1,(/maxphipts/))
+!!$
+!!$          ! Reorder coeffm array after fourier transform
+!!$          CALL fftshift(coeffm(-lmax:lmax),gm(itheta,-lmax:lmax))
+!!$
+!!$       ENDDO
+!!$       gm = gm * dphi
+!!$
+!!$       ! Now, the Gauss-Legendre quadrature
+!!$       DO il = 0, lmax
+!!$          DO im = -il, il
+!!$             sum = ZERO
+!!$
+!!$             DO itheta = 1, maxthetapts
+!!$                sum = sum + gm(itheta, im) * &
+!!$                     normfact(ABS(im),il) * legenpl(itheta-1,ABS(im),il) &
+!!$                     * (-1.0_dp)**ABS(im) * weights(itheta)
+!!$             ENDDO
+!!$
+!!$             func_lm(im,il) = sum
+!!$          ENDDO
+!!$       ENDDO
+!!$
+!!$       ! Deallocate stuff
+!!$       DEALLOCATE(gm)
+!!$       DEALLOCATE(coeffm)
+!!$
+    ENDIF
+    
+  END SUBROUTINE make_sht_single
+  
+  !=======================================================================
+  !=======================================================================
+  !
+  !   SUBROUTINE make_sht_group
+  !
+  !>  \brief This subroutine performs the (fast) Spherical
+  !>    Harmonics Transform (SHT). It uses a FFT to decompose
+  !>    into the magnetic quantum number m, and a Gauss-Legendre
+  !>    quadrature to decompose into angular momentum number l.
+  !
+  !======================SUBROUTINE ARGUMENTS=============================
+  !
+  !> \param[in] func Function to be transformed
+  !> \param[in] lmax Maximum angular momentum
+  !> \param[in] weights Gauss weigths needed to perform the quadrature
+  !> \param[out] func_lm Transformed function, decomposed into l,m
+  !
+  !=======================================================================
+  !=======================================================================
+
+  
+  SUBROUTINE make_sht_group(func, funcp, sph_harmonics, lmax, func_lm, funcx_lm, &
+       funcy_lm, funcz_lm, funcp_lm)
+    
+    IMPLICIT NONE
+    
+    COMPLEX(dp), INTENT(IN)        :: func(:, :)
+    COMPLEX(dp), INTENT(IN)        :: funcp(:, :)
+    INTEGER, INTENT(IN)            :: lmax
+    COMPLEX(dp), INTENT(IN)        :: sph_harmonics(:, :, -lmax:, 0:)
+    COMPLEX(dp), INTENT(OUT)       :: func_lm(-lmax:, 0:)
+    COMPLEX(dp), INTENT(OUT)       :: funcx_lm(-lmax:, 0:)
+    COMPLEX(dp), INTENT(OUT)       :: funcy_lm(-lmax:, 0:)
+    COMPLEX(dp), INTENT(OUT)       :: funcz_lm(-lmax:, 0:)
+    COMPLEX(dp), INTENT(OUT)       :: funcp_lm(-lmax:, 0:)
+    
+    INTEGER                        :: dims(2)
+    COMPLEX(dp), ALLOCATABLE       :: coeffm(:), gm(:, :)
+    COMPLEX(dp)                    :: ct1, ct2
+    INTEGER                        :: maxthetapts, maxphipts
+    INTEGER                        :: il, im, itheta, iphi
+    
+    !----------------------------------------------------------------------!
     
     ! What is the maximum number of theta and phi points?
     !numthetapts = SIZE(axis)
@@ -367,23 +503,35 @@ CONTAINS
     maxphipts   = dims(2)
     
     ! Initialize array to zero
-    func_lm = ZERO
+    func_lm  = ZERO
+    funcx_lm = ZERO
+    funcy_lm = ZERO
+    funcz_lm = ZERO
+    funcp_lm = ZERO
     
     IF(maxphipts.EQ.1) THEN
        
        ! Since mmax=0, only Gauss-Legendre quadrature
        DO il = 0, lmax
           
-          sum = ZERO
-          
           DO itheta = 1, maxthetapts
              
-             sum = sum + func(itheta, 1) *                             &
-                  CONJG(sph_harmonics(1, itheta, 0, il)) *             &
-                  th_weights(itheta) * phi_weights(1)
+             ct1 = CONJG(sph_harmonics(1, itheta, 0, il)) *             &
+                  rmesh%wtheta(itheta) * rmesh%wphi(1)
+             ct2 = func(itheta,iphi) * ct1
+             
+             func_lm(0,il) = func_lm(0,il) + ct2
+             funcx_lm(0,il) = funcx_lm(0,il) + ct2 *                    &
+                  rmesh%sinthetapts(itheta) * rmesh%cosphipts(iphi)
+             funcy_lm(0,il) = funcy_lm(0,il) + ct2 *                    &
+                  rmesh%sinthetapts(itheta) *                           &
+                  rmesh%sinphipts(iphi)
+             funcz_lm(0,il) = funcz_lm(0,il) + ct2 *                    &
+                  rmesh%costhetapts(itheta)
+             funcp_lm(0,il) = funcp_lm(0,il) + ct1 * funcp(itheta, iphi)
+             
              
           ENDDO
-          func_lm(0,il) = sum
        ENDDO
        
     ELSE
@@ -391,60 +539,33 @@ CONTAINS
        DO il = 0, lmax
           DO im = -il, il
              
-             sum = ZERO
-             
              DO iphi = 1, maxphipts
                 DO itheta = 1, maxthetapts
                    
-                   sum = sum + func(itheta, iphi) *                      &
-                        CONJG(sph_harmonics(iphi, itheta, im, il)) *     &
-                        th_weights(itheta) * phi_weights(iphi)
+                   ct1 = CONJG(sph_harmonics(iphi, itheta, im, il)) *    &
+                        rmesh%wtheta(itheta) * rmesh%wphi(iphi)
+                   ct2 = func(itheta,iphi) * ct1
+                   
+                   func_lm(0,il) = func_lm(0,il) + ct2
+                   funcx_lm(0,il) = funcx_lm(0,il) + ct2 *               &
+                        rmesh%sinthetapts(itheta) * rmesh%cosphipts(iphi)
+                   funcy_lm(0,il) = funcy_lm(0,il) + ct2 *               &
+                        rmesh%sinthetapts(itheta) *                      &
+                        rmesh%sinphipts(iphi)
+                   funcz_lm(0,il) = funcz_lm(0,il) + ct2 *               &
+                        rmesh%costhetapts(itheta)
+                   funcp_lm(0,il) = funcp_lm(0,il) + ct1 * funcp(itheta, iphi)
                    
                 ENDDO
              ENDDO
-             func_lm(im,il) = sum
+             
           ENDDO
        ENDDO
        
        
-!!$       ALLOCATE(coeffm(-lmax:lmax))
-!!$       ALLOCATE(gm(1:maxthetapts,-lmax:lmax))
-!!$       coeffm = ZERO
-!!$       gm     = ZERO
-!!$       dphi = twopi / REAL(maxphipts,dp)
-!!$       
-!!$       DO itheta = 1, maxthetapts
-!!$          coeffm = ZERO
-!!$          CALL FourierTransform(func(itheta,:),coeffm,1,(/maxphipts/))
-!!$          
-!!$          ! Reorder coeffm array after fourier transform
-!!$          CALL fftshift(coeffm(-lmax:lmax),gm(itheta,-lmax:lmax))
-!!$          
-!!$       ENDDO
-!!$       gm = gm * dphi
-!!$       
-!!$       ! Now, the Gauss-Legendre quadrature
-!!$       DO il = 0, lmax
-!!$          DO im = -il, il
-!!$             sum = ZERO
-!!$             
-!!$             DO itheta = 1, maxthetapts
-!!$                sum = sum + gm(itheta, im) * &
-!!$                     normfact(ABS(im),il) * legenpl(itheta-1,ABS(im),il) &
-!!$                     * (-1.0_dp)**ABS(im) * weights(itheta)
-!!$             ENDDO
-!!$             
-!!$             func_lm(im,il) = sum
-!!$          ENDDO
-!!$       ENDDO
-!!$       
-!!$       ! Deallocate stuff
-!!$       DEALLOCATE(gm)
-!!$       DEALLOCATE(coeffm)
-!!$       
     ENDIF
-   
-  END SUBROUTINE make_sht
+    
+  END SUBROUTINE make_sht_group
   
   !*****************************************************************!
 END MODULE sharmonics

@@ -166,7 +166,7 @@ fourier.o: ${MKL_DFTI_OBJS} constants.o tools.o
 else ifeq (${FFT_LIB},fftw)
 fourier.o: constants.o tools.o fftw.o
 endif
-sht.o: constants.o gaussleg.o
+sharmonics.o: constants.o comm_surff.o gaussleg.o
 patchwork.o: constants.o tools.o
 io_pop.o: constants.o patchwork.o 
 io_subset.o: constants.o tools.o patchwork.o
@@ -203,7 +203,7 @@ popsicle.o : io_pop.o surface.o corrsurface.o \
 ########################################################
 
 tools.lo: constants.lo
-comm_surf.lo: constants.lo
+comm_surff.lo: constants.lo
 scatt_interp.lo: constants.lo ${SHEPPACK_LO}
 cubic_interp.lo: constants.lo
 spline_interp.lo: constants.lo tools.lo
@@ -230,7 +230,7 @@ fourier.lo: ${MKL_DFTI_LO} constants.lo tools.lo
 else ifeq (${FFT_LIB},fftw)
 fourier.lo: constants.lo tools.lo fftw.lo
 endif
-sht.lo: constants.lo gaussleg.lo
+sharmonics.lo: constants.lo comm_surff.lo gaussleg.lo
 patchwork.lo: constants.lo tools.lo
 surface.lo: constants.lo tools.lo boundary.lo \
 	io_surface.lo
