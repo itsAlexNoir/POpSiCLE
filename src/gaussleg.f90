@@ -22,7 +22,7 @@ MODULE gaussleg
 
   PRIVATE
 
-  PUBLIC      :: get_gauss_stuff
+  PUBLIC      :: make_gauss_legendre
   PUBLIC      :: make_gauss_lobatto
   PUBLIC      :: make_rnormal
   PUBLIC      :: make_legendre
@@ -55,7 +55,7 @@ CONTAINS
   !=======================================================================
   !=======================================================================
 
-  SUBROUTINE get_gauss_stuff(lower_bound, upper_bound, axis, weights)
+  SUBROUTINE make_gauss_legendre(lower_bound, upper_bound, axis, weights)
 
     IMPLICIT NONE
 
@@ -118,7 +118,7 @@ CONTAINS
     weights(1:m)=2.0_dp*xl/((1.0_dp-z**2)*pp**2)
     weights(n:n-m+1:-1)=weights(1:m)
 
-  END SUBROUTINE get_gauss_stuff
+  END SUBROUTINE make_gauss_legendre
 
   !------------------------------------------------------------------------------!
   

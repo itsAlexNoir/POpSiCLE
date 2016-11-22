@@ -141,7 +141,9 @@ if(params.draw_polar_pad):
     #clamp = [-10,-5]
     #clamp = [-8,-3]
     clamp = [-6,-1]
-    #clamp = [-4,3]
+    #clamp = [-8,-5]
+    #clamp = [-5,-2]
+    #clamp = [-3,1]
     ylimit = 130.0
     #ylimit = 40.0
     xticks = None #np.arange(0,25,0.2)
@@ -164,10 +166,12 @@ if(params.draw_polar_pad):
 if(params.draw_semipolar_pad):
     print('Plotting semipolar t-surff PAD...')
     logplot = 1
-    clamp = [-10,-5]
+    #clamp = [-10,-5]
     #clamp = [-8,-3]
-    #clamp = [-6,-1]
-    #clamp = [-4,2]
+    clamp = [-6,-1]
+    #clamp = [-8,-5]
+    #clamp = [-5,-2]
+    #clamp = [-3,1]
     ylimit = 130.0
     #ylimit = 40.0
     xticks = None #np.arange(0,25,0.2)
