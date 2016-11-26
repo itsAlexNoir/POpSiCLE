@@ -191,7 +191,8 @@ CONTAINS
     
     INTEGER, ALLOCATABLE       :: members(:)
     INTEGER                    :: simgroup, iogroup, ipro
-    INTEGER                    :: iogroup_size, indcomm
+    INTEGER                    :: iogroup_size, iocomm_maxsize
+    INTEGER                    :: indcomm
     INTEGER, ALLOCATABLE       :: sumcomm(:)
     INTEGER                    :: numprocx, numprocy, numprocz, numprocr
     INTEGER                    :: Nx, Ny, Nz, Nr
@@ -213,7 +214,8 @@ CONTAINS
          numprocx, numprocy, numprocz, numprocr )
     
     iogroup_size = numprocz * numprocr
-    ALLOCATE(sumcomm(0:numprocx * numprocy-1))
+    iocomm_maxsize = numprocx * numprocy - 1
+    ALLOCATE(sumcomm(0:iocomm_maxsize))
     ALLOCATE(members(1:iogroup_size))
     members = 0
     
@@ -243,6 +245,14 @@ CONTAINS
     CALL MPI_ALLREDUCE(densityproc2D, densitytotal2D, Nx * Ny, &
          MPI_DOUBLE_PRECISION, MPI_SUM, sumcomm(indcomm), ierror)
     
+    ! Release communicator and groups
+    DO indcomm = 0, iocomm_maxsize
+       CALL MPI_COMM_FREE(sumcomm(indcomm), ierror)
+    ENDDO
+    
+    CALL MPI_GROUP_FREE(iogroup, ierror)
+    CALL MPI_GROUP_FREE(simgroup, ierror)
+    
     DEALLOCATE(members,sumcomm)
     
   END SUBROUTINE sum_grid_pieces_xy
@@ -267,7 +277,8 @@ CONTAINS
     
     INTEGER, ALLOCATABLE       :: members(:)
     INTEGER                    :: simgroup, iogroup, ipro
-    INTEGER                    :: iogroup_size, indcomm
+    INTEGER                    :: iogroup_size, iocomm_maxsize
+    INTEGER                    :: indcomm
     INTEGER, ALLOCATABLE       :: sumcomm(:)
     INTEGER                    :: numprocx, numprocy, numprocz, numprocr
     INTEGER                    :: Nx, Ny, Nz, Nr
@@ -289,7 +300,8 @@ CONTAINS
          numprocx, numprocy, numprocz, numprocr )
     
     iogroup_size = numprocy * numprocr
-    ALLOCATE(sumcomm(0:numprocx * numprocz-1))
+    iocomm_maxsize = numprocx * numprocz-1
+    ALLOCATE(sumcomm(0:iocomm_maxsize))
     ALLOCATE(members(1:iogroup_size))
     members = 0
     
@@ -320,6 +332,14 @@ CONTAINS
     CALL MPI_ALLREDUCE(densityproc2D, densitytotal2D, Nx * Nz, &
          MPI_DOUBLE_PRECISION, MPI_SUM, sumcomm(indcomm), ierror)
     
+    ! Release communicator and groups
+    DO indcomm = 0, iocomm_maxsize
+       CALL MPI_COMM_FREE(sumcomm(indcomm), ierror)
+    ENDDO
+    
+    CALL MPI_GROUP_FREE(iogroup, ierror)
+    CALL MPI_GROUP_FREE(simgroup, ierror)
+    
     DEALLOCATE(members,sumcomm)
     
   END SUBROUTINE sum_grid_pieces_xz
@@ -344,7 +364,8 @@ CONTAINS
     
     INTEGER, ALLOCATABLE       :: members(:)
     INTEGER                    :: simgroup, iogroup, ipro
-    INTEGER                    :: iogroup_size, indcomm
+    INTEGER                    :: iogroup_size, iocomm_maxsize
+    INTEGER                    :: indcomm
     INTEGER, ALLOCATABLE       :: sumcomm(:)
     INTEGER                    :: numprocx, numprocy, numprocz, numprocr
     INTEGER                    :: Nx, Ny, Nz, Nr
@@ -366,7 +387,8 @@ CONTAINS
          numprocx, numprocy, numprocz, numprocr )
     
     iogroup_size = numprocx * numprocr
-    ALLOCATE(sumcomm(0:numprocy * numprocz-1))
+    iocomm_maxsize = numprocy * numprocz-1
+    ALLOCATE(sumcomm(0:iocomm_maxsize))
     ALLOCATE(members(1:iogroup_size))
     members = 0
     
@@ -396,6 +418,14 @@ CONTAINS
     CALL MPI_ALLREDUCE(densityproc2D, densitytotal2D, Ny * Nz, &
          MPI_DOUBLE_PRECISION, MPI_SUM, sumcomm(indcomm), ierror)
     
+    ! Release communicator and groups
+    DO indcomm = 0, iocomm_maxsize
+       CALL MPI_COMM_FREE(sumcomm(indcomm), ierror)
+    ENDDO
+    
+    CALL MPI_GROUP_FREE(iogroup, ierror)
+    CALL MPI_GROUP_FREE(simgroup, ierror)
+  
     DEALLOCATE(members,sumcomm)
     
   END SUBROUTINE sum_grid_pieces_yz
@@ -420,7 +450,8 @@ CONTAINS
     
     INTEGER, ALLOCATABLE       :: members(:)
     INTEGER                    :: simgroup, iogroup, ipro
-    INTEGER                    :: iogroup_size, indcomm
+    INTEGER                    :: iogroup_size, iocomm_maxsize
+    INTEGER                    :: indcomm
     INTEGER, ALLOCATABLE       :: sumcomm(:)
     INTEGER                    :: numprocx, numprocy, numprocz, numprocr
     INTEGER                    :: Nx, Ny, Nz, Nr
@@ -442,7 +473,8 @@ CONTAINS
          numprocx, numprocy, numprocz, numprocr )
     
     iogroup_size = numprocx * numprocy
-    ALLOCATE(sumcomm(0:numprocr * numprocz-1))
+    iocomm_maxsize = numprocr * numprocz-1
+    ALLOCATE(sumcomm(0:iocomm_maxsize))
     ALLOCATE(members(1:iogroup_size))
     members = 0
     
@@ -472,6 +504,14 @@ CONTAINS
     CALL MPI_ALLREDUCE(densityproc2D, densitytotal2D, Nr * Nz, &
          MPI_DOUBLE_PRECISION, MPI_SUM, sumcomm(indcomm), ierror)
     
+    ! Release communicator and groups
+    DO indcomm = 0, iocomm_maxsize
+       CALL MPI_COMM_FREE(sumcomm(indcomm), ierror)
+    ENDDO
+    
+    CALL MPI_GROUP_FREE(iogroup, ierror)
+    CALL MPI_GROUP_FREE(simgroup, ierror)
+    
     DEALLOCATE(members,sumcomm)
     
   END SUBROUTINE sum_grid_pieces_rz
@@ -496,7 +536,8 @@ CONTAINS
     
     INTEGER, ALLOCATABLE       :: members(:)
     INTEGER                    :: simgroup, iogroup, ipro
-    INTEGER                    :: iogroup_size, indcomm
+    INTEGER                    :: iogroup_size, iocomm_maxsize
+    INTEGER                    :: indcomm
     INTEGER, ALLOCATABLE       :: sumcomm(:)
     INTEGER                    :: numprocx, numprocy, numprocz, numprocr
     INTEGER                    :: Nx, Ny, Nz, Nr
@@ -519,7 +560,8 @@ CONTAINS
     
     ! Get the members list of processors to be in the sum
     iogroup_size = numprocr
-    ALLOCATE(sumcomm(0:numprocx * numprocy * numprocz-1))
+    iocomm_maxsize = numprocx * numprocy * numprocz-1
+    ALLOCATE(sumcomm(0:iocomm_maxsize))
     ALLOCATE(members(1:iogroup_size))
     members = 0
     
@@ -549,6 +591,14 @@ CONTAINS
     indcomm = ipx + numprocx * ipy + numprocx * numprocy * ipz
     CALL MPI_ALLREDUCE(densityproc3D, densitytotal3D, Nx * Ny * Nz, &
          MPI_DOUBLE_PRECISION, MPI_SUM, sumcomm(indcomm), ierror)
+    
+    ! Release communicator and groups
+    DO indcomm = 0, iocomm_maxsize
+       CALL MPI_COMM_FREE(sumcomm(indcomm), ierror)
+    ENDDO
+    
+    CALL MPI_GROUP_FREE(iogroup, ierror)
+    CALL MPI_GROUP_FREE(simgroup, ierror)
     
     DEALLOCATE(members,sumcomm)
     

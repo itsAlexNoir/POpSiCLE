@@ -602,9 +602,9 @@ CONTAINS
     
     !------------------------------------------------------------------------!
     
+    fluxintegral = ZERO
+
     IF ( rmesh%numphipts .EQ. 1 ) THEN
-       
-       fieldterm = ZERO
        
        DO il = 0, kmesh%lmax
           
@@ -613,7 +613,7 @@ CONTAINS
           term2 = psip_lm(0, il) *			 &
                sph_harmonicsk(iphi, itheta, 0, il)
           
-          fieldterm = fieldterm + ZIMAGONE *             &
+          fieldterm = ZIMAGONE *                         &
                (afield(1, itime) * psix_lm(0, il) +      &
                afield(2, itime) * psiy_lm(0, il)  +      &
                afield(3, itime) * psiz_lm(0, il)) *      &
