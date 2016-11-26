@@ -391,6 +391,11 @@ CONTAINS
 
     ENDIF
     
+    ! Release communicator and groups
+    CALL MPI_COMM_FREE(iocomm, ierror)
+    CALL MPI_GROUP_FREE(iogroup, ierror)
+    CALL MPI_GROUP_FREE(simgroup, ierror)
+    
     ! Deallocate stuff
     DEALLOCATE(i_am_subset_local,i_am_subset)
     DEALLOCATE(my_subset_dims,subset_dims_global)

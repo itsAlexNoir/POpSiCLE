@@ -512,6 +512,12 @@ CONTAINS
                iocomm, ipgrid, filename, series_desired=series )
        ENDIF
     ENDIF
+
+    ! Release communicator
+    CALL MPI_COMM_FREE(iocomm, ierror)
+    CALL MPI_GROUP_FREE(iogroup, ierror)
+    CALL MPI_GROUP_FREE(simgroup, ierror)
+
     
     DEALLOCATE(densitytotal3D)
     DEALLOCATE(members)
@@ -623,6 +629,11 @@ CONTAINS
                series_desired=series)
        ENDIF
     ENDIF
+
+    ! Release communicator and groups
+    CALL MPI_COMM_FREE(iocomm, ierror)
+    CALL MPI_GROUP_FREE(iogroup, ierror)
+    CALL MPI_GROUP_FREE(simgroup, ierror)
     
     DEALLOCATE(densitytotal2D)
     DEALLOCATE(members)
@@ -734,6 +745,11 @@ CONTAINS
                series_desired=series)
        ENDIF
     ENDIF
+
+    ! Release communicator
+    CALL MPI_COMM_FREE(iocomm, ierror)
+    CALL MPI_GROUP_FREE(iogroup, ierror)
+    CALL MPI_GROUP_FREE(simgroup, ierror)
     
     DEALLOCATE(densitytotal2D)
     DEALLOCATE(members)
@@ -846,6 +862,11 @@ CONTAINS
        ENDIF
     ENDIF
     
+    ! Release communicator and groups
+    CALL MPI_COMM_FREE(iocomm, ierror)
+    CALL MPI_GROUP_FREE(iogroup, ierror)
+    CALL MPI_GROUP_FREE(simgroup, ierror)
+    
     DEALLOCATE(densitytotal2D)
     DEALLOCATE(members)
     
@@ -957,9 +978,14 @@ CONTAINS
        ENDIF
     ENDIF
     
+    ! Release communicator and groups
+    CALL MPI_COMM_FREE(iocomm, ierror)
+    CALL MPI_GROUP_FREE(iogroup, ierror)
+    CALL MPI_GROUP_FREE(simgroup, ierror)
+    
     DEALLOCATE(densitytotal2D)
     DEALLOCATE(members)
-    
+        
   END SUBROUTINE write_slice_rz
   
   !-------------------------------------------------------------------!
