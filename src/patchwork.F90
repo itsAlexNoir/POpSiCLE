@@ -246,10 +246,7 @@ CONTAINS
          MPI_DOUBLE_PRECISION, MPI_SUM, sumcomm(indcomm), ierror)
     
     ! Release communicator and groups
-    DO indcomm = 0, iocomm_maxsize
-       CALL MPI_COMM_FREE(sumcomm(indcomm), ierror)
-    ENDDO
-    
+    CALL MPI_COMM_FREE(sumcomm(indcomm), ierror)
     CALL MPI_GROUP_FREE(iogroup, ierror)
     CALL MPI_GROUP_FREE(simgroup, ierror)
     
@@ -333,10 +330,7 @@ CONTAINS
          MPI_DOUBLE_PRECISION, MPI_SUM, sumcomm(indcomm), ierror)
     
     ! Release communicator and groups
-    DO indcomm = 0, iocomm_maxsize
-       CALL MPI_COMM_FREE(sumcomm(indcomm), ierror)
-    ENDDO
-    
+    CALL MPI_COMM_FREE(sumcomm(indcomm), ierror)
     CALL MPI_GROUP_FREE(iogroup, ierror)
     CALL MPI_GROUP_FREE(simgroup, ierror)
     
@@ -419,13 +413,10 @@ CONTAINS
          MPI_DOUBLE_PRECISION, MPI_SUM, sumcomm(indcomm), ierror)
     
     ! Release communicator and groups
-    DO indcomm = 0, iocomm_maxsize
-       CALL MPI_COMM_FREE(sumcomm(indcomm), ierror)
-    ENDDO
-    
+    CALL MPI_COMM_FREE(sumcomm(indcomm), ierror)    
     CALL MPI_GROUP_FREE(iogroup, ierror)
     CALL MPI_GROUP_FREE(simgroup, ierror)
-  
+    
     DEALLOCATE(members,sumcomm)
     
   END SUBROUTINE sum_grid_pieces_yz
@@ -505,10 +496,7 @@ CONTAINS
          MPI_DOUBLE_PRECISION, MPI_SUM, sumcomm(indcomm), ierror)
     
     ! Release communicator and groups
-    DO indcomm = 0, iocomm_maxsize
-       CALL MPI_COMM_FREE(sumcomm(indcomm), ierror)
-    ENDDO
-    
+    CALL MPI_COMM_FREE(sumcomm(indcomm), ierror)
     CALL MPI_GROUP_FREE(iogroup, ierror)
     CALL MPI_GROUP_FREE(simgroup, ierror)
     
@@ -593,10 +581,7 @@ CONTAINS
          MPI_DOUBLE_PRECISION, MPI_SUM, sumcomm(indcomm), ierror)
     
     ! Release communicator and groups
-    DO indcomm = 0, iocomm_maxsize
-       CALL MPI_COMM_FREE(sumcomm(indcomm), ierror)
-    ENDDO
-    
+    CALL MPI_COMM_FREE(sumcomm(indcomm), ierror)
     CALL MPI_GROUP_FREE(iogroup, ierror)
     CALL MPI_GROUP_FREE(simgroup, ierror)
     
