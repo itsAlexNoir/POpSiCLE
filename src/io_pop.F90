@@ -631,7 +631,8 @@ CONTAINS
     ENDIF
 
     ! Release communicator and groups
-    CALL MPI_COMM_FREE(iocomm, ierror)
+    IF((ipz.EQ.0).AND.(ipr.EQ.0)) &
+         CALL MPI_COMM_FREE(iocomm, ierror)
     CALL MPI_GROUP_FREE(iogroup, ierror)
     CALL MPI_GROUP_FREE(simgroup, ierror)
     
@@ -745,9 +746,10 @@ CONTAINS
                series_desired=series)
        ENDIF
     ENDIF
-
+    
     ! Release communicator
-    CALL MPI_COMM_FREE(iocomm, ierror)
+    IF((ipy.EQ.0).AND.(ipr.EQ.0)) &
+         CALL MPI_COMM_FREE(iocomm, ierror)
     CALL MPI_GROUP_FREE(iogroup, ierror)
     CALL MPI_GROUP_FREE(simgroup, ierror)
     
@@ -795,7 +797,7 @@ CONTAINS
     !---------------------------------------------------!
     
     ! Create a global group, used for I/O
-    call MPI_COMM_GROUP(globalcomm, simgroup, ierror)
+    CALL MPI_COMM_GROUP(globalcomm, simgroup, ierror)
     
     ! Assign dimensions
     CALL get_simulation_parameters( rank, &
@@ -837,7 +839,7 @@ CONTAINS
     ELSE
        series = .FALSE.
     ENDIF
-
+    
     IF (ipx.EQ.0 .AND. ipr.EQ.0) THEN
        IF(PRESENT(groupname).AND. PRESENT(setname)) THEN
           CALL write_wave(RESHAPE(densitytotal2D,(/Ny * Nz/)), 2, &
@@ -863,7 +865,8 @@ CONTAINS
     ENDIF
     
     ! Release communicator and groups
-    CALL MPI_COMM_FREE(iocomm, ierror)
+    IF( (ipx.EQ.0).AND.(ipr.EQ.0)) &
+         CALL MPI_COMM_FREE(iocomm, ierror)
     CALL MPI_GROUP_FREE(iogroup, ierror)
     CALL MPI_GROUP_FREE(simgroup, ierror)
     
@@ -979,6 +982,7 @@ CONTAINS
     ENDIF
     
     ! Release communicator and groups
+    IF((ipx.EQ.0).AND.(ipy.EQ.0)) &
     CALL MPI_COMM_FREE(iocomm, ierror)
     CALL MPI_GROUP_FREE(iogroup, ierror)
     CALL MPI_GROUP_FREE(simgroup, ierror)
