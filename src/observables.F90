@@ -264,7 +264,8 @@ CONTAINS
     CALL get_polar_amplitude(bk,probk2D)
     
     dims = (/ kmesh%maxkpts, kmesh%maxthetapts /)
-    
+
+#if _USE_SILO
     IF(silofile) THEN
        CALL create_silo_file(filename)
        CALL write_silo_rectilinear_mesh2D(filename, dims, &
@@ -289,7 +290,8 @@ CONTAINS
        
        DEALLOCATE(xax, yax)
     ENDIF
-          
+#endif
+      
     IF(PRESENT(groupname)) THEN
        CALL write_wave(RESHAPE(probk2D, &
             (/kmesh%maxkpts*kmesh%maxthetapts/)),2,&
@@ -356,6 +358,7 @@ CONTAINS
     
     dims = (/ kmesh%maxkpts, kmesh%maxthetapts, kmesh%maxphipts /)
     
+#if _USE_SILO
     IF(silofile) THEN
        CALL create_silo_file(filename)
        CALL write_silo_rectilinear_mesh3D(filename,dims, &
@@ -363,7 +366,8 @@ CONTAINS
        CALL write_silo_function3D(filename, dims, 'kethetaphi', &
             probk3D, 'PES_3D')
     ENDIF
-    
+#endif
+
     IF(PRESENT(groupname)) THEN
        CALL write_wave(RESHAPE(probk3D, &
             (/kmesh%maxkpts*kmesh%maxthetapts* &

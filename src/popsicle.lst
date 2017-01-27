@@ -9,12 +9,12 @@ comm_surff samplingpt popsicle_aux popsicle
 
 POPSICLE_MONO_LIST = constants tools bessel gaussleg \
 scatt_interp cubic_interp spline_interp scattcoords  \
-cubcoords coords waveduplicate sharmonics observables \
+cubcoords coords waveduplicate sharmonics \
 samplingpt boundary popsicle_aux popsicle
 
 POPSICLE_HYBRID_LIST = scattboundcyl scattboundcart \
 cubboundcyl cubboundcart boundary fourier patchwork \
-flux comm_surff io_pop io_subset io_surface \
+flux observables comm_surff io_pop io_subset io_surface \
 surface
 
 FFTW_LIST = fftw
