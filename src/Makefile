@@ -122,11 +122,11 @@ endif
 ########################################
 
 ifdef SILO_PATH
-DIRECTIVES +=,-D_USE_SILO=1
+DIRECTIVES +=-Wp,-D_USE_SILO=1
 INCL    += -I${SILO_PATH}/include
 LIBS    += -L${SILO_PATH}/lib -lsiloh5
 else
-DIRECTIVES +=,-D_USE_SILO=0
+DIRECTIVES += -Wp,-D_USE_SILO=0
 endif
 
 #######################################
