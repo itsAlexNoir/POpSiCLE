@@ -13,7 +13,7 @@ import graph as graph
 
 
 ########################################
-##       popsicle viewer.py
+#       popsicle viewer.py
 ########################################
 
 # Load all the parameters

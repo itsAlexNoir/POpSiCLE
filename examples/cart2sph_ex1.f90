@@ -1,6 +1,6 @@
 PROGRAM cart2sph_ex1
 
-  USE popsicle
+  USE popsicle_aux
   
   IMPLICIT NONE
 

@@ -1,6 +1,6 @@
 PROGRAM tsurff_test
   
-  USE popsicle
+  USE popsicle_aux
   
   REAL(dp)                   :: radius_boundary
   INTEGER                    :: lmax, mmin, mmax

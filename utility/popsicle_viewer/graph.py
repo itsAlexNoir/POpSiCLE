@@ -446,14 +446,53 @@ def oneframe_polarsurf(matrix,ax1,ax2,clamp,axes_aspect=True,
     
     ax1 = plt.subplot(gs[0,0],polar=True)
     surf1 = ax1.pcolormesh(AX2,AX1,matrix_twice,vmax=clamp[1],vmin=clamp[0],
-                               shading='gouraud',rasterized='True')
-    ax1.plot(np.linspace(0, 2*np.pi, 100), np.ones(100)*2.0*Up,
-            lw=2,color='white', linestyle='-')
-    ax1.plot(np.linspace(0, 2*np.pi, 100), np.ones(100)*10.0*Up,
-            lw=2,color='white', linestyle='-')
-    #ax1.text(np.pi/1.9, 2.8*Up, r'$2U_p$', fontsize=20,color='white')
-    ax1.text(np.pi/1.9, 4.5*Up, r'$2U_p$', fontsize=20,color='white')
-    ax1.text(np.pi/2.0, 9.2*Up, r'$10U_p$', fontsize=20,color='white')
+                           shading='gouraud',rasterized='True')
+    # ax1.plot(np.linspace(0, 2*np.pi, 100), np.ones(100)*2.0*Up,
+    #          lw=2,color='white', linestyle='-')
+    # ax1.plot(np.linspace(0, 2*np.pi, 100), np.ones(100)*10.0*Up,
+    #         lw=2,color='white', linestyle='-')
+    # ##ax1.text(np.pi/1.9, 2.8*Up, r'$2U_p$', fontsize=20,color='white')
+    # ax1.text(np.pi/1.9, 4.5*Up, r'$2U_p$', fontsize=20,color='white')
+    # ax1.text(np.pi/2.0, 9.2*Up, r'$10U_p$', fontsize=20,color='white')
+
+
+    # Draw lines perpendicular to the internuclear axis.
+    # Two-centre interference minima
+    minima = 3.73002507442
+    x = np.linspace(-200,200,200)
+    r = np.sqrt(x**2+minima**2)
+    theta1 = np.arctan2(x,minima)
+    theta2 = np.arctan2(x,-minima)
+    
+    ax1.plot(theta1,r,lw=2,color='white', linestyle='-')
+    ax1.plot(theta2,r,lw=2,color='white', linestyle='-')
+
+    ax1.text(np.pi*0.47, 8.0*Up, r'$n=0$', fontsize=20,color='white')
+    ax1.text(np.pi*1.43, 7.5*Up, r'$n=0$', fontsize=20,color='white')
+
+    minima = 33.57
+    x = np.linspace(-200,200,200)
+    r = np.sqrt(x**2+minima**2)
+    theta1 = np.arctan2(x,minima)
+    theta2 = np.arctan2(x,-minima)
+    
+    ax1.plot(theta1,r,lw=2,color='white', linestyle='-')
+    ax1.plot(theta2,r,lw=2,color='white', linestyle='-')
+
+    ax1.text(np.pi*0.38, 9.2*Up, r'$n=1$', fontsize=20,color='white')
+    ax1.text(np.pi*1.34, 8.3*Up, r'$n=1$', fontsize=20,color='white')
+
+    minima = 93.25
+    x = np.linspace(-200,200,200)
+    r = np.sqrt(x**2+minima**2)
+    theta1 = np.arctan2(x,minima)
+    theta2 = np.arctan2(x,-minima)
+    
+    ax1.plot(theta1,r,lw=2,color='white', linestyle='-')
+    ax1.plot(theta2,r,lw=2,color='white', linestyle='-')
+
+    ax1.text(np.pi*0.27, 10.5*Up, r'$n=2$', fontsize=20,color='white')
+    ax1.text(np.pi*1.2, 9.2*Up, r'$n=2$', fontsize=20,color='white')
 
     cb1 = fig.colorbar(surf1,ax=ax1,use_gridspec=True,pad=0.1)
     cb1.set_ticks(np.arange(clamp[1],clamp[0]-1,-1))
