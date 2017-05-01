@@ -1,6 +1,6 @@
 PROGRAM cy2sph_ex3
   
-  USE popsicle
+  USE popsicle_aux
   
   IMPLICIT NONE
 
@@ -138,7 +138,7 @@ PROGRAM cy2sph_ex3
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL cpu_time(start_time)
   CALL initialize_cylindrical_surface(gpts, hpts, dims, &
-       Rboundary, tolerance, fdrule, deltar, lmax, filename)
+       Rboundary, tolerance, fdrule, deltar, lmax, filename, 0)
   CALL cpu_time(end_time)
   
   comp_time = end_time - start_time
@@ -211,7 +211,7 @@ PROGRAM cy2sph_ex3
   CALL cpu_time(start_time)
   
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
-  CALL get_cylindrical_surface(filename, psi, gpts, hpts, dims, &
+  CALL get_cylindrical_surface(filename, 0, psi, gpts, hpts, dims, &
        fdrule, 0.0_dp , efield, afield, lmax)
   
   CALL cpu_time(end_time)

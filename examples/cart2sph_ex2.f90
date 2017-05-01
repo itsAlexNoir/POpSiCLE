@@ -1,7 +1,7 @@
 PROGRAM cart2sph_ex2
 
   USE MPI
-  USE popsicle
+  USE popsicle_aux
   
   IMPLICIT NONE
 

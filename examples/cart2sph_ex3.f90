@@ -1,6 +1,6 @@
 PROGRAM cart2sph_ex2
   
-  USE popsicle
+  USE popsicle_aux
   
   IMPLICIT NONE
 
@@ -138,7 +138,7 @@ PROGRAM cart2sph_ex2
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL cpu_time(start_time)
   CALL initialize_cartesian_surface(xpts, ypts, zpts, dims, &
-       Rboundary, tolerance, fdrule, deltar, lmax, filename)
+       Rboundary, tolerance, fdrule, deltar, lmax, filename, 0)
   CALL cpu_time(end_time)
   
   comp_time = end_time - start_time
@@ -218,7 +218,7 @@ PROGRAM cart2sph_ex2
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL cpu_time(start_time)
   
-  CALL get_cartesian_surface(filename, psi, xpts, ypts, zpts, dims, &
+  CALL get_cartesian_surface(filename, 0, psi, xpts, ypts, zpts, dims, &
        fdrule, 0.0_dp , efield, afield, lmax )
   
   CALL cpu_time(end_time)

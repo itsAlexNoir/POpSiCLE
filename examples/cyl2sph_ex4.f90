@@ -1,7 +1,7 @@
 PROGRAM cyl2sph_ex4
   
   USE MPI
-  USE popsicle
+  USE popsicle_aux
   
   IMPLICIT NONE
   
@@ -171,7 +171,7 @@ PROGRAM cyl2sph_ex4
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL cpu_time(start_time)
   CALL initialize_cylindrical_surface(gpts, hpts, dims_local, &
-       Rboundary, tolerance, fdrule, deltar, lmax, filename, &
+       Rboundary, tolerance, fdrule, deltar, lmax, filename, 0, &
        mpi_rank=rank, mpi_size=size, comm=MPI_COMM_WORLD)
   CALL cpu_time(end_time)
   
@@ -247,7 +247,7 @@ PROGRAM cyl2sph_ex4
   filename = './results/sphfunc.rb' // rbstr // '.lmax' // lmaxstr
   CALL cpu_time(start_time)
   
-  CALL get_cylindrical_surface(filename, psi, gpts, hpts, dims_local, &
+  CALL get_cylindrical_surface(filename, 0, psi, gpts, hpts, dims_local, &
        fdrule, 0.0_dp , &
        efield, afield, lmax, mpi_rank=rank, mpi_size=size )
   

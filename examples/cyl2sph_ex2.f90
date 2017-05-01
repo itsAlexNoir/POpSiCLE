@@ -1,7 +1,7 @@
 PROGRAM cyl2sph_ex2
   
   USE MPI
-  USE popsicle
+  USE popsicle_aux
   
   IMPLICIT NONE
   
@@ -19,6 +19,7 @@ PROGRAM cyl2sph_ex2
   COMPLEX(dp), ALLOCATABLE   :: Y_lm(:, :)
   COMPLEX(dp), ALLOCATABLE   :: R_nl(:, :)
   COMPLEX(dp), ALLOCATABLE   :: cylfunc(:, :)
+  COMPLEX(dp), ALLOCATABLE   :: cylfunc_deriv(:, :)
   REAL(dp)                   :: drho, dz
   COMPLEX(dp), ALLOCATABLE   :: sphfunc(:, :)
   COMPLEX(dp), ALLOCATABLE   :: sphfunc_dr(:, :)
@@ -104,6 +105,7 @@ PROGRAM cyl2sph_ex2
   ALLOCATE(Y_lm(minrho:maxrho,minz:maxz))
   ALLOCATE(R_nl(minrho:maxrho,minz:maxz))
   ALLOCATE(cylfunc(minrho:maxrho,minz:maxz))
+  ALLOCATE(cylfunc_deriv(minrho:maxrho,minz:maxz))
   
   DO iz = minz, maxz
      DO irho = minrho, maxrho
@@ -142,7 +144,7 @@ PROGRAM cyl2sph_ex2
   dr = 0.1_dp
   lmax = 10
   fdrule = 2
-  external_derivative = .TRUE.
+  !external_derivative = .TRUE.
   local_dims  = (/maxrhopts, maxzpts/)
   global_dims = (/numrhopts, numzpts/)
   filename    = 'results/cyl2sph'
@@ -180,7 +182,7 @@ PROGRAM cyl2sph_ex2
   
   CALL initialize_cylindrical_surface(rho_ax(1:maxrhopts+1), &
        z_ax(1:maxzpts+1),(/maxrhopts+1,maxzpts+1/), Rboundary, &
-       tolerance, fdrule, dr, lmax, filename, &
+       tolerance, fdrule, dr, lmax, filename, 0, &
        mpi_rank=rank, mpi_size=size, comm=MPI_COMM_WORLD)
   
   CALL cpu_time(end_time)
@@ -211,7 +213,7 @@ PROGRAM cyl2sph_ex2
 !!$     CALL get_cylindrical_boundary(rho_ax, z_ax, local_dims, cylfunc, &
 !!$          2, sphfunc, sphfunc_dr, sphfunc_dth)
      
-     CALL get_cylindrical_surface(filename, &
+     CALL get_cylindrical_surface(filename, 0, &
           cylfunc(1:maxrhopts+1,1:maxzpts+1), &
           rho_ax(1:maxrhopts+1),z_ax(1:maxzpts+1), &
           (/maxrhopts+1,maxzpts+1/), fdrule, 0.0_dp , &
@@ -312,7 +314,7 @@ PROGRAM cyl2sph_ex2
   ! Free memory
   DEALLOCATE(rho_ax,z_ax)
   DEALLOCATE(Y_lm, R_nl)
-  DEALLOCATE(cylfunc)
+  DEALLOCATE(cylfunc,cylfunc_deriv)
   DEALLOCATE(sphfunc)
   DEALLOCATE(sphfunc_dr, sphfunc_dth)
   
