@@ -47,8 +47,8 @@ PROGRAM cyl2sph_ex1
   
   ! Set number of points
   
-  maxrhopts = 300 !80
-  maxzpts = 601 !80
+  maxrhopts = 500 !80
+  maxzpts = 501 !80
   
   minrho = 1
   maxrho = maxrhopts + 1
@@ -96,24 +96,25 @@ PROGRAM cyl2sph_ex1
            thetapt = ACOS( z_ax(iz) / rpt )
         ENDIF
         
-!!$           Y_lm(ix,iy,iz) = 0.25_dp * SQRT(5.0_dp / pi) * &
-!!$                ( 3.0_dp * COS(thetapt)**2 - 1.0_dp) !* COS(phipt) !EXP(ZIMAGONE*phipt)
+        ! n=2 l=1 m=0
+        !Y_lm(irho,iz) = 0.5_dp * SQRT(3.0_dp / pi ) * COS(thetapt)
         
-        Y_lm(irho,iz) = 0.5_dp * SQRT(3.0_dp / pi ) * COS(thetapt)
+        ! n=3 l=2 m=0
+        Y_lm(irho,iz) = 0.25_dp * SQRT(5.0_dp / pi) * &
+             ( 3.0_dp * COS(thetapt)**2 - 1.0_dp)
+        
         R_nl(irho,iz) = 1.0_dp
         
-!!$        cylfunc(irho,iz) = EXP(-rpt / 2.0_dp) * R_nl(irho, iz) * &
-!!$             Y_lm(irho,iz)
-
-        cylfunc(irho,iz) = EXP( ZIMAGONE * 2.0_dp * rpt) * Y_lm(irho,iz)
+        cylfunc(irho,iz) = EXP( - rpt / 2.0_dp ) * R_nl(irho,iz) * &
+             Y_lm(irho,iz)
      ENDDO
   ENDDO
   
   ! Initialize the boundary
-  Rboundary = 25.0_dp
-  tolerance = 0.3_dp !0.15_dp
+  Rboundary = 20.0_dp
+  tolerance = 0.15_dp !0.15_dp
   dr = 0.1_dp
-  lmax = 10 !8
+  lmax = 100 !8
   fdrule = 6
   dtheta = 0.1_dp
   dims      = (/maxrhopts, maxzpts/)
@@ -139,11 +140,11 @@ PROGRAM cyl2sph_ex1
   CALL cpu_time(start_time)
   
   !! For scattered interpolation uncomment the subroutine below
-  !CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
-  !     Rboundary, tolerance, 2, dr, lmax )
-  
   CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
-       Rboundary, 2, dr, lmax )
+       Rboundary, tolerance, 2, dr, lmax )
+  
+  !CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
+  !     Rboundary, 2, dr, lmax )
 
 !!$  CALL initialize_cylindrical_surface(rho_ax(1:maxrhopts+1), &
 !!$       z_ax(1:maxzpts+1),(/maxrhopts+1,maxzpts+1/), Rboundary, &
@@ -184,12 +185,12 @@ PROGRAM cyl2sph_ex1
      CALL cpu_time(start_time)
      
      !! For scattered interpolation uncomment the subroutine below
-     !CALL get_cylindrical_boundary(cylfunc, sphfunc, sphfunc_dr, &
-     !     sphfunc_dth, 'quadratic')
+     CALL get_cylindrical_boundary(cylfunc, sphfunc, sphfunc_dr, &
+          sphfunc_dth, 'quadratic')
      
-!!$     CALL get_cylindrical_boundary(rho_ax, z_ax, dims, cylfunc, &
-!!$          6, sphfunc, sphfunc_dr, sphfunc_dth)
-
+     !CALL get_cylindrical_boundary(rho_ax, z_ax, dims, cylfunc, &
+     !     6, sphfunc, sphfunc_dr, sphfunc_dth)
+     
 !!$     CALL get_cylindrical_surface(filename, &
 !!$          cylfunc(1:maxrhopts+1,1:maxzpts+1), &
 !!$          rho_ax(1:maxrhopts+1),z_ax(1:maxzpts+1), &
@@ -208,14 +209,16 @@ PROGRAM cyl2sph_ex1
      WRITE(*,*)
      
   ENDDO
+
+  minerror = 1.0E10_dp
+  maxerror = 0.0_dp
   
   DO itheta = 1, numthetapts
      DO ir = 1, numrpts
         
         ref_value =  EXP(-rpts_boundary(ir) / 2.0_dp) *  &
-             !0.25_dp * SQRT(5.0_dp / pi) * &
-             !( 3.0_dp * COS(theta_boundary(itheta))**2 - 1.0_dp)
-             0.5_dp * SQRT(3.0_dp / pi) * costheta_boundary(itheta)
+             0.25_dp * SQRT( 5.0_dp / pi) * &
+             ( 3.0_dp * COS(theta_boundary(itheta))**2 - 1.0_dp)
         
         maxerror = MAX(maxerror, ABS(sphfunc(ir,itheta) -&
              ref_value))
