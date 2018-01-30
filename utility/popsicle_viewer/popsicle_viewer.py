@@ -18,7 +18,7 @@ import graph as graph
 
 # Load all the parameters
 inp_params = {}
-inp.read_input(inp_params,'./input_popview.dat')
+inp.read_input(inp_params,'./input_popview.inp')
 
 params = inp.parameters(inp_params)
 

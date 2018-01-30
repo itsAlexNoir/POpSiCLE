@@ -1,0 +1,79 @@
+########################################
+####### Options for this script ########
+########################################
+
+## Paths to the files (supposed to be in the same
+## directory that this input file).
+
+spherical_filename     = prob3D
+polar_filename         = probketheta
+mes_filename           = mes
+pes_filename           = pes
+samp_pes_filename      = spes
+samp_pad_filename      = pad
+samp_wavetime_filename = probt
+
+## Which frame do you want to plot?
+
+draw_spherical_amplitude = 0
+draw_polar_amplitude     = 0
+draw_sph_polar_amplitude = 0
+draw_pad                 = 0
+draw_polar_pad           = 0
+draw_semipolar_pad       = 0
+draw_mes                 = 0
+draw_pes                 = 0
+draw_EnEe                = 0
+draw_diff_cross          = 0
+draw_total_cross         = 0
+draw_sampling_pes        = 0
+draw_sampling_pad        = 0
+draw_semipolar_samp_pad  = 0
+draw_wavetime            = 0
+
+## If you want to plot the frame on screen
+showframe = 1
+## If you want to save the frame to a file
+makeframe = 0
+## Time of the final snapshot
+frametime = 0
+
+## Clamp values for density plots.
+clamp_max=0
+clamp_min=-6
+
+########################################
+#### Parameters of the simulation ######
+########################################
+
+fixed_nuclei = 1
+
+lmax = 10
+mmax = 0
+
+maxthetapts = 101
+maxphipts   = 1
+
+dEe = 0.005
+dEn = 1.0
+dE = 0.005
+
+Eemaxpts = 640
+Enmaxpts = 1
+
+Emax  = 2.0
+
+################################
+
+# in nm
+wavelength = 23.05
+# W/cm2
+intensity  = 1.0e13
+no_cycles = 13
+Eg = 0.600000922215923
+Ip = 0.600000922215923 + 0.5
+
+# in eV
+Ee_ejec_eV = 10.0
+
+###############################
