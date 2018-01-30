@@ -140,12 +140,13 @@ PROGRAM cyl2sph_ex1
   CALL cpu_time(start_time)
   
   !! For scattered interpolation uncomment the subroutine below
-  CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
-       Rboundary, tolerance, 2, dr, lmax )
-  
   !CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
-  !     Rboundary, 2, dr, lmax )
-
+  !     Rboundary, tolerance, 2, dr, lmax )
+  
+  !! For scattered interpolation uncomment the subroutine below
+  CALL initialize_cylindrical_boundary(rho_ax, z_ax, dims, &
+       Rboundary, 2, dr, lmax )
+  
 !!$  CALL initialize_cylindrical_surface(rho_ax(1:maxrhopts+1), &
 !!$       z_ax(1:maxzpts+1),(/maxrhopts+1,maxzpts+1/), Rboundary, &
 !!$       tolerance, fdrule, dr, lmax, filename )

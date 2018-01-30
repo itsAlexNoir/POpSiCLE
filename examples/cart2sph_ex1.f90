@@ -1,7 +1,6 @@
 PROGRAM cart2sph_ex1
 
   USE popsicle_aux
-
   IMPLICIT NONE
 
   INTEGER                    :: numxpts
@@ -37,7 +36,6 @@ PROGRAM cart2sph_ex1
   CHARACTER(LEN = 7)         :: rbstr
   CHARACTER(LEN = 5)         :: lmaxstr
   CHARACTER(LEN = 100)       :: filename
-
   !------------------------------------------------------!
 
   WRITE(*,*) '****************************'
