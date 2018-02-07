@@ -3,7 +3,7 @@
 
 import numpy as np
 import h5py as h5py
-import constants as const
+from . import constants as const
 
 ########################################
 ##           data.py

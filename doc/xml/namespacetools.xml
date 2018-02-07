@@ -1,0 +1,761 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacetools" kind="namespace" language="Fortran">
+    <compoundname>tools</compoundname>
+    <innerclass refid="interfacetools_1_1make__cross__derivative" prot="private">tools::make_cross_derivative</innerclass>
+    <innerclass refid="interfacetools_1_1make__derivative" prot="private">tools::make_derivative</innerclass>
+    <innerclass refid="interfacetools_1_1make__wave__boundary__derivative" prot="private">tools::make_wave_boundary_derivative</innerclass>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="tools_8f90_1adff0debcbf01d0adfac8e1d23199ed96" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable tools::fd_coeff1</definition>
+        <argsstring></argsstring>
+        <name>fd_coeff1</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="42" column="1" bodyfile="src/tools.f90" bodystart="42" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="variable" id="tools_8f90_1a95e39d2914b76c2d4cd844f2cb134275" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable tools::fd_coeff2</definition>
+        <argsstring></argsstring>
+        <name>fd_coeff2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="43" column="1" bodyfile="src/tools.f90" bodystart="43" bodyend="43"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="tools_8f90_1a3c1b4472085237f52238acc6f0d116f1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>integer function, public</type>
+        <definition>integer function, public tools::indx</definition>
+        <argsstring>(ix, iy, iz, ir, Nx, Ny, Nz, Nr)</argsstring>
+        <name>indx</name>
+        <param>
+          <type>ix</type>
+          <defname>ix</defname>
+        </param>
+        <param>
+          <type>iy</type>
+          <defname>iy</defname>
+        </param>
+        <param>
+          <type>iz</type>
+          <defname>iz</defname>
+        </param>
+        <param>
+          <type>ir</type>
+          <defname>ir</defname>
+        </param>
+        <param>
+          <type>Nx</type>
+          <defname>Nx</defname>
+        </param>
+        <param>
+          <type>Ny</type>
+          <defname>Ny</defname>
+        </param>
+        <param>
+          <type>Nz</type>
+          <defname>Nz</defname>
+        </param>
+        <param>
+          <type>Nr</type>
+          <defname>Nr</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="47" column="1" bodyfile="src/tools.f90" bodystart="48" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="tools_8f90_1a99764edfc7929f55dfa990a9e3d16002" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public tools::get_simulation_parameters</definition>
+        <argsstring>(rank, dims_local, dims_global, grid_rank, Nx, Ny, Nz, Nr, Nxgl, Nygl, Nzgl, Nrgl, ipx, ipy, ipz, ipr, numprocx, numprocy, numprocz, numprocr)</argsstring>
+        <name>get_simulation_parameters</name>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <param>
+          <type>dims_local</type>
+          <defname>dims_local</defname>
+        </param>
+        <param>
+          <type>dims_global</type>
+          <defname>dims_global</defname>
+        </param>
+        <param>
+          <type>grid_rank</type>
+          <defname>grid_rank</defname>
+        </param>
+        <param>
+          <type>Nx</type>
+          <defname>Nx</defname>
+        </param>
+        <param>
+          <type>Ny</type>
+          <defname>Ny</defname>
+        </param>
+        <param>
+          <type>Nz</type>
+          <defname>Nz</defname>
+        </param>
+        <param>
+          <type>Nr</type>
+          <defname>Nr</defname>
+        </param>
+        <param>
+          <type>Nxgl</type>
+          <defname>Nxgl</defname>
+        </param>
+        <param>
+          <type>Nygl</type>
+          <defname>Nygl</defname>
+        </param>
+        <param>
+          <type>Nzgl</type>
+          <defname>Nzgl</defname>
+        </param>
+        <param>
+          <type>Nrgl</type>
+          <defname>Nrgl</defname>
+        </param>
+        <param>
+          <type>ipx</type>
+          <defname>ipx</defname>
+        </param>
+        <param>
+          <type>ipy</type>
+          <defname>ipy</defname>
+        </param>
+        <param>
+          <type>ipz</type>
+          <defname>ipz</defname>
+        </param>
+        <param>
+          <type>ipr</type>
+          <defname>ipr</defname>
+        </param>
+        <param>
+          <type>numprocx</type>
+          <defname>numprocx</defname>
+        </param>
+        <param>
+          <type>numprocy</type>
+          <defname>numprocy</defname>
+        </param>
+        <param>
+          <type>numprocz</type>
+          <defname>numprocz</defname>
+        </param>
+        <param>
+          <type>numprocr</type>
+          <defname>numprocr</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="62" column="1" bodyfile="src/tools.f90" bodystart="67" bodyend="157"/>
+      </memberdef>
+      <memberdef kind="function" id="tools_8f90_1a8b9186ca9624c97ecb05fcc5ea122d12" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public tools::initialize_fd_coeffs</definition>
+        <argsstring>(fd_rule)</argsstring>
+        <name>initialize_fd_coeffs</name>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="162" column="1" bodyfile="src/tools.f90" bodystart="163" bodyend="296"/>
+      </memberdef>
+      <memberdef kind="function" id="tools_8f90_1a5ffbd2337028a23e11299ce54f024997" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public tools::delete_fd_coeffs</definition>
+        <argsstring>()</argsstring>
+        <name>delete_fd_coeffs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="301" column="1" bodyfile="src/tools.f90" bodystart="302" bodyend="305"/>
+      </memberdef>
+      <memberdef kind="function" id="tools_8f90_1a3a80873b5c6b35a3aa5bd4f22498133c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine tools::make_wave_boundary_derivative2d</definition>
+        <argsstring>(wave, wave_deriv, fd_rule, deltar, numrpts, numthetapts)</argsstring>
+        <name>make_wave_boundary_derivative2d</name>
+        <param>
+          <type>wave</type>
+          <defname>wave</defname>
+        </param>
+        <param>
+          <type>wave_deriv</type>
+          <defname>wave_deriv</defname>
+        </param>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <param>
+          <type>deltar</type>
+          <defname>deltar</defname>
+        </param>
+        <param>
+          <type>numrpts</type>
+          <defname>numrpts</defname>
+        </param>
+        <param>
+          <type>numthetapts</type>
+          <defname>numthetapts</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="309" column="1" bodyfile="src/tools.f90" bodystart="311" bodyend="341"/>
+      </memberdef>
+      <memberdef kind="function" id="tools_8f90_1a2f2bf951453669e70964df7fb4b233ab" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine tools::make_wave_boundary_derivative3d</definition>
+        <argsstring>(wave, wave_deriv, fd_rule, deltar, numrpts, numthetapts, numphipts)</argsstring>
+        <name>make_wave_boundary_derivative3d</name>
+        <param>
+          <type>wave</type>
+          <defname>wave</defname>
+        </param>
+        <param>
+          <type>wave_deriv</type>
+          <defname>wave_deriv</defname>
+        </param>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <param>
+          <type>deltar</type>
+          <defname>deltar</defname>
+        </param>
+        <param>
+          <type>numrpts</type>
+          <defname>numrpts</defname>
+        </param>
+        <param>
+          <type>numthetapts</type>
+          <defname>numthetapts</defname>
+        </param>
+        <param>
+          <type>numphipts</type>
+          <defname>numphipts</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="346" column="1" bodyfile="src/tools.f90" bodystart="348" bodyend="380"/>
+      </memberdef>
+      <memberdef kind="function" id="tools_8f90_1a3c125838be398143901359f08493af08" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine tools::dmake_derivative</definition>
+        <argsstring>(func, func_dx, fd_rule, dx, fdcoeffs)</argsstring>
+        <name>dmake_derivative</name>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>func_dx</type>
+          <defname>func_dx</defname>
+        </param>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <param>
+          <type>dx</type>
+          <defname>dx</defname>
+        </param>
+        <param>
+          <type>fdcoeffs</type>
+          <defname>fdcoeffs</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="385" column="1" bodyfile="src/tools.f90" bodystart="387" bodyend="412"/>
+      </memberdef>
+      <memberdef kind="function" id="tools_8f90_1a891c41ab6491b76527ce55363539ddfe" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine tools::zmake_derivative</definition>
+        <argsstring>(func, func_dx, fd_rule, dx, fdcoeffs)</argsstring>
+        <name>zmake_derivative</name>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>func_dx</type>
+          <defname>func_dx</defname>
+        </param>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <param>
+          <type>dx</type>
+          <defname>dx</defname>
+        </param>
+        <param>
+          <type>fdcoeffs</type>
+          <defname>fdcoeffs</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="417" column="1" bodyfile="src/tools.f90" bodystart="419" bodyend="445"/>
+      </memberdef>
+      <memberdef kind="function" id="tools_8f90_1abc238e2106d3cecfbc2b22fdeaccd7e2" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine tools::dmake_cross_derivative2d</definition>
+        <argsstring>(func, func_dxdy, fd_rule, dx, dy, xcoeffs, ycoeffs)</argsstring>
+        <name>dmake_cross_derivative2d</name>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>func_dxdy</type>
+          <defname>func_dxdy</defname>
+        </param>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <param>
+          <type>dx</type>
+          <defname>dx</defname>
+        </param>
+        <param>
+          <type>dy</type>
+          <defname>dy</defname>
+        </param>
+        <param>
+          <type>xcoeffs</type>
+          <defname>xcoeffs</defname>
+        </param>
+        <param>
+          <type>ycoeffs</type>
+          <defname>ycoeffs</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="450" column="1" bodyfile="src/tools.f90" bodystart="452" bodyend="497"/>
+      </memberdef>
+      <memberdef kind="function" id="tools_8f90_1a866b57a1e6108889816fdb184d5b560d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine tools::zmake_cross_derivative2d</definition>
+        <argsstring>(func, func_dxdy, fd_rule, dx, dy, xcoeffs, ycoeffs)</argsstring>
+        <name>zmake_cross_derivative2d</name>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>func_dxdy</type>
+          <defname>func_dxdy</defname>
+        </param>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <param>
+          <type>dx</type>
+          <defname>dx</defname>
+        </param>
+        <param>
+          <type>dy</type>
+          <defname>dy</defname>
+        </param>
+        <param>
+          <type>xcoeffs</type>
+          <defname>xcoeffs</defname>
+        </param>
+        <param>
+          <type>ycoeffs</type>
+          <defname>ycoeffs</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="502" column="1" bodyfile="src/tools.f90" bodystart="504" bodyend="549"/>
+      </memberdef>
+      <memberdef kind="function" id="tools_8f90_1a51b850452ea02853f95af383a082d062" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine tools::dmake_cross_derivative3d</definition>
+        <argsstring>(func, func_dxdydz, fd_rule, dx, dy, dz, xcoeffs, ycoeffs, zcoeffs)</argsstring>
+        <name>dmake_cross_derivative3d</name>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>func_dxdydz</type>
+          <defname>func_dxdydz</defname>
+        </param>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <param>
+          <type>dx</type>
+          <defname>dx</defname>
+        </param>
+        <param>
+          <type>dy</type>
+          <defname>dy</defname>
+        </param>
+        <param>
+          <type>dz</type>
+          <defname>dz</defname>
+        </param>
+        <param>
+          <type>xcoeffs</type>
+          <defname>xcoeffs</defname>
+        </param>
+        <param>
+          <type>ycoeffs</type>
+          <defname>ycoeffs</defname>
+        </param>
+        <param>
+          <type>zcoeffs</type>
+          <defname>zcoeffs</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="554" column="1" bodyfile="src/tools.f90" bodystart="556" bodyend="625"/>
+      </memberdef>
+      <memberdef kind="function" id="tools_8f90_1a2a6ecf2908b40d75911f80a68e7f9266" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine tools::zmake_cross_derivative3d</definition>
+        <argsstring>(func, func_dxdydz, fd_rule, dx, dy, dz, xcoeffs, ycoeffs, zcoeffs)</argsstring>
+        <name>zmake_cross_derivative3d</name>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>func_dxdydz</type>
+          <defname>func_dxdydz</defname>
+        </param>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <param>
+          <type>dx</type>
+          <defname>dx</defname>
+        </param>
+        <param>
+          <type>dy</type>
+          <defname>dy</defname>
+        </param>
+        <param>
+          <type>dz</type>
+          <defname>dz</defname>
+        </param>
+        <param>
+          <type>xcoeffs</type>
+          <defname>xcoeffs</defname>
+        </param>
+        <param>
+          <type>ycoeffs</type>
+          <defname>ycoeffs</defname>
+        </param>
+        <param>
+          <type>zcoeffs</type>
+          <defname>zcoeffs</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="630" column="1" bodyfile="src/tools.f90" bodystart="632" bodyend="701"/>
+      </memberdef>
+      <memberdef kind="function" id="tools_8f90_1a8a6f67ecc3408a911492208daad9ef3f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public tools::fdweights</definition>
+        <argsstring>(xi, x, n, m, c)</argsstring>
+        <name>fdweights</name>
+        <param>
+          <type>xi</type>
+          <defname>xi</defname>
+        </param>
+        <param>
+          <type>x</type>
+          <defname>x</defname>
+        </param>
+        <param>
+          <type>n</type>
+          <defname>n</defname>
+        </param>
+        <param>
+          <type>m</type>
+          <defname>m</defname>
+        </param>
+        <param>
+          <type>c</type>
+          <defname>c</defname>
+        </param>
+        <briefdescription>
+<para>Create finite-difference weights. </para>        </briefdescription>
+        <detaileddescription>
+<para>Create coefficients to be used for finite-difference rules. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">xi</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Central grid point. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Grid points. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Order of the finite-difference rule. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">m</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Order of the highest derivative + 1 (This includes 0th). </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">Finite-difference</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>coefficients. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="723" column="1" bodyfile="src/tools.f90" bodystart="724" bodyend="768"/>
+      </memberdef>
+      <memberdef kind="function" id="tools_8f90_1a027e5384b75059ac3bc757b3ef7e69a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public tools::interv</definition>
+        <argsstring>(xt, lxt, x, left, mflag)</argsstring>
+        <name>interv</name>
+        <param>
+          <type>xt</type>
+          <defname>xt</defname>
+        </param>
+        <param>
+          <type>lxt</type>
+          <defname>lxt</defname>
+        </param>
+        <param>
+          <type>x</type>
+          <defname>x</defname>
+        </param>
+        <param>
+          <type>left</type>
+          <defname>left</defname>
+        </param>
+        <param>
+          <type>mflag</type>
+          <defname>mflag</defname>
+        </param>
+        <briefdescription>
+<para>FInd the interval within T containing x. </para>        </briefdescription>
+        <detaileddescription>
+<para>The program is designed to be efficient in the common situation that it is called repeatedly, with x taken from an increasing or decreasing sequence. This will happen, e.g., when a pp function is to be graphed. The first guess for left is therefore taken to be the value returned at the previous call and stored in the local variable ilo . A first check ascertains that ilo .lt. lxt (this is necessary since the present call may have nothing to do with the previous call). Then, if xt(ilo) .le. x .lt. xt(ilo+1), we set left = ilo and are done after just three comparisons. Otherwise, we repeatedly double the difference istep = ihi - ilo while also moving ilo and ihi in the direction of x , until xt(ilo) .le. x .lt. xt(ihi), after which we use bisection to get, in addition, ilo+1 = ihi .left = ilo is then returned. ****** o u t p u t ****** left, mflag.....both integers, whose value is</para><para>1 -1 if x .lt. xt(1) i 0 if xt(i) .le. x .lt. xt(i+1) i 0 if xt(i) .lt. x .eq. xt(i+1) .eq. xt(lxt) i 1 if xt(i) .lt. xt(i+1) .eq. xt(lxt) .lt. x</para><para>In particular, mflag = 0 is the &apos;usual&apos; case. mflag .ne. 0 indicates that x lies outside the CLOSED interval xt(1) .le. y .le. xt(lxt) . The asymmetric treatment of the intervals is due to the decision to make all pp functions cont- inuous from the right, but, by returning mflag = 0 even if x = xt(lxt), there is the option of having the computed pp function continuous from the left at xt(lxt) . <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">xt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>.a real sequence, of length lxt , assumed to be nondecreasing. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">lxt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>.number of terms in the sequence xt. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the point whose location with respect to the sequence xt is to be determined. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">left</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Left index on the interval. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">mflag</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Control parameter. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="818" column="1" bodyfile="src/tools.f90" bodystart="819" bodyend="857"/>
+      </memberdef>
+      <memberdef kind="function" id="tools_8f90_1aeebb42c85a4bdd4f49bbbc5155d0eb35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public tools::prime_sieve</definition>
+        <argsstring>(last_number, number_of_primes, numbers)</argsstring>
+        <name>prime_sieve</name>
+        <param>
+          <type>last_number</type>
+          <defname>last_number</defname>
+        </param>
+        <param>
+          <type>number_of_primes</type>
+          <defname>number_of_primes</defname>
+        </param>
+        <param>
+          <type>numbers</type>
+          <defname>numbers</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="862" column="1" bodyfile="src/tools.f90" bodystart="864" bodyend="914"/>
+      </memberdef>
+      <memberdef kind="function" id="tools_8f90_1aa7479940f4ad121767a85e1cb3937668" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public tools::trial_division</definition>
+        <argsstring>(nn, numfactors, prime_factors)</argsstring>
+        <name>trial_division</name>
+        <param>
+          <type>nn</type>
+          <defname>nn</defname>
+        </param>
+        <param>
+          <type>numfactors</type>
+          <defname>numfactors</defname>
+        </param>
+        <param>
+          <type>prime_factors</type>
+          <defname>prime_factors</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="922" column="1" bodyfile="src/tools.f90" bodystart="924" bodyend="979"/>
+      </memberdef>
+      <memberdef kind="function" id="tools_8f90_1ad6f287cf226c25412624986bba39b3e4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public tools::reshape_numptsperproc</definition>
+        <argsstring>(numxpts, numprocs, numprocsio, numxptsperproc, numypts, numyptsperproc)</argsstring>
+        <name>reshape_numptsperproc</name>
+        <param>
+          <type>numxpts</type>
+          <defname>numxpts</defname>
+        </param>
+        <param>
+          <type>numprocs</type>
+          <defname>numprocs</defname>
+        </param>
+        <param>
+          <type>numprocsio</type>
+          <defname>numprocsio</defname>
+        </param>
+        <param>
+          <type>numxptsperproc</type>
+          <defname>numxptsperproc</defname>
+        </param>
+        <param>
+          <type>numypts</type>
+          <defname>numypts</defname>
+        </param>
+        <param>
+          <type>numyptsperproc</type>
+          <defname>numyptsperproc</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="984" column="1" bodyfile="src/tools.f90" bodystart="986" bodyend="1048"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/tools.f90" line="1" column="1"/>
+  </compounddef>
+</doxygen>

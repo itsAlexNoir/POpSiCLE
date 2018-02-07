@@ -1,0 +1,33 @@
+\hypertarget{namespacecorrsurface}{}\section{corrsurface Module Reference}
+\label{namespacecorrsurface}\index{corrsurface@{corrsurface}}
+
+
+Correlated surface module.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacecorrsurface_a613097c30fc43c1bc43cf7736285868d}\label{namespacecorrsurface_a613097c30fc43c1bc43cf7736285868d}} 
+subroutine, public {\bfseries initialize\+\_\+correlated\+\_\+cylindrical\+\_\+surface} (rho\+\_\+ax, z\+\_\+ax, bigr\+\_\+ax, dims, Rboundary, radius\+\_\+tolerance, fd\+\_\+rule, dr, lmax, order\+\_\+basis, filename, mpi\+\_\+rank, mpi\+\_\+size, comm)
+\item 
+\mbox{\Hypertarget{namespacecorrsurface_aea44c2b6267315f250440da5998ca237}\label{namespacecorrsurface_aea44c2b6267315f250440da5998ca237}} 
+subroutine, public {\bfseries get\+\_\+correlated\+\_\+cylindrical\+\_\+surface} (filename, wavefunc, rho\+\_\+ax, z\+\_\+ax, bigr\+\_\+ax, dims, fd\+\_\+rule, time, efield, afield, lmax, mpi\+\_\+rank, mpi\+\_\+size)
+\item 
+\mbox{\Hypertarget{namespacecorrsurface_ada8b8eb0002e2495f8e1c12d0745e100}\label{namespacecorrsurface_ada8b8eb0002e2495f8e1c12d0745e100}} 
+subroutine, public {\bfseries delete\+\_\+correlated\+\_\+surface2d} (mpi\+\_\+rank)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Correlated surface module. 
+
+\begin{DoxyAuthor}{Author}
+Alejandro de la Calle. Queen\textquotesingle{}s University Belfast. 
+
+Daniel Dundas. Queen\textquotesingle{}s University Belfast. 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+17/03/2016
+\end{DoxyDate}
+This module contains routines to get the surface flux from the electronic part of a wavefunction expanded in a spherical harmonic basis. 

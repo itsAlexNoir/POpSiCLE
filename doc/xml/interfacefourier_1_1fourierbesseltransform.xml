@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfacefourier_1_1fourierbesseltransform" kind="interface" language="Fortran" prot="private">
+    <compoundname>fourier::fourierbesseltransform</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfacefourier_1_1fourierbesseltransform_1aad394ae48b9366d8a4302d379af2b8f2" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine fourier::fourierbesseltransform::fourierbesseltransform_serial</definition>
+        <argsstring>(psi, psik, rho_ax, krho_ax, jacobrho, fftshift_on)</argsstring>
+        <name>fourierbesseltransform_serial</name>
+        <param>
+          <type>psi</type>
+          <defname>psi</defname>
+        </param>
+        <param>
+          <type>psik</type>
+          <defname>psik</defname>
+        </param>
+        <param>
+          <type>rho_ax</type>
+          <defname>rho_ax</defname>
+        </param>
+        <param>
+          <type>krho_ax</type>
+          <defname>krho_ax</defname>
+        </param>
+        <param>
+          <type>jacobrho</type>
+          <defname>jacobrho</defname>
+        </param>
+        <param>
+          <type>fftshift_on</type>
+          <defname>fftshift_on</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/fourier.F90" line="626" column="1" bodyfile="src/fourier.F90" bodystart="628" bodyend="793"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/fourier.F90" line="42" column="1" bodyfile="src/fourier.F90" bodystart="42" bodyend="46"/>
+    <listofallmembers>
+      <member refid="interfacefourier_1_1fourierbesseltransform_1aad394ae48b9366d8a4302d379af2b8f2" prot="private" virt="non-virtual"><scope>fourier::fourierbesseltransform</scope><name>fourierbesseltransform_serial</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

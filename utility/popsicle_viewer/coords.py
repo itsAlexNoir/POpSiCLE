@@ -3,8 +3,8 @@
 
 import numpy as np
 import scipy.interpolate as interp
-import constants as const
-import aux_funcs as aux
+from . import constants as const
+from . import aux_funcs as aux
 
 ########################################
 ##           coords.py

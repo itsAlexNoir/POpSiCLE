@@ -1,0 +1,566 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacesamplingpt" kind="namespace" language="Fortran">
+    <compoundname>samplingpt</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="samplingpt_8f90_1acaac9b9d151f32d72ea7bdb17a48399a" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable, public</type>
+        <definition>real(dp), dimension(:), allocatable, public samplingpt::w</definition>
+        <argsstring></argsstring>
+        <name>w</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="39" column="1" bodyfile="src/samplingpt.f90" bodystart="39" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1a8958d119c7aa22f03d058d12e496caa6" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable, public</type>
+        <definition>real(dp), dimension(:), allocatable, public samplingpt::theta_ax</definition>
+        <argsstring></argsstring>
+        <name>theta_ax</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="40" column="1" bodyfile="src/samplingpt.f90" bodystart="40" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1ad1e39f38571812480ebf3770925fca53" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable, public</type>
+        <definition>real(dp), dimension(:), allocatable, public samplingpt::costheta_ax</definition>
+        <argsstring></argsstring>
+        <name>costheta_ax</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="40" column="1" bodyfile="src/samplingpt.f90" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1a58093d69347d7f685eabeabbeeaf7cef" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable, public</type>
+        <definition>real(dp), dimension(:), allocatable, public samplingpt::phi_ax</definition>
+        <argsstring></argsstring>
+        <name>phi_ax</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="41" column="1" bodyfile="src/samplingpt.f90" bodystart="41" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1aa0d6f3020c05ca363560376f40cfabb0" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable, public</type>
+        <definition>real(dp), dimension(:), allocatable, public samplingpt::gauss_th_weights</definition>
+        <argsstring></argsstring>
+        <name>gauss_th_weights</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="42" column="1" bodyfile="src/samplingpt.f90" bodystart="42" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1ab0338658900b7197df99ecea001e7716" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer samplingpt::numkpts</definition>
+        <argsstring></argsstring>
+        <name>numkpts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="45" column="1" bodyfile="src/samplingpt.f90" bodystart="45" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1ab58c9e26c89c38fa670504625ab29e3e" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) samplingpt::dt</definition>
+        <argsstring></argsstring>
+        <name>dt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="46" column="1" bodyfile="src/samplingpt.f90" bodystart="46" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1a309c6d8af5faea910e5ef2d3c52dd963" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) samplingpt::dw</definition>
+        <argsstring></argsstring>
+        <name>dw</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="46" column="1" bodyfile="src/samplingpt.f90" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1a42b11b7accc467e895b1ee36926a3b61" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) samplingpt::wmax</definition>
+        <argsstring></argsstring>
+        <name>wmax</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="46" column="1" bodyfile="src/samplingpt.f90" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1ae1ad5d9a0ca442c3ee1c6ea6d28757f6" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) samplingpt::coulomb_exp_ener</definition>
+        <argsstring></argsstring>
+        <name>coulomb_exp_ener</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="47" column="1" bodyfile="src/samplingpt.f90" bodystart="47" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1af087cbc48c662c1e8a120182a1eab334" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer samplingpt::ntime</definition>
+        <argsstring></argsstring>
+        <name>ntime</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="48" column="1" bodyfile="src/samplingpt.f90" bodystart="48" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1ad26b8a3faec81e2fd7b1c68db056a405" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer samplingpt::ntimeafter</definition>
+        <argsstring></argsstring>
+        <name>ntimeafter</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="48" column="1" bodyfile="src/samplingpt.f90" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1ade5447536a7e2c0e33f3106fbb0dbc04" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer samplingpt::ntimetotal</definition>
+        <argsstring></argsstring>
+        <name>ntimetotal</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="48" column="1" bodyfile="src/samplingpt.f90" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1a0e5cca14f7b8288c8d567862f0d0e011" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable samplingpt::time</definition>
+        <argsstring></argsstring>
+        <name>time</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="49" column="1" bodyfile="src/samplingpt.f90" bodystart="49" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1a02665717736311031c820703f7bd1b1a" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:, :), allocatable</type>
+        <definition>real(dp), dimension(:, :), allocatable samplingpt::efield</definition>
+        <argsstring></argsstring>
+        <name>efield</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="49" column="1" bodyfile="src/samplingpt.f90" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1a9f7e3ffa73e97fda7e0bfa8b283540ac" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:, :), allocatable</type>
+        <definition>real(dp), dimension(:, :), allocatable samplingpt::afield</definition>
+        <argsstring></argsstring>
+        <name>afield</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="49" column="1" bodyfile="src/samplingpt.f90" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1af152f5f3a0c28a096f2358e5b186cbc0" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable samplingpt::psi_sph</definition>
+        <argsstring></argsstring>
+        <name>psi_sph</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="50" column="1" bodyfile="src/samplingpt.f90" bodystart="50" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1afeab415fa71fd6cc9a681ee2db3295e6" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable samplingpt::psip_sph</definition>
+        <argsstring></argsstring>
+        <name>psip_sph</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="50" column="1" bodyfile="src/samplingpt.f90" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1a689d54e3a00316df1b358c51af118ae8" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable samplingpt::psi_sph_v</definition>
+        <argsstring></argsstring>
+        <name>psi_sph_v</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="51" column="1" bodyfile="src/samplingpt.f90" bodystart="51" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1ac9f50d73e3cc2b6644f33193e4a0b885" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) samplingpt::rb</definition>
+        <argsstring></argsstring>
+        <name>rb</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="52" column="1" bodyfile="src/samplingpt.f90" bodystart="52" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1ac46ffce85b7c341679e1e249bb3b2dcf" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer samplingpt::numpts</definition>
+        <argsstring></argsstring>
+        <name>numpts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="53" column="1" bodyfile="src/samplingpt.f90" bodystart="53" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1a3e169e9306e5b28dd8b8bb490cc7a83c" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer samplingpt::numrpts</definition>
+        <argsstring></argsstring>
+        <name>numrpts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="53" column="1" bodyfile="src/samplingpt.f90" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1aaa0862ee6965a4352e35c874eacae681" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer samplingpt::numwpts</definition>
+        <argsstring></argsstring>
+        <name>numwpts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="53" column="1" bodyfile="src/samplingpt.f90" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1a9779444ed4095d65c502630d7a770277" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer samplingpt::numthetapts</definition>
+        <argsstring></argsstring>
+        <name>numthetapts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="54" column="1" bodyfile="src/samplingpt.f90" bodystart="54" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1a3ba9ecddb2feab2cfd8b33dfb52f98a7" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer samplingpt::numphipts</definition>
+        <argsstring></argsstring>
+        <name>numphipts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="54" column="1" bodyfile="src/samplingpt.f90" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1a2c8fded55d79ffa9eed2d61f35c88b01" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer samplingpt::numtotalsamplingpts</definition>
+        <argsstring></argsstring>
+        <name>numtotalsamplingpts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="55" column="1" bodyfile="src/samplingpt.f90" bodystart="55" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1aadba9cdc249352de566933fd22448d88" prot="private" static="no" mutable="no">
+        <type>logical</type>
+        <definition>logical samplingpt::aftercycles</definition>
+        <argsstring></argsstring>
+        <name>aftercycles</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="56" column="1" bodyfile="src/samplingpt.f90" bodystart="56" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="variable" id="samplingpt_8f90_1a8194758038382cfc22e3645613a91f9f" prot="private" static="no" mutable="no">
+        <type>logical</type>
+        <definition>logical samplingpt::gauge_trans_desired</definition>
+        <argsstring></argsstring>
+        <name>gauge_trans_desired</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="57" column="1" bodyfile="src/samplingpt.f90" bodystart="57" bodyend="57"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="samplingpt_8f90_1aedc6ff33bd2c95501dae0ecfb072620d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public samplingpt::initialize_sampling_points</definition>
+        <argsstring>(filename, radb, maxtotalsamplingpts, maxthetapts, maxphipts, timeafter_fs, gauge_trans_on, coulomb_exp, maxwpts)</argsstring>
+        <name>initialize_sampling_points</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>radb</type>
+          <defname>radb</defname>
+        </param>
+        <param>
+          <type>maxtotalsamplingpts</type>
+          <defname>maxtotalsamplingpts</defname>
+        </param>
+        <param>
+          <type>maxthetapts</type>
+          <defname>maxthetapts</defname>
+        </param>
+        <param>
+          <type>maxphipts</type>
+          <defname>maxphipts</defname>
+        </param>
+        <param>
+          <type>timeafter_fs</type>
+          <defname>timeafter_fs</defname>
+        </param>
+        <param>
+          <type>gauge_trans_on</type>
+          <defname>gauge_trans_on</defname>
+        </param>
+        <param>
+          <type>coulomb_exp</type>
+          <defname>coulomb_exp</defname>
+        </param>
+        <param>
+          <type>maxwpts</type>
+          <defname>maxwpts</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="66" column="1" bodyfile="src/samplingpt.f90" bodystart="68" bodyend="181"/>
+      </memberdef>
+      <memberdef kind="function" id="samplingpt_8f90_1a0f9f73f89bed9fef0692957a7ddc847c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public samplingpt::calculate_sampling_pes</definition>
+        <argsstring>(filename, pes, pad)</argsstring>
+        <name>calculate_sampling_pes</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>pes</type>
+          <defname>pes</defname>
+        </param>
+        <param>
+          <type>pad</type>
+          <defname>pad</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="186" column="1" bodyfile="src/samplingpt.f90" bodystart="187" bodyend="264"/>
+      </memberdef>
+      <memberdef kind="function" id="samplingpt_8f90_1a0fda52c15fe497169145e465a6b6632f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public samplingpt::get_wave_time_file</definition>
+        <argsstring>(filename)</argsstring>
+        <name>get_wave_time_file</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="269" column="1" bodyfile="src/samplingpt.f90" bodystart="270" bodyend="308"/>
+      </memberdef>
+      <memberdef kind="function" id="samplingpt_8f90_1aa096cd8efb8eb4564dcfa68831f1f223" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public samplingpt::write_sampling_pes</definition>
+        <argsstring>(filename, pes)</argsstring>
+        <name>write_sampling_pes</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>pes</type>
+          <defname>pes</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="313" column="1" bodyfile="src/samplingpt.f90" bodystart="314" bodyend="332"/>
+      </memberdef>
+      <memberdef kind="function" id="samplingpt_8f90_1a5ea9da11d3732fc18d5708948214b3d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public samplingpt::write_sampling_polar</definition>
+        <argsstring>(filename, pad, groupname)</argsstring>
+        <name>write_sampling_polar</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>pad</type>
+          <defname>pad</defname>
+        </param>
+        <param>
+          <type>groupname</type>
+          <defname>groupname</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="337" column="1" bodyfile="src/samplingpt.f90" bodystart="338" bodyend="380"/>
+      </memberdef>
+      <memberdef kind="function" id="samplingpt_8f90_1ac705ce47a8c5f1b42c1c95110dc95bc7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public samplingpt::write_sampling_3damplitude</definition>
+        <argsstring>(filename, pad, groupname)</argsstring>
+        <name>write_sampling_3damplitude</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>pad</type>
+          <defname>pad</defname>
+        </param>
+        <param>
+          <type>groupname</type>
+          <defname>groupname</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="385" column="1" bodyfile="src/samplingpt.f90" bodystart="386" bodyend="402"/>
+      </memberdef>
+      <memberdef kind="function" id="samplingpt_8f90_1abba1b9cfce3604146806e8eec27076cc" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine samplingpt::gauge_transform_l2v</definition>
+        <argsstring>(psi_length, psi_vel, afield)</argsstring>
+        <name>gauge_transform_l2v</name>
+        <param>
+          <type>psi_length</type>
+          <defname>psi_length</defname>
+        </param>
+        <param>
+          <type>psi_vel</type>
+          <defname>psi_vel</defname>
+        </param>
+        <param>
+          <type>afield</type>
+          <defname>afield</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/samplingpt.f90" line="407" column="1" bodyfile="src/samplingpt.f90" bodystart="408" bodyend="433"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/samplingpt.f90" line="1" column="1"/>
+  </compounddef>
+</doxygen>

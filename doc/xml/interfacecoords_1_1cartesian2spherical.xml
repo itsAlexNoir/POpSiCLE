@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfacecoords_1_1cartesian2spherical" kind="interface" language="Fortran" prot="public">
+    <compoundname>coords::cartesian2spherical</compoundname>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="interfacecoords_1_1cartesian2spherical_1a4ed11efef005233cc5c047b84cdf0c82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>coords::cartesian2spherical::dscatt_cartesian2spherical2d</definition>
+        <argsstring></argsstring>
+        <name>dscatt_cartesian2spherical2d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="" line="1" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacecoords_1_1cartesian2spherical_1a78a98d16e4adbf995a537b38e579ea1b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>coords::cartesian2spherical::zscatt_cartesian2spherical2d</definition>
+        <argsstring></argsstring>
+        <name>zscatt_cartesian2spherical2d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="" line="1" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacecoords_1_1cartesian2spherical_1a1c4ffadb9757dfb6aa43021bb146a08c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>coords::cartesian2spherical::dscatt_cartesian2spherical3d</definition>
+        <argsstring></argsstring>
+        <name>dscatt_cartesian2spherical3d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="" line="1" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacecoords_1_1cartesian2spherical_1af7bb7e6c9cdd5edd3ea1d8ea9ade18d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>coords::cartesian2spherical::zscatt_cartesian2spherical3d</definition>
+        <argsstring></argsstring>
+        <name>zscatt_cartesian2spherical3d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="" line="1" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacecoords_1_1cartesian2spherical_1a81fca726f4f613cd788598cc64c745ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>coords::cartesian2spherical::dcubic_cartesian2spherical3d</definition>
+        <argsstring></argsstring>
+        <name>dcubic_cartesian2spherical3d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="" line="1" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacecoords_1_1cartesian2spherical_1a5868e63f8aadfd6623340d14ac43447a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>coords::cartesian2spherical::zcubic_cartesian2spherical3d</definition>
+        <argsstring></argsstring>
+        <name>zcubic_cartesian2spherical3d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="" line="1" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/coords.f90" line="22" column="1" bodyfile="src/coords.f90" bodystart="22" bodyend="28"/>
+    <listofallmembers>
+      <member refid="interfacecoords_1_1cartesian2spherical_1a81fca726f4f613cd788598cc64c745ab" prot="public" virt="non-virtual"><scope>coords::cartesian2spherical</scope><name>dcubic_cartesian2spherical3d</name></member>
+      <member refid="interfacecoords_1_1cartesian2spherical_1a4ed11efef005233cc5c047b84cdf0c82" prot="public" virt="non-virtual"><scope>coords::cartesian2spherical</scope><name>dscatt_cartesian2spherical2d</name></member>
+      <member refid="interfacecoords_1_1cartesian2spherical_1a1c4ffadb9757dfb6aa43021bb146a08c" prot="public" virt="non-virtual"><scope>coords::cartesian2spherical</scope><name>dscatt_cartesian2spherical3d</name></member>
+      <member refid="interfacecoords_1_1cartesian2spherical_1a5868e63f8aadfd6623340d14ac43447a" prot="public" virt="non-virtual"><scope>coords::cartesian2spherical</scope><name>zcubic_cartesian2spherical3d</name></member>
+      <member refid="interfacecoords_1_1cartesian2spherical_1a78a98d16e4adbf995a537b38e579ea1b" prot="public" virt="non-virtual"><scope>coords::cartesian2spherical</scope><name>zscatt_cartesian2spherical2d</name></member>
+      <member refid="interfacecoords_1_1cartesian2spherical_1af7bb7e6c9cdd5edd3ea1d8ea9ade18d3" prot="public" virt="non-virtual"><scope>coords::cartesian2spherical</scope><name>zscatt_cartesian2spherical3d</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,57 @@
+\hypertarget{namespaceflux}{}\section{flux Module Reference}
+\label{namespaceflux}\index{flux@{flux}}
+
+
+Flux module.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespaceflux_afbe72e1cf19f311bac15e6e015f998a0}\label{namespaceflux_afbe72e1cf19f311bac15e6e015f998a0}} 
+subroutine, public {\bfseries initialize\+\_\+tsurff} (filename)
+\item 
+\mbox{\Hypertarget{namespaceflux_aaa28bbe52ee6b3671c068f6c3190d908}\label{namespaceflux_aaa28bbe52ee6b3671c068f6c3190d908}} 
+subroutine, public {\bfseries make\+\_\+kpoints} (lmax, maxkpts, maxthetapts, maxphipts, deltaenergy, eneoffset)
+\item 
+\mbox{\Hypertarget{namespaceflux_a708e0f0ebd170bdc9da7fb40196bee3f}\label{namespaceflux_a708e0f0ebd170bdc9da7fb40196bee3f}} 
+subroutine, public {\bfseries get\+\_\+flux} (filename, iorbital)
+\item 
+\mbox{\Hypertarget{namespaceflux_afbcdcaf92171a5e303b254bf533ba4a3}\label{namespaceflux_afbcdcaf92171a5e303b254bf533ba4a3}} 
+subroutine, public {\bfseries calculate\+\_\+time\+\_\+integrand} (fluxintegral, ik, itheta, iphi, itime)
+\item 
+\mbox{\Hypertarget{namespaceflux_a6d69c7ea5f5cffd9aba456aebda7bfa6}\label{namespaceflux_a6d69c7ea5f5cffd9aba456aebda7bfa6}} 
+subroutine, public {\bfseries get\+\_\+volkov\+\_\+phase} (volkov\+\_\+phase, ik, itheta, iphi, itime)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespaceflux_a75c9cdf1cea8e80ebfef2eeab56cae63}\label{namespaceflux_a75c9cdf1cea8e80ebfef2eeab56cae63}} 
+real(dp), dimension(\+:, \+:, \+:), allocatable, public {\bfseries probk3d}
+\item 
+\mbox{\Hypertarget{namespaceflux_a31c2f93e11d855c35e8c79e95e385c3e}\label{namespaceflux_a31c2f93e11d855c35e8c79e95e385c3e}} 
+complex(dp), dimension(\+:, \+:, \+:), allocatable, public {\bfseries bktime}
+\item 
+\mbox{\Hypertarget{namespaceflux_a4e49591385063c1947b39e62425f9d59}\label{namespaceflux_a4e49591385063c1947b39e62425f9d59}} 
+complex(dp), dimension(\+:, \+:, \+:), allocatable, public {\bfseries bktimeold}
+\item 
+\mbox{\Hypertarget{namespaceflux_a4838ad043e62e7922f5f1e25964a3148}\label{namespaceflux_a4838ad043e62e7922f5f1e25964a3148}} 
+complex(dp), dimension(\+:, \+:, \+:, \+:), allocatable, public {\bfseries bk}
+\item 
+\mbox{\Hypertarget{namespaceflux_ac343e5ae6fb0b101196a1c11b5610677}\label{namespaceflux_ac343e5ae6fb0b101196a1c11b5610677}} 
+complex(dp), dimension(\+:, \+:, \+:), allocatable, public {\bfseries bkaverage}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Flux module. 
+
+\begin{DoxyAuthor}{Author}
+Alejandro de la Calle. Queen\textquotesingle{}s University Belfast. 
+
+Daniel Dundas. Queen\textquotesingle{}s University Belfast. 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+05/11/2015
+\end{DoxyDate}
+This module contains routines to calculate the flux passing through a surface, and integrating this surface over time. 

@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="dir_68267d1309a1af8e8297ef4c3efbcdba" kind="dir">
+    <compoundname>src</compoundname>
+    <innerfile refid="bessel_8f">bessel.f</innerfile>
+    <innerfile refid="boundary_8_f90">boundary.F90</innerfile>
+    <innerfile refid="comm__surff_8_f90">comm_surff.F90</innerfile>
+    <innerfile refid="constants_8f90">constants.f90</innerfile>
+    <innerfile refid="coords_8f90">coords.f90</innerfile>
+    <innerfile refid="corrsurface_8_f90">corrsurface.F90</innerfile>
+    <innerfile refid="corrtools_8f90">corrtools.f90</innerfile>
+    <innerfile refid="cubboundcart_8_f90">cubboundcart.F90</innerfile>
+    <innerfile refid="cubboundcyl_8_f90">cubboundcyl.F90</innerfile>
+    <innerfile refid="cubcoords_8f90">cubcoords.f90</innerfile>
+    <innerfile refid="cubic__interp_8f90">cubic_interp.f90</innerfile>
+    <innerfile refid="fftw_8_f90">fftw.F90</innerfile>
+    <innerfile refid="flux_8f90">flux.f90</innerfile>
+    <innerfile refid="fourier_8_f90">fourier.F90</innerfile>
+    <innerfile refid="gaussleg_8f90">gaussleg.f90</innerfile>
+    <innerfile refid="io__corrsurface_8_f90">io_corrsurface.F90</innerfile>
+    <innerfile refid="io__pop_8_f90">io_pop.F90</innerfile>
+    <innerfile refid="io__subset_8_f90">io_subset.F90</innerfile>
+    <innerfile refid="io__surface_8_f90">io_surface.F90</innerfile>
+    <innerfile refid="observables_8_f90">observables.F90</innerfile>
+    <innerfile refid="patchwork_8_f90">patchwork.F90</innerfile>
+    <innerfile refid="popsicle_8f90">popsicle.f90</innerfile>
+    <innerfile refid="popsicle__aux_8f90">popsicle_aux.f90</innerfile>
+    <innerfile refid="samplingpt_8f90">samplingpt.f90</innerfile>
+    <innerfile refid="scatt__interp_8f90">scatt_interp.f90</innerfile>
+    <innerfile refid="scattboundcart_8_f90">scattboundcart.F90</innerfile>
+    <innerfile refid="scattboundcyl_8_f90">scattboundcyl.F90</innerfile>
+    <innerfile refid="scattcoords_8f90">scattcoords.f90</innerfile>
+    <innerfile refid="sharmonics_8f90">sharmonics.f90</innerfile>
+    <innerfile refid="silo__aux_8f">silo_aux.f</innerfile>
+    <innerfile refid="spline__interp_8f90">spline_interp.f90</innerfile>
+    <innerfile refid="surface_8_f90">surface.F90</innerfile>
+    <innerfile refid="tools_8f90">tools.f90</innerfile>
+    <innerfile refid="waveduplicate_8f90">waveduplicate.f90</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/"/>
+  </compounddef>
+</doxygen>

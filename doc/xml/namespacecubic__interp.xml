@@ -1,0 +1,572 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacecubic__interp" kind="namespace" language="Fortran">
+    <compoundname>cubic_interp</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="namespacecubic__interp_1a71aadf17555e7e5152368db60ab724c1" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:, :), allocatable, public</type>
+        <definition>real(dp), dimension(:, :), allocatable, public cubic_interp::wbi</definition>
+        <argsstring></argsstring>
+        <name>wbi</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubic_interp.f90" line="33" column="1" bodyfile="src/cubic_interp.f90" bodystart="33" bodyend="33"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecubic__interp_1affcc410624234e1e707635bc35c0b560" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:, :), allocatable, public</type>
+        <definition>real(dp), dimension(:, :), allocatable, public cubic_interp::wtri</definition>
+        <argsstring></argsstring>
+        <name>wtri</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubic_interp.f90" line="34" column="1" bodyfile="src/cubic_interp.f90" bodystart="34" bodyend="34"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="namespacecubic__interp_1afed9776f2ce4526ed5443e7ea51e7326" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubic_interp::initialize_bicubic_matrix</definition>
+        <argsstring>()</argsstring>
+        <name>initialize_bicubic_matrix</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubic_interp.f90" line="41" column="1" bodyfile="src/cubic_interp.f90" bodystart="42" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacecubic__interp_1a950ccb0166b8ffc61abf5fbf0358da50" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubic_interp::initialize_tricubic_matrix</definition>
+        <argsstring>()</argsstring>
+        <name>initialize_tricubic_matrix</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubic_interp.f90" line="67" column="1" bodyfile="src/cubic_interp.f90" bodystart="68" bodyend="219"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacecubic__interp_1a15eb80172a4fecca51c0d3768190c41b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine cubic_interp::get_bicubic_coeffs</definition>
+        <argsstring>(y, y1, y2, y12, d1, d2, wt, c)</argsstring>
+        <name>get_bicubic_coeffs</name>
+        <param>
+          <type>y</type>
+          <defname>y</defname>
+        </param>
+        <param>
+          <type>y1</type>
+          <defname>y1</defname>
+        </param>
+        <param>
+          <type>y2</type>
+          <defname>y2</defname>
+        </param>
+        <param>
+          <type>y12</type>
+          <defname>y12</defname>
+        </param>
+        <param>
+          <type>d1</type>
+          <defname>d1</defname>
+        </param>
+        <param>
+          <type>d2</type>
+          <defname>d2</defname>
+        </param>
+        <param>
+          <type>wt</type>
+          <defname>wt</defname>
+        </param>
+        <param>
+          <type>c</type>
+          <defname>c</defname>
+        </param>
+        <briefdescription>
+<para>Calculate coefficients used in bicubic interpolation,. </para>        </briefdescription>
+        <detaileddescription>
+<para>Given arrays y, y1, y2, and y12, each of length 4, containing the function, gradients, and cross derivative at the four grid points of a rectangular grid cell (numbered counterclockwise from the lower left), and given d1 and d2, the length of the grid cell in the 1- and 2- directions, this routine returns the 4 × 4 table c that is used by routine bcuint for bicubic interpolation, <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">y</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Function value at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the derivative of the function in the first direction at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the derivative of the function in the second direction at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y12</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the cross-derivative at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">wt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Matrix with tabulated coefficients from linear transformation </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>c Matrix with the desired coefficients </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubic_interp.f90" line="247" column="1" bodyfile="src/cubic_interp.f90" bodystart="248" bodyend="266"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacecubic__interp_1ac5a5fcf47e4d90f6584e19f36a5537ea" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine cubic_interp::get_tricubic_coeffs</definition>
+        <argsstring>(y, y1, y2, y3, y12, y13, y23, y123, d1, d2, d3, wt, c)</argsstring>
+        <name>get_tricubic_coeffs</name>
+        <param>
+          <type>y</type>
+          <defname>y</defname>
+        </param>
+        <param>
+          <type>y1</type>
+          <defname>y1</defname>
+        </param>
+        <param>
+          <type>y2</type>
+          <defname>y2</defname>
+        </param>
+        <param>
+          <type>y3</type>
+          <defname>y3</defname>
+        </param>
+        <param>
+          <type>y12</type>
+          <defname>y12</defname>
+        </param>
+        <param>
+          <type>y13</type>
+          <defname>y13</defname>
+        </param>
+        <param>
+          <type>y23</type>
+          <defname>y23</defname>
+        </param>
+        <param>
+          <type>y123</type>
+          <defname>y123</defname>
+        </param>
+        <param>
+          <type>d1</type>
+          <defname>d1</defname>
+        </param>
+        <param>
+          <type>d2</type>
+          <defname>d2</defname>
+        </param>
+        <param>
+          <type>d3</type>
+          <defname>d3</defname>
+        </param>
+        <param>
+          <type>wt</type>
+          <defname>wt</defname>
+        </param>
+        <param>
+          <type>c</type>
+          <defname>c</defname>
+        </param>
+        <briefdescription>
+<para>Calculate coefficients used in bicubic interpolation,. </para>        </briefdescription>
+        <detaileddescription>
+<para>Given arrays y, y1, y2, y3 and y12, y13, y23 and y123 each of length 8, containing the function, gradients, and cross derivative at the eight grid points of a cubic grid cell (numbered counterclockwise from the lower left), and given d1, d2 and d3, the length of the grid cell in the 1-, 2- and 3-directions, this routine returns the 8 × 8 table c that is used by routine bcuint for bicubic interpolation, <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">y</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Function value at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the derivative of the function in the first direction at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the derivative of the function in the second direction at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y3</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the derivative of the function in the third direction at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y12</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the cross-derivative at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y13</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the cross-derivative at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y23</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the cross-derivative at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y123</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the cross-derivative at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">wt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Matrix with tabulated coefficients from linear transformation </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>c Matrix with the desired coefficients </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubic_interp.f90" line="299" column="1" bodyfile="src/cubic_interp.f90" bodystart="300" bodyend="326"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacecubic__interp_1ade3b7f9c8f620bfa6154cbe10d683532" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubic_interp::bicubic_interpolation</definition>
+        <argsstring>(y, y1, y2, y12, x1l, x1u, x2l, x2u, x1, x2, ansy, ansy1, ansy2)</argsstring>
+        <name>bicubic_interpolation</name>
+        <param>
+          <type>y</type>
+          <defname>y</defname>
+        </param>
+        <param>
+          <type>y1</type>
+          <defname>y1</defname>
+        </param>
+        <param>
+          <type>y2</type>
+          <defname>y2</defname>
+        </param>
+        <param>
+          <type>y12</type>
+          <defname>y12</defname>
+        </param>
+        <param>
+          <type>x1l</type>
+          <defname>x1l</defname>
+        </param>
+        <param>
+          <type>x1u</type>
+          <defname>x1u</defname>
+        </param>
+        <param>
+          <type>x2l</type>
+          <defname>x2l</defname>
+        </param>
+        <param>
+          <type>x2u</type>
+          <defname>x2u</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>ansy</type>
+          <defname>ansy</defname>
+        </param>
+        <param>
+          <type>ansy1</type>
+          <defname>ansy1</defname>
+        </param>
+        <param>
+          <type>ansy2</type>
+          <defname>ansy2</defname>
+        </param>
+        <briefdescription>
+<para>Get interpolated values from bicubic interpolation. </para>        </briefdescription>
+        <detaileddescription>
+<para>Bicubic interpolation within a grid square, Input quantities are y,y1,y2,y12, x1l and x1u, the lower and upper coordinates of the grid square in the 1- direction; x2l and x2u likewise for the 2-direction; and x1,x2, the coordinates of the desired point for the interpolation, The interpolated function value is returned as ansy, and the interpolated gradient values as ansy1 and ansy2, <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">y</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Function value at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the derivative of the function in the first direction at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the derivative of the function in the second direction at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y12</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the cross-derivative at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">wt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Matrix with tabulated coefficients from linear transformation </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>c Matrix with the desired coefficients </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubic_interp.f90" line="355" column="1" bodyfile="src/cubic_interp.f90" bodystart="357" bodyend="399"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacecubic__interp_1ad490c4ba4e83a774d3b55c284c0e381d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubic_interp::tricubic_interpolation</definition>
+        <argsstring>(y, y1, y2, y3, y12, y13, y23, y123, x1l, x1u, x2l, x2u, x3l, x3u, x1, x2, x3, ansy, ansy1, ansy2, ansy3)</argsstring>
+        <name>tricubic_interpolation</name>
+        <param>
+          <type>y</type>
+          <defname>y</defname>
+        </param>
+        <param>
+          <type>y1</type>
+          <defname>y1</defname>
+        </param>
+        <param>
+          <type>y2</type>
+          <defname>y2</defname>
+        </param>
+        <param>
+          <type>y3</type>
+          <defname>y3</defname>
+        </param>
+        <param>
+          <type>y12</type>
+          <defname>y12</defname>
+        </param>
+        <param>
+          <type>y13</type>
+          <defname>y13</defname>
+        </param>
+        <param>
+          <type>y23</type>
+          <defname>y23</defname>
+        </param>
+        <param>
+          <type>y123</type>
+          <defname>y123</defname>
+        </param>
+        <param>
+          <type>x1l</type>
+          <defname>x1l</defname>
+        </param>
+        <param>
+          <type>x1u</type>
+          <defname>x1u</defname>
+        </param>
+        <param>
+          <type>x2l</type>
+          <defname>x2l</defname>
+        </param>
+        <param>
+          <type>x2u</type>
+          <defname>x2u</defname>
+        </param>
+        <param>
+          <type>x3l</type>
+          <defname>x3l</defname>
+        </param>
+        <param>
+          <type>x3u</type>
+          <defname>x3u</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>x3</type>
+          <defname>x3</defname>
+        </param>
+        <param>
+          <type>ansy</type>
+          <defname>ansy</defname>
+        </param>
+        <param>
+          <type>ansy1</type>
+          <defname>ansy1</defname>
+        </param>
+        <param>
+          <type>ansy2</type>
+          <defname>ansy2</defname>
+        </param>
+        <param>
+          <type>ansy3</type>
+          <defname>ansy3</defname>
+        </param>
+        <briefdescription>
+<para>Get interpolated values from tricubic interpolation. </para>        </briefdescription>
+        <detaileddescription>
+<para>Tricubic interpolation within a grid cube, Input quantities are y,y1,y2,y3,y12,y13,y23,y123, x1l and x1u, the lower and upper coordinates of the grid square in the 1- direction; x2l, x2u and x3l and x3u likewise for the 2 and 3-direction; and x1,x2,x3 the coordinates of the desired point for the interpolation, The interpolated function value is returned as ansy, and the interpolated gradient values as ansy1 and ansy2, <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">y</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Function value at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the derivative of the function in the first direction at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the derivative of the function in the second direction at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y3</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the derivative of the function in the thrird direction at known points </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y12</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the cross-derivative at known points x and y </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y13</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the cross-derivative at known points x and z </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y23</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the cross-derivative at known points y and z </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">y123</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value of the cross-derivative at known points x, y and z </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">wt</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Matrix with tabulated coefficients from linear transformation </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>c Matrix with the desired coefficients </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubic_interp.f90" line="434" column="1" bodyfile="src/cubic_interp.f90" bodystart="437" bodyend="491"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacecubic__interp_1a11d7c3fd8b509441a6e375769e551d9a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubic_interp::delete_bicubic_matrix</definition>
+        <argsstring>()</argsstring>
+        <name>delete_bicubic_matrix</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubic_interp.f90" line="496" column="1" bodyfile="src/cubic_interp.f90" bodystart="497" bodyend="501"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacecubic__interp_1ac84abe68a55f13830b66b4b277773170" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubic_interp::delete_tricubic_matrix</definition>
+        <argsstring></argsstring>
+        <name>delete_tricubic_matrix</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubic_interp.f90" line="506" column="1" bodyfile="src/cubic_interp.f90" bodystart="507" bodyend="511"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Interpolating routines,. </para>    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para>Alejandro de la Calle, Queen&apos;s University Belfast, </para></simplesect>
+<simplesect kind="author"><para>Daniel Dundas, Queen&apos;s University Belfast, </para></simplesect>
+<simplesect kind="date"><para>15/04/2015</para></simplesect>
+This module contains all the subprograms needed for an interpolation of the wavefunction, including routines for multidimensions grid, Many of the routines in this module have been extract form the numerical recipes books, </para>    </detaileddescription>
+    <location file="src/cubic_interp.f90" line="18" column="1"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,375 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacesharmonics" kind="namespace" language="Fortran">
+    <compoundname>sharmonics</compoundname>
+    <innerclass refid="interfacesharmonics_1_1make__sht" prot="private">sharmonics::make_sht</innerclass>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="namespacesharmonics_1a54e2870724fae4c7a6ac8dc4b971a993" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:, :, :), allocatable, public</type>
+        <definition>real(dp), dimension(:, :, :), allocatable, public sharmonics::legenpl</definition>
+        <argsstring></argsstring>
+        <name>legenpl</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/sharmonics.f90" line="41" column="1" bodyfile="src/sharmonics.f90" bodystart="41" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacesharmonics_1a9cfef04ded9db9a5fd116ec10af39b43" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:, :), allocatable, public</type>
+        <definition>real(dp), dimension(:, :), allocatable, public sharmonics::normfact</definition>
+        <argsstring></argsstring>
+        <name>normfact</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/sharmonics.f90" line="42" column="1" bodyfile="src/sharmonics.f90" bodystart="42" bodyend="42"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="namespacesharmonics_1a3562b6c9f338ddd73debe9069c0a9efa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public sharmonics::initialize_legendre_stuff</definition>
+        <argsstring>(lmax, axis)</argsstring>
+        <name>initialize_legendre_stuff</name>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>axis</type>
+          <defname>axis</defname>
+        </param>
+        <briefdescription>
+<para>This subroutine initializes the Legendre polynomial and his correpondent normalization factors for the maximum angular momentum required. The routines that compute the polynomial and the factor are located at the module gaussleg. This is only a wrapper to call them once at the beginning of the simulation. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">lmax</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Maximum angular momenta </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">axis</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The abscissa (cos theta) for Legendre polynomials </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">legenpl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The array containing all the polynomials needed </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">normfact</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The array containing all the normalization factors </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/sharmonics.f90" line="68" column="1" bodyfile="src/sharmonics.f90" bodystart="69" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesharmonics_1a1b0768c031d59eb8ff3c10e5173e995b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public sharmonics::create_spherical_harmonics</definition>
+        <argsstring>(sph_harmonics, lmax, costheta_axis, phi_axis)</argsstring>
+        <name>create_spherical_harmonics</name>
+        <param>
+          <type>sph_harmonics</type>
+          <defname>sph_harmonics</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>costheta_axis</type>
+          <defname>costheta_axis</defname>
+        </param>
+        <param>
+          <type>phi_axis</type>
+          <defname>phi_axis</defname>
+        </param>
+        <briefdescription>
+<para>This subroutine initializes the spherical harmonic matrix. The routines that compute the polynomial and the factor are located at the module gaussleg. This is only a wrapper to call them once at the beginning of the simulation. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">lmax</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Maximum angular momenta </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">costheta_axis</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The abscissa (cos theta) for Legendre polynomials </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">phi_axis</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Phi angle axis </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">sph_harmonics</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The spherical harmonics matrix </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/sharmonics.f90" line="127" column="1" bodyfile="src/sharmonics.f90" bodystart="128" bodyend="198"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesharmonics_1a138ab46d773e1ada5242bbb938180477" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public sharmonics::create_spherical_harmonics_couplings</definition>
+        <argsstring>(xcoupling, ycoupling, zcoupling, sph_harmonics, lmax, theta_axis, phi_axis, theta_w, phi_w)</argsstring>
+        <name>create_spherical_harmonics_couplings</name>
+        <param>
+          <type>xcoupling</type>
+          <defname>xcoupling</defname>
+        </param>
+        <param>
+          <type>ycoupling</type>
+          <defname>ycoupling</defname>
+        </param>
+        <param>
+          <type>zcoupling</type>
+          <defname>zcoupling</defname>
+        </param>
+        <param>
+          <type>sph_harmonics</type>
+          <defname>sph_harmonics</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>theta_axis</type>
+          <defname>theta_axis</defname>
+        </param>
+        <param>
+          <type>phi_axis</type>
+          <defname>phi_axis</defname>
+        </param>
+        <param>
+          <type>theta_w</type>
+          <defname>theta_w</defname>
+        </param>
+        <param>
+          <type>phi_w</type>
+          <defname>phi_w</defname>
+        </param>
+        <briefdescription>
+<para>This subroutine initializes the spherical harmonic matrix. The routines that compute the polynomial and the factor are located at the module gaussleg. This is only a wrapper to call them once at the beginning of the simulation. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">lmax</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Maximum angular momenta </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">costheta_axis</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The abscissa (cos theta) for Legendre polynomials </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">phi_axis</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Phi angle axis </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">sph_harmonics</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The spherical harmonics matrix </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/sharmonics.f90" line="221" column="1" bodyfile="src/sharmonics.f90" bodystart="223" bodyend="327"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesharmonics_1ac4aa6e87290881e00fb2c3602000191b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine sharmonics::make_sht_single</definition>
+        <argsstring>(func, sph_harmonics, lmax, th_weights, phi_weights, func_lm)</argsstring>
+        <name>make_sht_single</name>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>sph_harmonics</type>
+          <defname>sph_harmonics</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>th_weights</type>
+          <defname>th_weights</defname>
+        </param>
+        <param>
+          <type>phi_weights</type>
+          <defname>phi_weights</defname>
+        </param>
+        <param>
+          <type>func_lm</type>
+          <defname>func_lm</defname>
+        </param>
+        <briefdescription>
+<para>This subroutine performs the (fast) Spherical Harmonics Transform (SHT). It uses a FFT to decompose into the magnetic quantum number m, and a Gauss-Legendre quadrature to decompose into angular momentum number l. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">func</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Function to be transformed </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">lmax</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Maximum angular momentum </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">weights</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Gauss weigths needed to perform the quadrature </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">func_lm</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Transformed function, decomposed into l,m </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/sharmonics.f90" line="350" column="1" bodyfile="src/sharmonics.f90" bodystart="351" bodyend="452"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesharmonics_1a93b738fc93256ab0780f6cba00d0a877" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine sharmonics::make_sht_group</definition>
+        <argsstring>(func, funcp, sph_harmonics, lmax, func_lm, funcx_lm, funcy_lm, funcz_lm, funcp_lm)</argsstring>
+        <name>make_sht_group</name>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>funcp</type>
+          <defname>funcp</defname>
+        </param>
+        <param>
+          <type>sph_harmonics</type>
+          <defname>sph_harmonics</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>func_lm</type>
+          <defname>func_lm</defname>
+        </param>
+        <param>
+          <type>funcx_lm</type>
+          <defname>funcx_lm</defname>
+        </param>
+        <param>
+          <type>funcy_lm</type>
+          <defname>funcy_lm</defname>
+        </param>
+        <param>
+          <type>funcz_lm</type>
+          <defname>funcz_lm</defname>
+        </param>
+        <param>
+          <type>funcp_lm</type>
+          <defname>funcp_lm</defname>
+        </param>
+        <briefdescription>
+<para>This subroutine performs the (fast) Spherical Harmonics Transform (SHT). It uses a FFT to decompose into the magnetic quantum number m, and a Gauss-Legendre quadrature to decompose into angular momentum number l. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">func</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Function to be transformed </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">lmax</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Maximum angular momentum </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">weights</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Gauss weigths needed to perform the quadrature </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">func_lm</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Transformed function, decomposed into l,m </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/sharmonics.f90" line="476" column="1" bodyfile="src/sharmonics.f90" bodystart="478" bodyend="566"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Spherical harmonics module. </para>    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para>Alejandro de la Calle. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="author"><para>Daniel Dundas. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="date"><para>05/10/2015</para></simplesect>
+This module contains routines to decompose a function in spherical coordinates into spherical harmonics. It contains two types: For functions that depends only in theta, and also for functions in 3D, for theta and phi. </para>    </detaileddescription>
+    <location file="src/sharmonics.f90" line="18" column="1"/>
+  </compounddef>
+</doxygen>

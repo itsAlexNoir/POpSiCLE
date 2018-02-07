@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="fftw_8_f90" kind="file" language="Fortran">
+    <compoundname>fftw.F90</compoundname>
+    <innernamespace refid="namespacefftw">fftw</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="keyword">MODULE</highlight><highlight class="normal"><sp/>fftw</highlight></codeline>
+<codeline lineno="2"><highlight class="normal"><sp/><sp/>use,<sp/></highlight><highlight class="keywordtype">INTRINSIC</highlight><highlight class="normal"><sp/>::<sp/>iso_c_binding</highlight></codeline>
+<codeline lineno="3"><highlight class="normal"><sp/><sp/>include<sp/></highlight><highlight class="stringliteral">&apos;fftw3.f03&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="keyword">END<sp/>MODULE<sp/></highlight><highlight class="normal">fftw</highlight></codeline>
+    </programlisting>
+    <location file="src/fftw.F90"/>
+  </compounddef>
+</doxygen>

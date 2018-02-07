@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfaceio__subset_1_1read__subset" kind="interface" language="Fortran" prot="private">
+    <compoundname>io_subset::read_subset</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfaceio__subset_1_1read__subset_1ac2c92b38d1de62ac0e02c85d6402b6a1" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine io_subset::read_subset::dread_subset_serial</definition>
+        <argsstring>(filename_in, psi, rank, dims, offset)</argsstring>
+        <name>dread_subset_serial</name>
+        <param>
+          <type>filename_in</type>
+          <defname>filename_in</defname>
+        </param>
+        <param>
+          <type>psi</type>
+          <defname>psi</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>offset</type>
+          <defname>offset</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/io_subset.F90" line="419" column="1" bodyfile="src/io_subset.F90" bodystart="420" bodyend="521"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/io_subset.F90" line="25" column="1" bodyfile="src/io_subset.F90" bodystart="25" bodyend="29"/>
+    <listofallmembers>
+      <member refid="interfaceio__subset_1_1read__subset_1ac2c92b38d1de62ac0e02c85d6402b6a1" prot="private" virt="non-virtual"><scope>io_subset::read_subset</scope><name>dread_subset_serial</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

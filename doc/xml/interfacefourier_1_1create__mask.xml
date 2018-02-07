@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfacefourier_1_1create__mask" kind="interface" language="Fortran" prot="private">
+    <compoundname>fourier::create_mask</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfacefourier_1_1create__mask_1aab2fc1b88006302d4e7d7ba0f49614e8" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine fourier::create_mask::create_mask4d</definition>
+        <argsstring>(mask, x_ax, y_ax, z_ax, r_ax, inner_rad, outer_rad)</argsstring>
+        <name>create_mask4d</name>
+        <param>
+          <type>mask</type>
+          <defname>mask</defname>
+        </param>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>r_ax</type>
+          <defname>r_ax</defname>
+        </param>
+        <param>
+          <type>inner_rad</type>
+          <defname>inner_rad</defname>
+        </param>
+        <param>
+          <type>outer_rad</type>
+          <defname>outer_rad</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/fourier.F90" line="1486" column="1" bodyfile="src/fourier.F90" bodystart="1488" bodyend="1548"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacefourier_1_1create__mask_1abf6218becd27014583aae9195055ca87" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine fourier::create_mask::create_mask3d</definition>
+        <argsstring>(mask, x_ax, y_ax, z_ax, inner_rad, outer_rad)</argsstring>
+        <name>create_mask3d</name>
+        <param>
+          <type>mask</type>
+          <defname>mask</defname>
+        </param>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>inner_rad</type>
+          <defname>inner_rad</defname>
+        </param>
+        <param>
+          <type>outer_rad</type>
+          <defname>outer_rad</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/fourier.F90" line="1553" column="1" bodyfile="src/fourier.F90" bodystart="1555" bodyend="1610"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacefourier_1_1create__mask_1a5114b0588dad20eaa1f0bf7d497b0c23" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine fourier::create_mask::create_mask2d</definition>
+        <argsstring>(mask, x_ax, y_ax, inner_rad, outer_rad)</argsstring>
+        <name>create_mask2d</name>
+        <param>
+          <type>mask</type>
+          <defname>mask</defname>
+        </param>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>inner_rad</type>
+          <defname>inner_rad</defname>
+        </param>
+        <param>
+          <type>outer_rad</type>
+          <defname>outer_rad</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/fourier.F90" line="1615" column="1" bodyfile="src/fourier.F90" bodystart="1617" bodyend="1667"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/fourier.F90" line="24" column="1" bodyfile="src/fourier.F90" bodystart="24" bodyend="27"/>
+    <listofallmembers>
+      <member refid="interfacefourier_1_1create__mask_1a5114b0588dad20eaa1f0bf7d497b0c23" prot="private" virt="non-virtual"><scope>fourier::create_mask</scope><name>create_mask2d</name></member>
+      <member refid="interfacefourier_1_1create__mask_1abf6218becd27014583aae9195055ca87" prot="private" virt="non-virtual"><scope>fourier::create_mask</scope><name>create_mask3d</name></member>
+      <member refid="interfacefourier_1_1create__mask_1aab2fc1b88006302d4e7d7ba0f49614e8" prot="private" virt="non-virtual"><scope>fourier::create_mask</scope><name>create_mask4d</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,104 @@
+\hypertarget{namespacesharmonics}{}\section{sharmonics Module Reference}
+\label{namespacesharmonics}\index{sharmonics@{sharmonics}}
+
+
+Spherical harmonics module.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \mbox{\hyperlink{namespacesharmonics_a3562b6c9f338ddd73debe9069c0a9efa}{initialize\+\_\+legendre\+\_\+stuff}} (lmax, axis)
+\begin{DoxyCompactList}\small\item\em This subroutine initializes the Legendre polynomial and his correpondent normalization factors for the maximum angular momentum required. The routines that compute the polynomial and the factor are located at the module gaussleg. This is only a wrapper to call them once at the beginning of the simulation. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacesharmonics_a1b0768c031d59eb8ff3c10e5173e995b}{create\+\_\+spherical\+\_\+harmonics}} (sph\+\_\+harmonics, lmax, costheta\+\_\+axis, phi\+\_\+axis)
+\begin{DoxyCompactList}\small\item\em This subroutine initializes the spherical harmonic matrix. The routines that compute the polynomial and the factor are located at the module gaussleg. This is only a wrapper to call them once at the beginning of the simulation. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacesharmonics_a138ab46d773e1ada5242bbb938180477}{create\+\_\+spherical\+\_\+harmonics\+\_\+couplings}} (xcoupling, ycoupling, zcoupling, sph\+\_\+harmonics, lmax, theta\+\_\+axis, phi\+\_\+axis, theta\+\_\+w, phi\+\_\+w)
+\begin{DoxyCompactList}\small\item\em This subroutine initializes the spherical harmonic matrix. The routines that compute the polynomial and the factor are located at the module gaussleg. This is only a wrapper to call them once at the beginning of the simulation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacesharmonics_a54e2870724fae4c7a6ac8dc4b971a993}\label{namespacesharmonics_a54e2870724fae4c7a6ac8dc4b971a993}} 
+real(dp), dimension(\+:, \+:, \+:), allocatable, public {\bfseries legenpl}
+\item 
+\mbox{\Hypertarget{namespacesharmonics_a9cfef04ded9db9a5fd116ec10af39b43}\label{namespacesharmonics_a9cfef04ded9db9a5fd116ec10af39b43}} 
+real(dp), dimension(\+:, \+:), allocatable, public {\bfseries normfact}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Spherical harmonics module. 
+
+\begin{DoxyAuthor}{Author}
+Alejandro de la Calle. Queen\textquotesingle{}s University Belfast. 
+
+Daniel Dundas. Queen\textquotesingle{}s University Belfast. 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+05/10/2015
+\end{DoxyDate}
+This module contains routines to decompose a function in spherical coordinates into spherical harmonics. It contains two types\+: For functions that depends only in theta, and also for functions in 3D, for theta and phi. 
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{namespacesharmonics_a1b0768c031d59eb8ff3c10e5173e995b}\label{namespacesharmonics_a1b0768c031d59eb8ff3c10e5173e995b}} 
+\index{sharmonics@{sharmonics}!create\+\_\+spherical\+\_\+harmonics@{create\+\_\+spherical\+\_\+harmonics}}
+\index{create\+\_\+spherical\+\_\+harmonics@{create\+\_\+spherical\+\_\+harmonics}!sharmonics@{sharmonics}}
+\subsubsection{\texorpdfstring{create\+\_\+spherical\+\_\+harmonics()}{create\_spherical\_harmonics()}}
+{\footnotesize\ttfamily subroutine, public sharmonics\+::create\+\_\+spherical\+\_\+harmonics (\begin{DoxyParamCaption}\item[{complex(dp), dimension(\+:, \+:, -\/lmax\+:, 0\+:), intent(out)}]{sph\+\_\+harmonics,  }\item[{integer, intent(in)}]{lmax,  }\item[{real(dp), dimension(\+:), intent(in)}]{costheta\+\_\+axis,  }\item[{real(dp), dimension(\+:), intent(in)}]{phi\+\_\+axis }\end{DoxyParamCaption})}
+
+
+
+This subroutine initializes the spherical harmonic matrix. The routines that compute the polynomial and the factor are located at the module gaussleg. This is only a wrapper to call them once at the beginning of the simulation. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em lmax} & Maximum angular momenta \\
+\hline
+\mbox{\tt in}  & {\em costheta\+\_\+axis} & The abscissa (cos theta) for Legendre polynomials \\
+\hline
+\mbox{\tt in}  & {\em phi\+\_\+axis} & Phi angle axis \\
+\hline
+\mbox{\tt out}  & {\em sph\+\_\+harmonics} & The spherical harmonics matrix \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespacesharmonics_a138ab46d773e1ada5242bbb938180477}\label{namespacesharmonics_a138ab46d773e1ada5242bbb938180477}} 
+\index{sharmonics@{sharmonics}!create\+\_\+spherical\+\_\+harmonics\+\_\+couplings@{create\+\_\+spherical\+\_\+harmonics\+\_\+couplings}}
+\index{create\+\_\+spherical\+\_\+harmonics\+\_\+couplings@{create\+\_\+spherical\+\_\+harmonics\+\_\+couplings}!sharmonics@{sharmonics}}
+\subsubsection{\texorpdfstring{create\+\_\+spherical\+\_\+harmonics\+\_\+couplings()}{create\_spherical\_harmonics\_couplings()}}
+{\footnotesize\ttfamily subroutine, public sharmonics\+::create\+\_\+spherical\+\_\+harmonics\+\_\+couplings (\begin{DoxyParamCaption}\item[{real(dp), dimension(-\/lmax\+:, 0\+:, -\/lmax\+:, 0\+:), intent(out)}]{xcoupling,  }\item[{real(dp), dimension(-\/lmax\+:, 0\+:, -\/lmax\+:, 0\+:), intent(out)}]{ycoupling,  }\item[{real(dp), dimension(-\/lmax\+:, 0\+:, -\/lmax\+:, 0\+:), intent(out)}]{zcoupling,  }\item[{complex(dp), dimension(\+:, \+:, -\/lmax\+:, 0\+:), intent(in)}]{sph\+\_\+harmonics,  }\item[{integer, intent(in)}]{lmax,  }\item[{real(dp), dimension(\+:), intent(in)}]{theta\+\_\+axis,  }\item[{real(dp), dimension(\+:), intent(in)}]{phi\+\_\+axis,  }\item[{real(dp), dimension(\+:), intent(in)}]{theta\+\_\+w,  }\item[{real(dp), dimension(\+:), intent(in)}]{phi\+\_\+w }\end{DoxyParamCaption})}
+
+
+
+This subroutine initializes the spherical harmonic matrix. The routines that compute the polynomial and the factor are located at the module gaussleg. This is only a wrapper to call them once at the beginning of the simulation. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em lmax} & Maximum angular momenta \\
+\hline
+\mbox{\tt in}  & {\em costheta\+\_\+axis} & The abscissa (cos theta) for Legendre polynomials \\
+\hline
+\mbox{\tt in}  & {\em phi\+\_\+axis} & Phi angle axis \\
+\hline
+\mbox{\tt out}  & {\em sph\+\_\+harmonics} & The spherical harmonics matrix \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespacesharmonics_a3562b6c9f338ddd73debe9069c0a9efa}\label{namespacesharmonics_a3562b6c9f338ddd73debe9069c0a9efa}} 
+\index{sharmonics@{sharmonics}!initialize\+\_\+legendre\+\_\+stuff@{initialize\+\_\+legendre\+\_\+stuff}}
+\index{initialize\+\_\+legendre\+\_\+stuff@{initialize\+\_\+legendre\+\_\+stuff}!sharmonics@{sharmonics}}
+\subsubsection{\texorpdfstring{initialize\+\_\+legendre\+\_\+stuff()}{initialize\_legendre\_stuff()}}
+{\footnotesize\ttfamily subroutine, public sharmonics\+::initialize\+\_\+legendre\+\_\+stuff (\begin{DoxyParamCaption}\item[{integer, intent(in)}]{lmax,  }\item[{real(dp), dimension(\+:), intent(in)}]{axis }\end{DoxyParamCaption})}
+
+
+
+This subroutine initializes the Legendre polynomial and his correpondent normalization factors for the maximum angular momentum required. The routines that compute the polynomial and the factor are located at the module gaussleg. This is only a wrapper to call them once at the beginning of the simulation. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em lmax} & Maximum angular momenta \\
+\hline
+\mbox{\tt in}  & {\em axis} & The abscissa (cos theta) for Legendre polynomials \\
+\hline
+\mbox{\tt out}  & {\em legenpl} & The array containing all the polynomials needed \\
+\hline
+\mbox{\tt out}  & {\em normfact} & The array containing all the normalization factors \\
+\hline
+\end{DoxyParams}

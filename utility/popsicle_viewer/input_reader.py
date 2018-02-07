@@ -4,7 +4,7 @@
 import numpy as np
 import fileinput as fileinp
 import sys as sys
-import constants as const
+from . import constants as const
 
 ########################################
 ##           input_reader.py

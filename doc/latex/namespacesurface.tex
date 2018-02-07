@@ -1,0 +1,42 @@
+\hypertarget{namespacesurface}{}\section{surface Module Reference}
+\label{namespacesurface}\index{surface@{surface}}
+
+
+Surface module.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacesurface_a47af91cd7f1d5f28fd9f1dfcd5ff2afa}\label{namespacesurface_a47af91cd7f1d5f28fd9f1dfcd5ff2afa}} 
+subroutine, public {\bfseries initialize\+\_\+cylindrical\+\_\+surface} (rho\+\_\+ax, z\+\_\+ax, dims, Rboundary, radius\+\_\+tolerance, fd\+\_\+rule, dr, lmax, filename, itime, mpi\+\_\+rank, mpi\+\_\+size, comm)
+\item 
+\mbox{\Hypertarget{namespacesurface_a84785222e1c493ba239e9c3c0b269d55}\label{namespacesurface_a84785222e1c493ba239e9c3c0b269d55}} 
+subroutine, public {\bfseries initialize\+\_\+cartesian\+\_\+surface} (x\+\_\+ax, y\+\_\+ax, z\+\_\+ax, dims, Rboundary, radius\+\_\+tolerance, fd\+\_\+rule, dr, lmax, filename, itime, mpi\+\_\+rank, mpi\+\_\+size, comm)
+\item 
+\mbox{\Hypertarget{namespacesurface_a512ae9dbd39eaf12e66d733749d65642}\label{namespacesurface_a512ae9dbd39eaf12e66d733749d65642}} 
+subroutine, public {\bfseries get\+\_\+cylindrical\+\_\+surface} (filename, itime, wavefunc, rho\+\_\+ax, z\+\_\+ax, dims, fd\+\_\+rule, time, efield, afield, lmax, mpi\+\_\+rank, mpi\+\_\+size)
+\item 
+\mbox{\Hypertarget{namespacesurface_ac2ef5ef833ecd09a52367e4eb4d75512}\label{namespacesurface_ac2ef5ef833ecd09a52367e4eb4d75512}} 
+subroutine, public {\bfseries get\+\_\+cartesian\+\_\+surface} (filename, itime, wavefunc, x\+\_\+ax, y\+\_\+ax, z\+\_\+ax, dims, fd\+\_\+rule, time, efield, afield, lmax, mpi\+\_\+rank, mpi\+\_\+size)
+\item 
+\mbox{\Hypertarget{namespacesurface_a38df72433aa65cbfc858d35b9ae23813}\label{namespacesurface_a38df72433aa65cbfc858d35b9ae23813}} 
+subroutine, public {\bfseries delete\+\_\+surface2d} (mpi\+\_\+rank)
+\item 
+\mbox{\Hypertarget{namespacesurface_abe2d94c449094d9ac327ef3f5f7969f9}\label{namespacesurface_abe2d94c449094d9ac327ef3f5f7969f9}} 
+subroutine, public {\bfseries delete\+\_\+surface3d} (mpi\+\_\+rank)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Surface module. 
+
+\begin{DoxyAuthor}{Author}
+Alejandro de la Calle. Queen\textquotesingle{}s University Belfast. 
+
+Daniel Dundas. Queen\textquotesingle{}s University Belfast. 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+21/10/2015
+\end{DoxyDate}
+This module contains routines to get the surface flux from a wavefunction expanded in a spherical harmonic basis. 

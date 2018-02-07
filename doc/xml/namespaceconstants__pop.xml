@@ -1,0 +1,422 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespaceconstants__pop" kind="namespace" language="Fortran">
+    <compoundname>constants_pop</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" prot="public" static="no" mutable="no">
+        <type>integer, parameter, public</type>
+        <definition>integer, parameter, public constants_pop::dp</definition>
+        <argsstring></argsstring>
+        <name>dp</name>
+        <initializer>= KIND(1.0D0)</initializer>
+        <briefdescription>
+<para>Double precision type length. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="28" column="1" bodyfile="src/constants.f90" bodystart="28" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1a30c1570dd8020fd168553df145d76ff4" prot="public" static="no" mutable="no">
+        <type>integer, parameter, public</type>
+        <definition>integer, parameter, public constants_pop::sp</definition>
+        <argsstring></argsstring>
+        <name>sp</name>
+        <initializer>= KIND(1.0)</initializer>
+        <briefdescription>
+<para>Single precision type length. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="30" column="1" bodyfile="src/constants.f90" bodystart="30" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1a31f741f0bab3c2deff3403f25fc8fca1" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::sqrttwo</definition>
+        <argsstring></argsstring>
+        <name>sqrttwo</name>
+        <initializer>= 1.4142135623730951_dp</initializer>
+        <briefdescription>
+<para><formula id="0">$\sqrt{2}$</formula> </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="32" column="1" bodyfile="src/constants.f90" bodystart="32" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1a05c3e12abc77506eb165034fba783f98" prot="public" static="no" mutable="no">
+        <type>complex(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>complex(dp), parameter, public constants_pop::zimagone</definition>
+        <argsstring></argsstring>
+        <name>zimagone</name>
+        <initializer>= (0.0_dp, 1.0_dp)</initializer>
+        <briefdescription>
+<para>Imaginary unit. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="35" column="1" bodyfile="src/constants.f90" bodystart="35" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1a8edc7d38939b111c254324349ea23a4e" prot="public" static="no" mutable="no">
+        <type>complex(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>complex(dp), parameter, public constants_pop::zone</definition>
+        <argsstring></argsstring>
+        <name>zone</name>
+        <initializer>= (1.0_dp, 0.0_dp)</initializer>
+        <briefdescription>
+<para>Complex number one. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="37" column="1" bodyfile="src/constants.f90" bodystart="37" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1aae6cdd4aab6006c82b6b6614d95804c1" prot="public" static="no" mutable="no">
+        <type>complex(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>complex(dp), parameter, public constants_pop::zero</definition>
+        <argsstring></argsstring>
+        <name>zero</name>
+        <initializer>= (0.0_dp, 0.0_dp)</initializer>
+        <briefdescription>
+<para>Zero, in complex type. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="39" column="1" bodyfile="src/constants.f90" bodystart="39" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1a65af0ef41eb6207bbb00ff634e46aead" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::amu_to_internal</definition>
+        <argsstring></argsstring>
+        <name>amu_to_internal</name>
+        <initializer>= 103.6426867_dp</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><xrefsect id="todo_1_todo000001"><xreftitle>Todo</xreftitle><xrefdescription><para>: document this. </para></xrefdescription></xrefsect></para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="46" column="1" bodyfile="src/constants.f90" bodystart="46" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1ab04ab54f96ed6fef633748a530e9185a" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::speed_light</definition>
+        <argsstring></argsstring>
+        <name>speed_light</name>
+        <initializer>= 137.0_dp</initializer>
+        <briefdescription>
+<para>in atomic units </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="48" column="1" bodyfile="src/constants.f90" bodystart="48" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1a1f85092be6cafe4f853150042e429521" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::fine_structure</definition>
+        <argsstring></argsstring>
+        <name>fine_structure</name>
+        <initializer>= 1.0_dp / 137.0_dp</initializer>
+        <briefdescription>
+<para>Fine-structure constant in atomic units. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="50" column="1" bodyfile="src/constants.f90" bodystart="50" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1a247ec198c661d1f71a84a2953dc1add8" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::boltzmann_k</definition>
+        <argsstring></argsstring>
+        <name>boltzmann_k</name>
+        <initializer>= 8.61734215E-5_dp</initializer>
+        <briefdescription>
+<para>in eV / K units </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="52" column="1" bodyfile="src/constants.f90" bodystart="52" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1af079e42c08b5b29f83ae03e82d838150" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::ev_to_hartree</definition>
+        <argsstring></argsstring>
+        <name>ev_to_hartree</name>
+        <initializer>= 0.03674932600434263_dp</initializer>
+        <briefdescription>
+<para>One eV in hartree (atomic units of energy). </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="54" column="1" bodyfile="src/constants.f90" bodystart="54" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1ad6f277e1c710648d407733689ac041b6" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::hatree_to_ev</definition>
+        <argsstring></argsstring>
+        <name>hatree_to_ev</name>
+        <initializer>= 27.211383411_dp</initializer>
+        <briefdescription>
+<para>One hartree (atomic units of energy) in eV. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="56" column="1" bodyfile="src/constants.f90" bodystart="56" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1a4fd039ac08ba8388739583feeb5bc603" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::hbar</definition>
+        <argsstring></argsstring>
+        <name>hbar</name>
+        <initializer>= 0.65821188926_dp</initializer>
+        <briefdescription>
+<para><formula id="1">$\hbar$</formula> in eV fs </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="58" column="1" bodyfile="src/constants.f90" bodystart="58" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1ad63fbcef2547f788cdc856b118322820" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::pi</definition>
+        <argsstring></argsstring>
+        <name>pi</name>
+        <initializer>= 3.141592653589793_dp</initializer>
+        <briefdescription>
+<para><formula id="2">$\pi$</formula> </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="60" column="1" bodyfile="src/constants.f90" bodystart="60" bodyend="60"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1ae43dedb6e19b862871cca993749be265" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::twopi</definition>
+        <argsstring></argsstring>
+        <name>twopi</name>
+        <initializer>= 2.0_dp * pi</initializer>
+        <briefdescription>
+<para><formula id="3">$2\pi$</formula> </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="62" column="1" bodyfile="src/constants.f90" bodystart="62" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1ac19ec58d8898ca8e5b8643eb5392e6de" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::oneovertwopi</definition>
+        <argsstring></argsstring>
+        <name>oneovertwopi</name>
+        <initializer>= 1.0_dp / twopi</initializer>
+        <briefdescription>
+<para><formula id="4">$\frac{1}{\pi}$</formula> </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="64" column="1" bodyfile="src/constants.f90" bodystart="64" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1aaca1780ca726234138cb9e815a4222a1" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::sqrtoneovertwopi</definition>
+        <argsstring></argsstring>
+        <name>sqrtoneovertwopi</name>
+        <initializer>= SQRT(<ref refid="namespaceconstants__pop_1ac19ec58d8898ca8e5b8643eb5392e6de" kindref="member">oneovertwopi</ref>)</initializer>
+        <briefdescription>
+<para><formula id="5">$\sqrt{\frac{1}{2\pi}}$</formula> </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="66" column="1" bodyfile="src/constants.f90" bodystart="66" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1a48d520b0575fa59982719ff96fb7fda9" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::sqrtoneovertwopito3</definition>
+        <argsstring></argsstring>
+        <name>sqrtoneovertwopito3</name>
+        <initializer>= SQRT(<ref refid="namespaceconstants__pop_1ac19ec58d8898ca8e5b8643eb5392e6de" kindref="member">oneovertwopi</ref>)**3</initializer>
+        <briefdescription>
+<para><formula id="6">$\frac{1}{\sqrt{(2\pi)}^3}$</formula> </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="68" column="1" bodyfile="src/constants.f90" bodystart="68" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1a88ee88acbcb1bf0469dc8669a50e6c91" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::autime_fs</definition>
+        <argsstring></argsstring>
+        <name>autime_fs</name>
+        <initializer>= 2.418884326505E-2</initializer>
+        <briefdescription>
+<para>One atomic unit of time in femtoseconds. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="70" column="1" bodyfile="src/constants.f90" bodystart="70" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1aeb96f2e5640ee234baacf3c6ccacdc6e" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::autime_s</definition>
+        <argsstring></argsstring>
+        <name>autime_s</name>
+        <initializer>= 2.418884326505E-17</initializer>
+        <briefdescription>
+<para>One atomic unit of time in seconds. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="72" column="1" bodyfile="src/constants.f90" bodystart="72" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1a75f02cb937876c56f22093c7578047df" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::bohr_to_ang</definition>
+        <argsstring></argsstring>
+        <name>bohr_to_ang</name>
+        <initializer>= 0.5291772083_dp</initializer>
+        <briefdescription>
+<para>One bohr (one atomic unit of length) in angstroms. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="74" column="1" bodyfile="src/constants.f90" bodystart="74" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1a34e4163a044a3f01fe513adea2ccac34" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::aulength_m</definition>
+        <argsstring></argsstring>
+        <name>aulength_m</name>
+        <initializer>= 5.2917721092E-11</initializer>
+        <briefdescription>
+<para>One bohr (one atomic unit of length) in m. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="76" column="1" bodyfile="src/constants.f90" bodystart="76" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1ac8f988d57927d4a7dedd9e1bcd6e4a9b" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::aulength_nm</definition>
+        <argsstring></argsstring>
+        <name>aulength_nm</name>
+        <initializer>= 5.2917721092E-2</initializer>
+        <briefdescription>
+<para>One bohr (one atomic unit of length) in nm. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="78" column="1" bodyfile="src/constants.f90" bodystart="78" bodyend="78"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1ac3ab83a89e71fd7dd5973834b92d2435" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::efs_to_microamps</definition>
+        <argsstring></argsstring>
+        <name>efs_to_microamps</name>
+        <initializer>= 160.2176462_dp</initializer>
+        <briefdescription>
+<para>Unit of current intensity. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="80" column="1" bodyfile="src/constants.f90" bodystart="80" bodyend="80"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1a2939df9761a8b4158c47f7593ee2b08f" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::epsilon0</definition>
+        <argsstring></argsstring>
+        <name>epsilon0</name>
+        <initializer>= 5.526349954E-3_dp</initializer>
+        <briefdescription>
+<para>Dielectric constant in vacuum. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="82" column="1" bodyfile="src/constants.f90" bodystart="82" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1ab92b307f53a323d6a0120f4954daf2bd" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::waveconvert</definition>
+        <argsstring></argsstring>
+        <name>waveconvert</name>
+        <initializer>= 45.7720588235D0</initializer>
+        <briefdescription>
+<para>Conversion factor for converting between wavelength and frequency in atomic units. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="85" column="1" bodyfile="src/constants.f90" bodystart="85" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1a9c3733d86ce09fbf90cd8d74ea3c5419" prot="public" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter, public</type>
+        <definition>real(dp), parameter, public constants_pop::intensity_au</definition>
+        <argsstring></argsstring>
+        <name>intensity_au</name>
+        <initializer>= 3.51D16</initializer>
+        <briefdescription>
+<para>Atomic unit of intensity. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="87" column="1" bodyfile="src/constants.f90" bodystart="87" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1af8058334878d2d9bcdc15692292e43ea" prot="private" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter</type>
+        <definition>real(dp), parameter constants_pop::massfacelectron</definition>
+        <argsstring></argsstring>
+        <name>massfacelectron</name>
+        <initializer>= 0.5D0</initializer>
+        <briefdescription>
+<para>Mass factor for the electron to use in kinetic energy. In atomis units. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="89" column="1" bodyfile="src/constants.f90" bodystart="89" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceconstants__pop_1abfcc60e12639fb1e9149182d3fbe526b" prot="private" static="no" mutable="no">
+        <type>real(<ref refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kindref="member">dp</ref>), parameter</type>
+        <definition>real(dp), parameter constants_pop::massfacfield</definition>
+        <argsstring></argsstring>
+        <name>massfacfield</name>
+        <initializer>= 1.0D0</initializer>
+        <briefdescription>
+<para>Mass factor for the field term. In atomis units. </para>        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/constants.f90" line="91" column="1" bodyfile="src/constants.f90" bodystart="91" bodyend="91"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Constants numbers and data types. </para>    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para>Alejandro de la Calle. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="author"><para>Daniel Dundas. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="date"><para>15/04/2015</para></simplesect>
+As the name says, this module contains physical constants and other quantities of interest. Also, it constains data types definitions and kinds </para>    </detaileddescription>
+    <location file="src/constants.f90" line="18" column="1"/>
+  </compounddef>
+</doxygen>

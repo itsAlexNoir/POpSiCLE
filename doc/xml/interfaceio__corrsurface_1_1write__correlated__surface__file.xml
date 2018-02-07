@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfaceio__corrsurface_1_1write__correlated__surface__file" kind="interface" language="Fortran" prot="private">
+    <compoundname>io_corrsurface::write_correlated_surface_file</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfaceio__corrsurface_1_1write__correlated__surface__file_1acc0e31ae664a1661701242af83707115" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine io_corrsurface::write_correlated_surface_file::write_correlated_surface_file2d_serial</definition>
+        <argsstring>(filename, wave, wavederiv, time, efield, afield, lmax, basis_order)</argsstring>
+        <name>write_correlated_surface_file2d_serial</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>wave</type>
+          <defname>wave</defname>
+        </param>
+        <param>
+          <type>wavederiv</type>
+          <defname>wavederiv</defname>
+        </param>
+        <param>
+          <type>time</type>
+          <defname>time</defname>
+        </param>
+        <param>
+          <type>efield</type>
+          <defname>efield</defname>
+        </param>
+        <param>
+          <type>afield</type>
+          <defname>afield</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>basis_order</type>
+          <defname>basis_order</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/io_corrsurface.F90" line="44" column="1" bodyfile="src/io_corrsurface.F90" bodystart="46" bodyend="190"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/io_corrsurface.F90" line="20" column="1" bodyfile="src/io_corrsurface.F90" bodystart="20" bodyend="26"/>
+    <listofallmembers>
+      <member refid="interfaceio__corrsurface_1_1write__correlated__surface__file_1acc0e31ae664a1661701242af83707115" prot="private" virt="non-virtual"><scope>io_corrsurface::write_correlated_surface_file</scope><name>write_correlated_surface_file2d_serial</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,488 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespaceflux" kind="namespace" language="Fortran">
+    <compoundname>flux</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="namespaceflux_1a75c9cdf1cea8e80ebfef2eeab56cae63" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:, :, :), allocatable, public</type>
+        <definition>real(dp), dimension(:, :, :), allocatable, public flux::probk3d</definition>
+        <argsstring></argsstring>
+        <name>probk3d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="44" column="1" bodyfile="src/flux.f90" bodystart="44" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1a31c2f93e11d855c35e8c79e95e385c3e" prot="public" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable, public</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable, public flux::bktime</definition>
+        <argsstring></argsstring>
+        <name>bktime</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="45" column="1" bodyfile="src/flux.f90" bodystart="45" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1a4e49591385063c1947b39e62425f9d59" prot="public" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable, public</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable, public flux::bktimeold</definition>
+        <argsstring></argsstring>
+        <name>bktimeold</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="46" column="1" bodyfile="src/flux.f90" bodystart="46" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1a4838ad043e62e7922f5f1e25964a3148" prot="public" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :, :), allocatable, public</type>
+        <definition>complex(dp), dimension(:, :, :, :), allocatable, public flux::bk</definition>
+        <argsstring></argsstring>
+        <name>bk</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="47" column="1" bodyfile="src/flux.f90" bodystart="47" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1ac343e5ae6fb0b101196a1c11b5610677" prot="public" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable, public</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable, public flux::bkaverage</definition>
+        <argsstring></argsstring>
+        <name>bkaverage</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="48" column="1" bodyfile="src/flux.f90" bodystart="48" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1ada787f3d9f3f983f9648a3829541ca34" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :, :), allocatable flux::sph_harmonics</definition>
+        <argsstring></argsstring>
+        <name>sph_harmonics</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="50" column="1" bodyfile="src/flux.f90" bodystart="50" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1acdd96e2aa8fee93aa5e6aa7ba541bf6f" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :, :), allocatable flux::sph_harmonicsk</definition>
+        <argsstring></argsstring>
+        <name>sph_harmonicsk</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="51" column="1" bodyfile="src/flux.f90" bodystart="51" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1a022157223af43dc7d3170dff5c8844b1" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable flux::psi_sph</definition>
+        <argsstring></argsstring>
+        <name>psi_sph</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="53" column="1" bodyfile="src/flux.f90" bodystart="53" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1a65ca7470110665a5adef87099ad2bd0f" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable flux::psip_sph</definition>
+        <argsstring></argsstring>
+        <name>psip_sph</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="54" column="1" bodyfile="src/flux.f90" bodystart="54" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1ae16251774e8e4c6dcc5b86255cde9a0d" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable flux::psi_lm</definition>
+        <argsstring></argsstring>
+        <name>psi_lm</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="56" column="1" bodyfile="src/flux.f90" bodystart="56" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1a290d2c6050597bfd4cc54ee7eb3a9d20" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable flux::psix_lm</definition>
+        <argsstring></argsstring>
+        <name>psix_lm</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="57" column="1" bodyfile="src/flux.f90" bodystart="57" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1a8aef3d03771d40f144e5bbd69162704d" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable flux::psiy_lm</definition>
+        <argsstring></argsstring>
+        <name>psiy_lm</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="58" column="1" bodyfile="src/flux.f90" bodystart="58" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1a6f978f7c23585fe136b15dc6e657cd21" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable flux::psiz_lm</definition>
+        <argsstring></argsstring>
+        <name>psiz_lm</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="59" column="1" bodyfile="src/flux.f90" bodystart="59" bodyend="59"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1a8823c69ece4833510a78a7df5d244208" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable flux::psip_lm</definition>
+        <argsstring></argsstring>
+        <name>psip_lm</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="60" column="1" bodyfile="src/flux.f90" bodystart="60" bodyend="60"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1adc00e0e1ce150de410512256d4df6719" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable flux::krspts</definition>
+        <argsstring></argsstring>
+        <name>krspts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="62" column="1" bodyfile="src/flux.f90" bodystart="62" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1aff745d2452ae9df09a22df0ba2703325" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:, :), allocatable</type>
+        <definition>real(dp), dimension(:, :), allocatable flux::jl</definition>
+        <argsstring></argsstring>
+        <name>jl</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="63" column="1" bodyfile="src/flux.f90" bodystart="63" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1aec5822f945e8b66f0e176c8a70578013" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:, :), allocatable</type>
+        <definition>real(dp), dimension(:, :), allocatable flux::jlp</definition>
+        <argsstring></argsstring>
+        <name>jlp</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="64" column="1" bodyfile="src/flux.f90" bodystart="64" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1abe9e8e9502c43a8792f6c385d9f2dab9" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable flux::yl</definition>
+        <argsstring></argsstring>
+        <name>yl</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="65" column="1" bodyfile="src/flux.f90" bodystart="65" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1a59899bd43df581c3ac28e291e0706c13" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable flux::ylp</definition>
+        <argsstring></argsstring>
+        <name>ylp</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="66" column="1" bodyfile="src/flux.f90" bodystart="66" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1aa40d8e151bc5a4d5c75caee186d0a72c" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:, :), allocatable</type>
+        <definition>real(dp), dimension(:, :), allocatable flux::efield</definition>
+        <argsstring></argsstring>
+        <name>efield</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="69" column="1" bodyfile="src/flux.f90" bodystart="69" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1aaa2782e9c392a973d720d7a83537ff40" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:, :), allocatable</type>
+        <definition>real(dp), dimension(:, :), allocatable flux::afield</definition>
+        <argsstring></argsstring>
+        <name>afield</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="70" column="1" bodyfile="src/flux.f90" bodystart="70" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1a835d01a13c36506c21e1a58fe0f52de2" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:, :), allocatable</type>
+        <definition>real(dp), dimension(:, :), allocatable flux::quiver</definition>
+        <argsstring></argsstring>
+        <name>quiver</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="71" column="1" bodyfile="src/flux.f90" bodystart="71" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceflux_1a7347f6d876a16b5fbdcd3d336d14c740" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable flux::asqintegral</definition>
+        <argsstring></argsstring>
+        <name>asqintegral</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="72" column="1" bodyfile="src/flux.f90" bodystart="72" bodyend="72"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceflux_1afbe72e1cf19f311bac15e6e015f998a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public flux::initialize_tsurff</definition>
+        <argsstring>(filename)</argsstring>
+        <name>initialize_tsurff</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="78" column="1" bodyfile="src/flux.f90" bodystart="79" bodyend="275"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceflux_1aaa28bbe52ee6b3671c068f6c3190d908" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public flux::make_kpoints</definition>
+        <argsstring>(lmax, maxkpts, maxthetapts, maxphipts, deltaenergy, eneoffset)</argsstring>
+        <name>make_kpoints</name>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>maxkpts</type>
+          <defname>maxkpts</defname>
+        </param>
+        <param>
+          <type>maxthetapts</type>
+          <defname>maxthetapts</defname>
+        </param>
+        <param>
+          <type>maxphipts</type>
+          <defname>maxphipts</defname>
+        </param>
+        <param>
+          <type>deltaenergy</type>
+          <defname>deltaenergy</defname>
+        </param>
+        <param>
+          <type>eneoffset</type>
+          <defname>eneoffset</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="281" column="1" bodyfile="src/flux.f90" bodystart="283" bodyend="382"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceflux_1a708e0f0ebd170bdc9da7fb40196bee3f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public flux::get_flux</definition>
+        <argsstring>(filename, iorbital)</argsstring>
+        <name>get_flux</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>iorbital</type>
+          <defname>iorbital</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="388" column="1" bodyfile="src/flux.f90" bodystart="389" bodyend="582"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceflux_1afbcdcaf92171a5e303b254bf533ba4a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public flux::calculate_time_integrand</definition>
+        <argsstring>(fluxintegral, ik, itheta, iphi, itime)</argsstring>
+        <name>calculate_time_integrand</name>
+        <param>
+          <type>fluxintegral</type>
+          <defname>fluxintegral</defname>
+        </param>
+        <param>
+          <type>ik</type>
+          <defname>ik</defname>
+        </param>
+        <param>
+          <type>itheta</type>
+          <defname>itheta</defname>
+        </param>
+        <param>
+          <type>iphi</type>
+          <defname>iphi</defname>
+        </param>
+        <param>
+          <type>itime</type>
+          <defname>itime</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="588" column="1" bodyfile="src/flux.f90" bodystart="590" bodyend="661"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceflux_1a6d69c7ea5f5cffd9aba456aebda7bfa6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public flux::get_volkov_phase</definition>
+        <argsstring>(volkov_phase, ik, itheta, iphi, itime)</argsstring>
+        <name>get_volkov_phase</name>
+        <param>
+          <type>volkov_phase</type>
+          <defname>volkov_phase</defname>
+        </param>
+        <param>
+          <type>ik</type>
+          <defname>ik</defname>
+        </param>
+        <param>
+          <type>itheta</type>
+          <defname>itheta</defname>
+        </param>
+        <param>
+          <type>iphi</type>
+          <defname>iphi</defname>
+        </param>
+        <param>
+          <type>itime</type>
+          <defname>itime</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="667" column="1" bodyfile="src/flux.f90" bodystart="668" bodyend="694"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceflux_1a531fe7102e27e9ca7b14897f4c702d52" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine flux::make_field_integral_terms</definition>
+        <argsstring>()</argsstring>
+        <name>make_field_integral_terms</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="700" column="1" bodyfile="src/flux.f90" bodystart="701" bodyend="740"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceflux_1aff2ae47ed1665193d3c27ccd0486b54e" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine flux::gauge_transform_l2v</definition>
+        <argsstring>(itime)</argsstring>
+        <name>gauge_transform_l2v</name>
+        <param>
+          <type>itime</type>
+          <defname>itime</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/flux.f90" line="746" column="1" bodyfile="src/flux.f90" bodystart="747" bodyend="779"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Flux module. </para>    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para>Alejandro de la Calle. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="author"><para>Daniel Dundas. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="date"><para>05/11/2015</para></simplesect>
+This module contains routines to calculate the flux passing through a surface, and integrating this surface over time. </para>    </detaileddescription>
+    <location file="src/flux.f90" line="16" column="1"/>
+  </compounddef>
+</doxygen>

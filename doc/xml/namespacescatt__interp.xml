@@ -1,0 +1,998 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacescatt__interp" kind="namespace" language="Fortran">
+    <compoundname>scatt_interp</compoundname>
+    <innerclass refid="interfacescatt__interp_1_1create__scatt__interpolant" prot="private">scatt_interp::create_scatt_interpolant</innerclass>
+    <innerclass refid="interfacescatt__interp_1_1destroy__scatt__interpolant" prot="private">scatt_interp::destroy_scatt_interpolant</innerclass>
+    <innerclass refid="interfacescatt__interp_1_1scatt__interpolate" prot="private">scatt_interp::scatt_interpolate</innerclass>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="namespacescatt__interp_1afc404361c193e33cd267772176d2ff18" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable scatt_interp::func_re</definition>
+        <argsstring></argsstring>
+        <name>func_re</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="55" column="1" bodyfile="src/scatt_interp.f90" bodystart="55" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1abdba2119040f2c801abe092a97d6e4b7" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable scatt_interp::func_im</definition>
+        <argsstring></argsstring>
+        <name>func_im</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="56" column="1" bodyfile="src/scatt_interp.f90" bodystart="56" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1aa7c9c7c4e82d19a441f922622eca8351" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer scatt_interp::nq</definition>
+        <argsstring></argsstring>
+        <name>nq</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="59" column="1" bodyfile="src/scatt_interp.f90" bodystart="59" bodyend="59"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a81ff98ada708775122eaf6370565579b" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer scatt_interp::nr</definition>
+        <argsstring></argsstring>
+        <name>nr</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="59" column="1" bodyfile="src/scatt_interp.f90" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a4f2ff36367fb29d54cb99a3ada9eb67e" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer scatt_interp::nw</definition>
+        <argsstring></argsstring>
+        <name>nw</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="59" column="1" bodyfile="src/scatt_interp.f90" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a64da6f4c6909e3e10fba1d6d290763ca" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) scatt_interp::dx_re</definition>
+        <argsstring></argsstring>
+        <name>dx_re</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="60" column="1" bodyfile="src/scatt_interp.f90" bodystart="60" bodyend="60"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1af5794544581ae2f7f14c1826ac90822a" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) scatt_interp::dy_re</definition>
+        <argsstring></argsstring>
+        <name>dy_re</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="60" column="1" bodyfile="src/scatt_interp.f90" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1aea0529b4927908042c771aced3d1dfb1" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) scatt_interp::rmax_re</definition>
+        <argsstring></argsstring>
+        <name>rmax_re</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="60" column="1" bodyfile="src/scatt_interp.f90" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a189a8050f6396a1db9bbf5200019df77" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) scatt_interp::xmin_re</definition>
+        <argsstring></argsstring>
+        <name>xmin_re</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="61" column="1" bodyfile="src/scatt_interp.f90" bodystart="61" bodyend="61"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1ac2d963125c8e7f9877c6260b527999fc" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) scatt_interp::ymin_re</definition>
+        <argsstring></argsstring>
+        <name>ymin_re</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="61" column="1" bodyfile="src/scatt_interp.f90" bodystart="61" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a80b864cfe2a0df6968f03ed0e3d6c678" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable scatt_interp::xyzmin_re</definition>
+        <argsstring></argsstring>
+        <name>xyzmin_re</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="62" column="1" bodyfile="src/scatt_interp.f90" bodystart="62" bodyend="62"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a2289587399f75de78e83f2fa96f92300" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable scatt_interp::xyzdel_re</definition>
+        <argsstring></argsstring>
+        <name>xyzdel_re</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="62" column="1" bodyfile="src/scatt_interp.f90" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a88b63a9abe15792a264eea80ad04850b" prot="private" static="no" mutable="no">
+        <type>integer, dimension(:), allocatable</type>
+        <definition>integer, dimension(:), allocatable scatt_interp::lnext_re</definition>
+        <argsstring></argsstring>
+        <name>lnext_re</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="63" column="1" bodyfile="src/scatt_interp.f90" bodystart="63" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a9941a0a0611047acd8b69b1ea19fbfd8" prot="private" static="no" mutable="no">
+        <type>integer, dimension(:, :), allocatable</type>
+        <definition>integer, dimension(:, :), allocatable scatt_interp::lcell_re</definition>
+        <argsstring></argsstring>
+        <name>lcell_re</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="64" column="1" bodyfile="src/scatt_interp.f90" bodystart="64" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1acb99fdbe01bafc31e60cf55bbe1761bf" prot="private" static="no" mutable="no">
+        <type>integer, dimension(:, :, :), allocatable</type>
+        <definition>integer, dimension(:, :, :), allocatable scatt_interp::lcell3_re</definition>
+        <argsstring></argsstring>
+        <name>lcell3_re</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="65" column="1" bodyfile="src/scatt_interp.f90" bodystart="65" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1af0f816112c42e77647833117f8b437bf" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable scatt_interp::rsq_re</definition>
+        <argsstring></argsstring>
+        <name>rsq_re</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="66" column="1" bodyfile="src/scatt_interp.f90" bodystart="66" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a23646be1a2c6ab971e47f7102ae65a7e" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable scatt_interp::rw_re</definition>
+        <argsstring></argsstring>
+        <name>rw_re</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="66" column="1" bodyfile="src/scatt_interp.f90" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a293227e8480234a688a211b56cac3eec" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:, :), allocatable</type>
+        <definition>real(dp), dimension(:, :), allocatable scatt_interp::aq_re</definition>
+        <argsstring></argsstring>
+        <name>aq_re</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="67" column="1" bodyfile="src/scatt_interp.f90" bodystart="67" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a304ad8a5fe835fa3f25262cd2708b17b" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:, :), allocatable</type>
+        <definition>real(dp), dimension(:, :), allocatable scatt_interp::al_re</definition>
+        <argsstring></argsstring>
+        <name>al_re</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="67" column="1" bodyfile="src/scatt_interp.f90" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1aa2e832512d63c4a53eecbf71dee7a4ec" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) scatt_interp::dx_im</definition>
+        <argsstring></argsstring>
+        <name>dx_im</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="69" column="1" bodyfile="src/scatt_interp.f90" bodystart="69" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a9e5009df95d96136a49880346bf45144" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) scatt_interp::dy_im</definition>
+        <argsstring></argsstring>
+        <name>dy_im</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="69" column="1" bodyfile="src/scatt_interp.f90" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1ab9595bcd7cd85db03edeacf86e894dd8" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) scatt_interp::rmax_im</definition>
+        <argsstring></argsstring>
+        <name>rmax_im</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="69" column="1" bodyfile="src/scatt_interp.f90" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a812c9fdb3804abb4645462b94c6c0a42" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) scatt_interp::xmin_im</definition>
+        <argsstring></argsstring>
+        <name>xmin_im</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="70" column="1" bodyfile="src/scatt_interp.f90" bodystart="70" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a46768a1ecb214a4303f76f90ff854ad4" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) scatt_interp::ymin_im</definition>
+        <argsstring></argsstring>
+        <name>ymin_im</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="70" column="1" bodyfile="src/scatt_interp.f90" bodystart="70" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1ab23f34e9792ea2e8e191f4c1a2a70f40" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable scatt_interp::xyzmin_im</definition>
+        <argsstring></argsstring>
+        <name>xyzmin_im</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="71" column="1" bodyfile="src/scatt_interp.f90" bodystart="71" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a0f5fc54597afc3e93c301b85ec416922" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable scatt_interp::xyzdel_im</definition>
+        <argsstring></argsstring>
+        <name>xyzdel_im</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="71" column="1" bodyfile="src/scatt_interp.f90" bodystart="71" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a2c3489d07daa6dd7ad4bc58eb818c450" prot="private" static="no" mutable="no">
+        <type>integer, dimension(:), allocatable</type>
+        <definition>integer, dimension(:), allocatable scatt_interp::lnext_im</definition>
+        <argsstring></argsstring>
+        <name>lnext_im</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="72" column="1" bodyfile="src/scatt_interp.f90" bodystart="72" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a614e8396243c0b53ee60f4c30f3d06cf" prot="private" static="no" mutable="no">
+        <type>integer, dimension(:, :), allocatable</type>
+        <definition>integer, dimension(:, :), allocatable scatt_interp::lcell_im</definition>
+        <argsstring></argsstring>
+        <name>lcell_im</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="73" column="1" bodyfile="src/scatt_interp.f90" bodystart="73" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a8cd479d83618a51d22794ebc06f82963" prot="private" static="no" mutable="no">
+        <type>integer, dimension(:, :, :), allocatable</type>
+        <definition>integer, dimension(:, :, :), allocatable scatt_interp::lcell3_im</definition>
+        <argsstring></argsstring>
+        <name>lcell3_im</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="74" column="1" bodyfile="src/scatt_interp.f90" bodystart="74" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1a162718b9ea44a12e227d3b04897c1ddf" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable scatt_interp::rsq_im</definition>
+        <argsstring></argsstring>
+        <name>rsq_im</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="75" column="1" bodyfile="src/scatt_interp.f90" bodystart="75" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1ada47d62d3783524c6c9380c74057b97b" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable scatt_interp::rw_im</definition>
+        <argsstring></argsstring>
+        <name>rw_im</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="75" column="1" bodyfile="src/scatt_interp.f90" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1ad9327f895afadb4e04e3b69ecc49f713" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:, :), allocatable</type>
+        <definition>real(dp), dimension(:, :), allocatable scatt_interp::aq_im</definition>
+        <argsstring></argsstring>
+        <name>aq_im</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="76" column="1" bodyfile="src/scatt_interp.f90" bodystart="76" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacescatt__interp_1adede7497b41a3958225023452545b75f" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:, :), allocatable</type>
+        <definition>real(dp), dimension(:, :), allocatable scatt_interp::al_im</definition>
+        <argsstring></argsstring>
+        <name>al_im</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="76" column="1" bodyfile="src/scatt_interp.f90" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="namespacescatt__interp_1a64a9659890c173f40c4a55437cdec904" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::dcreate_scatt_interpolant2d</definition>
+        <argsstring>(numpts, x1, x2, func, method, rank)</argsstring>
+        <name>dcreate_scatt_interpolant2d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+<para>Create the interpolant for scattered interpolantion. </para>        </briefdescription>
+        <detaileddescription>
+<para>Create and interpolant for scattered interpolation. The routine can choose between different orders. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">xx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Array of tabulated values </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Given value to be search </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>locate Array index of xx in which x is centered. </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="96" column="1" bodyfile="src/scatt_interp.f90" bodystart="97" bodyend="157"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacescatt__interp_1a622afe95dc79d62c1da8ff8e77150fa9" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::zcreate_scatt_interpolant2d</definition>
+        <argsstring>(numpts, x1, x2, func, method, rank)</argsstring>
+        <name>zcreate_scatt_interpolant2d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="162" column="1" bodyfile="src/scatt_interp.f90" bodystart="163" bodyend="239"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacescatt__interp_1a40ddc99a24f0e7af7b5ff99ff21ae3da" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::dcreate_scatt_interpolant3d</definition>
+        <argsstring>(numpts, x1, x2, x3, func, method, rank)</argsstring>
+        <name>dcreate_scatt_interpolant3d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>x3</type>
+          <defname>x3</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="244" column="1" bodyfile="src/scatt_interp.f90" bodystart="245" bodyend="295"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacescatt__interp_1a972ae7d77f2d148382ebeaebaa70d9cd" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::zcreate_scatt_interpolant3d</definition>
+        <argsstring>(numpts, x1, x2, x3, func, method, rank)</argsstring>
+        <name>zcreate_scatt_interpolant3d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>x3</type>
+          <defname>x3</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="300" column="1" bodyfile="src/scatt_interp.f90" bodystart="301" bodyend="380"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacescatt__interp_1a6a58ac69bdcba823ae877ecf6f91efb2" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::scatt_dinterpolate2d</definition>
+        <argsstring>(numpts, y1, y2, x1, x2, func, method, interp_val, interp_val_dx, interp_val_dy, rank)</argsstring>
+        <name>scatt_dinterpolate2d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>y1</type>
+          <defname>y1</defname>
+        </param>
+        <param>
+          <type>y2</type>
+          <defname>y2</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>interp_val</type>
+          <defname>interp_val</defname>
+        </param>
+        <param>
+          <type>interp_val_dx</type>
+          <defname>interp_val_dx</defname>
+        </param>
+        <param>
+          <type>interp_val_dy</type>
+          <defname>interp_val_dy</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="385" column="1" bodyfile="src/scatt_interp.f90" bodystart="387" bodyend="448"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacescatt__interp_1a73d146324dbdb4cf5f7cf4c389afe08c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::scatt_zinterpolate2d</definition>
+        <argsstring>(numpts, y1, y2, x1, x2, func, method, interp_val, interp_val_dx, interp_val_dy, rank)</argsstring>
+        <name>scatt_zinterpolate2d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>y1</type>
+          <defname>y1</defname>
+        </param>
+        <param>
+          <type>y2</type>
+          <defname>y2</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>interp_val</type>
+          <defname>interp_val</defname>
+        </param>
+        <param>
+          <type>interp_val_dx</type>
+          <defname>interp_val_dx</defname>
+        </param>
+        <param>
+          <type>interp_val_dy</type>
+          <defname>interp_val_dy</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="453" column="1" bodyfile="src/scatt_interp.f90" bodystart="455" bodyend="552"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacescatt__interp_1aad04d7bf30168c8a25802091612faf94" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::scatt_dinterpolate3d</definition>
+        <argsstring>(numpts, y1, y2, y3, x1, x2, x3, func, method, interp_val, interp_val_dx, interp_val_dy, interp_val_dz, rank)</argsstring>
+        <name>scatt_dinterpolate3d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>y1</type>
+          <defname>y1</defname>
+        </param>
+        <param>
+          <type>y2</type>
+          <defname>y2</defname>
+        </param>
+        <param>
+          <type>y3</type>
+          <defname>y3</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>x3</type>
+          <defname>x3</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>interp_val</type>
+          <defname>interp_val</defname>
+        </param>
+        <param>
+          <type>interp_val_dx</type>
+          <defname>interp_val_dx</defname>
+        </param>
+        <param>
+          <type>interp_val_dy</type>
+          <defname>interp_val_dy</defname>
+        </param>
+        <param>
+          <type>interp_val_dz</type>
+          <defname>interp_val_dz</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="557" column="1" bodyfile="src/scatt_interp.f90" bodystart="559" bodyend="623"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacescatt__interp_1ad85da83b5f0b1efa80b332f4add6754a" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::scatt_zinterpolate3d</definition>
+        <argsstring>(numpts, y1, y2, y3, x1, x2, x3, func, method, interp_val, interp_val_dx, interp_val_dy, interp_val_dz, rank)</argsstring>
+        <name>scatt_zinterpolate3d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>y1</type>
+          <defname>y1</defname>
+        </param>
+        <param>
+          <type>y2</type>
+          <defname>y2</defname>
+        </param>
+        <param>
+          <type>y3</type>
+          <defname>y3</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>x3</type>
+          <defname>x3</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>interp_val</type>
+          <defname>interp_val</defname>
+        </param>
+        <param>
+          <type>interp_val_dx</type>
+          <defname>interp_val_dx</defname>
+        </param>
+        <param>
+          <type>interp_val_dy</type>
+          <defname>interp_val_dy</defname>
+        </param>
+        <param>
+          <type>interp_val_dz</type>
+          <defname>interp_val_dz</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="628" column="1" bodyfile="src/scatt_interp.f90" bodystart="630" bodyend="728"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacescatt__interp_1a321cbdedab95c097348c0d9921abfd73" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::ddestroy_scatt_interpolant2d</definition>
+        <argsstring>(numpts, x1, x2, func)</argsstring>
+        <name>ddestroy_scatt_interpolant2d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="733" column="1" bodyfile="src/scatt_interp.f90" bodystart="734" bodyend="750"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacescatt__interp_1a9a26aa4fc301c08d7449bdcae7aba44c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::zdestroy_scatt_interpolant2d</definition>
+        <argsstring>(numpts, x1, x2, func)</argsstring>
+        <name>zdestroy_scatt_interpolant2d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="755" column="1" bodyfile="src/scatt_interp.f90" bodystart="756" bodyend="782"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacescatt__interp_1a7fef862feb98d3480c972c74f48b9b20" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::ddestroy_scatt_interpolant3d</definition>
+        <argsstring>(numpts, x1, x2, x3, func)</argsstring>
+        <name>ddestroy_scatt_interpolant3d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>x3</type>
+          <defname>x3</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="787" column="1" bodyfile="src/scatt_interp.f90" bodystart="788" bodyend="807"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacescatt__interp_1a3ea6798411b0c2e86d37639f81897066" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::zdestroy_scatt_interpolant3d</definition>
+        <argsstring>(numpts, x1, x2, x3, func)</argsstring>
+        <name>zdestroy_scatt_interpolant3d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>x3</type>
+          <defname>x3</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="811" column="1" bodyfile="src/scatt_interp.f90" bodystart="812" bodyend="842"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Interpolating routines. </para>    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para>Alejandro de la Calle. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="author"><para>Daniel Dundas. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="date"><para>15/04/2015</para></simplesect>
+This module contains all the subprograms needed for a scattered interpolation of the wavefunction. The method used is Sheppard method, implemented through the SHEPPACK package. </para>    </detaileddescription>
+    <location file="src/scatt_interp.f90" line="18" column="1"/>
+  </compounddef>
+</doxygen>

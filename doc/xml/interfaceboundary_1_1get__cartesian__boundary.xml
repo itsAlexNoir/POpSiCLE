@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfaceboundary_1_1get__cartesian__boundary" kind="interface" language="Fortran" prot="public">
+    <compoundname>boundary::get_cartesian_boundary</compoundname>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="interfaceboundary_1_1get__cartesian__boundary_1a50e34f982c6597bc6bdfcdaa37debff7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>boundary::get_cartesian_boundary::get_scatt_cartesian_boundary2d</definition>
+        <argsstring></argsstring>
+        <name>get_scatt_cartesian_boundary2d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="" line="1" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="interfaceboundary_1_1get__cartesian__boundary_1a2de9c58d2e4e727aff088dc9af8458d8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>boundary::get_cartesian_boundary::dget_scatt_cartesian_boundary3d</definition>
+        <argsstring></argsstring>
+        <name>dget_scatt_cartesian_boundary3d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="" line="1" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="interfaceboundary_1_1get__cartesian__boundary_1a2e4acc867d9ec5da65fb4604ba666892" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>boundary::get_cartesian_boundary::zget_scatt_cartesian_boundary3d</definition>
+        <argsstring></argsstring>
+        <name>zget_scatt_cartesian_boundary3d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="" line="1" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="interfaceboundary_1_1get__cartesian__boundary_1adc6d7a6fddbb5f79230cc80d82c3284e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>boundary::get_cartesian_boundary::dget_tricubic_cartesian_boundary3d</definition>
+        <argsstring></argsstring>
+        <name>dget_tricubic_cartesian_boundary3d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="" line="1" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="interfaceboundary_1_1get__cartesian__boundary_1a9ff04ccc9b57816fbbd95858c3926ff5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>boundary::get_cartesian_boundary::zget_tricubic_cartesian_boundary3d</definition>
+        <argsstring></argsstring>
+        <name>zget_tricubic_cartesian_boundary3d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="" line="1" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/boundary.F90" line="38" column="1" bodyfile="src/boundary.F90" bodystart="38" bodyend="43"/>
+    <listofallmembers>
+      <member refid="interfaceboundary_1_1get__cartesian__boundary_1a2de9c58d2e4e727aff088dc9af8458d8" prot="public" virt="non-virtual"><scope>boundary::get_cartesian_boundary</scope><name>dget_scatt_cartesian_boundary3d</name></member>
+      <member refid="interfaceboundary_1_1get__cartesian__boundary_1adc6d7a6fddbb5f79230cc80d82c3284e" prot="public" virt="non-virtual"><scope>boundary::get_cartesian_boundary</scope><name>dget_tricubic_cartesian_boundary3d</name></member>
+      <member refid="interfaceboundary_1_1get__cartesian__boundary_1a50e34f982c6597bc6bdfcdaa37debff7" prot="public" virt="non-virtual"><scope>boundary::get_cartesian_boundary</scope><name>get_scatt_cartesian_boundary2d</name></member>
+      <member refid="interfaceboundary_1_1get__cartesian__boundary_1a2e4acc867d9ec5da65fb4604ba666892" prot="public" virt="non-virtual"><scope>boundary::get_cartesian_boundary</scope><name>zget_scatt_cartesian_boundary3d</name></member>
+      <member refid="interfaceboundary_1_1get__cartesian__boundary_1a9ff04ccc9b57816fbbd95858c3926ff5" prot="public" virt="non-virtual"><scope>boundary::get_cartesian_boundary</scope><name>zget_tricubic_cartesian_boundary3d</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,249 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacecubcoords" kind="namespace" language="Fortran">
+    <compoundname>cubcoords</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="cubcoords_8f90_1a8b7c5f6e06a98999ab4759330efdcd9a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubcoords::dcubic_cartesian2spherical3d</definition>
+        <argsstring>(psi_cart, psi_sph, x_ax, y_ax, z_ax, r_ax, theta_ax, phi_ax, fdrule, psi_sph_dr, psi_sph_dth, psi_sph_dphi, rank)</argsstring>
+        <name>dcubic_cartesian2spherical3d</name>
+        <param>
+          <type>psi_cart</type>
+          <defname>psi_cart</defname>
+        </param>
+        <param>
+          <type>psi_sph</type>
+          <defname>psi_sph</defname>
+        </param>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>r_ax</type>
+          <defname>r_ax</defname>
+        </param>
+        <param>
+          <type>theta_ax</type>
+          <defname>theta_ax</defname>
+        </param>
+        <param>
+          <type>phi_ax</type>
+          <defname>phi_ax</defname>
+        </param>
+        <param>
+          <type>fdrule</type>
+          <defname>fdrule</defname>
+        </param>
+        <param>
+          <type>psi_sph_dr</type>
+          <defname>psi_sph_dr</defname>
+        </param>
+        <param>
+          <type>psi_sph_dth</type>
+          <defname>psi_sph_dth</defname>
+        </param>
+        <param>
+          <type>psi_sph_dphi</type>
+          <defname>psi_sph_dphi</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubcoords.f90" line="60" column="1" bodyfile="src/cubcoords.f90" bodystart="63" bodyend="400"/>
+      </memberdef>
+      <memberdef kind="function" id="cubcoords_8f90_1a3da95eb3ef6164f24b19c7fd65dbbde6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubcoords::zcubic_cartesian2spherical3d</definition>
+        <argsstring>(psi_cart, psi_sph, x_ax, y_ax, z_ax, r_ax, theta_ax, phi_ax, fdrule, psi_sph_dr, psi_sph_dth, psi_sph_dphi, rank)</argsstring>
+        <name>zcubic_cartesian2spherical3d</name>
+        <param>
+          <type>psi_cart</type>
+          <defname>psi_cart</defname>
+        </param>
+        <param>
+          <type>psi_sph</type>
+          <defname>psi_sph</defname>
+        </param>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>r_ax</type>
+          <defname>r_ax</defname>
+        </param>
+        <param>
+          <type>theta_ax</type>
+          <defname>theta_ax</defname>
+        </param>
+        <param>
+          <type>phi_ax</type>
+          <defname>phi_ax</defname>
+        </param>
+        <param>
+          <type>fdrule</type>
+          <defname>fdrule</defname>
+        </param>
+        <param>
+          <type>psi_sph_dr</type>
+          <defname>psi_sph_dr</defname>
+        </param>
+        <param>
+          <type>psi_sph_dth</type>
+          <defname>psi_sph_dth</defname>
+        </param>
+        <param>
+          <type>psi_sph_dphi</type>
+          <defname>psi_sph_dphi</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubcoords.f90" line="406" column="1" bodyfile="src/cubcoords.f90" bodystart="409" bodyend="792"/>
+      </memberdef>
+      <memberdef kind="function" id="cubcoords_8f90_1af80c6fd2071e76c130587b839fb0f042" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubcoords::dcubic_cylindrical2spherical2d</definition>
+        <argsstring>(psi_cyl, psi_sph, rho_ax, z_ax, r_ax, theta_ax, fdrule, psi_sph_dx, psi_sph_dy, rank)</argsstring>
+        <name>dcubic_cylindrical2spherical2d</name>
+        <param>
+          <type>psi_cyl</type>
+          <defname>psi_cyl</defname>
+        </param>
+        <param>
+          <type>psi_sph</type>
+          <defname>psi_sph</defname>
+        </param>
+        <param>
+          <type>rho_ax</type>
+          <defname>rho_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>r_ax</type>
+          <defname>r_ax</defname>
+        </param>
+        <param>
+          <type>theta_ax</type>
+          <defname>theta_ax</defname>
+        </param>
+        <param>
+          <type>fdrule</type>
+          <defname>fdrule</defname>
+        </param>
+        <param>
+          <type>psi_sph_dx</type>
+          <defname>psi_sph_dx</defname>
+        </param>
+        <param>
+          <type>psi_sph_dy</type>
+          <defname>psi_sph_dy</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubcoords.f90" line="811" column="1" bodyfile="src/cubcoords.f90" bodystart="813" bodyend="1016"/>
+      </memberdef>
+      <memberdef kind="function" id="cubcoords_8f90_1af15cc37f3efb97c70ac949702300786a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubcoords::zcubic_cylindrical2spherical2d</definition>
+        <argsstring>(psi_cyl, psi_sph, rho_ax, z_ax, r_ax, theta_ax, fdrule, psi_sph_dx, psi_sph_dy, rank)</argsstring>
+        <name>zcubic_cylindrical2spherical2d</name>
+        <param>
+          <type>psi_cyl</type>
+          <defname>psi_cyl</defname>
+        </param>
+        <param>
+          <type>psi_sph</type>
+          <defname>psi_sph</defname>
+        </param>
+        <param>
+          <type>rho_ax</type>
+          <defname>rho_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>r_ax</type>
+          <defname>r_ax</defname>
+        </param>
+        <param>
+          <type>theta_ax</type>
+          <defname>theta_ax</defname>
+        </param>
+        <param>
+          <type>fdrule</type>
+          <defname>fdrule</defname>
+        </param>
+        <param>
+          <type>psi_sph_dx</type>
+          <defname>psi_sph_dx</defname>
+        </param>
+        <param>
+          <type>psi_sph_dy</type>
+          <defname>psi_sph_dy</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubcoords.f90" line="1021" column="1" bodyfile="src/cubcoords.f90" bodystart="1023" bodyend="1253"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/cubcoords.f90" line="19" column="1"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,409 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacescattcoords" kind="namespace" language="Fortran">
+    <compoundname>scattcoords</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="scattcoords_8f90_1a38247b5a42fb4719b1e1b33d34835b85" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer scattcoords::numpts</definition>
+        <argsstring></argsstring>
+        <name>numpts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattcoords.f90" line="35" column="1" bodyfile="src/scattcoords.f90" bodystart="35" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattcoords_8f90_1a625df3b7e3988fe37f5fef9d5224017e" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer scattcoords::numrpts</definition>
+        <argsstring></argsstring>
+        <name>numrpts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattcoords.f90" line="35" column="1" bodyfile="src/scattcoords.f90" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattcoords_8f90_1af69936dba7f6b03bf685c9b6934b7e2c" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer scattcoords::numthetapts</definition>
+        <argsstring></argsstring>
+        <name>numthetapts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattcoords.f90" line="36" column="1" bodyfile="src/scattcoords.f90" bodystart="36" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattcoords_8f90_1a6e88956ccb48224dc3d01525d3b16484" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer scattcoords::numphipts</definition>
+        <argsstring></argsstring>
+        <name>numphipts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattcoords.f90" line="36" column="1" bodyfile="src/scattcoords.f90" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="scattcoords_8f90_1a0b8d71e230b90bf4bd434f07cdacb3df" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattcoords::dscatt_cartesian2spherical2d</definition>
+        <argsstring>(psi_cart, psi_sph, x_ax, y_ax, r_ax, theta_ax, method, psi_sph_dr, psi_sph_dth, rank)</argsstring>
+        <name>dscatt_cartesian2spherical2d</name>
+        <param>
+          <type>psi_cart</type>
+          <defname>psi_cart</defname>
+        </param>
+        <param>
+          <type>psi_sph</type>
+          <defname>psi_sph</defname>
+        </param>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>r_ax</type>
+          <defname>r_ax</defname>
+        </param>
+        <param>
+          <type>theta_ax</type>
+          <defname>theta_ax</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>psi_sph_dr</type>
+          <defname>psi_sph_dr</defname>
+        </param>
+        <param>
+          <type>psi_sph_dth</type>
+          <defname>psi_sph_dth</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattcoords.f90" line="60" column="1" bodyfile="src/scattcoords.f90" bodystart="62" bodyend="206"/>
+      </memberdef>
+      <memberdef kind="function" id="scattcoords_8f90_1acbd261f35014ed929145b84b222268dc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattcoords::zscatt_cartesian2spherical2d</definition>
+        <argsstring>(psi_cart, psi_sph, x_ax, y_ax, r_ax, theta_ax, method, psi_sph_dr, psi_sph_dth, rank)</argsstring>
+        <name>zscatt_cartesian2spherical2d</name>
+        <param>
+          <type>psi_cart</type>
+          <defname>psi_cart</defname>
+        </param>
+        <param>
+          <type>psi_sph</type>
+          <defname>psi_sph</defname>
+        </param>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>r_ax</type>
+          <defname>r_ax</defname>
+        </param>
+        <param>
+          <type>theta_ax</type>
+          <defname>theta_ax</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>psi_sph_dr</type>
+          <defname>psi_sph_dr</defname>
+        </param>
+        <param>
+          <type>psi_sph_dth</type>
+          <defname>psi_sph_dth</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattcoords.f90" line="211" column="1" bodyfile="src/scattcoords.f90" bodystart="213" bodyend="357"/>
+      </memberdef>
+      <memberdef kind="function" id="scattcoords_8f90_1ad71ebbdeccfe5156f540c448cd4150ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattcoords::dscatt_cartesian2spherical3d</definition>
+        <argsstring>(psi_cart, psi_sph, x_ax, y_ax, z_ax, r_ax, theta_ax, phi_ax, method, psi_sph_dr, psi_sph_dth, psi_sph_dphi, rank)</argsstring>
+        <name>dscatt_cartesian2spherical3d</name>
+        <param>
+          <type>psi_cart</type>
+          <defname>psi_cart</defname>
+        </param>
+        <param>
+          <type>psi_sph</type>
+          <defname>psi_sph</defname>
+        </param>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>r_ax</type>
+          <defname>r_ax</defname>
+        </param>
+        <param>
+          <type>theta_ax</type>
+          <defname>theta_ax</defname>
+        </param>
+        <param>
+          <type>phi_ax</type>
+          <defname>phi_ax</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>psi_sph_dr</type>
+          <defname>psi_sph_dr</defname>
+        </param>
+        <param>
+          <type>psi_sph_dth</type>
+          <defname>psi_sph_dth</defname>
+        </param>
+        <param>
+          <type>psi_sph_dphi</type>
+          <defname>psi_sph_dphi</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattcoords.f90" line="371" column="1" bodyfile="src/scattcoords.f90" bodystart="374" bodyend="567"/>
+      </memberdef>
+      <memberdef kind="function" id="scattcoords_8f90_1aab0cb27c9b1334a63dfc1661b98f520a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattcoords::zscatt_cartesian2spherical3d</definition>
+        <argsstring>(psi_cart, psi_sph, x_ax, y_ax, z_ax, r_ax, theta_ax, phi_ax, method, psi_sph_dr, psi_sph_dth, psi_sph_dphi, rank)</argsstring>
+        <name>zscatt_cartesian2spherical3d</name>
+        <param>
+          <type>psi_cart</type>
+          <defname>psi_cart</defname>
+        </param>
+        <param>
+          <type>psi_sph</type>
+          <defname>psi_sph</defname>
+        </param>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>r_ax</type>
+          <defname>r_ax</defname>
+        </param>
+        <param>
+          <type>theta_ax</type>
+          <defname>theta_ax</defname>
+        </param>
+        <param>
+          <type>phi_ax</type>
+          <defname>phi_ax</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>psi_sph_dr</type>
+          <defname>psi_sph_dr</defname>
+        </param>
+        <param>
+          <type>psi_sph_dth</type>
+          <defname>psi_sph_dth</defname>
+        </param>
+        <param>
+          <type>psi_sph_dphi</type>
+          <defname>psi_sph_dphi</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattcoords.f90" line="573" column="1" bodyfile="src/scattcoords.f90" bodystart="576" bodyend="767"/>
+      </memberdef>
+      <memberdef kind="function" id="scattcoords_8f90_1ad01cea9ec396222c201edc7f3ea9f158" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattcoords::dscatt_cylindrical2spherical2d</definition>
+        <argsstring>(psi_cyl, psi_sph, rho_ax, z_ax, r_ax, theta_ax, method, psi_sph_dx, psi_sph_dy, rank)</argsstring>
+        <name>dscatt_cylindrical2spherical2d</name>
+        <param>
+          <type>psi_cyl</type>
+          <defname>psi_cyl</defname>
+        </param>
+        <param>
+          <type>psi_sph</type>
+          <defname>psi_sph</defname>
+        </param>
+        <param>
+          <type>rho_ax</type>
+          <defname>rho_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>r_ax</type>
+          <defname>r_ax</defname>
+        </param>
+        <param>
+          <type>theta_ax</type>
+          <defname>theta_ax</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>psi_sph_dx</type>
+          <defname>psi_sph_dx</defname>
+        </param>
+        <param>
+          <type>psi_sph_dy</type>
+          <defname>psi_sph_dy</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattcoords.f90" line="786" column="1" bodyfile="src/scattcoords.f90" bodystart="788" bodyend="934"/>
+      </memberdef>
+      <memberdef kind="function" id="scattcoords_8f90_1a0b1ad7d12b8df0347efd5b0a092519a7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattcoords::zscatt_cylindrical2spherical2d</definition>
+        <argsstring>(psi_cyl, psi_sph, rho_ax, z_ax, r_ax, theta_ax, method, psi_sph_dx, psi_sph_dy, rank)</argsstring>
+        <name>zscatt_cylindrical2spherical2d</name>
+        <param>
+          <type>psi_cyl</type>
+          <defname>psi_cyl</defname>
+        </param>
+        <param>
+          <type>psi_sph</type>
+          <defname>psi_sph</defname>
+        </param>
+        <param>
+          <type>rho_ax</type>
+          <defname>rho_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>r_ax</type>
+          <defname>r_ax</defname>
+        </param>
+        <param>
+          <type>theta_ax</type>
+          <defname>theta_ax</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>psi_sph_dx</type>
+          <defname>psi_sph_dx</defname>
+        </param>
+        <param>
+          <type>psi_sph_dy</type>
+          <defname>psi_sph_dy</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattcoords.f90" line="939" column="1" bodyfile="src/scattcoords.f90" bodystart="941" bodyend="1088"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/scattcoords.f90" line="19" column="1"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,239 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="structcomm__surff_1_1rgrid" kind="type" language="Fortran" prot="public">
+    <compoundname>comm_surff::rgrid</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structcomm__surff_1_1rgrid_1a8bfa62e6bdcc1c4d94263a0e5b68faf7" prot="public" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer comm_surff::rgrid::numthetapts</definition>
+        <argsstring></argsstring>
+        <name>numthetapts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="64" column="1" bodyfile="src/comm_surff.F90" bodystart="64" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1rgrid_1a914a7bfbb2847409121942c65baf91e4" prot="public" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer comm_surff::rgrid::numphipts</definition>
+        <argsstring></argsstring>
+        <name>numphipts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="64" column="1" bodyfile="src/comm_surff.F90" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1rgrid_1a2ce0f8806d0fa0efa542a9dcad01115a" prot="public" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer comm_surff::rgrid::lmax</definition>
+        <argsstring></argsstring>
+        <name>lmax</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="65" column="1" bodyfile="src/comm_surff.F90" bodystart="65" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1rgrid_1a4dabe33f3f198f7426b50e1c7d4ce432" prot="public" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer comm_surff::rgrid::numlm</definition>
+        <argsstring></argsstring>
+        <name>numlm</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="66" column="1" bodyfile="src/comm_surff.F90" bodystart="66" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1rgrid_1a85dfe8ae0ff362b3cbce318c5b0f0dcf" prot="public" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer comm_surff::rgrid::numlmplus</definition>
+        <argsstring></argsstring>
+        <name>numlmplus</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="67" column="1" bodyfile="src/comm_surff.F90" bodystart="67" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1rgrid_1a9f5037b3a2e557385678384677ae1b2b" prot="public" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) comm_surff::rgrid::rsurface</definition>
+        <argsstring></argsstring>
+        <name>rsurface</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="68" column="1" bodyfile="src/comm_surff.F90" bodystart="68" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1rgrid_1af563dcb9e2e4e68622a04cdf034328d4" prot="public" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) comm_surff::rgrid::deltaphi</definition>
+        <argsstring></argsstring>
+        <name>deltaphi</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="69" column="1" bodyfile="src/comm_surff.F90" bodystart="69" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1rgrid_1ab61dcbc831cd8d8b4a726eafdeb4d629" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable comm_surff::rgrid::thetapts</definition>
+        <argsstring></argsstring>
+        <name>thetapts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="70" column="1" bodyfile="src/comm_surff.F90" bodystart="70" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1rgrid_1a88f08563d2373265a46e2b8e98f47743" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable comm_surff::rgrid::sinthetapts</definition>
+        <argsstring></argsstring>
+        <name>sinthetapts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="71" column="1" bodyfile="src/comm_surff.F90" bodystart="71" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1rgrid_1af284db90b14634b4d39be0d17e5d33f5" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable comm_surff::rgrid::costhetapts</definition>
+        <argsstring></argsstring>
+        <name>costhetapts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="72" column="1" bodyfile="src/comm_surff.F90" bodystart="72" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1rgrid_1a80c8b8be43596599b5e47fa22f0f3aea" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable comm_surff::rgrid::wtheta</definition>
+        <argsstring></argsstring>
+        <name>wtheta</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="73" column="1" bodyfile="src/comm_surff.F90" bodystart="73" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1rgrid_1adc89bec229b20816366a01c8b80b15b5" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable comm_surff::rgrid::phipts</definition>
+        <argsstring></argsstring>
+        <name>phipts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="74" column="1" bodyfile="src/comm_surff.F90" bodystart="74" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1rgrid_1a1c81288b089ca34c6c1c9bd52dd2efdc" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable comm_surff::rgrid::sinphipts</definition>
+        <argsstring></argsstring>
+        <name>sinphipts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="75" column="1" bodyfile="src/comm_surff.F90" bodystart="75" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1rgrid_1a9a9c08e70fb13b5f61993c941ea21942" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable comm_surff::rgrid::cosphipts</definition>
+        <argsstring></argsstring>
+        <name>cosphipts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="76" column="1" bodyfile="src/comm_surff.F90" bodystart="76" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1rgrid_1ace59fcc6d7cabfc555a7835670eff2fb" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable comm_surff::rgrid::wphi</definition>
+        <argsstring></argsstring>
+        <name>wphi</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="77" column="1" bodyfile="src/comm_surff.F90" bodystart="77" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1rgrid_1a77df560b2853c3a533878e831a04ca11" prot="public" static="no" mutable="no">
+        <type>logical</type>
+        <definition>logical comm_surff::rgrid::gauge_transform</definition>
+        <argsstring></argsstring>
+        <name>gauge_transform</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="78" column="1" bodyfile="src/comm_surff.F90" bodystart="78" bodyend="78"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/comm_surff.F90" line="62" column="1" bodyfile="src/comm_surff.F90" bodystart="62" bodyend="80"/>
+    <listofallmembers>
+      <member refid="structcomm__surff_1_1rgrid_1a9a9c08e70fb13b5f61993c941ea21942" prot="public" virt="non-virtual"><scope>comm_surff::rgrid</scope><name>cosphipts</name></member>
+      <member refid="structcomm__surff_1_1rgrid_1af284db90b14634b4d39be0d17e5d33f5" prot="public" virt="non-virtual"><scope>comm_surff::rgrid</scope><name>costhetapts</name></member>
+      <member refid="structcomm__surff_1_1rgrid_1af563dcb9e2e4e68622a04cdf034328d4" prot="public" virt="non-virtual"><scope>comm_surff::rgrid</scope><name>deltaphi</name></member>
+      <member refid="structcomm__surff_1_1rgrid_1a77df560b2853c3a533878e831a04ca11" prot="public" virt="non-virtual"><scope>comm_surff::rgrid</scope><name>gauge_transform</name></member>
+      <member refid="structcomm__surff_1_1rgrid_1a2ce0f8806d0fa0efa542a9dcad01115a" prot="public" virt="non-virtual"><scope>comm_surff::rgrid</scope><name>lmax</name></member>
+      <member refid="structcomm__surff_1_1rgrid_1a4dabe33f3f198f7426b50e1c7d4ce432" prot="public" virt="non-virtual"><scope>comm_surff::rgrid</scope><name>numlm</name></member>
+      <member refid="structcomm__surff_1_1rgrid_1a85dfe8ae0ff362b3cbce318c5b0f0dcf" prot="public" virt="non-virtual"><scope>comm_surff::rgrid</scope><name>numlmplus</name></member>
+      <member refid="structcomm__surff_1_1rgrid_1a914a7bfbb2847409121942c65baf91e4" prot="public" virt="non-virtual"><scope>comm_surff::rgrid</scope><name>numphipts</name></member>
+      <member refid="structcomm__surff_1_1rgrid_1a8bfa62e6bdcc1c4d94263a0e5b68faf7" prot="public" virt="non-virtual"><scope>comm_surff::rgrid</scope><name>numthetapts</name></member>
+      <member refid="structcomm__surff_1_1rgrid_1adc89bec229b20816366a01c8b80b15b5" prot="public" virt="non-virtual"><scope>comm_surff::rgrid</scope><name>phipts</name></member>
+      <member refid="structcomm__surff_1_1rgrid_1a9f5037b3a2e557385678384677ae1b2b" prot="public" virt="non-virtual"><scope>comm_surff::rgrid</scope><name>rsurface</name></member>
+      <member refid="structcomm__surff_1_1rgrid_1a1c81288b089ca34c6c1c9bd52dd2efdc" prot="public" virt="non-virtual"><scope>comm_surff::rgrid</scope><name>sinphipts</name></member>
+      <member refid="structcomm__surff_1_1rgrid_1a88f08563d2373265a46e2b8e98f47743" prot="public" virt="non-virtual"><scope>comm_surff::rgrid</scope><name>sinthetapts</name></member>
+      <member refid="structcomm__surff_1_1rgrid_1ab61dcbc831cd8d8b4a726eafdeb4d629" prot="public" virt="non-virtual"><scope>comm_surff::rgrid</scope><name>thetapts</name></member>
+      <member refid="structcomm__surff_1_1rgrid_1ace59fcc6d7cabfc555a7835670eff2fb" prot="public" virt="non-virtual"><scope>comm_surff::rgrid</scope><name>wphi</name></member>
+      <member refid="structcomm__surff_1_1rgrid_1a80c8b8be43596599b5e47fa22f0f3aea" prot="public" virt="non-virtual"><scope>comm_surff::rgrid</scope><name>wtheta</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

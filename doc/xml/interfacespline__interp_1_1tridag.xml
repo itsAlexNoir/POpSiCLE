@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfacespline__interp_1_1tridag" kind="interface" language="Fortran" prot="private">
+    <compoundname>spline_interp::tridag</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfacespline__interp_1_1tridag_1a35476ebe321db24c6a8d7088e04115f4" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>recursive subroutine</type>
+        <definition>recursive subroutine spline_interp::tridag::tridag_par</definition>
+        <argsstring>(a, b, c, r, u)</argsstring>
+        <name>tridag_par</name>
+        <param>
+          <type>a</type>
+          <defname>a</defname>
+        </param>
+        <param>
+          <type>b</type>
+          <defname>b</defname>
+        </param>
+        <param>
+          <type>c</type>
+          <defname>c</defname>
+        </param>
+        <param>
+          <type>r</type>
+          <defname>r</defname>
+        </param>
+        <param>
+          <type>u</type>
+          <defname>u</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/spline_interp.f90" line="172" column="1" bodyfile="src/spline_interp.f90" bodystart="173" bodyend="226"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/spline_interp.f90" line="30" column="1" bodyfile="src/spline_interp.f90" bodystart="30" bodyend="31"/>
+    <listofallmembers>
+      <member refid="interfacespline__interp_1_1tridag_1a35476ebe321db24c6a8d7088e04115f4" prot="private" virt="non-virtual"><scope>spline_interp::tridag</scope><name>tridag_par</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfacetools_1_1make__wave__boundary__derivative" kind="interface" language="Fortran" prot="private">
+    <compoundname>tools::make_wave_boundary_derivative</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfacetools_1_1make__wave__boundary__derivative_1a80edd19aa57c57dd72c6567bd3a34762" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine tools::make_wave_boundary_derivative::make_wave_boundary_derivative2d</definition>
+        <argsstring>(wave, wave_deriv, fd_rule, deltar, numrpts, numthetapts)</argsstring>
+        <name>make_wave_boundary_derivative2d</name>
+        <param>
+          <type>wave</type>
+          <defname>wave</defname>
+        </param>
+        <param>
+          <type>wave_deriv</type>
+          <defname>wave_deriv</defname>
+        </param>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <param>
+          <type>deltar</type>
+          <defname>deltar</defname>
+        </param>
+        <param>
+          <type>numrpts</type>
+          <defname>numrpts</defname>
+        </param>
+        <param>
+          <type>numthetapts</type>
+          <defname>numthetapts</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="309" column="1" bodyfile="src/tools.f90" bodystart="311" bodyend="341"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacetools_1_1make__wave__boundary__derivative_1a4f1a408c426cee8a81339d30f4ffa059" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine tools::make_wave_boundary_derivative::make_wave_boundary_derivative3d</definition>
+        <argsstring>(wave, wave_deriv, fd_rule, deltar, numrpts, numthetapts, numphipts)</argsstring>
+        <name>make_wave_boundary_derivative3d</name>
+        <param>
+          <type>wave</type>
+          <defname>wave</defname>
+        </param>
+        <param>
+          <type>wave_deriv</type>
+          <defname>wave_deriv</defname>
+        </param>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <param>
+          <type>deltar</type>
+          <defname>deltar</defname>
+        </param>
+        <param>
+          <type>numrpts</type>
+          <defname>numrpts</defname>
+        </param>
+        <param>
+          <type>numthetapts</type>
+          <defname>numthetapts</defname>
+        </param>
+        <param>
+          <type>numphipts</type>
+          <defname>numphipts</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/tools.f90" line="346" column="1" bodyfile="src/tools.f90" bodystart="348" bodyend="380"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/tools.f90" line="24" column="1" bodyfile="src/tools.f90" bodystart="24" bodyend="26"/>
+    <listofallmembers>
+      <member refid="interfacetools_1_1make__wave__boundary__derivative_1a80edd19aa57c57dd72c6567bd3a34762" prot="private" virt="non-virtual"><scope>tools::make_wave_boundary_derivative</scope><name>make_wave_boundary_derivative2d</name></member>
+      <member refid="interfacetools_1_1make__wave__boundary__derivative_1a4f1a408c426cee8a81339d30f4ffa059" prot="private" virt="non-virtual"><scope>tools::make_wave_boundary_derivative</scope><name>make_wave_boundary_derivative3d</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

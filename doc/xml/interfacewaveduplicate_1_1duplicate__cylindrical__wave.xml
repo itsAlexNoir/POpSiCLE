@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfacewaveduplicate_1_1duplicate__cylindrical__wave" kind="interface" language="Fortran" prot="private">
+    <compoundname>waveduplicate::duplicate_cylindrical_wave</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfacewaveduplicate_1_1duplicate__cylindrical__wave_1a9da22a98c395dec15289e2861809d3b7" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine waveduplicate::duplicate_cylindrical_wave::dduplicate_cylindrical_wave2d</definition>
+        <argsstring>(psi_original, psi_duplicated, rho1_ax, z1_ax, rho2_ax, z2_ax, fdrule, psi_dup_drho, psi_dup_dz, rank)</argsstring>
+        <name>dduplicate_cylindrical_wave2d</name>
+        <param>
+          <type>psi_original</type>
+          <defname>psi_original</defname>
+        </param>
+        <param>
+          <type>psi_duplicated</type>
+          <defname>psi_duplicated</defname>
+        </param>
+        <param>
+          <type>rho1_ax</type>
+          <defname>rho1_ax</defname>
+        </param>
+        <param>
+          <type>z1_ax</type>
+          <defname>z1_ax</defname>
+        </param>
+        <param>
+          <type>rho2_ax</type>
+          <defname>rho2_ax</defname>
+        </param>
+        <param>
+          <type>z2_ax</type>
+          <defname>z2_ax</defname>
+        </param>
+        <param>
+          <type>fdrule</type>
+          <defname>fdrule</defname>
+        </param>
+        <param>
+          <type>psi_dup_drho</type>
+          <defname>psi_dup_drho</defname>
+        </param>
+        <param>
+          <type>psi_dup_dz</type>
+          <defname>psi_dup_dz</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/waveduplicate.f90" line="760" column="1" bodyfile="src/waveduplicate.f90" bodystart="762" bodyend="956"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacewaveduplicate_1_1duplicate__cylindrical__wave_1aa16e8a0d8a87ca8260b4786aca97972b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine waveduplicate::duplicate_cylindrical_wave::zduplicate_cylindrical_wave2d</definition>
+        <argsstring>(psi_original, psi_duplicated, rho1_ax, z1_ax, rho2_ax, z2_ax, fdrule, psi_dup_drho, psi_dup_dz, rank)</argsstring>
+        <name>zduplicate_cylindrical_wave2d</name>
+        <param>
+          <type>psi_original</type>
+          <defname>psi_original</defname>
+        </param>
+        <param>
+          <type>psi_duplicated</type>
+          <defname>psi_duplicated</defname>
+        </param>
+        <param>
+          <type>rho1_ax</type>
+          <defname>rho1_ax</defname>
+        </param>
+        <param>
+          <type>z1_ax</type>
+          <defname>z1_ax</defname>
+        </param>
+        <param>
+          <type>rho2_ax</type>
+          <defname>rho2_ax</defname>
+        </param>
+        <param>
+          <type>z2_ax</type>
+          <defname>z2_ax</defname>
+        </param>
+        <param>
+          <type>fdrule</type>
+          <defname>fdrule</defname>
+        </param>
+        <param>
+          <type>psi_dup_drho</type>
+          <defname>psi_dup_drho</defname>
+        </param>
+        <param>
+          <type>psi_dup_dz</type>
+          <defname>psi_dup_dz</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/waveduplicate.f90" line="961" column="1" bodyfile="src/waveduplicate.f90" bodystart="963" bodyend="1183"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/waveduplicate.f90" line="19" column="1" bodyfile="src/waveduplicate.f90" bodystart="19" bodyend="21"/>
+    <listofallmembers>
+      <member refid="interfacewaveduplicate_1_1duplicate__cylindrical__wave_1a9da22a98c395dec15289e2861809d3b7" prot="private" virt="non-virtual"><scope>waveduplicate::duplicate_cylindrical_wave</scope><name>dduplicate_cylindrical_wave2d</name></member>
+      <member refid="interfacewaveduplicate_1_1duplicate__cylindrical__wave_1aa16e8a0d8a87ca8260b4786aca97972b" prot="private" virt="non-virtual"><scope>waveduplicate::duplicate_cylindrical_wave</scope><name>zduplicate_cylindrical_wave2d</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

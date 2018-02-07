@@ -1,0 +1,467 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacescattboundcart" kind="namespace" language="Fortran">
+    <compoundname>scattboundcart</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="scattboundcart_8_f90_1a92e61dc7fb986535c4091ca908d4aa59" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable, public</type>
+        <definition>real(dp), dimension(:), allocatable, public scattboundcart::phi_boundary</definition>
+        <argsstring></argsstring>
+        <name>phi_boundary</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="28" column="1" bodyfile="src/scattboundcart.F90" bodystart="28" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcart_8_f90_1a76715b7ec583186bea3af5704c31339f" prot="public" static="no" mutable="no">
+        <type>integer, dimension(:, :, :), allocatable, public</type>
+        <definition>integer, dimension(:, :, :), allocatable, public scattboundcart::i_am_in_local3d</definition>
+        <argsstring></argsstring>
+        <name>i_am_in_local3d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="30" column="1" bodyfile="src/scattboundcart.F90" bodystart="30" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcart_8_f90_1a4d6ec6a041968c47d167c1d013750410" prot="public" static="no" mutable="no">
+        <type>integer, dimension(:, :, :), allocatable, public</type>
+        <definition>integer, dimension(:, :, :), allocatable, public scattboundcart::i_am_in_global3d</definition>
+        <argsstring></argsstring>
+        <name>i_am_in_global3d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="31" column="1" bodyfile="src/scattboundcart.F90" bodystart="31" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcart_8_f90_1a401e1bf06c3f6bde0f4334eda54bde21" prot="public" static="no" mutable="no">
+        <type>integer, public</type>
+        <definition>integer, public scattboundcart::numphipts</definition>
+        <argsstring></argsstring>
+        <name>numphipts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="32" column="1" bodyfile="src/scattboundcart.F90" bodystart="32" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcart_8_f90_1adfe78a4dccc46299d3c3f677ca208269" prot="public" static="no" mutable="no">
+        <type>integer, public</type>
+        <definition>integer, public scattboundcart::numphiptsperproc</definition>
+        <argsstring></argsstring>
+        <name>numphiptsperproc</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="33" column="1" bodyfile="src/scattboundcart.F90" bodystart="33" bodyend="33"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcart_8_f90_1a097a4dcb88281d614323ee2e574b6211" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer scattboundcart::numpts</definition>
+        <argsstring></argsstring>
+        <name>numpts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="35" column="1" bodyfile="src/scattboundcart.F90" bodystart="35" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcart_8_f90_1adf375ebb7444c6fd754ec34645ef4cec" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable scattboundcart::xpts_scatt</definition>
+        <argsstring></argsstring>
+        <name>xpts_scatt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="36" column="1" bodyfile="src/scattboundcart.F90" bodystart="36" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcart_8_f90_1a34ea9829603d44af302f1aa1bdb6ee69" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable scattboundcart::ypts_scatt</definition>
+        <argsstring></argsstring>
+        <name>ypts_scatt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="37" column="1" bodyfile="src/scattboundcart.F90" bodystart="37" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcart_8_f90_1a838d650c99d2f051112b5980b0db0ea0" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable scattboundcart::zpts_scatt</definition>
+        <argsstring></argsstring>
+        <name>zpts_scatt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="38" column="1" bodyfile="src/scattboundcart.F90" bodystart="38" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcart_8_f90_1ad110b2447a7da5b6614724be38af2b2a" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:), allocatable</type>
+        <definition>complex(dp), dimension(:), allocatable scattboundcart::psi_scatt</definition>
+        <argsstring></argsstring>
+        <name>psi_scatt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="39" column="1" bodyfile="src/scattboundcart.F90" bodystart="39" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcart_8_f90_1a7b75defd43f621aa7397c60085089196" prot="private" static="no" mutable="no">
+        <type>integer, dimension(:), allocatable</type>
+        <definition>integer, dimension(:), allocatable scattboundcart::index_x1</definition>
+        <argsstring></argsstring>
+        <name>index_x1</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="40" column="1" bodyfile="src/scattboundcart.F90" bodystart="40" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcart_8_f90_1a0e9067b389aa7056f786b9c1f73db305" prot="private" static="no" mutable="no">
+        <type>integer, dimension(:), allocatable</type>
+        <definition>integer, dimension(:), allocatable scattboundcart::index_x2</definition>
+        <argsstring></argsstring>
+        <name>index_x2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="41" column="1" bodyfile="src/scattboundcart.F90" bodystart="41" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcart_8_f90_1aa8e7e6842c4e0a9150695d838ba402e0" prot="private" static="no" mutable="no">
+        <type>integer, dimension(:), allocatable</type>
+        <definition>integer, dimension(:), allocatable scattboundcart::index_x3</definition>
+        <argsstring></argsstring>
+        <name>index_x3</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="42" column="1" bodyfile="src/scattboundcart.F90" bodystart="42" bodyend="42"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="scattboundcart_8_f90_1a4d09f827c01188f65bb1e14cad39d610" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattboundcart::initialize_scatt_cartesian_boundary2d</definition>
+        <argsstring>(x_ax, y_ax, dims, Rs, radtol, fdpts, deltar, lmax, maxpts)</argsstring>
+        <name>initialize_scatt_cartesian_boundary2d</name>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>Rs</type>
+          <defname>Rs</defname>
+        </param>
+        <param>
+          <type>radtol</type>
+          <defname>radtol</defname>
+        </param>
+        <param>
+          <type>fdpts</type>
+          <defname>fdpts</defname>
+        </param>
+        <param>
+          <type>deltar</type>
+          <defname>deltar</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>maxpts</type>
+          <defname>maxpts</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="50" column="1" bodyfile="src/scattboundcart.F90" bodystart="53" bodyend="240"/>
+      </memberdef>
+      <memberdef kind="function" id="scattboundcart_8_f90_1a8adf34c082a45e404d23b7fa7221ea41" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattboundcart::initialize_scatt_cartesian_boundary3d</definition>
+        <argsstring>(x_ax, y_ax, z_ax, dims, Rs, radtol, fdpts, deltar, lmax, mpi_rank, mpi_size, comm)</argsstring>
+        <name>initialize_scatt_cartesian_boundary3d</name>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>Rs</type>
+          <defname>Rs</defname>
+        </param>
+        <param>
+          <type>radtol</type>
+          <defname>radtol</defname>
+        </param>
+        <param>
+          <type>fdpts</type>
+          <defname>fdpts</defname>
+        </param>
+        <param>
+          <type>deltar</type>
+          <defname>deltar</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>mpi_rank</type>
+          <defname>mpi_rank</defname>
+        </param>
+        <param>
+          <type>mpi_size</type>
+          <defname>mpi_size</defname>
+        </param>
+        <param>
+          <type>comm</type>
+          <defname>comm</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="251" column="1" bodyfile="src/scattboundcart.F90" bodystart="253" bodyend="620"/>
+      </memberdef>
+      <memberdef kind="function" id="scattboundcart_8_f90_1ad6cccbdb0148bc2d1f5caa71b23a0ea9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattboundcart::get_scatt_cartesian_boundary2d</definition>
+        <argsstring>(psi_cart, psi2D_sph, psi2D_sph_dx, psi2D_sph_dy, method, rank)</argsstring>
+        <name>get_scatt_cartesian_boundary2d</name>
+        <param>
+          <type>psi_cart</type>
+          <defname>psi_cart</defname>
+        </param>
+        <param>
+          <type>psi2D_sph</type>
+          <defname>psi2D_sph</defname>
+        </param>
+        <param>
+          <type>psi2D_sph_dx</type>
+          <defname>psi2D_sph_dx</defname>
+        </param>
+        <param>
+          <type>psi2D_sph_dy</type>
+          <defname>psi2D_sph_dy</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="630" column="1" bodyfile="src/scattboundcart.F90" bodystart="632" bodyend="691"/>
+      </memberdef>
+      <memberdef kind="function" id="scattboundcart_8_f90_1afc9ad3da41ade7e9cb2dcded7ee6bc23" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattboundcart::dget_scatt_cartesian_boundary3d</definition>
+        <argsstring>(psi_cart, psi3D_sph, psi3D_sph_dx, psi3D_sph_dy, psi3D_sph_dz, method, rank)</argsstring>
+        <name>dget_scatt_cartesian_boundary3d</name>
+        <param>
+          <type>psi_cart</type>
+          <defname>psi_cart</defname>
+        </param>
+        <param>
+          <type>psi3D_sph</type>
+          <defname>psi3D_sph</defname>
+        </param>
+        <param>
+          <type>psi3D_sph_dx</type>
+          <defname>psi3D_sph_dx</defname>
+        </param>
+        <param>
+          <type>psi3D_sph_dy</type>
+          <defname>psi3D_sph_dy</defname>
+        </param>
+        <param>
+          <type>psi3D_sph_dz</type>
+          <defname>psi3D_sph_dz</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="700" column="1" bodyfile="src/scattboundcart.F90" bodystart="702" bodyend="777"/>
+      </memberdef>
+      <memberdef kind="function" id="scattboundcart_8_f90_1a538bfb4607d746217aad137960bb8f0c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattboundcart::zget_scatt_cartesian_boundary3d</definition>
+        <argsstring>(psi_cart, psi3D_sph, psi3D_sph_dx, psi3D_sph_dy, psi3D_sph_dz, method, rank)</argsstring>
+        <name>zget_scatt_cartesian_boundary3d</name>
+        <param>
+          <type>psi_cart</type>
+          <defname>psi_cart</defname>
+        </param>
+        <param>
+          <type>psi3D_sph</type>
+          <defname>psi3D_sph</defname>
+        </param>
+        <param>
+          <type>psi3D_sph_dx</type>
+          <defname>psi3D_sph_dx</defname>
+        </param>
+        <param>
+          <type>psi3D_sph_dy</type>
+          <defname>psi3D_sph_dy</defname>
+        </param>
+        <param>
+          <type>psi3D_sph_dz</type>
+          <defname>psi3D_sph_dz</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="782" column="1" bodyfile="src/scattboundcart.F90" bodystart="784" bodyend="859"/>
+      </memberdef>
+      <memberdef kind="function" id="scattboundcart_8_f90_1a26134e7e7555ca6e36f0deabd28af766" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattboundcart::delete_scatt_cartesian_boundary2d</definition>
+        <argsstring>(rpts, theta, rank)</argsstring>
+        <name>delete_scatt_cartesian_boundary2d</name>
+        <param>
+          <type>rpts</type>
+          <defname>rpts</defname>
+        </param>
+        <param>
+          <type>theta</type>
+          <defname>theta</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="865" column="1" bodyfile="src/scattboundcart.F90" bodystart="866" bodyend="884"/>
+      </memberdef>
+      <memberdef kind="function" id="scattboundcart_8_f90_1a1e9ad7a8a631eb09d8195efac9c6ab2a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattboundcart::delete_scatt_cartesian_boundary3d</definition>
+        <argsstring>(rpts, theta, phi, rank)</argsstring>
+        <name>delete_scatt_cartesian_boundary3d</name>
+        <param>
+          <type>rpts</type>
+          <defname>rpts</defname>
+        </param>
+        <param>
+          <type>theta</type>
+          <defname>theta</defname>
+        </param>
+        <param>
+          <type>phi</type>
+          <defname>phi</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcart.F90" line="889" column="1" bodyfile="src/scattboundcart.F90" bodystart="890" bodyend="910"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/scattboundcart.F90" line="1" column="1"/>
+  </compounddef>
+</doxygen>

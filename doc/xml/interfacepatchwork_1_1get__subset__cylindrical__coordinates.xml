@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfacepatchwork_1_1get__subset__cylindrical__coordinates" kind="interface" language="Fortran" prot="private">
+    <compoundname>patchwork::get_subset_cylindrical_coordinates</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfacepatchwork_1_1get__subset__cylindrical__coordinates_1ac75529622a5ee1057856e1ea0b9589ab" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine patchwork::get_subset_cylindrical_coordinates::get_subset_cylindrical_coordinates_serial</definition>
+        <argsstring>(domain, offset, dims, rhopts, zpts, rpts)</argsstring>
+        <name>get_subset_cylindrical_coordinates_serial</name>
+        <param>
+          <type>domain</type>
+          <defname>domain</defname>
+        </param>
+        <param>
+          <type>offset</type>
+          <defname>offset</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>rhopts</type>
+          <defname>rhopts</defname>
+        </param>
+        <param>
+          <type>zpts</type>
+          <defname>zpts</defname>
+        </param>
+        <param>
+          <type>rpts</type>
+          <defname>rpts</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/patchwork.F90" line="111" column="1" bodyfile="src/patchwork.F90" bodystart="113" bodyend="166"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/patchwork.F90" line="28" column="1" bodyfile="src/patchwork.F90" bodystart="28" bodyend="29"/>
+    <listofallmembers>
+      <member refid="interfacepatchwork_1_1get__subset__cylindrical__coordinates_1ac75529622a5ee1057856e1ea0b9589ab" prot="private" virt="non-virtual"><scope>patchwork::get_subset_cylindrical_coordinates</scope><name>get_subset_cylindrical_coordinates_serial</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

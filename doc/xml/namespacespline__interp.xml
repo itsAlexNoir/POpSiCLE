@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacespline__interp" kind="namespace" language="Fortran">
+    <compoundname>spline_interp</compoundname>
+    <innerclass refid="interfacespline__interp_1_1tridag" prot="private">spline_interp::tridag</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="namespacespline__interp_1a2019ce6ce4f8a7d8bf49e1606a7b5ec2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public spline_interp::get_scnd_derivatives_spline</definition>
+        <argsstring>(x, y, yp1, ypn, y2)</argsstring>
+        <name>get_scnd_derivatives_spline</name>
+        <param>
+          <type>x</type>
+          <defname>x</defname>
+        </param>
+        <param>
+          <type>y</type>
+          <defname>y</defname>
+        </param>
+        <param>
+          <type>yp1</type>
+          <defname>yp1</defname>
+        </param>
+        <param>
+          <type>ypn</type>
+          <defname>ypn</defname>
+        </param>
+        <param>
+          <type>y2</type>
+          <defname>y2</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/spline_interp.f90" line="38" column="1" bodyfile="src/spline_interp.f90" bodystart="39" bodyend="83"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacespline__interp_1a2dd4ae64baa2f9b89f7a9f44e16eecc2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public spline_interp::spline_interpolation</definition>
+        <argsstring>(xa, ya, y2a, x, y)</argsstring>
+        <name>spline_interpolation</name>
+        <param>
+          <type>xa</type>
+          <defname>xa</defname>
+        </param>
+        <param>
+          <type>ya</type>
+          <defname>ya</defname>
+        </param>
+        <param>
+          <type>y2a</type>
+          <defname>y2a</defname>
+        </param>
+        <param>
+          <type>x</type>
+          <defname>x</defname>
+        </param>
+        <param>
+          <type>y</type>
+          <defname>y</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/spline_interp.f90" line="88" column="1" bodyfile="src/spline_interp.f90" bodystart="89" bodyend="124"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacespline__interp_1ae93c890920efc279ba50ce38c2ea5053" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine spline_interp::tridag_ser</definition>
+        <argsstring>(a, b, c, r, u)</argsstring>
+        <name>tridag_ser</name>
+        <param>
+          <type>a</type>
+          <defname>a</defname>
+        </param>
+        <param>
+          <type>b</type>
+          <defname>b</defname>
+        </param>
+        <param>
+          <type>c</type>
+          <defname>c</defname>
+        </param>
+        <param>
+          <type>r</type>
+          <defname>r</defname>
+        </param>
+        <param>
+          <type>u</type>
+          <defname>u</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/spline_interp.f90" line="129" column="1" bodyfile="src/spline_interp.f90" bodystart="130" bodyend="167"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacespline__interp_1ac7b3309962c1784ea7dad32ad884e557" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>recursive subroutine</type>
+        <definition>recursive subroutine spline_interp::tridag_par</definition>
+        <argsstring>(a, b, c, r, u)</argsstring>
+        <name>tridag_par</name>
+        <param>
+          <type>a</type>
+          <defname>a</defname>
+        </param>
+        <param>
+          <type>b</type>
+          <defname>b</defname>
+        </param>
+        <param>
+          <type>c</type>
+          <defname>c</defname>
+        </param>
+        <param>
+          <type>r</type>
+          <defname>r</defname>
+        </param>
+        <param>
+          <type>u</type>
+          <defname>u</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/spline_interp.f90" line="172" column="1" bodyfile="src/spline_interp.f90" bodystart="173" bodyend="226"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Interpolating routines,. </para>    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para>Alejandro de la Calle, Queen&apos;s University Belfast, </para></simplesect>
+<simplesect kind="author"><para>Daniel Dundas, Queen&apos;s University Belfast, </para></simplesect>
+<simplesect kind="date"><para>15/04/2015</para></simplesect>
+This module contains routines for a unidimensional spline interpolation. </para>    </detaileddescription>
+    <location file="src/spline_interp.f90" line="16" column="1"/>
+  </compounddef>
+</doxygen>

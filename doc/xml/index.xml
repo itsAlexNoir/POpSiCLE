@@ -1,0 +1,719 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.8.14">
+  <compound refid="interfacecoords_1_1cartesian2spherical" kind="interface"><name>coords::cartesian2spherical</name>
+    <member refid="interfacecoords_1_1cartesian2spherical_1a4ed11efef005233cc5c047b84cdf0c82" kind="function"><name>dscatt_cartesian2spherical2d</name></member>
+    <member refid="interfacecoords_1_1cartesian2spherical_1a78a98d16e4adbf995a537b38e579ea1b" kind="function"><name>zscatt_cartesian2spherical2d</name></member>
+    <member refid="interfacecoords_1_1cartesian2spherical_1a1c4ffadb9757dfb6aa43021bb146a08c" kind="function"><name>dscatt_cartesian2spherical3d</name></member>
+    <member refid="interfacecoords_1_1cartesian2spherical_1af7bb7e6c9cdd5edd3ea1d8ea9ade18d3" kind="function"><name>zscatt_cartesian2spherical3d</name></member>
+    <member refid="interfacecoords_1_1cartesian2spherical_1a81fca726f4f613cd788598cc64c745ab" kind="function"><name>dcubic_cartesian2spherical3d</name></member>
+    <member refid="interfacecoords_1_1cartesian2spherical_1a5868e63f8aadfd6623340d14ac43447a" kind="function"><name>zcubic_cartesian2spherical3d</name></member>
+  </compound>
+  <compound refid="structcomm__surff_1_1commtype" kind="type"><name>comm_surff::commtype</name>
+    <member refid="structcomm__surff_1_1commtype_1acb1665c6ecdd1514489c9392097b7c05" kind="variable"><name>iprocessor</name></member>
+    <member refid="structcomm__surff_1_1commtype_1ad7edf67b93dcb268b1328e1e7fcb0417" kind="variable"><name>ipk</name></member>
+    <member refid="structcomm__surff_1_1commtype_1a833cdda0f563e08ac971be0e62ac5601" kind="variable"><name>ipt</name></member>
+    <member refid="structcomm__surff_1_1commtype_1a28d08e96147fe880383339f18d6b518a" kind="variable"><name>ipp</name></member>
+    <member refid="structcomm__surff_1_1commtype_1a17fbf61d415ebf5d751ef31372d3a352" kind="variable"><name>numproc1dk</name></member>
+    <member refid="structcomm__surff_1_1commtype_1aac3b511e47cae2a3c8b6a7c526837697" kind="variable"><name>numproc1dt</name></member>
+    <member refid="structcomm__surff_1_1commtype_1a218e0690756ea1cda9841b0a5917eb4e" kind="variable"><name>numproc1dp</name></member>
+    <member refid="structcomm__surff_1_1commtype_1a5a21bb7fc4e18a31f3d6e31838201963" kind="variable"><name>maxproc1dk</name></member>
+    <member refid="structcomm__surff_1_1commtype_1a6ffee9d86941de4a02932d42742627e9" kind="variable"><name>maxproc1dt</name></member>
+    <member refid="structcomm__surff_1_1commtype_1a5d6fd0c0f1d716ffdc8ff05b6ba4896f" kind="variable"><name>maxproc1dp</name></member>
+    <member refid="structcomm__surff_1_1commtype_1a6e7073e8a90281cf344422ae2ee5de17" kind="variable"><name>numprocessors</name></member>
+    <member refid="structcomm__surff_1_1commtype_1ad27dbc379836bed2eaaca2d0aa4da852" kind="variable"><name>numprocessorsglobal</name></member>
+    <member refid="structcomm__surff_1_1commtype_1a6f436e9876f646f1cf9da13c91cd1a46" kind="variable"><name>commsimulation</name></member>
+    <member refid="structcomm__surff_1_1commtype_1ad535c47d173a1253ba13b167559ba61e" kind="variable"><name>cprocessor</name></member>
+    <member refid="structcomm__surff_1_1commtype_1a2a0578e5b7e2d6dc2ab2574be72882c9" kind="variable"><name>iparray</name></member>
+    <member refid="structcomm__surff_1_1commtype_1a7a34335b6dee23a7f46da0311137f7e0" kind="variable"><name>iparrayk</name></member>
+    <member refid="structcomm__surff_1_1commtype_1af2146653ec7592ee751f048c184614c6" kind="variable"><name>iparrayt</name></member>
+    <member refid="structcomm__surff_1_1commtype_1a7a84107420c8d6c743ae7a059d9c270c" kind="variable"><name>iparrayp</name></member>
+  </compound>
+  <compound refid="interfacefourier_1_1create__correlated__mask" kind="interface"><name>fourier::create_correlated_mask</name>
+    <member refid="interfacefourier_1_1create__correlated__mask_1af87aaefbea35bc8c549cef10f1ad25c5" kind="function"><name>create_correlated_mask2d1d</name></member>
+    <member refid="interfacefourier_1_1create__correlated__mask_1ad0d1a7d605b9ce7cf892252b3a02f57e" kind="function"><name>create_correlated_mask3d1d</name></member>
+  </compound>
+  <compound refid="interfacefourier_1_1create__mask" kind="interface"><name>fourier::create_mask</name>
+    <member refid="interfacefourier_1_1create__mask_1aab2fc1b88006302d4e7d7ba0f49614e8" kind="function"><name>create_mask4d</name></member>
+    <member refid="interfacefourier_1_1create__mask_1abf6218becd27014583aae9195055ca87" kind="function"><name>create_mask3d</name></member>
+    <member refid="interfacefourier_1_1create__mask_1a5114b0588dad20eaa1f0bf7d497b0c23" kind="function"><name>create_mask2d</name></member>
+  </compound>
+  <compound refid="interfacescatt__interp_1_1create__scatt__interpolant" kind="interface"><name>scatt_interp::create_scatt_interpolant</name>
+    <member refid="interfacescatt__interp_1_1create__scatt__interpolant_1a8b20f3fbdeb67d132ce059d1c1ceac48" kind="function"><name>dcreate_scatt_interpolant2d</name></member>
+    <member refid="interfacescatt__interp_1_1create__scatt__interpolant_1add614642a4fcb29f7ada2ca49b409c66" kind="function"><name>zcreate_scatt_interpolant2d</name></member>
+    <member refid="interfacescatt__interp_1_1create__scatt__interpolant_1aa09151e8bf3c9cd8eddb0784206febb8" kind="function"><name>dcreate_scatt_interpolant3d</name></member>
+    <member refid="interfacescatt__interp_1_1create__scatt__interpolant_1a6d14b82482ec68c9c48f836c1d1a825b" kind="function"><name>zcreate_scatt_interpolant3d</name></member>
+  </compound>
+  <compound refid="interfacecoords_1_1cylindrical2spherical" kind="interface"><name>coords::cylindrical2spherical</name>
+    <member refid="interfacecoords_1_1cylindrical2spherical_1a9c0ced65e0ff22f04d57e9b399340a2b" kind="function"><name>dscatt_cylindrical2spherical2d</name></member>
+    <member refid="interfacecoords_1_1cylindrical2spherical_1af3e47a93d1333fef6148f9b18739c789" kind="function"><name>zscatt_cylindrical2spherical2d</name></member>
+    <member refid="interfacecoords_1_1cylindrical2spherical_1a4b1e65253c91720c9cb09efcfd0d8722" kind="function"><name>dcubic_cylindrical2spherical2d</name></member>
+    <member refid="interfacecoords_1_1cylindrical2spherical_1a29deb5ee46e1c522e05ee77ae5c35fae" kind="function"><name>zcubic_cylindrical2spherical2d</name></member>
+  </compound>
+  <compound refid="interfaceboundary_1_1delete__cartesian__boundary" kind="interface"><name>boundary::delete_cartesian_boundary</name>
+    <member refid="interfaceboundary_1_1delete__cartesian__boundary_1a1a14bea5c2fe55ede5a1fc63f2f09b49" kind="function"><name>delete_scatt_cartesian_boundary2d</name></member>
+    <member refid="interfaceboundary_1_1delete__cartesian__boundary_1a08fb57a2f577432baccf1996a079595b" kind="function"><name>delete_scatt_cartesian_boundary3d</name></member>
+    <member refid="interfaceboundary_1_1delete__cartesian__boundary_1a85b9c21545ee205fc99402635b61bbeb" kind="function"><name>delete_tricubic_cartesian_boundary3d</name></member>
+  </compound>
+  <compound refid="interfaceboundary_1_1delete__cylindrical__boundary" kind="interface"><name>boundary::delete_cylindrical_boundary</name>
+    <member refid="interfaceboundary_1_1delete__cylindrical__boundary_1a9297e36153b54483f7f6028e1395ca5f" kind="function"><name>delete_scatt_cylindrical_boundary2d</name></member>
+    <member refid="interfaceboundary_1_1delete__cylindrical__boundary_1ae192b63adcc923c300b69d7adefbb450" kind="function"><name>delete_bicubic_cylindrical_boundary2d</name></member>
+  </compound>
+  <compound refid="interfacescatt__interp_1_1destroy__scatt__interpolant" kind="interface"><name>scatt_interp::destroy_scatt_interpolant</name>
+    <member refid="interfacescatt__interp_1_1destroy__scatt__interpolant_1a21916ebe9f193630cf320867d76564de" kind="function"><name>ddestroy_scatt_interpolant2d</name></member>
+    <member refid="interfacescatt__interp_1_1destroy__scatt__interpolant_1a039da7704f36b67353c56820ddf3d6f6" kind="function"><name>zdestroy_scatt_interpolant2d</name></member>
+    <member refid="interfacescatt__interp_1_1destroy__scatt__interpolant_1a31a4fbaadab1cf7b8f154dd3ba22c045" kind="function"><name>ddestroy_scatt_interpolant3d</name></member>
+    <member refid="interfacescatt__interp_1_1destroy__scatt__interpolant_1a3074b49db13c87ce273cd9f6d89909ec" kind="function"><name>zdestroy_scatt_interpolant3d</name></member>
+  </compound>
+  <compound refid="interfacewaveduplicate_1_1duplicate__cartesian__wave" kind="interface"><name>waveduplicate::duplicate_cartesian_wave</name>
+    <member refid="interfacewaveduplicate_1_1duplicate__cartesian__wave_1a24b528e84060533d82e33dc429923819" kind="function"><name>dduplicate_cartesian_wave3d</name></member>
+    <member refid="interfacewaveduplicate_1_1duplicate__cartesian__wave_1af51f6d5938976cb6fa299ce33f4b7bd8" kind="function"><name>zduplicate_cartesian_wave3d</name></member>
+  </compound>
+  <compound refid="interfacewaveduplicate_1_1duplicate__cylindrical__wave" kind="interface"><name>waveduplicate::duplicate_cylindrical_wave</name>
+    <member refid="interfacewaveduplicate_1_1duplicate__cylindrical__wave_1a9da22a98c395dec15289e2861809d3b7" kind="function"><name>dduplicate_cylindrical_wave2d</name></member>
+    <member refid="interfacewaveduplicate_1_1duplicate__cylindrical__wave_1aa16e8a0d8a87ca8260b4786aca97972b" kind="function"><name>zduplicate_cylindrical_wave2d</name></member>
+  </compound>
+  <compound refid="interfacefourier_1_1fourierbesseltransform" kind="interface"><name>fourier::fourierbesseltransform</name>
+    <member refid="interfacefourier_1_1fourierbesseltransform_1aad394ae48b9366d8a4302d379af2b8f2" kind="function"><name>fourierbesseltransform_serial</name></member>
+  </compound>
+  <compound refid="interfacefourier_1_1fouriertransform" kind="interface"><name>fourier::fouriertransform</name>
+    <member refid="interfacefourier_1_1fouriertransform_1a1803f88e3ef71fae41ff9bd896eabefc" kind="function"><name>fouriertransform_serial</name></member>
+  </compound>
+  <compound refid="interfaceboundary_1_1get__cartesian__boundary" kind="interface"><name>boundary::get_cartesian_boundary</name>
+    <member refid="interfaceboundary_1_1get__cartesian__boundary_1a50e34f982c6597bc6bdfcdaa37debff7" kind="function"><name>get_scatt_cartesian_boundary2d</name></member>
+    <member refid="interfaceboundary_1_1get__cartesian__boundary_1a2de9c58d2e4e727aff088dc9af8458d8" kind="function"><name>dget_scatt_cartesian_boundary3d</name></member>
+    <member refid="interfaceboundary_1_1get__cartesian__boundary_1a2e4acc867d9ec5da65fb4604ba666892" kind="function"><name>zget_scatt_cartesian_boundary3d</name></member>
+    <member refid="interfaceboundary_1_1get__cartesian__boundary_1adc6d7a6fddbb5f79230cc80d82c3284e" kind="function"><name>dget_tricubic_cartesian_boundary3d</name></member>
+    <member refid="interfaceboundary_1_1get__cartesian__boundary_1a9ff04ccc9b57816fbbd95858c3926ff5" kind="function"><name>zget_tricubic_cartesian_boundary3d</name></member>
+  </compound>
+  <compound refid="interfaceboundary_1_1get__cylindrical__boundary" kind="interface"><name>boundary::get_cylindrical_boundary</name>
+    <member refid="interfaceboundary_1_1get__cylindrical__boundary_1ab895fb6137dc4d5e949d5d8c0d1d278c" kind="function"><name>dget_scatt_cylindrical_boundary2d</name></member>
+    <member refid="interfaceboundary_1_1get__cylindrical__boundary_1a8239d0a5abc6dff629805e4596eaf67d" kind="function"><name>dget_bicubic_cylindrical_boundary2d</name></member>
+    <member refid="interfaceboundary_1_1get__cylindrical__boundary_1a068e397dfd8b243c7cb96a1df90cf47b" kind="function"><name>zget_scatt_cylindrical_boundary2d</name></member>
+    <member refid="interfaceboundary_1_1get__cylindrical__boundary_1a5232ceaa3fd01a6677ba85f4e4d3dcd5" kind="function"><name>zget_bicubic_cylindrical_boundary2d</name></member>
+  </compound>
+  <compound refid="interfacepatchwork_1_1get__subset__cartesian__coordinates" kind="interface"><name>patchwork::get_subset_cartesian_coordinates</name>
+    <member refid="interfacepatchwork_1_1get__subset__cartesian__coordinates_1ae778e7bf191db1cf4e81db3600544304" kind="function"><name>get_subset_cartesian_coordinates_serial</name></member>
+  </compound>
+  <compound refid="interfacepatchwork_1_1get__subset__cylindrical__coordinates" kind="interface"><name>patchwork::get_subset_cylindrical_coordinates</name>
+    <member refid="interfacepatchwork_1_1get__subset__cylindrical__coordinates_1ac75529622a5ee1057856e1ea0b9589ab" kind="function"><name>get_subset_cylindrical_coordinates_serial</name></member>
+  </compound>
+  <compound refid="interfaceboundary_1_1initialize__cartesian__boundary" kind="interface"><name>boundary::initialize_cartesian_boundary</name>
+    <member refid="interfaceboundary_1_1initialize__cartesian__boundary_1a8e0377a001387835c58dab9420d10376" kind="function"><name>initialize_scatt_cartesian_boundary2d</name></member>
+    <member refid="interfaceboundary_1_1initialize__cartesian__boundary_1a8e0319c7164f152181a12183bd041e66" kind="function"><name>initialize_scatt_cartesian_boundary3d</name></member>
+    <member refid="interfaceboundary_1_1initialize__cartesian__boundary_1a8e78b2f5122eb6432ab453e77f4740d4" kind="function"><name>initialize_tricubic_cartesian_boundary3d</name></member>
+  </compound>
+  <compound refid="interfaceboundary_1_1initialize__cylindrical__boundary" kind="interface"><name>boundary::initialize_cylindrical_boundary</name>
+    <member refid="interfaceboundary_1_1initialize__cylindrical__boundary_1a6fdef441d406e174754c61aff96a032e" kind="function"><name>initialize_scatt_cylindrical_boundary2d</name></member>
+    <member refid="interfaceboundary_1_1initialize__cylindrical__boundary_1a354b0e3cda3b636f99e59d5ca48a893e" kind="function"><name>initialize_bicubic_cylindrical_boundary2d</name></member>
+  </compound>
+  <compound refid="structcomm__surff_1_1kgrid" kind="type"><name>comm_surff::kgrid</name>
+    <member refid="structcomm__surff_1_1kgrid_1a8482578d3ff790a2439c8663558fe4e1" kind="variable"><name>maxkpts</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1ac64c1ba59d5ad4e3d28e2cb0414f8991" kind="variable"><name>maxthetapts</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1a1561c5a9d573a6cbb43cb3786bf5077a" kind="variable"><name>maxphipts</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1a5059aeb238cd68d30c8a5fe866abbdfa" kind="variable"><name>numkpts</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1aeae92795de123c398ce1f265c0473fdc" kind="variable"><name>numthetapts</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1a6c8c16e42074049087717738988f79eb" kind="variable"><name>numphipts</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1ac85234accff9200bc0e1ca810de1ec5e" kind="variable"><name>lmax</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1a615458d2a8eaeb4f3ca1b90f7d29acef" kind="variable"><name>emin</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1ac943b2f8cde73f158314c6fb508285a3" kind="variable"><name>emax</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1a3a01062a5619e1921f21ca0376eff1bf" kind="variable"><name>emax_theoretical</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1a2f00699734a75f8878041536ec0cf1cc" kind="variable"><name>deltaenergy</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1a4457a0576d1d4f1f27d731af28d33089" kind="variable"><name>deltaphi</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1a615e1373a9257c4e299d5031cf2b10c0" kind="variable"><name>eneoffset</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1a1c0729a022d51cd209d811491dd987bf" kind="variable"><name>energypts</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1a9aa2922b0e890fbbdc0e248d2c804301" kind="variable"><name>kpts</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1af49f959483cfd2d33f694c23237b6a9a" kind="variable"><name>thetapts</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1a60c7310d3322e7835d3c2109d1b0857c" kind="variable"><name>sinthetapts</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1a8c58dd345a32aad7d7a42573291f3923" kind="variable"><name>costhetapts</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1a4347ed8bca6a80304ff6e9c7ed63be1c" kind="variable"><name>wtheta</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1ab138a6b58a798f9f21284095925d2285" kind="variable"><name>phipts</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1a677c4c5e5107449ab31539cee38e42cc" kind="variable"><name>sinphipts</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1a2ccc8305f35a427a2b49ae8e729a3e37" kind="variable"><name>cosphipts</name></member>
+    <member refid="structcomm__surff_1_1kgrid_1a8a92a006f5c84e4364969c803df935c3" kind="variable"><name>wphi</name></member>
+  </compound>
+  <compound refid="interfacetools_1_1make__cross__derivative" kind="interface"><name>tools::make_cross_derivative</name>
+    <member refid="interfacetools_1_1make__cross__derivative_1acd0afb9f2bfe52689c43bec9e67e55d6" kind="function"><name>dmake_cross_derivative2d</name></member>
+    <member refid="interfacetools_1_1make__cross__derivative_1a4243e7bcf01ea94c90ba65e69c28bc1f" kind="function"><name>zmake_cross_derivative2d</name></member>
+    <member refid="interfacetools_1_1make__cross__derivative_1a79cf07fa8a8058c938a79581e7bf4e9f" kind="function"><name>dmake_cross_derivative3d</name></member>
+    <member refid="interfacetools_1_1make__cross__derivative_1a882c9fdce2d7d4bb96fea271648d062d" kind="function"><name>zmake_cross_derivative3d</name></member>
+  </compound>
+  <compound refid="interfacetools_1_1make__derivative" kind="interface"><name>tools::make_derivative</name>
+    <member refid="interfacetools_1_1make__derivative_1a5e913da17e213609501ea86a9141f234" kind="function"><name>dmake_derivative</name></member>
+    <member refid="interfacetools_1_1make__derivative_1aad22030ab3b78eeb58a49820e3cf9aaa" kind="function"><name>zmake_derivative</name></member>
+  </compound>
+  <compound refid="interfacesharmonics_1_1make__sht" kind="interface"><name>sharmonics::make_sht</name>
+    <member refid="interfacesharmonics_1_1make__sht_1a935c0d0e3ea5765c2ca2060803a7d376" kind="function"><name>make_sht_single</name></member>
+    <member refid="interfacesharmonics_1_1make__sht_1a05625b0660d362849d0d95767be0a0e8" kind="function"><name>make_sht_group</name></member>
+  </compound>
+  <compound refid="interfacetools_1_1make__wave__boundary__derivative" kind="interface"><name>tools::make_wave_boundary_derivative</name>
+    <member refid="interfacetools_1_1make__wave__boundary__derivative_1a80edd19aa57c57dd72c6567bd3a34762" kind="function"><name>make_wave_boundary_derivative2d</name></member>
+    <member refid="interfacetools_1_1make__wave__boundary__derivative_1a4f1a408c426cee8a81339d30f4ffa059" kind="function"><name>make_wave_boundary_derivative3d</name></member>
+  </compound>
+  <compound refid="interfacegaussleg_1_1plgndr" kind="interface"><name>gaussleg::plgndr</name>
+    <member refid="interfacegaussleg_1_1plgndr_1aaf3a3ca665dc1cc0211d651f3d19b2cc" kind="function"><name>plgndr_s</name></member>
+    <member refid="interfacegaussleg_1_1plgndr_1aa4c128cae0c10528f1233063c994bab0" kind="function"><name>plgndr_v</name></member>
+  </compound>
+  <compound refid="interfaceio__subset_1_1read__subset" kind="interface"><name>io_subset::read_subset</name>
+    <member refid="interfaceio__subset_1_1read__subset_1ac2c92b38d1de62ac0e02c85d6402b6a1" kind="function"><name>dread_subset_serial</name></member>
+  </compound>
+  <compound refid="structcomm__surff_1_1rgrid" kind="type"><name>comm_surff::rgrid</name>
+    <member refid="structcomm__surff_1_1rgrid_1a8bfa62e6bdcc1c4d94263a0e5b68faf7" kind="variable"><name>numthetapts</name></member>
+    <member refid="structcomm__surff_1_1rgrid_1a914a7bfbb2847409121942c65baf91e4" kind="variable"><name>numphipts</name></member>
+    <member refid="structcomm__surff_1_1rgrid_1a2ce0f8806d0fa0efa542a9dcad01115a" kind="variable"><name>lmax</name></member>
+    <member refid="structcomm__surff_1_1rgrid_1a4dabe33f3f198f7426b50e1c7d4ce432" kind="variable"><name>numlm</name></member>
+    <member refid="structcomm__surff_1_1rgrid_1a85dfe8ae0ff362b3cbce318c5b0f0dcf" kind="variable"><name>numlmplus</name></member>
+    <member refid="structcomm__surff_1_1rgrid_1a9f5037b3a2e557385678384677ae1b2b" kind="variable"><name>rsurface</name></member>
+    <member refid="structcomm__surff_1_1rgrid_1af563dcb9e2e4e68622a04cdf034328d4" kind="variable"><name>deltaphi</name></member>
+    <member refid="structcomm__surff_1_1rgrid_1ab61dcbc831cd8d8b4a726eafdeb4d629" kind="variable"><name>thetapts</name></member>
+    <member refid="structcomm__surff_1_1rgrid_1a88f08563d2373265a46e2b8e98f47743" kind="variable"><name>sinthetapts</name></member>
+    <member refid="structcomm__surff_1_1rgrid_1af284db90b14634b4d39be0d17e5d33f5" kind="variable"><name>costhetapts</name></member>
+    <member refid="structcomm__surff_1_1rgrid_1a80c8b8be43596599b5e47fa22f0f3aea" kind="variable"><name>wtheta</name></member>
+    <member refid="structcomm__surff_1_1rgrid_1adc89bec229b20816366a01c8b80b15b5" kind="variable"><name>phipts</name></member>
+    <member refid="structcomm__surff_1_1rgrid_1a1c81288b089ca34c6c1c9bd52dd2efdc" kind="variable"><name>sinphipts</name></member>
+    <member refid="structcomm__surff_1_1rgrid_1a9a9c08e70fb13b5f61993c941ea21942" kind="variable"><name>cosphipts</name></member>
+    <member refid="structcomm__surff_1_1rgrid_1ace59fcc6d7cabfc555a7835670eff2fb" kind="variable"><name>wphi</name></member>
+    <member refid="structcomm__surff_1_1rgrid_1a77df560b2853c3a533878e831a04ca11" kind="variable"><name>gauge_transform</name></member>
+  </compound>
+  <compound refid="interfacescatt__interp_1_1scatt__interpolate" kind="interface"><name>scatt_interp::scatt_interpolate</name>
+    <member refid="interfacescatt__interp_1_1scatt__interpolate_1acc41802d6e6f489c684b0cd641043ad2" kind="function"><name>scatt_dinterpolate2d</name></member>
+    <member refid="interfacescatt__interp_1_1scatt__interpolate_1ad8b6c01672ddea8b6849d42e583bf13a" kind="function"><name>scatt_zinterpolate2d</name></member>
+    <member refid="interfacescatt__interp_1_1scatt__interpolate_1aff9eb24edb411d1434ba307cb1ec3bc1" kind="function"><name>scatt_dinterpolate3d</name></member>
+    <member refid="interfacescatt__interp_1_1scatt__interpolate_1aefa4153bed7e2ef8ea3d4be2eb59f8b6" kind="function"><name>scatt_zinterpolate3d</name></member>
+  </compound>
+  <compound refid="structcomm__surff_1_1tgrid" kind="type"><name>comm_surff::tgrid</name>
+    <member refid="structcomm__surff_1_1tgrid_1a6d810425996b13b4f9ee00df211f81a8" kind="variable"><name>numtimes</name></member>
+    <member refid="structcomm__surff_1_1tgrid_1aa29388224dae77a67a865f1b775e8333" kind="variable"><name>timepts</name></member>
+    <member refid="structcomm__surff_1_1tgrid_1ad943dfdbc8f52016c4f13f186a5ba1d4" kind="variable"><name>deltat</name></member>
+    <member refid="structcomm__surff_1_1tgrid_1a2d38e5a0229188fb1c2a56afe1abcebd" kind="variable"><name>truncate_time_integration</name></member>
+    <member refid="structcomm__surff_1_1tgrid_1a469cd7acb23d0bcf32f8f870241e67af" kind="variable"><name>maxtime_integrate</name></member>
+    <member refid="structcomm__surff_1_1tgrid_1a177018456dc6b39f13de764a09ece1c9" kind="variable"><name>timeaverageforrydberg</name></member>
+    <member refid="structcomm__surff_1_1tgrid_1a31bee20d9f45037174c7f07efc57b186" kind="variable"><name>timetoaverageover</name></member>
+  </compound>
+  <compound refid="interfacespline__interp_1_1tridag" kind="interface"><name>spline_interp::tridag</name>
+    <member refid="interfacespline__interp_1_1tridag_1a35476ebe321db24c6a8d7088e04115f4" kind="function"><name>tridag_par</name></member>
+  </compound>
+  <compound refid="interfaceio__corrsurface_1_1write__correlated__surface__file" kind="interface"><name>io_corrsurface::write_correlated_surface_file</name>
+    <member refid="interfaceio__corrsurface_1_1write__correlated__surface__file_1acc0e31ae664a1661701242af83707115" kind="function"><name>write_correlated_surface_file2d_serial</name></member>
+  </compound>
+  <compound refid="interfaceio__subset_1_1write__subset" kind="interface"><name>io_subset::write_subset</name>
+  </compound>
+  <compound refid="interfaceio__surface_1_1write__surface__file" kind="interface"><name>io_surface::write_surface_file</name>
+    <member refid="interfaceio__surface_1_1write__surface__file_1a32a7e80e17283a01a5d3c237dcc04a92" kind="function"><name>write_surface_file_2d</name></member>
+    <member refid="interfaceio__surface_1_1write__surface__file_1a0dd5aabf87e18884d82b0da2805abc14" kind="function"><name>write_surface_file_3d</name></member>
+  </compound>
+  <compound refid="interfaceio__pop_1_1write__wave" kind="interface"><name>io_pop::write_wave</name>
+    <member refid="interfaceio__pop_1_1write__wave_1af18621be0307630b7e7afdbfdbce4625" kind="function"><name>write_wave_serial</name></member>
+  </compound>
+  <compound refid="namespaceboundary" kind="namespace"><name>boundary</name>
+  </compound>
+  <compound refid="namespacecomm__surff" kind="namespace"><name>comm_surff</name>
+    <member refid="comm__surff_8_f90_1a4c71dd5a3cf9310ea31e40f3c5c98968" kind="variable"><name>commsurff</name></member>
+    <member refid="comm__surff_8_f90_1a53b6b7b9588ad307c03bc03d51bd2d74" kind="variable"><name>kmesh</name></member>
+    <member refid="comm__surff_8_f90_1acf1bd2505bc6f0101f2706ff26f27f1a" kind="variable"><name>rmesh</name></member>
+    <member refid="comm__surff_8_f90_1a2e93f9b315cb82cda2fed0261cf72825" kind="variable"><name>tmesh</name></member>
+    <member refid="comm__surff_8_f90_1a5743afde610c7e0631d782cf364bf198" kind="function"><name>initialize_communications</name></member>
+    <member refid="comm__surff_8_f90_1a7b66933f20e1055a31447aeae9875389" kind="function"><name>output_communications</name></member>
+    <member refid="comm__surff_8_f90_1ab668dc95a6c01ded9428090cbc26a18a" kind="function"><name>finalize_communications</name></member>
+    <member refid="comm__surff_8_f90_1a072d9d6ec6d9e58d464e62cdd88a63d8" kind="function"><name>timing</name></member>
+    <member refid="comm__surff_8_f90_1adb357edbe58fbfb6a3bb648e76851296" kind="function"><name>check_processor_count</name></member>
+    <member refid="comm__surff_8_f90_1a4533b3531a0ba47d03917313843ec14f" kind="function"><name>initialize_ip_addresses</name></member>
+    <member refid="comm__surff_8_f90_1aa35dd92a6f74feceb64b1b4cdcea9327" kind="function"><name>all_processor_barrier</name></member>
+    <member refid="comm__surff_8_f90_1a9f859f9038d9fb8f56944c5f84fd4caf" kind="function"><name>error</name></member>
+    <member refid="comm__surff_8_f90_1acd9d3251a64d0de083acb5ecd6e1c806" kind="function"><name>stopping</name></member>
+    <member refid="comm__surff_8_f90_1a552cebeebd1e78f8e63af49f0f27ede1" kind="function"><name>tsurff_stop</name></member>
+    <member refid="comm__surff_8_f90_1ae7dca795bbdc2c8ed9cfc19b539c668e" kind="function"><name>print_debug</name></member>
+  </compound>
+  <compound refid="namespaceconstants__pop" kind="namespace"><name>constants_pop</name>
+    <member refid="namespaceconstants__pop_1aa40e688cf9ef9b7cf0db05c80879ca15" kind="variable"><name>dp</name></member>
+    <member refid="namespaceconstants__pop_1a30c1570dd8020fd168553df145d76ff4" kind="variable"><name>sp</name></member>
+    <member refid="namespaceconstants__pop_1a31f741f0bab3c2deff3403f25fc8fca1" kind="variable"><name>sqrttwo</name></member>
+    <member refid="namespaceconstants__pop_1a05c3e12abc77506eb165034fba783f98" kind="variable"><name>zimagone</name></member>
+    <member refid="namespaceconstants__pop_1a8edc7d38939b111c254324349ea23a4e" kind="variable"><name>zone</name></member>
+    <member refid="namespaceconstants__pop_1aae6cdd4aab6006c82b6b6614d95804c1" kind="variable"><name>zero</name></member>
+    <member refid="namespaceconstants__pop_1a65af0ef41eb6207bbb00ff634e46aead" kind="variable"><name>amu_to_internal</name></member>
+    <member refid="namespaceconstants__pop_1ab04ab54f96ed6fef633748a530e9185a" kind="variable"><name>speed_light</name></member>
+    <member refid="namespaceconstants__pop_1a1f85092be6cafe4f853150042e429521" kind="variable"><name>fine_structure</name></member>
+    <member refid="namespaceconstants__pop_1a247ec198c661d1f71a84a2953dc1add8" kind="variable"><name>boltzmann_k</name></member>
+    <member refid="namespaceconstants__pop_1af079e42c08b5b29f83ae03e82d838150" kind="variable"><name>ev_to_hartree</name></member>
+    <member refid="namespaceconstants__pop_1ad6f277e1c710648d407733689ac041b6" kind="variable"><name>hatree_to_ev</name></member>
+    <member refid="namespaceconstants__pop_1a4fd039ac08ba8388739583feeb5bc603" kind="variable"><name>hbar</name></member>
+    <member refid="namespaceconstants__pop_1ad63fbcef2547f788cdc856b118322820" kind="variable"><name>pi</name></member>
+    <member refid="namespaceconstants__pop_1ae43dedb6e19b862871cca993749be265" kind="variable"><name>twopi</name></member>
+    <member refid="namespaceconstants__pop_1ac19ec58d8898ca8e5b8643eb5392e6de" kind="variable"><name>oneovertwopi</name></member>
+    <member refid="namespaceconstants__pop_1aaca1780ca726234138cb9e815a4222a1" kind="variable"><name>sqrtoneovertwopi</name></member>
+    <member refid="namespaceconstants__pop_1a48d520b0575fa59982719ff96fb7fda9" kind="variable"><name>sqrtoneovertwopito3</name></member>
+    <member refid="namespaceconstants__pop_1a88ee88acbcb1bf0469dc8669a50e6c91" kind="variable"><name>autime_fs</name></member>
+    <member refid="namespaceconstants__pop_1aeb96f2e5640ee234baacf3c6ccacdc6e" kind="variable"><name>autime_s</name></member>
+    <member refid="namespaceconstants__pop_1a75f02cb937876c56f22093c7578047df" kind="variable"><name>bohr_to_ang</name></member>
+    <member refid="namespaceconstants__pop_1a34e4163a044a3f01fe513adea2ccac34" kind="variable"><name>aulength_m</name></member>
+    <member refid="namespaceconstants__pop_1ac8f988d57927d4a7dedd9e1bcd6e4a9b" kind="variable"><name>aulength_nm</name></member>
+    <member refid="namespaceconstants__pop_1ac3ab83a89e71fd7dd5973834b92d2435" kind="variable"><name>efs_to_microamps</name></member>
+    <member refid="namespaceconstants__pop_1a2939df9761a8b4158c47f7593ee2b08f" kind="variable"><name>epsilon0</name></member>
+    <member refid="namespaceconstants__pop_1ab92b307f53a323d6a0120f4954daf2bd" kind="variable"><name>waveconvert</name></member>
+    <member refid="namespaceconstants__pop_1a9c3733d86ce09fbf90cd8d74ea3c5419" kind="variable"><name>intensity_au</name></member>
+    <member refid="namespaceconstants__pop_1af8058334878d2d9bcdc15692292e43ea" kind="variable"><name>massfacelectron</name></member>
+    <member refid="namespaceconstants__pop_1abfcc60e12639fb1e9149182d3fbe526b" kind="variable"><name>massfacfield</name></member>
+  </compound>
+  <compound refid="namespacecoords" kind="namespace"><name>coords</name>
+  </compound>
+  <compound refid="namespacecorrsurface" kind="namespace"><name>corrsurface</name>
+    <member refid="namespacecorrsurface_1ab79a11139dc0604765faac458781a914" kind="variable"><name>spherical_wave2d1d_local</name></member>
+    <member refid="namespacecorrsurface_1a7e2cc9ac4abce6454df31fb69f5e67c8" kind="variable"><name>spherical_wave2d1d_global</name></member>
+    <member refid="namespacecorrsurface_1ae79c83152a81ae82f81718c398dfdabe" kind="variable"><name>spherical_wave2d1d</name></member>
+    <member refid="namespacecorrsurface_1a51020f68d24006ced6702db316a38249" kind="variable"><name>spherical_wave2d1d_dr</name></member>
+    <member refid="namespacecorrsurface_1aace2322a65d8edd22d75b2c3aac6e232" kind="variable"><name>spherical_wave2d1d_dtheta</name></member>
+    <member refid="namespacecorrsurface_1ae43ad6e74b3387c47b1efdb0be3484a4" kind="variable"><name>sphericaln_wave2d</name></member>
+    <member refid="namespacecorrsurface_1a616149c765d23965994c93f00dc93e58" kind="variable"><name>sphericaln_wave2d_deriv</name></member>
+    <member refid="namespacecorrsurface_1a4ec08b9e766890f096ad716f082dfbe3" kind="variable"><name>spherical_wave3d_local</name></member>
+    <member refid="namespacecorrsurface_1a9a14646e54618e2262534a9aa9519a78" kind="variable"><name>spherical_wave3d_global</name></member>
+    <member refid="namespacecorrsurface_1a64ec4e27c570b53680666556b2b84358" kind="variable"><name>spherical_wave3d</name></member>
+    <member refid="namespacecorrsurface_1af00c8ec10645362c7028afd20a6b6159" kind="variable"><name>spherical_wave3d_dr</name></member>
+    <member refid="namespacecorrsurface_1a71ee7c8c64b2edb682b76a7fbcad8142" kind="variable"><name>spherical_wave3d_dtheta</name></member>
+    <member refid="namespacecorrsurface_1a65eb7cff0a4b3893dcab125a840eeda1" kind="variable"><name>spherical_wave3d_dphi</name></member>
+    <member refid="namespacecorrsurface_1a9365b32a733360f568408131c3809dbe" kind="variable"><name>spherical_wave3d_deriv</name></member>
+    <member refid="namespacecorrsurface_1ad598d70b0566b658ed9f86d457819231" kind="variable"><name>psi_l</name></member>
+    <member refid="namespacecorrsurface_1ab910d672bf195dd28dabd27b72d77b89" kind="variable"><name>psi_lm</name></member>
+    <member refid="namespacecorrsurface_1a7c0c44b7827e70383b324cda0068a9a1" kind="variable"><name>basis_set</name></member>
+    <member refid="namespacecorrsurface_1a5e538a19951705b9e28c5e85d338b9e2" kind="variable"><name>rb</name></member>
+    <member refid="namespacecorrsurface_1aa02eea0c7ef2a43cbeec0ca619581941" kind="variable"><name>deltar</name></member>
+    <member refid="namespacecorrsurface_1a47ed724cd40f1c2c3aab621ef17ec207" kind="variable"><name>basis_order</name></member>
+    <member refid="namespacecorrsurface_1aee1aaa0317e94e8af8f8a8b2f4855dd2" kind="variable"><name>numbigrpts</name></member>
+    <member refid="namespacecorrsurface_1a613097c30fc43c1bc43cf7736285868d" kind="function"><name>initialize_correlated_cylindrical_surface</name></member>
+    <member refid="namespacecorrsurface_1aea44c2b6267315f250440da5998ca237" kind="function"><name>get_correlated_cylindrical_surface</name></member>
+    <member refid="namespacecorrsurface_1ada8b8eb0002e2495f8e1c12d0745e100" kind="function"><name>delete_correlated_surface2d</name></member>
+  </compound>
+  <compound refid="namespacecorrtools" kind="namespace"><name>corrtools</name>
+    <member refid="namespacecorrtools_1a9dffe12a4315b0249103557d5f38051e" kind="function"><name>create_sine_basis</name></member>
+  </compound>
+  <compound refid="namespacecubboundcart" kind="namespace"><name>cubboundcart</name>
+    <member refid="cubboundcart_8_f90_1a0c7b83c474118b5fbb9e3d3f1c2f4516" kind="variable"><name>cellindex3d</name></member>
+    <member refid="cubboundcart_8_f90_1a0a754d8769de187dd0d931963d95cfa5" kind="function"><name>initialize_tricubic_cartesian_boundary3d</name></member>
+    <member refid="cubboundcart_8_f90_1ae6274e1a8c7037c1f95703b131a793d5" kind="function"><name>dget_tricubic_cartesian_boundary3d</name></member>
+    <member refid="cubboundcart_8_f90_1a9fe5ea4fc4eea3334e1b61d35d80e4f3" kind="function"><name>zget_tricubic_cartesian_boundary3d</name></member>
+    <member refid="cubboundcart_8_f90_1a6ba0ef77b3fa3f4ec16d1283a1d88a1c" kind="function"><name>delete_tricubic_cartesian_boundary3d</name></member>
+  </compound>
+  <compound refid="namespacecubboundcyl" kind="namespace"><name>cubboundcyl</name>
+    <member refid="cubboundcyl_8_f90_1ac909103fa14169199d252796eb542a42" kind="variable"><name>cellindex2d</name></member>
+    <member refid="cubboundcyl_8_f90_1a7518abec9c5395cd087680398786de30" kind="function"><name>initialize_bicubic_cylindrical_boundary2d</name></member>
+    <member refid="cubboundcyl_8_f90_1ab4cad349cec4121a0bd07495ccfa4235" kind="function"><name>dget_bicubic_cylindrical_boundary2d</name></member>
+    <member refid="cubboundcyl_8_f90_1afcbc019f93cb595ca71e494106d57ce3" kind="function"><name>zget_bicubic_cylindrical_boundary2d</name></member>
+    <member refid="cubboundcyl_8_f90_1a2b501ce5c4bda59d12b440fe32015127" kind="function"><name>delete_bicubic_cylindrical_boundary2d</name></member>
+  </compound>
+  <compound refid="namespacecubcoords" kind="namespace"><name>cubcoords</name>
+    <member refid="cubcoords_8f90_1a8b7c5f6e06a98999ab4759330efdcd9a" kind="function"><name>dcubic_cartesian2spherical3d</name></member>
+    <member refid="cubcoords_8f90_1a3da95eb3ef6164f24b19c7fd65dbbde6" kind="function"><name>zcubic_cartesian2spherical3d</name></member>
+    <member refid="cubcoords_8f90_1af80c6fd2071e76c130587b839fb0f042" kind="function"><name>dcubic_cylindrical2spherical2d</name></member>
+    <member refid="cubcoords_8f90_1af15cc37f3efb97c70ac949702300786a" kind="function"><name>zcubic_cylindrical2spherical2d</name></member>
+  </compound>
+  <compound refid="namespacecubic__interp" kind="namespace"><name>cubic_interp</name>
+    <member refid="namespacecubic__interp_1a71aadf17555e7e5152368db60ab724c1" kind="variable"><name>wbi</name></member>
+    <member refid="namespacecubic__interp_1affcc410624234e1e707635bc35c0b560" kind="variable"><name>wtri</name></member>
+    <member refid="namespacecubic__interp_1afed9776f2ce4526ed5443e7ea51e7326" kind="function"><name>initialize_bicubic_matrix</name></member>
+    <member refid="namespacecubic__interp_1a950ccb0166b8ffc61abf5fbf0358da50" kind="function"><name>initialize_tricubic_matrix</name></member>
+    <member refid="namespacecubic__interp_1a15eb80172a4fecca51c0d3768190c41b" kind="function"><name>get_bicubic_coeffs</name></member>
+    <member refid="namespacecubic__interp_1ac5a5fcf47e4d90f6584e19f36a5537ea" kind="function"><name>get_tricubic_coeffs</name></member>
+    <member refid="namespacecubic__interp_1ade3b7f9c8f620bfa6154cbe10d683532" kind="function"><name>bicubic_interpolation</name></member>
+    <member refid="namespacecubic__interp_1ad490c4ba4e83a774d3b55c284c0e381d" kind="function"><name>tricubic_interpolation</name></member>
+    <member refid="namespacecubic__interp_1a11d7c3fd8b509441a6e375769e551d9a" kind="function"><name>delete_bicubic_matrix</name></member>
+    <member refid="namespacecubic__interp_1ac84abe68a55f13830b66b4b277773170" kind="function"><name>delete_tricubic_matrix</name></member>
+  </compound>
+  <compound refid="namespacefftw" kind="namespace"><name>fftw</name>
+  </compound>
+  <compound refid="namespaceflux" kind="namespace"><name>flux</name>
+    <member refid="namespaceflux_1a75c9cdf1cea8e80ebfef2eeab56cae63" kind="variable"><name>probk3d</name></member>
+    <member refid="namespaceflux_1a31c2f93e11d855c35e8c79e95e385c3e" kind="variable"><name>bktime</name></member>
+    <member refid="namespaceflux_1a4e49591385063c1947b39e62425f9d59" kind="variable"><name>bktimeold</name></member>
+    <member refid="namespaceflux_1a4838ad043e62e7922f5f1e25964a3148" kind="variable"><name>bk</name></member>
+    <member refid="namespaceflux_1ac343e5ae6fb0b101196a1c11b5610677" kind="variable"><name>bkaverage</name></member>
+    <member refid="namespaceflux_1ada787f3d9f3f983f9648a3829541ca34" kind="variable"><name>sph_harmonics</name></member>
+    <member refid="namespaceflux_1acdd96e2aa8fee93aa5e6aa7ba541bf6f" kind="variable"><name>sph_harmonicsk</name></member>
+    <member refid="namespaceflux_1a022157223af43dc7d3170dff5c8844b1" kind="variable"><name>psi_sph</name></member>
+    <member refid="namespaceflux_1a65ca7470110665a5adef87099ad2bd0f" kind="variable"><name>psip_sph</name></member>
+    <member refid="namespaceflux_1ae16251774e8e4c6dcc5b86255cde9a0d" kind="variable"><name>psi_lm</name></member>
+    <member refid="namespaceflux_1a290d2c6050597bfd4cc54ee7eb3a9d20" kind="variable"><name>psix_lm</name></member>
+    <member refid="namespaceflux_1a8aef3d03771d40f144e5bbd69162704d" kind="variable"><name>psiy_lm</name></member>
+    <member refid="namespaceflux_1a6f978f7c23585fe136b15dc6e657cd21" kind="variable"><name>psiz_lm</name></member>
+    <member refid="namespaceflux_1a8823c69ece4833510a78a7df5d244208" kind="variable"><name>psip_lm</name></member>
+    <member refid="namespaceflux_1adc00e0e1ce150de410512256d4df6719" kind="variable"><name>krspts</name></member>
+    <member refid="namespaceflux_1aff745d2452ae9df09a22df0ba2703325" kind="variable"><name>jl</name></member>
+    <member refid="namespaceflux_1aec5822f945e8b66f0e176c8a70578013" kind="variable"><name>jlp</name></member>
+    <member refid="namespaceflux_1abe9e8e9502c43a8792f6c385d9f2dab9" kind="variable"><name>yl</name></member>
+    <member refid="namespaceflux_1a59899bd43df581c3ac28e291e0706c13" kind="variable"><name>ylp</name></member>
+    <member refid="namespaceflux_1aa40d8e151bc5a4d5c75caee186d0a72c" kind="variable"><name>efield</name></member>
+    <member refid="namespaceflux_1aaa2782e9c392a973d720d7a83537ff40" kind="variable"><name>afield</name></member>
+    <member refid="namespaceflux_1a835d01a13c36506c21e1a58fe0f52de2" kind="variable"><name>quiver</name></member>
+    <member refid="namespaceflux_1a7347f6d876a16b5fbdcd3d336d14c740" kind="variable"><name>asqintegral</name></member>
+    <member refid="namespaceflux_1afbe72e1cf19f311bac15e6e015f998a0" kind="function"><name>initialize_tsurff</name></member>
+    <member refid="namespaceflux_1aaa28bbe52ee6b3671c068f6c3190d908" kind="function"><name>make_kpoints</name></member>
+    <member refid="namespaceflux_1a708e0f0ebd170bdc9da7fb40196bee3f" kind="function"><name>get_flux</name></member>
+    <member refid="namespaceflux_1afbcdcaf92171a5e303b254bf533ba4a3" kind="function"><name>calculate_time_integrand</name></member>
+    <member refid="namespaceflux_1a6d69c7ea5f5cffd9aba456aebda7bfa6" kind="function"><name>get_volkov_phase</name></member>
+    <member refid="namespaceflux_1a531fe7102e27e9ca7b14897f4c702d52" kind="function"><name>make_field_integral_terms</name></member>
+    <member refid="namespaceflux_1aff2ae47ed1665193d3c27ccd0486b54e" kind="function"><name>gauge_transform_l2v</name></member>
+  </compound>
+  <compound refid="namespacefourier" kind="namespace"><name>fourier</name>
+    <member refid="fourier_8_f90_1ab577fda4a873e60b3693aecbdd2255fa" kind="function"><name>fouriertransform_serial</name></member>
+    <member refid="fourier_8_f90_1a0d00dbdcbb1656e5c18a1506e0ea9153" kind="function"><name>fourierbesseltransform_serial</name></member>
+    <member refid="fourier_8_f90_1a617934fc479ff3d06f0b20d2e20947fc" kind="function"><name>fft</name></member>
+    <member refid="fourier_8_f90_1ac0da71c78b4d1752259a0ed874568ddd" kind="function"><name>hankeltransform</name></member>
+    <member refid="fourier_8_f90_1a7a2eaa06b013950ad0be3f2c9aeec68b" kind="function"><name>fftshift</name></member>
+    <member refid="fourier_8_f90_1a3a14ad07e59b94bd8653e676b723ba95" kind="function"><name>create_mask4d</name></member>
+    <member refid="fourier_8_f90_1ab414b6c5030907294703aa143f2c27b6" kind="function"><name>create_mask3d</name></member>
+    <member refid="fourier_8_f90_1a5e26437504a2bfa9bf7df7f80a03e05e" kind="function"><name>create_mask2d</name></member>
+    <member refid="fourier_8_f90_1a8e0b6027256652a18736692476eaecb3" kind="function"><name>create_correlated_mask2d1d</name></member>
+    <member refid="fourier_8_f90_1add19b78c4eca225c4029e92b01ff297f" kind="function"><name>create_correlated_mask3d1d</name></member>
+  </compound>
+  <compound refid="namespacegaussleg" kind="namespace"><name>gaussleg</name>
+    <member refid="namespacegaussleg_1a03137cc32f867e636184d46d71c1a6e5" kind="function"><name>make_gauss_legendre</name></member>
+    <member refid="namespacegaussleg_1ae13f295f37c8f2b482df2dabe29d7efa" kind="function"><name>make_gauss_lobatto</name></member>
+    <member refid="namespacegaussleg_1a7f8d813a66f2e785e1863aaa89341c05" kind="function"><name>arth</name></member>
+    <member refid="namespacegaussleg_1abe9f1fb10770b5231c05a8ea76f208b5" kind="function"><name>make_rnormal</name></member>
+    <member refid="namespacegaussleg_1adf5fcb0267401d6480e597f82a096c93" kind="function"><name>make_legendre</name></member>
+    <member refid="namespacegaussleg_1abcc9482648e28be85634b4e0dc025c3e" kind="function"><name>plgndr_s</name></member>
+    <member refid="namespacegaussleg_1afd1920d919b9afc4f93cf9e8f3e6839c" kind="function"><name>plgndr_v</name></member>
+    <member refid="namespacegaussleg_1a684bbdd1b82f3ce27ad23bf5935c36b0" kind="function"><name>make_factlog</name></member>
+    <member refid="namespacegaussleg_1a26bbda9b75b77851866018371f404ead" kind="function"><name>clebsch</name></member>
+  </compound>
+  <compound refid="namespace_h_d_f5" kind="namespace"><name>HDF5</name>
+  </compound>
+  <compound refid="namespaceio__corrsurface" kind="namespace"><name>io_corrsurface</name>
+    <member refid="io__corrsurface_8_f90_1acb1cef71089624934c4a2f4051a622c0" kind="variable"><name>dataset_count</name></member>
+    <member refid="io__corrsurface_8_f90_1a8f6673ffbfe8c2aa2ca69e8084666ed1" kind="function"><name>write_correlated_surface_file2d_serial</name></member>
+  </compound>
+  <compound refid="namespaceio__pop" kind="namespace"><name>io_pop</name>
+    <member refid="io__pop_8_f90_1af3718e60609f8b1a0b7a31850d6eddd0" kind="function"><name>write_wave_serial</name></member>
+  </compound>
+  <compound refid="namespaceio__subset" kind="namespace"><name>io_subset</name>
+    <member refid="io__subset_8_f90_1ae18f05711a43455c2dfe7872f05d30e8" kind="function"><name>dread_subset_serial</name></member>
+    <member refid="io__subset_8_f90_1ad0df02680ed0d0dc1779c5bc91eb491e" kind="function"><name>dread_subset_parallel</name></member>
+  </compound>
+  <compound refid="namespaceio__surface" kind="namespace"><name>io_surface</name>
+    <member refid="io__surface_8_f90_1abecf6f51f7d20cb85caf81e096b4a747" kind="function"><name>create_surface_file</name></member>
+    <member refid="io__surface_8_f90_1a34f9a1f7600d06681a60dbbc34c135b1" kind="function"><name>write_surface_file_2d</name></member>
+    <member refid="io__surface_8_f90_1a7feac34a804d81baa9fa952308ce95d3" kind="function"><name>write_surface_file_3d</name></member>
+    <member refid="io__surface_8_f90_1a991c03479d3f08975e4fffca8d963d9d" kind="function"><name>write_surface_file_ndim</name></member>
+    <member refid="io__surface_8_f90_1af9053232513175241ed46f1af2c7b648" kind="function"><name>get_surface_dims</name></member>
+    <member refid="io__surface_8_f90_1a1cb2439b35e29b4512b9d95c06e1e474" kind="function"><name>read_surface</name></member>
+    <member refid="io__surface_8_f90_1a84eff02f03964c28f0fafd0292d1edc5" kind="function"><name>read_wave_surface</name></member>
+    <member refid="io__surface_8_f90_1a0e902359f1109397abb26c47f0022602" kind="function"><name>read_field_surface</name></member>
+  </compound>
+  <compound refid="namespaceobservables" kind="namespace"><name>observables</name>
+    <member refid="namespaceobservables_1a8a6bcfb58d52d4fe82720b4f70a9a055" kind="function"><name>get_angular_resolution</name></member>
+    <member refid="namespaceobservables_1a5d282836884dfc0914f77cd5fdf8bc70" kind="function"><name>get_radial_amplitude</name></member>
+    <member refid="namespaceobservables_1a415e076591f8d19abeeb7c1461c059c0" kind="function"><name>write_radial_amplitude</name></member>
+    <member refid="namespaceobservables_1a0b1a7af46f2ea07e735c4cb3a6abd1af" kind="function"><name>get_pes</name></member>
+    <member refid="namespaceobservables_1a49cbb4d39bc897eba652c7bd0c7b6649" kind="function"><name>write_pes</name></member>
+    <member refid="namespaceobservables_1a9c5b6413cb5024bc9ec9ea111f3bba83" kind="function"><name>get_polar_amplitude</name></member>
+    <member refid="namespaceobservables_1a7fe1bde01013c09aef479372c0943bb5" kind="function"><name>write_polar_amplitude</name></member>
+    <member refid="namespaceobservables_1a4898af9bd28d97f07c4bda50b9975368" kind="function"><name>get_amplitude3d</name></member>
+    <member refid="namespaceobservables_1a7cf9e4039abeb86fbdcdc0accdb0c5f8" kind="function"><name>write_amplitude3d</name></member>
+    <member refid="namespaceobservables_1a618ee95c37379a52aa20abbabcc0b582" kind="function"><name>get_momwave</name></member>
+    <member refid="namespaceobservables_1a85e7169aaa65a6e73ae6a1fe1ea80ba5" kind="function"><name>write_momwave</name></member>
+    <member refid="namespaceobservables_1ab8ee6f891db9f8aa59cb5aaf38330ce4" kind="function"><name>get_radial_amp_lm</name></member>
+    <member refid="namespaceobservables_1a01cd97ee60ce8ef98b98e2d245cc3018" kind="function"><name>write_radial_amp_lm</name></member>
+  </compound>
+  <compound refid="namespaceomp__lib" kind="namespace"><name>omp_lib</name>
+  </compound>
+  <compound refid="namespacepatchwork" kind="namespace"><name>patchwork</name>
+    <member refid="patchwork_8_f90_1a0c79ce942d09d069c037b21d269d6b2b" kind="function"><name>get_subset_cartesian_coordinates_serial</name></member>
+    <member refid="patchwork_8_f90_1add5e6fffca752c14b830da3cac3fddca" kind="function"><name>get_subset_cylindrical_coordinates_serial</name></member>
+  </compound>
+  <compound refid="namespacepopsicle" kind="namespace"><name>popsicle</name>
+  </compound>
+  <compound refid="namespacepopsicle__aux" kind="namespace"><name>popsicle_aux</name>
+  </compound>
+  <compound refid="namespacesamplingpt" kind="namespace"><name>samplingpt</name>
+    <member refid="samplingpt_8f90_1acaac9b9d151f32d72ea7bdb17a48399a" kind="variable"><name>w</name></member>
+    <member refid="samplingpt_8f90_1a8958d119c7aa22f03d058d12e496caa6" kind="variable"><name>theta_ax</name></member>
+    <member refid="samplingpt_8f90_1ad1e39f38571812480ebf3770925fca53" kind="variable"><name>costheta_ax</name></member>
+    <member refid="samplingpt_8f90_1a58093d69347d7f685eabeabbeeaf7cef" kind="variable"><name>phi_ax</name></member>
+    <member refid="samplingpt_8f90_1aa0d6f3020c05ca363560376f40cfabb0" kind="variable"><name>gauss_th_weights</name></member>
+    <member refid="samplingpt_8f90_1ab0338658900b7197df99ecea001e7716" kind="variable"><name>numkpts</name></member>
+    <member refid="samplingpt_8f90_1ab58c9e26c89c38fa670504625ab29e3e" kind="variable"><name>dt</name></member>
+    <member refid="samplingpt_8f90_1a309c6d8af5faea910e5ef2d3c52dd963" kind="variable"><name>dw</name></member>
+    <member refid="samplingpt_8f90_1a42b11b7accc467e895b1ee36926a3b61" kind="variable"><name>wmax</name></member>
+    <member refid="samplingpt_8f90_1ae1ad5d9a0ca442c3ee1c6ea6d28757f6" kind="variable"><name>coulomb_exp_ener</name></member>
+    <member refid="samplingpt_8f90_1af087cbc48c662c1e8a120182a1eab334" kind="variable"><name>ntime</name></member>
+    <member refid="samplingpt_8f90_1ad26b8a3faec81e2fd7b1c68db056a405" kind="variable"><name>ntimeafter</name></member>
+    <member refid="samplingpt_8f90_1ade5447536a7e2c0e33f3106fbb0dbc04" kind="variable"><name>ntimetotal</name></member>
+    <member refid="samplingpt_8f90_1a0e5cca14f7b8288c8d567862f0d0e011" kind="variable"><name>time</name></member>
+    <member refid="samplingpt_8f90_1a02665717736311031c820703f7bd1b1a" kind="variable"><name>efield</name></member>
+    <member refid="samplingpt_8f90_1a9f7e3ffa73e97fda7e0bfa8b283540ac" kind="variable"><name>afield</name></member>
+    <member refid="samplingpt_8f90_1af152f5f3a0c28a096f2358e5b186cbc0" kind="variable"><name>psi_sph</name></member>
+    <member refid="samplingpt_8f90_1afeab415fa71fd6cc9a681ee2db3295e6" kind="variable"><name>psip_sph</name></member>
+    <member refid="samplingpt_8f90_1a689d54e3a00316df1b358c51af118ae8" kind="variable"><name>psi_sph_v</name></member>
+    <member refid="samplingpt_8f90_1ac9f50d73e3cc2b6644f33193e4a0b885" kind="variable"><name>rb</name></member>
+    <member refid="samplingpt_8f90_1ac46ffce85b7c341679e1e249bb3b2dcf" kind="variable"><name>numpts</name></member>
+    <member refid="samplingpt_8f90_1a3e169e9306e5b28dd8b8bb490cc7a83c" kind="variable"><name>numrpts</name></member>
+    <member refid="samplingpt_8f90_1aaa0862ee6965a4352e35c874eacae681" kind="variable"><name>numwpts</name></member>
+    <member refid="samplingpt_8f90_1a9779444ed4095d65c502630d7a770277" kind="variable"><name>numthetapts</name></member>
+    <member refid="samplingpt_8f90_1a3ba9ecddb2feab2cfd8b33dfb52f98a7" kind="variable"><name>numphipts</name></member>
+    <member refid="samplingpt_8f90_1a2c8fded55d79ffa9eed2d61f35c88b01" kind="variable"><name>numtotalsamplingpts</name></member>
+    <member refid="samplingpt_8f90_1aadba9cdc249352de566933fd22448d88" kind="variable"><name>aftercycles</name></member>
+    <member refid="samplingpt_8f90_1a8194758038382cfc22e3645613a91f9f" kind="variable"><name>gauge_trans_desired</name></member>
+    <member refid="samplingpt_8f90_1aedc6ff33bd2c95501dae0ecfb072620d" kind="function"><name>initialize_sampling_points</name></member>
+    <member refid="samplingpt_8f90_1a0f9f73f89bed9fef0692957a7ddc847c" kind="function"><name>calculate_sampling_pes</name></member>
+    <member refid="samplingpt_8f90_1a0fda52c15fe497169145e465a6b6632f" kind="function"><name>get_wave_time_file</name></member>
+    <member refid="samplingpt_8f90_1aa096cd8efb8eb4564dcfa68831f1f223" kind="function"><name>write_sampling_pes</name></member>
+    <member refid="samplingpt_8f90_1a5ea9da11d3732fc18d5708948214b3d3" kind="function"><name>write_sampling_polar</name></member>
+    <member refid="samplingpt_8f90_1ac705ce47a8c5f1b42c1c95110dc95bc7" kind="function"><name>write_sampling_3damplitude</name></member>
+    <member refid="samplingpt_8f90_1abba1b9cfce3604146806e8eec27076cc" kind="function"><name>gauge_transform_l2v</name></member>
+  </compound>
+  <compound refid="namespacescatt__interp" kind="namespace"><name>scatt_interp</name>
+    <member refid="namespacescatt__interp_1afc404361c193e33cd267772176d2ff18" kind="variable"><name>func_re</name></member>
+    <member refid="namespacescatt__interp_1abdba2119040f2c801abe092a97d6e4b7" kind="variable"><name>func_im</name></member>
+    <member refid="namespacescatt__interp_1aa7c9c7c4e82d19a441f922622eca8351" kind="variable"><name>nq</name></member>
+    <member refid="namespacescatt__interp_1a81ff98ada708775122eaf6370565579b" kind="variable"><name>nr</name></member>
+    <member refid="namespacescatt__interp_1a4f2ff36367fb29d54cb99a3ada9eb67e" kind="variable"><name>nw</name></member>
+    <member refid="namespacescatt__interp_1a64da6f4c6909e3e10fba1d6d290763ca" kind="variable"><name>dx_re</name></member>
+    <member refid="namespacescatt__interp_1af5794544581ae2f7f14c1826ac90822a" kind="variable"><name>dy_re</name></member>
+    <member refid="namespacescatt__interp_1aea0529b4927908042c771aced3d1dfb1" kind="variable"><name>rmax_re</name></member>
+    <member refid="namespacescatt__interp_1a189a8050f6396a1db9bbf5200019df77" kind="variable"><name>xmin_re</name></member>
+    <member refid="namespacescatt__interp_1ac2d963125c8e7f9877c6260b527999fc" kind="variable"><name>ymin_re</name></member>
+    <member refid="namespacescatt__interp_1a80b864cfe2a0df6968f03ed0e3d6c678" kind="variable"><name>xyzmin_re</name></member>
+    <member refid="namespacescatt__interp_1a2289587399f75de78e83f2fa96f92300" kind="variable"><name>xyzdel_re</name></member>
+    <member refid="namespacescatt__interp_1a88b63a9abe15792a264eea80ad04850b" kind="variable"><name>lnext_re</name></member>
+    <member refid="namespacescatt__interp_1a9941a0a0611047acd8b69b1ea19fbfd8" kind="variable"><name>lcell_re</name></member>
+    <member refid="namespacescatt__interp_1acb99fdbe01bafc31e60cf55bbe1761bf" kind="variable"><name>lcell3_re</name></member>
+    <member refid="namespacescatt__interp_1af0f816112c42e77647833117f8b437bf" kind="variable"><name>rsq_re</name></member>
+    <member refid="namespacescatt__interp_1a23646be1a2c6ab971e47f7102ae65a7e" kind="variable"><name>rw_re</name></member>
+    <member refid="namespacescatt__interp_1a293227e8480234a688a211b56cac3eec" kind="variable"><name>aq_re</name></member>
+    <member refid="namespacescatt__interp_1a304ad8a5fe835fa3f25262cd2708b17b" kind="variable"><name>al_re</name></member>
+    <member refid="namespacescatt__interp_1aa2e832512d63c4a53eecbf71dee7a4ec" kind="variable"><name>dx_im</name></member>
+    <member refid="namespacescatt__interp_1a9e5009df95d96136a49880346bf45144" kind="variable"><name>dy_im</name></member>
+    <member refid="namespacescatt__interp_1ab9595bcd7cd85db03edeacf86e894dd8" kind="variable"><name>rmax_im</name></member>
+    <member refid="namespacescatt__interp_1a812c9fdb3804abb4645462b94c6c0a42" kind="variable"><name>xmin_im</name></member>
+    <member refid="namespacescatt__interp_1a46768a1ecb214a4303f76f90ff854ad4" kind="variable"><name>ymin_im</name></member>
+    <member refid="namespacescatt__interp_1ab23f34e9792ea2e8e191f4c1a2a70f40" kind="variable"><name>xyzmin_im</name></member>
+    <member refid="namespacescatt__interp_1a0f5fc54597afc3e93c301b85ec416922" kind="variable"><name>xyzdel_im</name></member>
+    <member refid="namespacescatt__interp_1a2c3489d07daa6dd7ad4bc58eb818c450" kind="variable"><name>lnext_im</name></member>
+    <member refid="namespacescatt__interp_1a614e8396243c0b53ee60f4c30f3d06cf" kind="variable"><name>lcell_im</name></member>
+    <member refid="namespacescatt__interp_1a8cd479d83618a51d22794ebc06f82963" kind="variable"><name>lcell3_im</name></member>
+    <member refid="namespacescatt__interp_1a162718b9ea44a12e227d3b04897c1ddf" kind="variable"><name>rsq_im</name></member>
+    <member refid="namespacescatt__interp_1ada47d62d3783524c6c9380c74057b97b" kind="variable"><name>rw_im</name></member>
+    <member refid="namespacescatt__interp_1ad9327f895afadb4e04e3b69ecc49f713" kind="variable"><name>aq_im</name></member>
+    <member refid="namespacescatt__interp_1adede7497b41a3958225023452545b75f" kind="variable"><name>al_im</name></member>
+    <member refid="namespacescatt__interp_1a64a9659890c173f40c4a55437cdec904" kind="function"><name>dcreate_scatt_interpolant2d</name></member>
+    <member refid="namespacescatt__interp_1a622afe95dc79d62c1da8ff8e77150fa9" kind="function"><name>zcreate_scatt_interpolant2d</name></member>
+    <member refid="namespacescatt__interp_1a40ddc99a24f0e7af7b5ff99ff21ae3da" kind="function"><name>dcreate_scatt_interpolant3d</name></member>
+    <member refid="namespacescatt__interp_1a972ae7d77f2d148382ebeaebaa70d9cd" kind="function"><name>zcreate_scatt_interpolant3d</name></member>
+    <member refid="namespacescatt__interp_1a6a58ac69bdcba823ae877ecf6f91efb2" kind="function"><name>scatt_dinterpolate2d</name></member>
+    <member refid="namespacescatt__interp_1a73d146324dbdb4cf5f7cf4c389afe08c" kind="function"><name>scatt_zinterpolate2d</name></member>
+    <member refid="namespacescatt__interp_1aad04d7bf30168c8a25802091612faf94" kind="function"><name>scatt_dinterpolate3d</name></member>
+    <member refid="namespacescatt__interp_1ad85da83b5f0b1efa80b332f4add6754a" kind="function"><name>scatt_zinterpolate3d</name></member>
+    <member refid="namespacescatt__interp_1a321cbdedab95c097348c0d9921abfd73" kind="function"><name>ddestroy_scatt_interpolant2d</name></member>
+    <member refid="namespacescatt__interp_1a9a26aa4fc301c08d7449bdcae7aba44c" kind="function"><name>zdestroy_scatt_interpolant2d</name></member>
+    <member refid="namespacescatt__interp_1a7fef862feb98d3480c972c74f48b9b20" kind="function"><name>ddestroy_scatt_interpolant3d</name></member>
+    <member refid="namespacescatt__interp_1a3ea6798411b0c2e86d37639f81897066" kind="function"><name>zdestroy_scatt_interpolant3d</name></member>
+  </compound>
+  <compound refid="namespacescattboundcart" kind="namespace"><name>scattboundcart</name>
+    <member refid="scattboundcart_8_f90_1a92e61dc7fb986535c4091ca908d4aa59" kind="variable"><name>phi_boundary</name></member>
+    <member refid="scattboundcart_8_f90_1a76715b7ec583186bea3af5704c31339f" kind="variable"><name>i_am_in_local3d</name></member>
+    <member refid="scattboundcart_8_f90_1a4d6ec6a041968c47d167c1d013750410" kind="variable"><name>i_am_in_global3d</name></member>
+    <member refid="scattboundcart_8_f90_1a401e1bf06c3f6bde0f4334eda54bde21" kind="variable"><name>numphipts</name></member>
+    <member refid="scattboundcart_8_f90_1adfe78a4dccc46299d3c3f677ca208269" kind="variable"><name>numphiptsperproc</name></member>
+    <member refid="scattboundcart_8_f90_1a097a4dcb88281d614323ee2e574b6211" kind="variable"><name>numpts</name></member>
+    <member refid="scattboundcart_8_f90_1adf375ebb7444c6fd754ec34645ef4cec" kind="variable"><name>xpts_scatt</name></member>
+    <member refid="scattboundcart_8_f90_1a34ea9829603d44af302f1aa1bdb6ee69" kind="variable"><name>ypts_scatt</name></member>
+    <member refid="scattboundcart_8_f90_1a838d650c99d2f051112b5980b0db0ea0" kind="variable"><name>zpts_scatt</name></member>
+    <member refid="scattboundcart_8_f90_1ad110b2447a7da5b6614724be38af2b2a" kind="variable"><name>psi_scatt</name></member>
+    <member refid="scattboundcart_8_f90_1a7b75defd43f621aa7397c60085089196" kind="variable"><name>index_x1</name></member>
+    <member refid="scattboundcart_8_f90_1a0e9067b389aa7056f786b9c1f73db305" kind="variable"><name>index_x2</name></member>
+    <member refid="scattboundcart_8_f90_1aa8e7e6842c4e0a9150695d838ba402e0" kind="variable"><name>index_x3</name></member>
+    <member refid="scattboundcart_8_f90_1a4d09f827c01188f65bb1e14cad39d610" kind="function"><name>initialize_scatt_cartesian_boundary2d</name></member>
+    <member refid="scattboundcart_8_f90_1a8adf34c082a45e404d23b7fa7221ea41" kind="function"><name>initialize_scatt_cartesian_boundary3d</name></member>
+    <member refid="scattboundcart_8_f90_1ad6cccbdb0148bc2d1f5caa71b23a0ea9" kind="function"><name>get_scatt_cartesian_boundary2d</name></member>
+    <member refid="scattboundcart_8_f90_1afc9ad3da41ade7e9cb2dcded7ee6bc23" kind="function"><name>dget_scatt_cartesian_boundary3d</name></member>
+    <member refid="scattboundcart_8_f90_1a538bfb4607d746217aad137960bb8f0c" kind="function"><name>zget_scatt_cartesian_boundary3d</name></member>
+    <member refid="scattboundcart_8_f90_1a26134e7e7555ca6e36f0deabd28af766" kind="function"><name>delete_scatt_cartesian_boundary2d</name></member>
+    <member refid="scattboundcart_8_f90_1a1e9ad7a8a631eb09d8195efac9c6ab2a" kind="function"><name>delete_scatt_cartesian_boundary3d</name></member>
+  </compound>
+  <compound refid="namespacescattboundcyl" kind="namespace"><name>scattboundcyl</name>
+    <member refid="scattboundcyl_8_f90_1a96f93e0587a89dff8418477019f2098f" kind="variable"><name>rpts_boundary</name></member>
+    <member refid="scattboundcyl_8_f90_1ac6fdb2029e749648e5a148d44c2ca3df" kind="variable"><name>theta_boundary</name></member>
+    <member refid="scattboundcyl_8_f90_1ad5a92533649eadcbf271c259ef0da45c" kind="variable"><name>costheta_boundary</name></member>
+    <member refid="scattboundcyl_8_f90_1aedd347ba45e7f6604214bb44729b828d" kind="variable"><name>theta_weights</name></member>
+    <member refid="scattboundcyl_8_f90_1a2869c56d07dd1fd77e37b06ce7566cf9" kind="variable"><name>i_am_surface_local</name></member>
+    <member refid="scattboundcyl_8_f90_1ab5710f2d04d92318056ae863c0968de3" kind="variable"><name>i_am_surface</name></member>
+    <member refid="scattboundcyl_8_f90_1aef1bc0b3be8b52708696292f05d83820" kind="variable"><name>surface_members</name></member>
+    <member refid="scattboundcyl_8_f90_1ab644613827f9db7c1b613cd0e1d81787" kind="variable"><name>i_am_in_local2d</name></member>
+    <member refid="scattboundcyl_8_f90_1ab68148451c425ee174991f90678869f8" kind="variable"><name>i_am_in_global2d</name></member>
+    <member refid="scattboundcyl_8_f90_1a63da7dda4cc5ca7c4795afa9ec0830b2" kind="variable"><name>numrpts</name></member>
+    <member refid="scattboundcyl_8_f90_1abfb972d237d94e9fcd4b7f59b0e1b14d" kind="variable"><name>numthetapts</name></member>
+    <member refid="scattboundcyl_8_f90_1a7bd29dda352e1510947fade25cfe963d" kind="variable"><name>numthetaptsperproc</name></member>
+    <member refid="scattboundcyl_8_f90_1a72d06460542a2f3c856d6555b9bba18b" kind="variable"><name>numsurfaceprocs</name></member>
+    <member refid="scattboundcyl_8_f90_1abebd3272ca287714b0d72450140fa42d" kind="variable"><name>numioprocs</name></member>
+    <member refid="scattboundcyl_8_f90_1a7b172e3cf8236ad7cff397f8aba6bbc6" kind="variable"><name>surfacerank</name></member>
+    <member refid="scattboundcyl_8_f90_1aa135857cff59af8bc1d8b8ccef5a58c7" kind="variable"><name>surfacecomm</name></member>
+    <member refid="scattboundcyl_8_f90_1a12a75e3ced5470d6ef5d82078472f6db" kind="variable"><name>numpts</name></member>
+    <member refid="scattboundcyl_8_f90_1a2589a794c5c2f8b0c927e6fcb0403510" kind="variable"><name>rhopts_scatt</name></member>
+    <member refid="scattboundcyl_8_f90_1a67addfb8aa268bc9ff4228a8cf130f8d" kind="variable"><name>zpts_scatt</name></member>
+    <member refid="scattboundcyl_8_f90_1a5eb5956ce0f2cc31b234d5605e93af07" kind="variable"><name>psi_scatt</name></member>
+    <member refid="scattboundcyl_8_f90_1a937ebe536e27b80f1337a715141760d5" kind="variable"><name>index_x1</name></member>
+    <member refid="scattboundcyl_8_f90_1af914f4f741324e54f89eb84514721749" kind="variable"><name>index_x2</name></member>
+    <member refid="scattboundcyl_8_f90_1a3196b064a72953ccd85e80300c220ecc" kind="function"><name>initialize_scatt_cylindrical_boundary2d</name></member>
+    <member refid="scattboundcyl_8_f90_1aef09b77a9ce035ec46a460d63f97e4f9" kind="function"><name>dget_scatt_cylindrical_boundary2d</name></member>
+    <member refid="scattboundcyl_8_f90_1ace9d3daaf08beea756a290bc5ebdca2d" kind="function"><name>zget_scatt_cylindrical_boundary2d</name></member>
+    <member refid="scattboundcyl_8_f90_1a3ac58d45af34de57f53d90a146a575bf" kind="function"><name>delete_scatt_cylindrical_boundary2d</name></member>
+  </compound>
+  <compound refid="namespacescattcoords" kind="namespace"><name>scattcoords</name>
+    <member refid="scattcoords_8f90_1a38247b5a42fb4719b1e1b33d34835b85" kind="variable"><name>numpts</name></member>
+    <member refid="scattcoords_8f90_1a625df3b7e3988fe37f5fef9d5224017e" kind="variable"><name>numrpts</name></member>
+    <member refid="scattcoords_8f90_1af69936dba7f6b03bf685c9b6934b7e2c" kind="variable"><name>numthetapts</name></member>
+    <member refid="scattcoords_8f90_1a6e88956ccb48224dc3d01525d3b16484" kind="variable"><name>numphipts</name></member>
+    <member refid="scattcoords_8f90_1a0b8d71e230b90bf4bd434f07cdacb3df" kind="function"><name>dscatt_cartesian2spherical2d</name></member>
+    <member refid="scattcoords_8f90_1acbd261f35014ed929145b84b222268dc" kind="function"><name>zscatt_cartesian2spherical2d</name></member>
+    <member refid="scattcoords_8f90_1ad71ebbdeccfe5156f540c448cd4150ed" kind="function"><name>dscatt_cartesian2spherical3d</name></member>
+    <member refid="scattcoords_8f90_1aab0cb27c9b1334a63dfc1661b98f520a" kind="function"><name>zscatt_cartesian2spherical3d</name></member>
+    <member refid="scattcoords_8f90_1ad01cea9ec396222c201edc7f3ea9f158" kind="function"><name>dscatt_cylindrical2spherical2d</name></member>
+    <member refid="scattcoords_8f90_1a0b1ad7d12b8df0347efd5b0a092519a7" kind="function"><name>zscatt_cylindrical2spherical2d</name></member>
+  </compound>
+  <compound refid="namespacesharmonics" kind="namespace"><name>sharmonics</name>
+    <member refid="namespacesharmonics_1a54e2870724fae4c7a6ac8dc4b971a993" kind="variable"><name>legenpl</name></member>
+    <member refid="namespacesharmonics_1a9cfef04ded9db9a5fd116ec10af39b43" kind="variable"><name>normfact</name></member>
+    <member refid="namespacesharmonics_1a3562b6c9f338ddd73debe9069c0a9efa" kind="function"><name>initialize_legendre_stuff</name></member>
+    <member refid="namespacesharmonics_1a1b0768c031d59eb8ff3c10e5173e995b" kind="function"><name>create_spherical_harmonics</name></member>
+    <member refid="namespacesharmonics_1a138ab46d773e1ada5242bbb938180477" kind="function"><name>create_spherical_harmonics_couplings</name></member>
+    <member refid="namespacesharmonics_1ac4aa6e87290881e00fb2c3602000191b" kind="function"><name>make_sht_single</name></member>
+    <member refid="namespacesharmonics_1a93b738fc93256ab0780f6cba00d0a877" kind="function"><name>make_sht_group</name></member>
+  </compound>
+  <compound refid="namespacesheppack" kind="namespace"><name>sheppack</name>
+  </compound>
+  <compound refid="namespacespline__interp" kind="namespace"><name>spline_interp</name>
+    <member refid="namespacespline__interp_1a2019ce6ce4f8a7d8bf49e1606a7b5ec2" kind="function"><name>get_scnd_derivatives_spline</name></member>
+    <member refid="namespacespline__interp_1a2dd4ae64baa2f9b89f7a9f44e16eecc2" kind="function"><name>spline_interpolation</name></member>
+    <member refid="namespacespline__interp_1ae93c890920efc279ba50ce38c2ea5053" kind="function"><name>tridag_ser</name></member>
+    <member refid="namespacespline__interp_1ac7b3309962c1784ea7dad32ad884e557" kind="function"><name>tridag_par</name></member>
+  </compound>
+  <compound refid="namespacesurface" kind="namespace"><name>surface</name>
+    <member refid="namespacesurface_1a89dff7b0bc8294e3f7aaffa1e3f66d44" kind="variable"><name>spherical_wave2d_local</name></member>
+    <member refid="namespacesurface_1a96154c203279ec9b4d82a0fdc8bc4f18" kind="variable"><name>spherical_wave2d</name></member>
+    <member refid="namespacesurface_1aa260c60b91a3988484d075fd1e0b0b77" kind="variable"><name>spherical_wave2d_dr</name></member>
+    <member refid="namespacesurface_1a8cda4e4ded24f3b65738826acfe8b86d" kind="variable"><name>spherical_wave2d_dtheta</name></member>
+    <member refid="namespacesurface_1abd5c1e5aac92bc692618b29923660396" kind="variable"><name>spherical_wave2d_deriv</name></member>
+    <member refid="namespacesurface_1a0076e723136b76ac85a1d436f450a65d" kind="variable"><name>spherical_wave3d_local</name></member>
+    <member refid="namespacesurface_1ad8cb460fb0aa29b57c5bc34c7bb460aa" kind="variable"><name>spherical_wave3d</name></member>
+    <member refid="namespacesurface_1a2be00436c28e258ed460d85c596b8ccb" kind="variable"><name>spherical_wave3d_dr</name></member>
+    <member refid="namespacesurface_1a2e082620ef65c53b698c585f3de3a38e" kind="variable"><name>spherical_wave3d_dtheta</name></member>
+    <member refid="namespacesurface_1aac0f2c2b1cde81a2287239e0c5b6a7e3" kind="variable"><name>spherical_wave3d_dphi</name></member>
+    <member refid="namespacesurface_1a7dcc8045a1f560b9278c9c035ecbe6db" kind="variable"><name>spherical_wave3d_deriv</name></member>
+    <member refid="namespacesurface_1ac5c34022e6b49a821efe8322f1f774dd" kind="variable"><name>psi_l</name></member>
+    <member refid="namespacesurface_1a5ca97f29f6c28d0493a98c1dff9df84a" kind="variable"><name>psi_lm</name></member>
+    <member refid="namespacesurface_1ac20fbaad10003e984da5c18fd51c3195" kind="variable"><name>rb</name></member>
+    <member refid="namespacesurface_1aadb39e17078c483d98c514cdc922ade1" kind="variable"><name>deltar</name></member>
+    <member refid="namespacesurface_1a911c0236211e7c985574812133c942e4" kind="variable"><name>maxpts</name></member>
+    <member refid="namespacesurface_1a47af91cd7f1d5f28fd9f1dfcd5ff2afa" kind="function"><name>initialize_cylindrical_surface</name></member>
+    <member refid="namespacesurface_1a84785222e1c493ba239e9c3c0b269d55" kind="function"><name>initialize_cartesian_surface</name></member>
+    <member refid="namespacesurface_1a512ae9dbd39eaf12e66d733749d65642" kind="function"><name>get_cylindrical_surface</name></member>
+    <member refid="namespacesurface_1ac2ef5ef833ecd09a52367e4eb4d75512" kind="function"><name>get_cartesian_surface</name></member>
+    <member refid="namespacesurface_1a38df72433aa65cbfc858d35b9ae23813" kind="function"><name>delete_surface2d</name></member>
+    <member refid="namespacesurface_1abe2d94c449094d9ac327ef3f5f7969f9" kind="function"><name>delete_surface3d</name></member>
+  </compound>
+  <compound refid="namespacetools" kind="namespace"><name>tools</name>
+    <member refid="tools_8f90_1adff0debcbf01d0adfac8e1d23199ed96" kind="variable"><name>fd_coeff1</name></member>
+    <member refid="tools_8f90_1a95e39d2914b76c2d4cd844f2cb134275" kind="variable"><name>fd_coeff2</name></member>
+    <member refid="tools_8f90_1a3c1b4472085237f52238acc6f0d116f1" kind="function"><name>indx</name></member>
+    <member refid="tools_8f90_1a99764edfc7929f55dfa990a9e3d16002" kind="function"><name>get_simulation_parameters</name></member>
+    <member refid="tools_8f90_1a8b9186ca9624c97ecb05fcc5ea122d12" kind="function"><name>initialize_fd_coeffs</name></member>
+    <member refid="tools_8f90_1a5ffbd2337028a23e11299ce54f024997" kind="function"><name>delete_fd_coeffs</name></member>
+    <member refid="tools_8f90_1a3a80873b5c6b35a3aa5bd4f22498133c" kind="function"><name>make_wave_boundary_derivative2d</name></member>
+    <member refid="tools_8f90_1a2f2bf951453669e70964df7fb4b233ab" kind="function"><name>make_wave_boundary_derivative3d</name></member>
+    <member refid="tools_8f90_1a3c125838be398143901359f08493af08" kind="function"><name>dmake_derivative</name></member>
+    <member refid="tools_8f90_1a891c41ab6491b76527ce55363539ddfe" kind="function"><name>zmake_derivative</name></member>
+    <member refid="tools_8f90_1abc238e2106d3cecfbc2b22fdeaccd7e2" kind="function"><name>dmake_cross_derivative2d</name></member>
+    <member refid="tools_8f90_1a866b57a1e6108889816fdb184d5b560d" kind="function"><name>zmake_cross_derivative2d</name></member>
+    <member refid="tools_8f90_1a51b850452ea02853f95af383a082d062" kind="function"><name>dmake_cross_derivative3d</name></member>
+    <member refid="tools_8f90_1a2a6ecf2908b40d75911f80a68e7f9266" kind="function"><name>zmake_cross_derivative3d</name></member>
+    <member refid="tools_8f90_1a8a6f67ecc3408a911492208daad9ef3f" kind="function"><name>fdweights</name></member>
+    <member refid="tools_8f90_1a027e5384b75059ac3bc757b3ef7e69a0" kind="function"><name>interv</name></member>
+    <member refid="tools_8f90_1aeebb42c85a4bdd4f49bbbc5155d0eb35" kind="function"><name>prime_sieve</name></member>
+    <member refid="tools_8f90_1aa7479940f4ad121767a85e1cb3937668" kind="function"><name>trial_division</name></member>
+    <member refid="tools_8f90_1ad6f287cf226c25412624986bba39b3e4" kind="function"><name>reshape_numptsperproc</name></member>
+  </compound>
+  <compound refid="namespacewaveduplicate" kind="namespace"><name>waveduplicate</name>
+    <member refid="waveduplicate_8f90_1a4f466b924c0c2ea3101a10dd273f86a1" kind="function"><name>dduplicate_cartesian_wave3d</name></member>
+    <member refid="waveduplicate_8f90_1af441d02dec86ca3a5c7e154aec8b07d8" kind="function"><name>zduplicate_cartesian_wave3d</name></member>
+    <member refid="waveduplicate_8f90_1aed6935a98ff54e8b0401e1a6b412eee2" kind="function"><name>dduplicate_cylindrical_wave2d</name></member>
+    <member refid="waveduplicate_8f90_1a18de5f188de1acbbd1816eb19798dfdd" kind="function"><name>zduplicate_cylindrical_wave2d</name></member>
+  </compound>
+  <compound refid="bessel_8f" kind="file"><name>bessel.f</name>
+    <member refid="bessel_8f_1a0d1c33daf1762e77796217cb53aef647" kind="function"><name>sbesjy</name></member>
+  </compound>
+  <compound refid="boundary_8_f90" kind="file"><name>boundary.F90</name>
+  </compound>
+  <compound refid="comm__surff_8_f90" kind="file"><name>comm_surff.F90</name>
+  </compound>
+  <compound refid="constants_8f90" kind="file"><name>constants.f90</name>
+  </compound>
+  <compound refid="coords_8f90" kind="file"><name>coords.f90</name>
+  </compound>
+  <compound refid="corrsurface_8_f90" kind="file"><name>corrsurface.F90</name>
+  </compound>
+  <compound refid="corrtools_8f90" kind="file"><name>corrtools.f90</name>
+  </compound>
+  <compound refid="cubboundcart_8_f90" kind="file"><name>cubboundcart.F90</name>
+  </compound>
+  <compound refid="cubboundcyl_8_f90" kind="file"><name>cubboundcyl.F90</name>
+  </compound>
+  <compound refid="cubcoords_8f90" kind="file"><name>cubcoords.f90</name>
+  </compound>
+  <compound refid="cubic__interp_8f90" kind="file"><name>cubic_interp.f90</name>
+  </compound>
+  <compound refid="fftw_8_f90" kind="file"><name>fftw.F90</name>
+  </compound>
+  <compound refid="flux_8f90" kind="file"><name>flux.f90</name>
+  </compound>
+  <compound refid="fourier_8_f90" kind="file"><name>fourier.F90</name>
+  </compound>
+  <compound refid="gaussleg_8f90" kind="file"><name>gaussleg.f90</name>
+  </compound>
+  <compound refid="io__corrsurface_8_f90" kind="file"><name>io_corrsurface.F90</name>
+  </compound>
+  <compound refid="io__pop_8_f90" kind="file"><name>io_pop.F90</name>
+  </compound>
+  <compound refid="io__subset_8_f90" kind="file"><name>io_subset.F90</name>
+  </compound>
+  <compound refid="io__surface_8_f90" kind="file"><name>io_surface.F90</name>
+  </compound>
+  <compound refid="observables_8_f90" kind="file"><name>observables.F90</name>
+  </compound>
+  <compound refid="patchwork_8_f90" kind="file"><name>patchwork.F90</name>
+  </compound>
+  <compound refid="popsicle_8f90" kind="file"><name>popsicle.f90</name>
+  </compound>
+  <compound refid="popsicle__aux_8f90" kind="file"><name>popsicle_aux.f90</name>
+  </compound>
+  <compound refid="samplingpt_8f90" kind="file"><name>samplingpt.f90</name>
+  </compound>
+  <compound refid="scatt__interp_8f90" kind="file"><name>scatt_interp.f90</name>
+  </compound>
+  <compound refid="scattboundcart_8_f90" kind="file"><name>scattboundcart.F90</name>
+  </compound>
+  <compound refid="scattboundcyl_8_f90" kind="file"><name>scattboundcyl.F90</name>
+  </compound>
+  <compound refid="scattcoords_8f90" kind="file"><name>scattcoords.f90</name>
+  </compound>
+  <compound refid="sharmonics_8f90" kind="file"><name>sharmonics.f90</name>
+  </compound>
+  <compound refid="silo__aux_8f" kind="file"><name>silo_aux.f</name>
+    <member refid="silo__aux_8f_1adeb6a7be54484e2461ddc0e6d4af6c2d" kind="function"><name>create_silo_file</name></member>
+    <member refid="silo__aux_8f_1a5a9c92c2a99662b331c921891a4f0851" kind="function"><name>write_silo_rectilinear_mesh2d</name></member>
+    <member refid="silo__aux_8f_1a7d0ffb3843fa68423fe351e0aaa555b6" kind="function"><name>write_silo_rectilinear_mesh3d</name></member>
+    <member refid="silo__aux_8f_1ae12d2ee2254040ec0d928da1a1197a8a" kind="function"><name>write_silo_curvilinear_mesh2d</name></member>
+    <member refid="silo__aux_8f_1aa748e56bfa84f71dedd29280e0ad5e9a" kind="function"><name>write_silo_curvilinear_mesh3d</name></member>
+    <member refid="silo__aux_8f_1a5425b0d6dbcafa3ab8ab531119121916" kind="function"><name>write_silo_function2d</name></member>
+    <member refid="silo__aux_8f_1a02d121a27ddb451c8a0958b27215ff3f" kind="function"><name>write_silo_function3d</name></member>
+  </compound>
+  <compound refid="spline__interp_8f90" kind="file"><name>spline_interp.f90</name>
+  </compound>
+  <compound refid="surface_8_f90" kind="file"><name>surface.F90</name>
+  </compound>
+  <compound refid="tools_8f90" kind="file"><name>tools.f90</name>
+  </compound>
+  <compound refid="waveduplicate_8f90" kind="file"><name>waveduplicate.f90</name>
+  </compound>
+  <compound refid="todo" kind="page"><name>todo</name>
+  </compound>
+  <compound refid="dir_68267d1309a1af8e8297ef4c3efbcdba" kind="dir"><name>src</name>
+  </compound>
+</doxygenindex>

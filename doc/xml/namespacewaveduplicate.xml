@@ -1,0 +1,251 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacewaveduplicate" kind="namespace" language="Fortran">
+    <compoundname>waveduplicate</compoundname>
+    <innerclass refid="interfacewaveduplicate_1_1duplicate__cartesian__wave" prot="private">waveduplicate::duplicate_cartesian_wave</innerclass>
+    <innerclass refid="interfacewaveduplicate_1_1duplicate__cylindrical__wave" prot="private">waveduplicate::duplicate_cylindrical_wave</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="waveduplicate_8f90_1a4f466b924c0c2ea3101a10dd273f86a1" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine waveduplicate::dduplicate_cartesian_wave3d</definition>
+        <argsstring>(psi_original, psi_duplicated, x1_ax, y1_ax, z1_ax, x2_ax, y2_ax, z2_ax, fdrule, psi_dup_dx, psi_dup_dy, psi_dup_dz, rank)</argsstring>
+        <name>dduplicate_cartesian_wave3d</name>
+        <param>
+          <type>psi_original</type>
+          <defname>psi_original</defname>
+        </param>
+        <param>
+          <type>psi_duplicated</type>
+          <defname>psi_duplicated</defname>
+        </param>
+        <param>
+          <type>x1_ax</type>
+          <defname>x1_ax</defname>
+        </param>
+        <param>
+          <type>y1_ax</type>
+          <defname>y1_ax</defname>
+        </param>
+        <param>
+          <type>z1_ax</type>
+          <defname>z1_ax</defname>
+        </param>
+        <param>
+          <type>x2_ax</type>
+          <defname>x2_ax</defname>
+        </param>
+        <param>
+          <type>y2_ax</type>
+          <defname>y2_ax</defname>
+        </param>
+        <param>
+          <type>z2_ax</type>
+          <defname>z2_ax</defname>
+        </param>
+        <param>
+          <type>fdrule</type>
+          <defname>fdrule</defname>
+        </param>
+        <param>
+          <type>psi_dup_dx</type>
+          <defname>psi_dup_dx</defname>
+        </param>
+        <param>
+          <type>psi_dup_dy</type>
+          <defname>psi_dup_dy</defname>
+        </param>
+        <param>
+          <type>psi_dup_dz</type>
+          <defname>psi_dup_dz</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/waveduplicate.f90" line="45" column="1" bodyfile="src/waveduplicate.f90" bodystart="48" bodyend="366"/>
+      </memberdef>
+      <memberdef kind="function" id="waveduplicate_8f90_1af441d02dec86ca3a5c7e154aec8b07d8" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine waveduplicate::zduplicate_cartesian_wave3d</definition>
+        <argsstring>(psi_original, psi_duplicated, x1_ax, y1_ax, z1_ax, x2_ax, y2_ax, z2_ax, fdrule, psi_dup_dx, psi_dup_dy, psi_dup_dz, rank)</argsstring>
+        <name>zduplicate_cartesian_wave3d</name>
+        <param>
+          <type>psi_original</type>
+          <defname>psi_original</defname>
+        </param>
+        <param>
+          <type>psi_duplicated</type>
+          <defname>psi_duplicated</defname>
+        </param>
+        <param>
+          <type>x1_ax</type>
+          <defname>x1_ax</defname>
+        </param>
+        <param>
+          <type>y1_ax</type>
+          <defname>y1_ax</defname>
+        </param>
+        <param>
+          <type>z1_ax</type>
+          <defname>z1_ax</defname>
+        </param>
+        <param>
+          <type>x2_ax</type>
+          <defname>x2_ax</defname>
+        </param>
+        <param>
+          <type>y2_ax</type>
+          <defname>y2_ax</defname>
+        </param>
+        <param>
+          <type>z2_ax</type>
+          <defname>z2_ax</defname>
+        </param>
+        <param>
+          <type>fdrule</type>
+          <defname>fdrule</defname>
+        </param>
+        <param>
+          <type>psi_dup_dx</type>
+          <defname>psi_dup_dx</defname>
+        </param>
+        <param>
+          <type>psi_dup_dy</type>
+          <defname>psi_dup_dy</defname>
+        </param>
+        <param>
+          <type>psi_dup_dz</type>
+          <defname>psi_dup_dz</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/waveduplicate.f90" line="372" column="1" bodyfile="src/waveduplicate.f90" bodystart="375" bodyend="741"/>
+      </memberdef>
+      <memberdef kind="function" id="waveduplicate_8f90_1aed6935a98ff54e8b0401e1a6b412eee2" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine waveduplicate::dduplicate_cylindrical_wave2d</definition>
+        <argsstring>(psi_original, psi_duplicated, rho1_ax, z1_ax, rho2_ax, z2_ax, fdrule, psi_dup_drho, psi_dup_dz, rank)</argsstring>
+        <name>dduplicate_cylindrical_wave2d</name>
+        <param>
+          <type>psi_original</type>
+          <defname>psi_original</defname>
+        </param>
+        <param>
+          <type>psi_duplicated</type>
+          <defname>psi_duplicated</defname>
+        </param>
+        <param>
+          <type>rho1_ax</type>
+          <defname>rho1_ax</defname>
+        </param>
+        <param>
+          <type>z1_ax</type>
+          <defname>z1_ax</defname>
+        </param>
+        <param>
+          <type>rho2_ax</type>
+          <defname>rho2_ax</defname>
+        </param>
+        <param>
+          <type>z2_ax</type>
+          <defname>z2_ax</defname>
+        </param>
+        <param>
+          <type>fdrule</type>
+          <defname>fdrule</defname>
+        </param>
+        <param>
+          <type>psi_dup_drho</type>
+          <defname>psi_dup_drho</defname>
+        </param>
+        <param>
+          <type>psi_dup_dz</type>
+          <defname>psi_dup_dz</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/waveduplicate.f90" line="760" column="1" bodyfile="src/waveduplicate.f90" bodystart="762" bodyend="956"/>
+      </memberdef>
+      <memberdef kind="function" id="waveduplicate_8f90_1a18de5f188de1acbbd1816eb19798dfdd" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine waveduplicate::zduplicate_cylindrical_wave2d</definition>
+        <argsstring>(psi_original, psi_duplicated, rho1_ax, z1_ax, rho2_ax, z2_ax, fdrule, psi_dup_drho, psi_dup_dz, rank)</argsstring>
+        <name>zduplicate_cylindrical_wave2d</name>
+        <param>
+          <type>psi_original</type>
+          <defname>psi_original</defname>
+        </param>
+        <param>
+          <type>psi_duplicated</type>
+          <defname>psi_duplicated</defname>
+        </param>
+        <param>
+          <type>rho1_ax</type>
+          <defname>rho1_ax</defname>
+        </param>
+        <param>
+          <type>z1_ax</type>
+          <defname>z1_ax</defname>
+        </param>
+        <param>
+          <type>rho2_ax</type>
+          <defname>rho2_ax</defname>
+        </param>
+        <param>
+          <type>z2_ax</type>
+          <defname>z2_ax</defname>
+        </param>
+        <param>
+          <type>fdrule</type>
+          <defname>fdrule</defname>
+        </param>
+        <param>
+          <type>psi_dup_drho</type>
+          <defname>psi_dup_drho</defname>
+        </param>
+        <param>
+          <type>psi_dup_dz</type>
+          <defname>psi_dup_dz</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/waveduplicate.f90" line="961" column="1" bodyfile="src/waveduplicate.f90" bodystart="963" bodyend="1183"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/waveduplicate.f90" line="1" column="1"/>
+  </compounddef>
+</doxygen>

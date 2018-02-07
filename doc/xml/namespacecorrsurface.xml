@@ -1,0 +1,442 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacecorrsurface" kind="namespace" language="Fortran">
+    <compoundname>corrsurface</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="namespacecorrsurface_1ab79a11139dc0604765faac458781a914" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable corrsurface::spherical_wave2d1d_local</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave2d1d_local</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="65" column="1" bodyfile="src/corrsurface.F90" bodystart="65" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1a7e2cc9ac4abce6454df31fb69f5e67c8" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable corrsurface::spherical_wave2d1d_global</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave2d1d_global</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="66" column="1" bodyfile="src/corrsurface.F90" bodystart="66" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1ae79c83152a81ae82f81718c398dfdabe" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable corrsurface::spherical_wave2d1d</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave2d1d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="67" column="1" bodyfile="src/corrsurface.F90" bodystart="67" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1a51020f68d24006ced6702db316a38249" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable corrsurface::spherical_wave2d1d_dr</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave2d1d_dr</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="68" column="1" bodyfile="src/corrsurface.F90" bodystart="68" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1aace2322a65d8edd22d75b2c3aac6e232" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable corrsurface::spherical_wave2d1d_dtheta</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave2d1d_dtheta</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="69" column="1" bodyfile="src/corrsurface.F90" bodystart="69" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1ae43ad6e74b3387c47b1efdb0be3484a4" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable corrsurface::sphericaln_wave2d</definition>
+        <argsstring></argsstring>
+        <name>sphericaln_wave2d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="70" column="1" bodyfile="src/corrsurface.F90" bodystart="70" bodyend="70"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1a616149c765d23965994c93f00dc93e58" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable corrsurface::sphericaln_wave2d_deriv</definition>
+        <argsstring></argsstring>
+        <name>sphericaln_wave2d_deriv</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="71" column="1" bodyfile="src/corrsurface.F90" bodystart="71" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1a4ec08b9e766890f096ad716f082dfbe3" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable corrsurface::spherical_wave3d_local</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave3d_local</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="73" column="1" bodyfile="src/corrsurface.F90" bodystart="73" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1a9a14646e54618e2262534a9aa9519a78" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable corrsurface::spherical_wave3d_global</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave3d_global</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="74" column="1" bodyfile="src/corrsurface.F90" bodystart="74" bodyend="74"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1a64ec4e27c570b53680666556b2b84358" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable corrsurface::spherical_wave3d</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave3d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="75" column="1" bodyfile="src/corrsurface.F90" bodystart="75" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1af00c8ec10645362c7028afd20a6b6159" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable corrsurface::spherical_wave3d_dr</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave3d_dr</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="76" column="1" bodyfile="src/corrsurface.F90" bodystart="76" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1a71ee7c8c64b2edb682b76a7fbcad8142" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable corrsurface::spherical_wave3d_dtheta</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave3d_dtheta</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="77" column="1" bodyfile="src/corrsurface.F90" bodystart="77" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1a65eb7cff0a4b3893dcab125a840eeda1" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable corrsurface::spherical_wave3d_dphi</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave3d_dphi</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="78" column="1" bodyfile="src/corrsurface.F90" bodystart="78" bodyend="78"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1a9365b32a733360f568408131c3809dbe" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable corrsurface::spherical_wave3d_deriv</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave3d_deriv</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="79" column="1" bodyfile="src/corrsurface.F90" bodystart="79" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1ad598d70b0566b658ed9f86d457819231" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable corrsurface::psi_l</definition>
+        <argsstring></argsstring>
+        <name>psi_l</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="81" column="1" bodyfile="src/corrsurface.F90" bodystart="81" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1ab910d672bf195dd28dabd27b72d77b89" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable corrsurface::psi_lm</definition>
+        <argsstring></argsstring>
+        <name>psi_lm</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="82" column="1" bodyfile="src/corrsurface.F90" bodystart="82" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1a7c0c44b7827e70383b324cda0068a9a1" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:, :), allocatable</type>
+        <definition>real(dp), dimension(:, :), allocatable corrsurface::basis_set</definition>
+        <argsstring></argsstring>
+        <name>basis_set</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="83" column="1" bodyfile="src/corrsurface.F90" bodystart="83" bodyend="83"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1a5e538a19951705b9e28c5e85d338b9e2" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) corrsurface::rb</definition>
+        <argsstring></argsstring>
+        <name>rb</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="85" column="1" bodyfile="src/corrsurface.F90" bodystart="85" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1aa02eea0c7ef2a43cbeec0ca619581941" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) corrsurface::deltar</definition>
+        <argsstring></argsstring>
+        <name>deltar</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="85" column="1" bodyfile="src/corrsurface.F90" bodystart="85" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1a47ed724cd40f1c2c3aab621ef17ec207" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer corrsurface::basis_order</definition>
+        <argsstring></argsstring>
+        <name>basis_order</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="86" column="1" bodyfile="src/corrsurface.F90" bodystart="86" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacecorrsurface_1aee1aaa0317e94e8af8f8a8b2f4855dd2" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer corrsurface::numbigrpts</definition>
+        <argsstring></argsstring>
+        <name>numbigrpts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="87" column="1" bodyfile="src/corrsurface.F90" bodystart="87" bodyend="87"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="namespacecorrsurface_1a613097c30fc43c1bc43cf7736285868d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public corrsurface::initialize_correlated_cylindrical_surface</definition>
+        <argsstring>(rho_ax, z_ax, bigr_ax, dims, Rboundary, radius_tolerance, fd_rule, dr, lmax, order_basis, filename, mpi_rank, mpi_size, comm)</argsstring>
+        <name>initialize_correlated_cylindrical_surface</name>
+        <param>
+          <type>rho_ax</type>
+          <defname>rho_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>bigr_ax</type>
+          <defname>bigr_ax</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>Rboundary</type>
+          <defname>Rboundary</defname>
+        </param>
+        <param>
+          <type>radius_tolerance</type>
+          <defname>radius_tolerance</defname>
+        </param>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <param>
+          <type>dr</type>
+          <defname>dr</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>order_basis</type>
+          <defname>order_basis</defname>
+        </param>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>mpi_rank</type>
+          <defname>mpi_rank</defname>
+        </param>
+        <param>
+          <type>mpi_size</type>
+          <defname>mpi_size</defname>
+        </param>
+        <param>
+          <type>comm</type>
+          <defname>comm</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="93" column="1" bodyfile="src/corrsurface.F90" bodystart="96" bodyend="193"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacecorrsurface_1aea44c2b6267315f250440da5998ca237" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public corrsurface::get_correlated_cylindrical_surface</definition>
+        <argsstring>(filename, wavefunc, rho_ax, z_ax, bigr_ax, dims, fd_rule, time, efield, afield, lmax, mpi_rank, mpi_size)</argsstring>
+        <name>get_correlated_cylindrical_surface</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>wavefunc</type>
+          <defname>wavefunc</defname>
+        </param>
+        <param>
+          <type>rho_ax</type>
+          <defname>rho_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>bigr_ax</type>
+          <defname>bigr_ax</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <param>
+          <type>time</type>
+          <defname>time</defname>
+        </param>
+        <param>
+          <type>efield</type>
+          <defname>efield</defname>
+        </param>
+        <param>
+          <type>afield</type>
+          <defname>afield</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>mpi_rank</type>
+          <defname>mpi_rank</defname>
+        </param>
+        <param>
+          <type>mpi_size</type>
+          <defname>mpi_size</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="334" column="1" bodyfile="src/corrsurface.F90" bodystart="337" bodyend="488"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacecorrsurface_1ada8b8eb0002e2495f8e1c12d0745e100" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public corrsurface::delete_correlated_surface2d</definition>
+        <argsstring>(mpi_rank)</argsstring>
+        <name>delete_correlated_surface2d</name>
+        <param>
+          <type>mpi_rank</type>
+          <defname>mpi_rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrsurface.F90" line="626" column="1" bodyfile="src/corrsurface.F90" bodystart="627" bodyend="644"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Correlated surface module. </para>    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para>Alejandro de la Calle. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="author"><para>Daniel Dundas. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="date"><para>17/03/2016</para></simplesect>
+This module contains routines to get the surface flux from the electronic part of a wavefunction expanded in a spherical harmonic basis. </para>    </detaileddescription>
+    <location file="src/corrsurface.F90" line="17" column="1"/>
+  </compounddef>
+</doxygen>

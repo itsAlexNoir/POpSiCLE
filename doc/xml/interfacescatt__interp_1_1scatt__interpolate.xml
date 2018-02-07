@@ -1,0 +1,271 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfacescatt__interp_1_1scatt__interpolate" kind="interface" language="Fortran" prot="private">
+    <compoundname>scatt_interp::scatt_interpolate</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfacescatt__interp_1_1scatt__interpolate_1acc41802d6e6f489c684b0cd641043ad2" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::scatt_interpolate::scatt_dinterpolate2d</definition>
+        <argsstring>(numpts, y1, y2, x1, x2, func, method, interp_val, interp_val_dx, interp_val_dy, rank)</argsstring>
+        <name>scatt_dinterpolate2d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>y1</type>
+          <defname>y1</defname>
+        </param>
+        <param>
+          <type>y2</type>
+          <defname>y2</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>interp_val</type>
+          <defname>interp_val</defname>
+        </param>
+        <param>
+          <type>interp_val_dx</type>
+          <defname>interp_val_dx</defname>
+        </param>
+        <param>
+          <type>interp_val_dy</type>
+          <defname>interp_val_dy</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="385" column="1" bodyfile="src/scatt_interp.f90" bodystart="387" bodyend="448"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacescatt__interp_1_1scatt__interpolate_1ad8b6c01672ddea8b6849d42e583bf13a" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::scatt_interpolate::scatt_zinterpolate2d</definition>
+        <argsstring>(numpts, y1, y2, x1, x2, func, method, interp_val, interp_val_dx, interp_val_dy, rank)</argsstring>
+        <name>scatt_zinterpolate2d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>y1</type>
+          <defname>y1</defname>
+        </param>
+        <param>
+          <type>y2</type>
+          <defname>y2</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>interp_val</type>
+          <defname>interp_val</defname>
+        </param>
+        <param>
+          <type>interp_val_dx</type>
+          <defname>interp_val_dx</defname>
+        </param>
+        <param>
+          <type>interp_val_dy</type>
+          <defname>interp_val_dy</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="453" column="1" bodyfile="src/scatt_interp.f90" bodystart="455" bodyend="552"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacescatt__interp_1_1scatt__interpolate_1aff9eb24edb411d1434ba307cb1ec3bc1" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::scatt_interpolate::scatt_dinterpolate3d</definition>
+        <argsstring>(numpts, y1, y2, y3, x1, x2, x3, func, method, interp_val, interp_val_dx, interp_val_dy, interp_val_dz, rank)</argsstring>
+        <name>scatt_dinterpolate3d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>y1</type>
+          <defname>y1</defname>
+        </param>
+        <param>
+          <type>y2</type>
+          <defname>y2</defname>
+        </param>
+        <param>
+          <type>y3</type>
+          <defname>y3</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>x3</type>
+          <defname>x3</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>interp_val</type>
+          <defname>interp_val</defname>
+        </param>
+        <param>
+          <type>interp_val_dx</type>
+          <defname>interp_val_dx</defname>
+        </param>
+        <param>
+          <type>interp_val_dy</type>
+          <defname>interp_val_dy</defname>
+        </param>
+        <param>
+          <type>interp_val_dz</type>
+          <defname>interp_val_dz</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="557" column="1" bodyfile="src/scatt_interp.f90" bodystart="559" bodyend="623"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacescatt__interp_1_1scatt__interpolate_1aefa4153bed7e2ef8ea3d4be2eb59f8b6" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::scatt_interpolate::scatt_zinterpolate3d</definition>
+        <argsstring>(numpts, y1, y2, y3, x1, x2, x3, func, method, interp_val, interp_val_dx, interp_val_dy, interp_val_dz, rank)</argsstring>
+        <name>scatt_zinterpolate3d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>y1</type>
+          <defname>y1</defname>
+        </param>
+        <param>
+          <type>y2</type>
+          <defname>y2</defname>
+        </param>
+        <param>
+          <type>y3</type>
+          <defname>y3</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>x3</type>
+          <defname>x3</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>interp_val</type>
+          <defname>interp_val</defname>
+        </param>
+        <param>
+          <type>interp_val_dx</type>
+          <defname>interp_val_dx</defname>
+        </param>
+        <param>
+          <type>interp_val_dy</type>
+          <defname>interp_val_dy</defname>
+        </param>
+        <param>
+          <type>interp_val_dz</type>
+          <defname>interp_val_dz</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="628" column="1" bodyfile="src/scatt_interp.f90" bodystart="630" bodyend="728"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/scatt_interp.f90" line="39" column="1" bodyfile="src/scatt_interp.f90" bodystart="39" bodyend="43"/>
+    <listofallmembers>
+      <member refid="interfacescatt__interp_1_1scatt__interpolate_1acc41802d6e6f489c684b0cd641043ad2" prot="private" virt="non-virtual"><scope>scatt_interp::scatt_interpolate</scope><name>scatt_dinterpolate2d</name></member>
+      <member refid="interfacescatt__interp_1_1scatt__interpolate_1aff9eb24edb411d1434ba307cb1ec3bc1" prot="private" virt="non-virtual"><scope>scatt_interp::scatt_interpolate</scope><name>scatt_dinterpolate3d</name></member>
+      <member refid="interfacescatt__interp_1_1scatt__interpolate_1ad8b6c01672ddea8b6849d42e583bf13a" prot="private" virt="non-virtual"><scope>scatt_interp::scatt_interpolate</scope><name>scatt_zinterpolate2d</name></member>
+      <member refid="interfacescatt__interp_1_1scatt__interpolate_1aefa4153bed7e2ef8ea3d4be2eb59f8b6" prot="private" virt="non-virtual"><scope>scatt_interp::scatt_interpolate</scope><name>scatt_zinterpolate3d</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

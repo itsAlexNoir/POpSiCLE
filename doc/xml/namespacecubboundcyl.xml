@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacecubboundcyl" kind="namespace" language="Fortran">
+    <compoundname>cubboundcyl</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="cubboundcyl_8_f90_1ac909103fa14169199d252796eb542a42" prot="public" static="no" mutable="no">
+        <type>integer, dimension(:,:,:), allocatable, public</type>
+        <definition>integer, dimension(: ,: ,:), allocatable, public cubboundcyl::cellindex2d</definition>
+        <argsstring></argsstring>
+        <name>cellindex2d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubboundcyl.F90" line="23" column="1" bodyfile="src/cubboundcyl.F90" bodystart="23" bodyend="23"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="cubboundcyl_8_f90_1a7518abec9c5395cd087680398786de30" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubboundcyl::initialize_bicubic_cylindrical_boundary2d</definition>
+        <argsstring>(rho_ax, z_ax, dims, Rb, fdpts, deltar, lmax, mpi_rank, mpi_size, comm)</argsstring>
+        <name>initialize_bicubic_cylindrical_boundary2d</name>
+        <param>
+          <type>rho_ax</type>
+          <defname>rho_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>Rb</type>
+          <defname>Rb</defname>
+        </param>
+        <param>
+          <type>fdpts</type>
+          <defname>fdpts</defname>
+        </param>
+        <param>
+          <type>deltar</type>
+          <defname>deltar</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>mpi_rank</type>
+          <defname>mpi_rank</defname>
+        </param>
+        <param>
+          <type>mpi_size</type>
+          <defname>mpi_size</defname>
+        </param>
+        <param>
+          <type>comm</type>
+          <defname>comm</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubboundcyl.F90" line="36" column="1" bodyfile="src/cubboundcyl.F90" bodystart="38" bodyend="296"/>
+      </memberdef>
+      <memberdef kind="function" id="cubboundcyl_8_f90_1ab4cad349cec4121a0bd07495ccfa4235" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubboundcyl::dget_bicubic_cylindrical_boundary2d</definition>
+        <argsstring>(rho_ax, z_ax, dims, psi_cyl, fdrule, psi2D_sph, psi2D_sph_dx, psi2D_sph_dy, rank)</argsstring>
+        <name>dget_bicubic_cylindrical_boundary2d</name>
+        <param>
+          <type>rho_ax</type>
+          <defname>rho_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>psi_cyl</type>
+          <defname>psi_cyl</defname>
+        </param>
+        <param>
+          <type>fdrule</type>
+          <defname>fdrule</defname>
+        </param>
+        <param>
+          <type>psi2D_sph</type>
+          <defname>psi2D_sph</defname>
+        </param>
+        <param>
+          <type>psi2D_sph_dx</type>
+          <defname>psi2D_sph_dx</defname>
+        </param>
+        <param>
+          <type>psi2D_sph_dy</type>
+          <defname>psi2D_sph_dy</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubboundcyl.F90" line="306" column="1" bodyfile="src/cubboundcyl.F90" bodystart="308" bodyend="442"/>
+      </memberdef>
+      <memberdef kind="function" id="cubboundcyl_8_f90_1afcbc019f93cb595ca71e494106d57ce3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubboundcyl::zget_bicubic_cylindrical_boundary2d</definition>
+        <argsstring>(rho_ax, z_ax, dims, psi_cyl, fdrule, psi2D_sph, psi2D_sph_dx, psi2D_sph_dy, rank)</argsstring>
+        <name>zget_bicubic_cylindrical_boundary2d</name>
+        <param>
+          <type>rho_ax</type>
+          <defname>rho_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>psi_cyl</type>
+          <defname>psi_cyl</defname>
+        </param>
+        <param>
+          <type>fdrule</type>
+          <defname>fdrule</defname>
+        </param>
+        <param>
+          <type>psi2D_sph</type>
+          <defname>psi2D_sph</defname>
+        </param>
+        <param>
+          <type>psi2D_sph_dx</type>
+          <defname>psi2D_sph_dx</defname>
+        </param>
+        <param>
+          <type>psi2D_sph_dy</type>
+          <defname>psi2D_sph_dy</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubboundcyl.F90" line="447" column="1" bodyfile="src/cubboundcyl.F90" bodystart="449" bodyend="615"/>
+      </memberdef>
+      <memberdef kind="function" id="cubboundcyl_8_f90_1a2b501ce5c4bda59d12b440fe32015127" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubboundcyl::delete_bicubic_cylindrical_boundary2d</definition>
+        <argsstring>(rpts, theta, w, rank)</argsstring>
+        <name>delete_bicubic_cylindrical_boundary2d</name>
+        <param>
+          <type>rpts</type>
+          <defname>rpts</defname>
+        </param>
+        <param>
+          <type>theta</type>
+          <defname>theta</defname>
+        </param>
+        <param>
+          <type>w</type>
+          <defname>w</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubboundcyl.F90" line="620" column="1" bodyfile="src/cubboundcyl.F90" bodystart="622" bodyend="642"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/cubboundcyl.F90" line="1" column="1"/>
+  </compounddef>
+</doxygen>

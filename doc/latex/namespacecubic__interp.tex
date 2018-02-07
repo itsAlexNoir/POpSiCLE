@@ -1,0 +1,111 @@
+\hypertarget{namespacecubic__interp}{}\section{cubic\+\_\+interp Module Reference}
+\label{namespacecubic__interp}\index{cubic\+\_\+interp@{cubic\+\_\+interp}}
+
+
+Interpolating routines,.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacecubic__interp_afed9776f2ce4526ed5443e7ea51e7326}\label{namespacecubic__interp_afed9776f2ce4526ed5443e7ea51e7326}} 
+subroutine, public {\bfseries initialize\+\_\+bicubic\+\_\+matrix} ()
+\item 
+\mbox{\Hypertarget{namespacecubic__interp_a950ccb0166b8ffc61abf5fbf0358da50}\label{namespacecubic__interp_a950ccb0166b8ffc61abf5fbf0358da50}} 
+subroutine, public {\bfseries initialize\+\_\+tricubic\+\_\+matrix} ()
+\item 
+subroutine, public \mbox{\hyperlink{namespacecubic__interp_ade3b7f9c8f620bfa6154cbe10d683532}{bicubic\+\_\+interpolation}} (y, y1, y2, y12, x1l, x1u, x2l, x2u, x1, x2, ansy, ansy1, ansy2)
+\begin{DoxyCompactList}\small\item\em Get interpolated values from bicubic interpolation. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacecubic__interp_ad490c4ba4e83a774d3b55c284c0e381d}{tricubic\+\_\+interpolation}} (y, y1, y2, y3, y12, y13, y23, y123, x1l, x1u, x2l, x2u, x3l, x3u, x1, x2, x3, ansy, ansy1, ansy2, ansy3)
+\begin{DoxyCompactList}\small\item\em Get interpolated values from tricubic interpolation. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{namespacecubic__interp_a11d7c3fd8b509441a6e375769e551d9a}\label{namespacecubic__interp_a11d7c3fd8b509441a6e375769e551d9a}} 
+subroutine, public {\bfseries delete\+\_\+bicubic\+\_\+matrix} ()
+\item 
+\mbox{\Hypertarget{namespacecubic__interp_ac84abe68a55f13830b66b4b277773170}\label{namespacecubic__interp_ac84abe68a55f13830b66b4b277773170}} 
+subroutine, public {\bfseries delete\+\_\+tricubic\+\_\+matrix}
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacecubic__interp_a71aadf17555e7e5152368db60ab724c1}\label{namespacecubic__interp_a71aadf17555e7e5152368db60ab724c1}} 
+real(dp), dimension(\+:, \+:), allocatable, public {\bfseries wbi}
+\item 
+\mbox{\Hypertarget{namespacecubic__interp_affcc410624234e1e707635bc35c0b560}\label{namespacecubic__interp_affcc410624234e1e707635bc35c0b560}} 
+real(dp), dimension(\+:, \+:), allocatable, public {\bfseries wtri}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Interpolating routines,. 
+
+\begin{DoxyAuthor}{Author}
+Alejandro de la Calle, Queen\textquotesingle{}s University Belfast, 
+
+Daniel Dundas, Queen\textquotesingle{}s University Belfast, 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+15/04/2015
+\end{DoxyDate}
+This module contains all the subprograms needed for an interpolation of the wavefunction, including routines for multidimensions grid, Many of the routines in this module have been extract form the numerical recipes books, 
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{namespacecubic__interp_ade3b7f9c8f620bfa6154cbe10d683532}\label{namespacecubic__interp_ade3b7f9c8f620bfa6154cbe10d683532}} 
+\index{cubic\+\_\+interp@{cubic\+\_\+interp}!bicubic\+\_\+interpolation@{bicubic\+\_\+interpolation}}
+\index{bicubic\+\_\+interpolation@{bicubic\+\_\+interpolation}!cubic\+\_\+interp@{cubic\+\_\+interp}}
+\subsubsection{\texorpdfstring{bicubic\+\_\+interpolation()}{bicubic\_interpolation()}}
+{\footnotesize\ttfamily subroutine, public cubic\+\_\+interp\+::bicubic\+\_\+interpolation (\begin{DoxyParamCaption}\item[{real(dp), dimension(4), intent(in)}]{y,  }\item[{real(dp), dimension(4), intent(in)}]{y1,  }\item[{real(dp), dimension(4), intent(in)}]{y2,  }\item[{real(dp), dimension(4), intent(in)}]{y12,  }\item[{real(dp), intent(in)}]{x1l,  }\item[{real(dp), intent(in)}]{x1u,  }\item[{real(dp), intent(in)}]{x2l,  }\item[{real(dp), intent(in)}]{x2u,  }\item[{real(dp), intent(in)}]{x1,  }\item[{real(dp), intent(in)}]{x2,  }\item[{real(dp), intent(out)}]{ansy,  }\item[{real(dp), intent(out)}]{ansy1,  }\item[{real(dp), intent(out)}]{ansy2 }\end{DoxyParamCaption})}
+
+
+
+Get interpolated values from bicubic interpolation. 
+
+Bicubic interpolation within a grid square, Input quantities are y,y1,y2,y12, x1l and x1u, the lower and upper coordinates of the grid square in the 1-\/ direction; x2l and x2u likewise for the 2-\/direction; and x1,x2, the coordinates of the desired point for the interpolation, The interpolated function value is returned as ansy, and the interpolated gradient values as ansy1 and ansy2, 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em y} & Function value at known points \\
+\hline
+\mbox{\tt in}  & {\em y1} & Value of the derivative of the function in the first direction at known points \\
+\hline
+\mbox{\tt in}  & {\em y2} & Value of the derivative of the function in the second direction at known points \\
+\hline
+\mbox{\tt in}  & {\em y12} & Value of the cross-\/derivative at known points \\
+\hline
+\mbox{\tt in}  & {\em wt} & Matrix with tabulated coefficients from linear transformation \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+c Matrix with the desired coefficients 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacecubic__interp_ad490c4ba4e83a774d3b55c284c0e381d}\label{namespacecubic__interp_ad490c4ba4e83a774d3b55c284c0e381d}} 
+\index{cubic\+\_\+interp@{cubic\+\_\+interp}!tricubic\+\_\+interpolation@{tricubic\+\_\+interpolation}}
+\index{tricubic\+\_\+interpolation@{tricubic\+\_\+interpolation}!cubic\+\_\+interp@{cubic\+\_\+interp}}
+\subsubsection{\texorpdfstring{tricubic\+\_\+interpolation()}{tricubic\_interpolation()}}
+{\footnotesize\ttfamily subroutine, public cubic\+\_\+interp\+::tricubic\+\_\+interpolation (\begin{DoxyParamCaption}\item[{real(dp), dimension(8), intent(in)}]{y,  }\item[{real(dp), dimension(8), intent(in)}]{y1,  }\item[{real(dp), dimension(8), intent(in)}]{y2,  }\item[{real(dp), dimension(8), intent(in)}]{y3,  }\item[{real(dp), dimension(8), intent(in)}]{y12,  }\item[{real(dp), dimension(8), intent(in)}]{y13,  }\item[{real(dp), dimension(8), intent(in)}]{y23,  }\item[{real(dp), dimension(8), intent(in)}]{y123,  }\item[{real(dp), intent(in)}]{x1l,  }\item[{real(dp), intent(in)}]{x1u,  }\item[{real(dp), intent(in)}]{x2l,  }\item[{real(dp), intent(in)}]{x2u,  }\item[{real(dp), intent(in)}]{x3l,  }\item[{real(dp), intent(in)}]{x3u,  }\item[{real(dp), intent(in)}]{x1,  }\item[{real(dp), intent(in)}]{x2,  }\item[{real(dp), intent(in)}]{x3,  }\item[{real(dp), intent(out)}]{ansy,  }\item[{real(dp), intent(out)}]{ansy1,  }\item[{real(dp), intent(out)}]{ansy2,  }\item[{real(dp), intent(out)}]{ansy3 }\end{DoxyParamCaption})}
+
+
+
+Get interpolated values from tricubic interpolation. 
+
+Tricubic interpolation within a grid cube, Input quantities are y,y1,y2,y3,y12,y13,y23,y123, x1l and x1u, the lower and upper coordinates of the grid square in the 1-\/ direction; x2l, x2u and x3l and x3u likewise for the 2 and 3-\/direction; and x1,x2,x3 the coordinates of the desired point for the interpolation, The interpolated function value is returned as ansy, and the interpolated gradient values as ansy1 and ansy2, 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em y} & Function value at known points \\
+\hline
+\mbox{\tt in}  & {\em y1} & Value of the derivative of the function in the first direction at known points \\
+\hline
+\mbox{\tt in}  & {\em y2} & Value of the derivative of the function in the second direction at known points \\
+\hline
+\mbox{\tt in}  & {\em y3} & Value of the derivative of the function in the thrird direction at known points \\
+\hline
+\mbox{\tt in}  & {\em y12} & Value of the cross-\/derivative at known points x and y \\
+\hline
+\mbox{\tt in}  & {\em y13} & Value of the cross-\/derivative at known points x and z \\
+\hline
+\mbox{\tt in}  & {\em y23} & Value of the cross-\/derivative at known points y and z \\
+\hline
+\mbox{\tt in}  & {\em y123} & Value of the cross-\/derivative at known points x, y and z \\
+\hline
+\mbox{\tt in}  & {\em wt} & Matrix with tabulated coefficients from linear transformation \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+c Matrix with the desired coefficients 
+\end{DoxyReturn}

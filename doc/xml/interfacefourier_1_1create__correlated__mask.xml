@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfacefourier_1_1create__correlated__mask" kind="interface" language="Fortran" prot="private">
+    <compoundname>fourier::create_correlated_mask</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfacefourier_1_1create__correlated__mask_1af87aaefbea35bc8c549cef10f1ad25c5" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine fourier::create_correlated_mask::create_correlated_mask2d1d</definition>
+        <argsstring>(mask, rho_ax, z_ax, r_ax, inner_erad, outer_erad, inner_nrad, outer_nrad)</argsstring>
+        <name>create_correlated_mask2d1d</name>
+        <param>
+          <type>mask</type>
+          <defname>mask</defname>
+        </param>
+        <param>
+          <type>rho_ax</type>
+          <defname>rho_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>r_ax</type>
+          <defname>r_ax</defname>
+        </param>
+        <param>
+          <type>inner_erad</type>
+          <defname>inner_erad</defname>
+        </param>
+        <param>
+          <type>outer_erad</type>
+          <defname>outer_erad</defname>
+        </param>
+        <param>
+          <type>inner_nrad</type>
+          <defname>inner_nrad</defname>
+        </param>
+        <param>
+          <type>outer_nrad</type>
+          <defname>outer_nrad</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/fourier.F90" line="1672" column="1" bodyfile="src/fourier.F90" bodystart="1674" bodyend="1740"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacefourier_1_1create__correlated__mask_1ad0d1a7d605b9ce7cf892252b3a02f57e" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine fourier::create_correlated_mask::create_correlated_mask3d1d</definition>
+        <argsstring>(mask, x_ax, y_ax, z_ax, r_ax, inner_erad, outer_erad, inner_nrad, outer_nrad)</argsstring>
+        <name>create_correlated_mask3d1d</name>
+        <param>
+          <type>mask</type>
+          <defname>mask</defname>
+        </param>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>r_ax</type>
+          <defname>r_ax</defname>
+        </param>
+        <param>
+          <type>inner_erad</type>
+          <defname>inner_erad</defname>
+        </param>
+        <param>
+          <type>outer_erad</type>
+          <defname>outer_erad</defname>
+        </param>
+        <param>
+          <type>inner_nrad</type>
+          <defname>inner_nrad</defname>
+        </param>
+        <param>
+          <type>outer_nrad</type>
+          <defname>outer_nrad</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/fourier.F90" line="1745" column="1" bodyfile="src/fourier.F90" bodystart="1747" bodyend="1817"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/fourier.F90" line="30" column="1" bodyfile="src/fourier.F90" bodystart="30" bodyend="32"/>
+    <listofallmembers>
+      <member refid="interfacefourier_1_1create__correlated__mask_1af87aaefbea35bc8c549cef10f1ad25c5" prot="private" virt="non-virtual"><scope>fourier::create_correlated_mask</scope><name>create_correlated_mask2d1d</name></member>
+      <member refid="interfacefourier_1_1create__correlated__mask_1ad0d1a7d605b9ce7cf892252b3a02f57e" prot="private" virt="non-virtual"><scope>fourier::create_correlated_mask</scope><name>create_correlated_mask3d1d</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

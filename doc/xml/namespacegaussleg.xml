@@ -1,0 +1,491 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacegaussleg" kind="namespace" language="Fortran">
+    <compoundname>gaussleg</compoundname>
+    <innerclass refid="interfacegaussleg_1_1plgndr" prot="private">gaussleg::plgndr</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="namespacegaussleg_1a03137cc32f867e636184d46d71c1a6e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public gaussleg::make_gauss_legendre</definition>
+        <argsstring>(lower_bound, upper_bound, axis, weights)</argsstring>
+        <name>make_gauss_legendre</name>
+        <param>
+          <type>lower_bound</type>
+          <defname>lower_bound</defname>
+        </param>
+        <param>
+          <type>upper_bound</type>
+          <defname>upper_bound</defname>
+        </param>
+        <param>
+          <type>axis</type>
+          <defname>axis</defname>
+        </param>
+        <param>
+          <type>weights</type>
+          <defname>weights</defname>
+        </param>
+        <briefdescription>
+<para>This subroutine returns the Gauss nodes of a particular range of values, and the correspondent Gauss weights. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">lower_bound</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Minimum value of the passed array </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">upper_bound</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Maximum value of the passed array </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">axis</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Returned axis with gaussian nodes. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">weights</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Returned weights array. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/gaussleg.f90" line="58" column="1" bodyfile="src/gaussleg.f90" bodystart="59" bodyend="120"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacegaussleg_1ae13f295f37c8f2b482df2dabe29d7efa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public gaussleg::make_gauss_lobatto</definition>
+        <argsstring>(lb, ub, x, w)</argsstring>
+        <name>make_gauss_lobatto</name>
+        <param>
+          <type>lb</type>
+          <defname>lb</defname>
+        </param>
+        <param>
+          <type>ub</type>
+          <defname>ub</defname>
+        </param>
+        <param>
+          <type>x</type>
+          <defname>x</defname>
+        </param>
+        <param>
+          <type>w</type>
+          <defname>w</defname>
+        </param>
+        <briefdescription>
+<para>This subroutine returns the axis and weights for. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">lb</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Minimum value of the passed array </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">ub</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Maximum value of the passed array </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Returned axis with gaussian nodes. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">w</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Returned weights array. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/gaussleg.f90" line="144" column="1" bodyfile="src/gaussleg.f90" bodystart="145" bodyend="219"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacegaussleg_1a7f8d813a66f2e785e1863aaa89341c05" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>real(dp) function, dimension(n)</type>
+        <definition>real(dp) function, dimension(n) gaussleg::arth</definition>
+        <argsstring>(first, increment, n)</argsstring>
+        <name>arth</name>
+        <param>
+          <type>first</type>
+          <defname>first</defname>
+        </param>
+        <param>
+          <type>increment</type>
+          <defname>increment</defname>
+        </param>
+        <param>
+          <type>n</type>
+          <defname>n</defname>
+        </param>
+        <briefdescription>
+<para>Returns an array of length n containing an arithmetic progression whose first value is first and whose increment is increment. If first and increment have rank greater than zero, returns an array of one larger rank, with the last subscript having size n and indexing the progressions. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="out">arth</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Array where the progression is stored. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">first</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The forst element. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">increment</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>the increment of the progression. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Number of elements in the progression. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/gaussleg.f90" line="245" column="1" bodyfile="src/gaussleg.f90" bodystart="246" bodyend="257"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacegaussleg_1abe9f1fb10770b5231c05a8ea76f208b5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public gaussleg::make_rnormal</definition>
+        <argsstring>(rnormal, factlog, MAXL, NUMPTS)</argsstring>
+        <name>make_rnormal</name>
+        <param>
+          <type>rnormal</type>
+          <defname>rnormal</defname>
+        </param>
+        <param>
+          <type>factlog</type>
+          <defname>factlog</defname>
+        </param>
+        <param>
+          <type>MAXL</type>
+          <defname>MAXL</defname>
+        </param>
+        <param>
+          <type>NUMPTS</type>
+          <defname>NUMPTS</defname>
+        </param>
+        <briefdescription>
+<para>This subroutine calculates the normalization co-efficients of the Legendre polynomials for all the {il, im} combinations which are required. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="out">rnormal</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The array which holds the normalization co-efficients as norm(im, il). </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">factlog</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The log of factorials. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">MAXL</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The maximum value of the angular momentum quantum number. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">NUMPTS</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of points at which the factorials are calculated at. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/gaussleg.f90" line="284" column="1" bodyfile="src/gaussleg.f90" bodystart="285" bodyend="310"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacegaussleg_1adf5fcb0267401d6480e597f82a096c93" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public gaussleg::make_legendre</definition>
+        <argsstring>(legenpl, costheta, MAXL, MAXTHETAPTS)</argsstring>
+        <name>make_legendre</name>
+        <param>
+          <type>legenpl</type>
+          <defname>legenpl</defname>
+        </param>
+        <param>
+          <type>costheta</type>
+          <defname>costheta</defname>
+        </param>
+        <param>
+          <type>MAXL</type>
+          <defname>MAXL</defname>
+        </param>
+        <param>
+          <type>MAXTHETAPTS</type>
+          <defname>MAXTHETAPTS</defname>
+        </param>
+        <briefdescription>
+<para>This subroutine calculates the Legendre polynomials for all permissible {il,im} combinations which are given by il={0,MAXL} =&gt; im={0,il}. This routine is based on that given in Numerical Recipies in FORTRAN, 2nd Edition, page 246-248, in which the Legendre polynomial was calculated as a function value using a recurrence relation. This routine improves this relation by storing the intermediate Legendre polynomials which the recurrrence relation discarded. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="out">legenpl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The array storing the Legendre polynomials given by: legenpl(x, im, il) </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">costheta</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The array storing the cosine of the angle at which the Legendre polynomial is calculated at, i.e. x={-1,1} </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">MAXL</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The maximum value of the single electron angular momentum quantum number. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">MAXTHETAPTS</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The maximum theta point. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/gaussleg.f90" line="343" column="1" bodyfile="src/gaussleg.f90" bodystart="344" bodyend="404"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacegaussleg_1abcc9482648e28be85634b4e0dc025c3e" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>real(dp) function</type>
+        <definition>real(dp) function gaussleg::plgndr_s</definition>
+        <argsstring>(l, m, x)</argsstring>
+        <name>plgndr_s</name>
+        <param>
+          <type>l</type>
+          <defname>l</defname>
+        </param>
+        <param>
+          <type>m</type>
+          <defname>m</defname>
+        </param>
+        <param>
+          <type>x</type>
+          <defname>x</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/gaussleg.f90" line="409" column="1" bodyfile="src/gaussleg.f90" bodystart="410" bodyend="446"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacegaussleg_1afd1920d919b9afc4f93cf9e8f3e6839c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>real(dp) function, dimension(size(x))</type>
+        <definition>real(dp) function, dimension(size(x)) gaussleg::plgndr_v</definition>
+        <argsstring>(l, m, x)</argsstring>
+        <name>plgndr_v</name>
+        <param>
+          <type>l</type>
+          <defname>l</defname>
+        </param>
+        <param>
+          <type>m</type>
+          <defname>m</defname>
+        </param>
+        <param>
+          <type>x</type>
+          <defname>x</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/gaussleg.f90" line="452" column="1" bodyfile="src/gaussleg.f90" bodystart="453" bodyend="490"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacegaussleg_1a684bbdd1b82f3ce27ad23bf5935c36b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public gaussleg::make_factlog</definition>
+        <argsstring>(factlog, NUMPTS)</argsstring>
+        <name>make_factlog</name>
+        <param>
+          <type>factlog</type>
+          <defname>factlog</defname>
+        </param>
+        <param>
+          <type>NUMPTS</type>
+          <defname>NUMPTS</defname>
+        </param>
+        <briefdescription>
+<para>This subroutine calculates the log of factorials. The log of the factorials is chosen since we can then use addition/subtraction instead of multiplication/division when calculating quantities involving factorials. This gives more stability. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="out">factlog</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The array storing the log of the factorials. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">NUMPTS</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of factorials we wish to calculate. The log of the factorials for all integers in the range {0,NUMPTS} are calculated. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/gaussleg.f90" line="513" column="1" bodyfile="src/gaussleg.f90" bodystart="514" bodyend="539"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacegaussleg_1a26bbda9b75b77851866018371f404ead" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>real(dp) function, public</type>
+        <definition>real(dp) function, public gaussleg::clebsch</definition>
+        <argsstring>(j1, j2, ibigj, m1, m2, ibigm, factlog, NUMPTS)</argsstring>
+        <name>clebsch</name>
+        <param>
+          <type>j1</type>
+          <defname>j1</defname>
+        </param>
+        <param>
+          <type>j2</type>
+          <defname>j2</defname>
+        </param>
+        <param>
+          <type>ibigj</type>
+          <defname>ibigj</defname>
+        </param>
+        <param>
+          <type>m1</type>
+          <defname>m1</defname>
+        </param>
+        <param>
+          <type>m2</type>
+          <defname>m2</defname>
+        </param>
+        <param>
+          <type>ibigm</type>
+          <defname>ibigm</defname>
+        </param>
+        <param>
+          <type>factlog</type>
+          <defname>factlog</defname>
+        </param>
+        <param>
+          <type>NUMPTS</type>
+          <defname>NUMPTS</defname>
+        </param>
+        <briefdescription>
+<para>This function calculates the Clebsch-Gordon co-efficient for given angular momentum and magnetic quantum numbers using an expression due to Racah<mdash/>See Rose, M.E., <lsquo/>Elementary Theory of Angular Momentum<rsquo/>, [1963], Wiley, pp 40. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">factlog</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The log of factorials. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">NUMPTS</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of points at which the factorials are calculated at. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">j1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Single electron angular momentum quantum number for electron 1. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">j2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Single electron angular momentum quantum number for electron 2. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">ibigj</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Total angular momentum quantum number. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">m1</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Magnetic momentum quantum number for electron 1. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">m2</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Magnetic quantum number for electron 2. </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">ibigm</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Total magnetic quantum number. </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/gaussleg.f90" line="571" column="1" bodyfile="src/gaussleg.f90" bodystart="572" bodyend="626"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Gauss legendre related routines. </para>    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para>Alejandro de la Calle. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="author"><para>Daniel Dundas. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="date"><para>24/09/2015</para></simplesect>
+This module contains routines to prepare and perform Gauss-Legendre quadratures. Also, it calculates Legendre polynomials, Clebsch-Gordon coeffcients and spherical harmonics transforms. </para>    </detaileddescription>
+    <location file="src/gaussleg.f90" line="17" column="1"/>
+  </compounddef>
+</doxygen>

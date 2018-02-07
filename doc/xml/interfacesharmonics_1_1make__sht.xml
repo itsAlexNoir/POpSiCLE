@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfacesharmonics_1_1make__sht" kind="interface" language="Fortran" prot="private">
+    <compoundname>sharmonics::make_sht</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfacesharmonics_1_1make__sht_1a935c0d0e3ea5765c2ca2060803a7d376" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine sharmonics::make_sht::make_sht_single</definition>
+        <argsstring>(func, sph_harmonics, lmax, th_weights, phi_weights, func_lm)</argsstring>
+        <name>make_sht_single</name>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>sph_harmonics</type>
+          <defname>sph_harmonics</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>th_weights</type>
+          <defname>th_weights</defname>
+        </param>
+        <param>
+          <type>phi_weights</type>
+          <defname>phi_weights</defname>
+        </param>
+        <param>
+          <type>func_lm</type>
+          <defname>func_lm</defname>
+        </param>
+        <briefdescription>
+<para>This subroutine performs the (fast) Spherical Harmonics Transform (SHT). It uses a FFT to decompose into the magnetic quantum number m, and a Gauss-Legendre quadrature to decompose into angular momentum number l. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">func</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Function to be transformed </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">lmax</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Maximum angular momentum </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">weights</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Gauss weigths needed to perform the quadrature </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">func_lm</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Transformed function, decomposed into l,m </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/sharmonics.f90" line="350" column="1" bodyfile="src/sharmonics.f90" bodystart="351" bodyend="452"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacesharmonics_1_1make__sht_1a05625b0660d362849d0d95767be0a0e8" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine sharmonics::make_sht::make_sht_group</definition>
+        <argsstring>(func, funcp, sph_harmonics, lmax, func_lm, funcx_lm, funcy_lm, funcz_lm, funcp_lm)</argsstring>
+        <name>make_sht_group</name>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>funcp</type>
+          <defname>funcp</defname>
+        </param>
+        <param>
+          <type>sph_harmonics</type>
+          <defname>sph_harmonics</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>func_lm</type>
+          <defname>func_lm</defname>
+        </param>
+        <param>
+          <type>funcx_lm</type>
+          <defname>funcx_lm</defname>
+        </param>
+        <param>
+          <type>funcy_lm</type>
+          <defname>funcy_lm</defname>
+        </param>
+        <param>
+          <type>funcz_lm</type>
+          <defname>funcz_lm</defname>
+        </param>
+        <param>
+          <type>funcp_lm</type>
+          <defname>funcp_lm</defname>
+        </param>
+        <briefdescription>
+<para>This subroutine performs the (fast) Spherical Harmonics Transform (SHT). It uses a FFT to decompose into the magnetic quantum number m, and a Gauss-Legendre quadrature to decompose into angular momentum number l. </para>        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">func</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Function to be transformed </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">lmax</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Maximum angular momentum </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">weights</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Gauss weigths needed to perform the quadrature </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">func_lm</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Transformed function, decomposed into l,m </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/sharmonics.f90" line="476" column="1" bodyfile="src/sharmonics.f90" bodystart="478" bodyend="566"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/sharmonics.f90" line="34" column="1" bodyfile="src/sharmonics.f90" bodystart="34" bodyend="36"/>
+    <listofallmembers>
+      <member refid="interfacesharmonics_1_1make__sht_1a05625b0660d362849d0d95767be0a0e8" prot="private" virt="non-virtual"><scope>sharmonics::make_sht</scope><name>make_sht_group</name></member>
+      <member refid="interfacesharmonics_1_1make__sht_1a935c0d0e3ea5765c2ca2060803a7d376" prot="private" virt="non-virtual"><scope>sharmonics::make_sht</scope><name>make_sht_single</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

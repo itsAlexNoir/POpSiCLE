@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfaceboundary_1_1initialize__cylindrical__boundary" kind="interface" language="Fortran" prot="public">
+    <compoundname>boundary::initialize_cylindrical_boundary</compoundname>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="interfaceboundary_1_1initialize__cylindrical__boundary_1a6fdef441d406e174754c61aff96a032e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>boundary::initialize_cylindrical_boundary::initialize_scatt_cylindrical_boundary2d</definition>
+        <argsstring></argsstring>
+        <name>initialize_scatt_cylindrical_boundary2d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="" line="1" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="interfaceboundary_1_1initialize__cylindrical__boundary_1a354b0e3cda3b636f99e59d5ca48a893e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>boundary::initialize_cylindrical_boundary::initialize_bicubic_cylindrical_boundary2d</definition>
+        <argsstring></argsstring>
+        <name>initialize_bicubic_cylindrical_boundary2d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="" line="1" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/boundary.F90" line="20" column="1" bodyfile="src/boundary.F90" bodystart="20" bodyend="22"/>
+    <listofallmembers>
+      <member refid="interfaceboundary_1_1initialize__cylindrical__boundary_1a354b0e3cda3b636f99e59d5ca48a893e" prot="public" virt="non-virtual"><scope>boundary::initialize_cylindrical_boundary</scope><name>initialize_bicubic_cylindrical_boundary2d</name></member>
+      <member refid="interfaceboundary_1_1initialize__cylindrical__boundary_1a6fdef441d406e174754c61aff96a032e" prot="public" virt="non-virtual"><scope>boundary::initialize_cylindrical_boundary</scope><name>initialize_scatt_cylindrical_boundary2d</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

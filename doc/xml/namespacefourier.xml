@@ -1,0 +1,359 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacefourier" kind="namespace" language="Fortran">
+    <compoundname>fourier</compoundname>
+    <innerclass refid="interfacefourier_1_1create__correlated__mask" prot="private">fourier::create_correlated_mask</innerclass>
+    <innerclass refid="interfacefourier_1_1create__mask" prot="private">fourier::create_mask</innerclass>
+    <innerclass refid="interfacefourier_1_1fourierbesseltransform" prot="private">fourier::fourierbesseltransform</innerclass>
+    <innerclass refid="interfacefourier_1_1fouriertransform" prot="private">fourier::fouriertransform</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="fourier_8_f90_1ab577fda4a873e60b3693aecbdd2255fa" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine fourier::fouriertransform_serial</definition>
+        <argsstring>(psi, psik, rank, dims_local, inverse)</argsstring>
+        <name>fouriertransform_serial</name>
+        <param>
+          <type>psi</type>
+          <defname>psi</defname>
+        </param>
+        <param>
+          <type>psik</type>
+          <defname>psik</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <param>
+          <type>dims_local</type>
+          <defname>dims_local</defname>
+        </param>
+        <param>
+          <type>inverse</type>
+          <defname>inverse</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/fourier.F90" line="51" column="1" bodyfile="src/fourier.F90" bodystart="53" bodyend="79"/>
+      </memberdef>
+      <memberdef kind="function" id="fourier_8_f90_1a0d00dbdcbb1656e5c18a1506e0ea9153" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine fourier::fourierbesseltransform_serial</definition>
+        <argsstring>(psi, psik, rho_ax, krho_ax, jacobrho, fftshift_on)</argsstring>
+        <name>fourierbesseltransform_serial</name>
+        <param>
+          <type>psi</type>
+          <defname>psi</defname>
+        </param>
+        <param>
+          <type>psik</type>
+          <defname>psik</defname>
+        </param>
+        <param>
+          <type>rho_ax</type>
+          <defname>rho_ax</defname>
+        </param>
+        <param>
+          <type>krho_ax</type>
+          <defname>krho_ax</defname>
+        </param>
+        <param>
+          <type>jacobrho</type>
+          <defname>jacobrho</defname>
+        </param>
+        <param>
+          <type>fftshift_on</type>
+          <defname>fftshift_on</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/fourier.F90" line="626" column="1" bodyfile="src/fourier.F90" bodystart="628" bodyend="793"/>
+      </memberdef>
+      <memberdef kind="function" id="fourier_8_f90_1a617934fc479ff3d06f0b20d2e20947fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public fourier::fft</definition>
+        <argsstring></argsstring>
+        <name>fft</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/fourier.F90" line="1411" column="1" bodyfile="src/fourier.F90" bodystart="1412" bodyend="1416"/>
+      </memberdef>
+      <memberdef kind="function" id="fourier_8_f90_1ac0da71c78b4d1752259a0ed874568ddd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>complex(dp) function, public</type>
+        <definition>complex(dp) function, public fourier::hankeltransform</definition>
+        <argsstring>(in, Nrho, rpts, krpts, jacobian)</argsstring>
+        <name>hankeltransform</name>
+        <param>
+          <type>in</type>
+          <defname>in</defname>
+        </param>
+        <param>
+          <type>Nrho</type>
+          <defname>Nrho</defname>
+        </param>
+        <param>
+          <type>rpts</type>
+          <defname>rpts</defname>
+        </param>
+        <param>
+          <type>krpts</type>
+          <defname>krpts</defname>
+        </param>
+        <param>
+          <type>jacobian</type>
+          <defname>jacobian</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/fourier.F90" line="1425" column="1" bodyfile="src/fourier.F90" bodystart="1426" bodyend="1447"/>
+      </memberdef>
+      <memberdef kind="function" id="fourier_8_f90_1a7a2eaa06b013950ad0be3f2c9aeec68b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public fourier::fftshift</definition>
+        <argsstring>(x, y)</argsstring>
+        <name>fftshift</name>
+        <param>
+          <type>x</type>
+          <defname>x</defname>
+        </param>
+        <param>
+          <type>y</type>
+          <defname>y</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/fourier.F90" line="1452" column="1" bodyfile="src/fourier.F90" bodystart="1453" bodyend="1481"/>
+      </memberdef>
+      <memberdef kind="function" id="fourier_8_f90_1a3a14ad07e59b94bd8653e676b723ba95" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine fourier::create_mask4d</definition>
+        <argsstring>(mask, x_ax, y_ax, z_ax, r_ax, inner_rad, outer_rad)</argsstring>
+        <name>create_mask4d</name>
+        <param>
+          <type>mask</type>
+          <defname>mask</defname>
+        </param>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>r_ax</type>
+          <defname>r_ax</defname>
+        </param>
+        <param>
+          <type>inner_rad</type>
+          <defname>inner_rad</defname>
+        </param>
+        <param>
+          <type>outer_rad</type>
+          <defname>outer_rad</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/fourier.F90" line="1486" column="1" bodyfile="src/fourier.F90" bodystart="1488" bodyend="1548"/>
+      </memberdef>
+      <memberdef kind="function" id="fourier_8_f90_1ab414b6c5030907294703aa143f2c27b6" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine fourier::create_mask3d</definition>
+        <argsstring>(mask, x_ax, y_ax, z_ax, inner_rad, outer_rad)</argsstring>
+        <name>create_mask3d</name>
+        <param>
+          <type>mask</type>
+          <defname>mask</defname>
+        </param>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>inner_rad</type>
+          <defname>inner_rad</defname>
+        </param>
+        <param>
+          <type>outer_rad</type>
+          <defname>outer_rad</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/fourier.F90" line="1553" column="1" bodyfile="src/fourier.F90" bodystart="1555" bodyend="1610"/>
+      </memberdef>
+      <memberdef kind="function" id="fourier_8_f90_1a5e26437504a2bfa9bf7df7f80a03e05e" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine fourier::create_mask2d</definition>
+        <argsstring>(mask, x_ax, y_ax, inner_rad, outer_rad)</argsstring>
+        <name>create_mask2d</name>
+        <param>
+          <type>mask</type>
+          <defname>mask</defname>
+        </param>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>inner_rad</type>
+          <defname>inner_rad</defname>
+        </param>
+        <param>
+          <type>outer_rad</type>
+          <defname>outer_rad</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/fourier.F90" line="1615" column="1" bodyfile="src/fourier.F90" bodystart="1617" bodyend="1667"/>
+      </memberdef>
+      <memberdef kind="function" id="fourier_8_f90_1a8e0b6027256652a18736692476eaecb3" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine fourier::create_correlated_mask2d1d</definition>
+        <argsstring>(mask, rho_ax, z_ax, r_ax, inner_erad, outer_erad, inner_nrad, outer_nrad)</argsstring>
+        <name>create_correlated_mask2d1d</name>
+        <param>
+          <type>mask</type>
+          <defname>mask</defname>
+        </param>
+        <param>
+          <type>rho_ax</type>
+          <defname>rho_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>r_ax</type>
+          <defname>r_ax</defname>
+        </param>
+        <param>
+          <type>inner_erad</type>
+          <defname>inner_erad</defname>
+        </param>
+        <param>
+          <type>outer_erad</type>
+          <defname>outer_erad</defname>
+        </param>
+        <param>
+          <type>inner_nrad</type>
+          <defname>inner_nrad</defname>
+        </param>
+        <param>
+          <type>outer_nrad</type>
+          <defname>outer_nrad</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/fourier.F90" line="1672" column="1" bodyfile="src/fourier.F90" bodystart="1674" bodyend="1740"/>
+      </memberdef>
+      <memberdef kind="function" id="fourier_8_f90_1add19b78c4eca225c4029e92b01ff297f" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine fourier::create_correlated_mask3d1d</definition>
+        <argsstring>(mask, x_ax, y_ax, z_ax, r_ax, inner_erad, outer_erad, inner_nrad, outer_nrad)</argsstring>
+        <name>create_correlated_mask3d1d</name>
+        <param>
+          <type>mask</type>
+          <defname>mask</defname>
+        </param>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>r_ax</type>
+          <defname>r_ax</defname>
+        </param>
+        <param>
+          <type>inner_erad</type>
+          <defname>inner_erad</defname>
+        </param>
+        <param>
+          <type>outer_erad</type>
+          <defname>outer_erad</defname>
+        </param>
+        <param>
+          <type>inner_nrad</type>
+          <defname>inner_nrad</defname>
+        </param>
+        <param>
+          <type>outer_nrad</type>
+          <defname>outer_nrad</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/fourier.F90" line="1745" column="1" bodyfile="src/fourier.F90" bodystart="1747" bodyend="1817"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/fourier.F90" line="1" column="1"/>
+  </compounddef>
+</doxygen>

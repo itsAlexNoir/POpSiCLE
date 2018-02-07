@@ -1,0 +1,528 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacesurface" kind="namespace" language="Fortran">
+    <compoundname>surface</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="namespacesurface_1a89dff7b0bc8294e3f7aaffa1e3f66d44" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable surface::spherical_wave2d_local</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave2d_local</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="40" column="1" bodyfile="src/surface.F90" bodystart="40" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacesurface_1a96154c203279ec9b4d82a0fdc8bc4f18" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable surface::spherical_wave2d</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave2d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="41" column="1" bodyfile="src/surface.F90" bodystart="41" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacesurface_1aa260c60b91a3988484d075fd1e0b0b77" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable surface::spherical_wave2d_dr</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave2d_dr</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="42" column="1" bodyfile="src/surface.F90" bodystart="42" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacesurface_1a8cda4e4ded24f3b65738826acfe8b86d" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable surface::spherical_wave2d_dtheta</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave2d_dtheta</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="43" column="1" bodyfile="src/surface.F90" bodystart="43" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacesurface_1abd5c1e5aac92bc692618b29923660396" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:), allocatable</type>
+        <definition>complex(dp), dimension(:), allocatable surface::spherical_wave2d_deriv</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave2d_deriv</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="44" column="1" bodyfile="src/surface.F90" bodystart="44" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacesurface_1a0076e723136b76ac85a1d436f450a65d" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable surface::spherical_wave3d_local</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave3d_local</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="46" column="1" bodyfile="src/surface.F90" bodystart="46" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacesurface_1ad8cb460fb0aa29b57c5bc34c7bb460aa" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable surface::spherical_wave3d</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave3d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="47" column="1" bodyfile="src/surface.F90" bodystart="47" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacesurface_1a2be00436c28e258ed460d85c596b8ccb" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable surface::spherical_wave3d_dr</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave3d_dr</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="48" column="1" bodyfile="src/surface.F90" bodystart="48" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacesurface_1a2e082620ef65c53b698c585f3de3a38e" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable surface::spherical_wave3d_dtheta</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave3d_dtheta</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="49" column="1" bodyfile="src/surface.F90" bodystart="49" bodyend="49"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacesurface_1aac0f2c2b1cde81a2287239e0c5b6a7e3" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable surface::spherical_wave3d_dphi</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave3d_dphi</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="50" column="1" bodyfile="src/surface.F90" bodystart="50" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacesurface_1a7dcc8045a1f560b9278c9c035ecbe6db" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable surface::spherical_wave3d_deriv</definition>
+        <argsstring></argsstring>
+        <name>spherical_wave3d_deriv</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="51" column="1" bodyfile="src/surface.F90" bodystart="51" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacesurface_1ac5c34022e6b49a821efe8322f1f774dd" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :), allocatable surface::psi_l</definition>
+        <argsstring></argsstring>
+        <name>psi_l</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="53" column="1" bodyfile="src/surface.F90" bodystart="53" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacesurface_1a5ca97f29f6c28d0493a98c1dff9df84a" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:, :, :), allocatable</type>
+        <definition>complex(dp), dimension(:, :, :), allocatable surface::psi_lm</definition>
+        <argsstring></argsstring>
+        <name>psi_lm</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="54" column="1" bodyfile="src/surface.F90" bodystart="54" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacesurface_1ac20fbaad10003e984da5c18fd51c3195" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) surface::rb</definition>
+        <argsstring></argsstring>
+        <name>rb</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="56" column="1" bodyfile="src/surface.F90" bodystart="56" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacesurface_1aadb39e17078c483d98c514cdc922ade1" prot="private" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) surface::deltar</definition>
+        <argsstring></argsstring>
+        <name>deltar</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="56" column="1" bodyfile="src/surface.F90" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespacesurface_1a911c0236211e7c985574812133c942e4" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer surface::maxpts</definition>
+        <argsstring></argsstring>
+        <name>maxpts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="57" column="1" bodyfile="src/surface.F90" bodystart="57" bodyend="57"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="namespacesurface_1a47af91cd7f1d5f28fd9f1dfcd5ff2afa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public surface::initialize_cylindrical_surface</definition>
+        <argsstring>(rho_ax, z_ax, dims, Rboundary, radius_tolerance, fd_rule, dr, lmax, filename, itime, mpi_rank, mpi_size, comm)</argsstring>
+        <name>initialize_cylindrical_surface</name>
+        <param>
+          <type>rho_ax</type>
+          <defname>rho_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>Rboundary</type>
+          <defname>Rboundary</defname>
+        </param>
+        <param>
+          <type>radius_tolerance</type>
+          <defname>radius_tolerance</defname>
+        </param>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <param>
+          <type>dr</type>
+          <defname>dr</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>itime</type>
+          <defname>itime</defname>
+        </param>
+        <param>
+          <type>mpi_rank</type>
+          <defname>mpi_rank</defname>
+        </param>
+        <param>
+          <type>mpi_size</type>
+          <defname>mpi_size</defname>
+        </param>
+        <param>
+          <type>comm</type>
+          <defname>comm</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="63" column="1" bodyfile="src/surface.F90" bodystart="66" bodyend="140"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesurface_1a84785222e1c493ba239e9c3c0b269d55" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public surface::initialize_cartesian_surface</definition>
+        <argsstring>(x_ax, y_ax, z_ax, dims, Rboundary, radius_tolerance, fd_rule, dr, lmax, filename, itime, mpi_rank, mpi_size, comm)</argsstring>
+        <name>initialize_cartesian_surface</name>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>Rboundary</type>
+          <defname>Rboundary</defname>
+        </param>
+        <param>
+          <type>radius_tolerance</type>
+          <defname>radius_tolerance</defname>
+        </param>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <param>
+          <type>dr</type>
+          <defname>dr</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>itime</type>
+          <defname>itime</defname>
+        </param>
+        <param>
+          <type>mpi_rank</type>
+          <defname>mpi_rank</defname>
+        </param>
+        <param>
+          <type>mpi_size</type>
+          <defname>mpi_size</defname>
+        </param>
+        <param>
+          <type>comm</type>
+          <defname>comm</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="147" column="1" bodyfile="src/surface.F90" bodystart="150" bodyend="229"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesurface_1a512ae9dbd39eaf12e66d733749d65642" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public surface::get_cylindrical_surface</definition>
+        <argsstring>(filename, itime, wavefunc, rho_ax, z_ax, dims, fd_rule, time, efield, afield, lmax, mpi_rank, mpi_size)</argsstring>
+        <name>get_cylindrical_surface</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>itime</type>
+          <defname>itime</defname>
+        </param>
+        <param>
+          <type>wavefunc</type>
+          <defname>wavefunc</defname>
+        </param>
+        <param>
+          <type>rho_ax</type>
+          <defname>rho_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <param>
+          <type>time</type>
+          <defname>time</defname>
+        </param>
+        <param>
+          <type>efield</type>
+          <defname>efield</defname>
+        </param>
+        <param>
+          <type>afield</type>
+          <defname>afield</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>mpi_rank</type>
+          <defname>mpi_rank</defname>
+        </param>
+        <param>
+          <type>mpi_size</type>
+          <defname>mpi_size</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="237" column="1" bodyfile="src/surface.F90" bodystart="240" bodyend="317"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesurface_1ac2ef5ef833ecd09a52367e4eb4d75512" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public surface::get_cartesian_surface</definition>
+        <argsstring>(filename, itime, wavefunc, x_ax, y_ax, z_ax, dims, fd_rule, time, efield, afield, lmax, mpi_rank, mpi_size)</argsstring>
+        <name>get_cartesian_surface</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>itime</type>
+          <defname>itime</defname>
+        </param>
+        <param>
+          <type>wavefunc</type>
+          <defname>wavefunc</defname>
+        </param>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>fd_rule</type>
+          <defname>fd_rule</defname>
+        </param>
+        <param>
+          <type>time</type>
+          <defname>time</defname>
+        </param>
+        <param>
+          <type>efield</type>
+          <defname>efield</defname>
+        </param>
+        <param>
+          <type>afield</type>
+          <defname>afield</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>mpi_rank</type>
+          <defname>mpi_rank</defname>
+        </param>
+        <param>
+          <type>mpi_size</type>
+          <defname>mpi_size</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="323" column="1" bodyfile="src/surface.F90" bodystart="326" bodyend="406"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesurface_1a38df72433aa65cbfc858d35b9ae23813" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public surface::delete_surface2d</definition>
+        <argsstring>(mpi_rank)</argsstring>
+        <name>delete_surface2d</name>
+        <param>
+          <type>mpi_rank</type>
+          <defname>mpi_rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="412" column="1" bodyfile="src/surface.F90" bodystart="413" bodyend="433"/>
+      </memberdef>
+      <memberdef kind="function" id="namespacesurface_1abe2d94c449094d9ac327ef3f5f7969f9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public surface::delete_surface3d</definition>
+        <argsstring>(mpi_rank)</argsstring>
+        <name>delete_surface3d</name>
+        <param>
+          <type>mpi_rank</type>
+          <defname>mpi_rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/surface.F90" line="438" column="1" bodyfile="src/surface.F90" bodystart="439" bodyend="463"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Surface module. </para>    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para>Alejandro de la Calle. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="author"><para>Daniel Dundas. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="date"><para>21/10/2015</para></simplesect>
+This module contains routines to get the surface flux from a wavefunction expanded in a spherical harmonic basis. </para>    </detaileddescription>
+    <location file="src/surface.F90" line="16" column="1"/>
+  </compounddef>
+</doxygen>

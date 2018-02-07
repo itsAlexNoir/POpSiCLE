@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfaceboundary_1_1delete__cylindrical__boundary" kind="interface" language="Fortran" prot="public">
+    <compoundname>boundary::delete_cylindrical_boundary</compoundname>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="interfaceboundary_1_1delete__cylindrical__boundary_1a9297e36153b54483f7f6028e1395ca5f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>boundary::delete_cylindrical_boundary::delete_scatt_cylindrical_boundary2d</definition>
+        <argsstring></argsstring>
+        <name>delete_scatt_cylindrical_boundary2d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="" line="1" column="1"/>
+      </memberdef>
+      <memberdef kind="function" id="interfaceboundary_1_1delete__cylindrical__boundary_1ae192b63adcc923c300b69d7adefbb450" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>boundary::delete_cylindrical_boundary::delete_bicubic_cylindrical_boundary2d</definition>
+        <argsstring></argsstring>
+        <name>delete_bicubic_cylindrical_boundary2d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="" line="1" column="1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/boundary.F90" line="46" column="1" bodyfile="src/boundary.F90" bodystart="46" bodyend="48"/>
+    <listofallmembers>
+      <member refid="interfaceboundary_1_1delete__cylindrical__boundary_1ae192b63adcc923c300b69d7adefbb450" prot="public" virt="non-virtual"><scope>boundary::delete_cylindrical_boundary</scope><name>delete_bicubic_cylindrical_boundary2d</name></member>
+      <member refid="interfaceboundary_1_1delete__cylindrical__boundary_1a9297e36153b54483f7f6028e1395ca5f" prot="public" virt="non-virtual"><scope>boundary::delete_cylindrical_boundary</scope><name>delete_scatt_cylindrical_boundary2d</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacecorrtools" kind="namespace" language="Fortran">
+    <compoundname>corrtools</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="namespacecorrtools_1a9dffe12a4315b0249103557d5f38051e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public corrtools::create_sine_basis</definition>
+        <argsstring>(sineb, order, r_axis)</argsstring>
+        <name>create_sine_basis</name>
+        <param>
+          <type>sineb</type>
+          <defname>sineb</defname>
+        </param>
+        <param>
+          <type>order</type>
+          <defname>order</defname>
+        </param>
+        <param>
+          <type>r_axis</type>
+          <defname>r_axis</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/corrtools.f90" line="29" column="1" bodyfile="src/corrtools.f90" bodystart="30" bodyend="52"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Auxiliary functions needed to calculate correlated spectra. </para>    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para>Alejandro de la Calle. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="author"><para>Daniel Dundas. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="date"><para>01/03/2016</para></simplesect>
+This module contains routines related to the correlated spectra, such as creating sine basis and a Runge-Kutta integrator. </para>    </detaileddescription>
+    <location file="src/corrtools.f90" line="17" column="1"/>
+  </compounddef>
+</doxygen>

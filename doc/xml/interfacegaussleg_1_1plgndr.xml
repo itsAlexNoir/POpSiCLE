@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfacegaussleg_1_1plgndr" kind="interface" language="Fortran" prot="private">
+    <compoundname>gaussleg::plgndr</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfacegaussleg_1_1plgndr_1aaf3a3ca665dc1cc0211d651f3d19b2cc" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>real(dp) function</type>
+        <definition>real(dp) function gaussleg::plgndr::plgndr_s</definition>
+        <argsstring>(l, m, x)</argsstring>
+        <name>plgndr_s</name>
+        <param>
+          <type>l</type>
+          <defname>l</defname>
+        </param>
+        <param>
+          <type>m</type>
+          <defname>m</defname>
+        </param>
+        <param>
+          <type>x</type>
+          <defname>x</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/gaussleg.f90" line="409" column="1" bodyfile="src/gaussleg.f90" bodystart="410" bodyend="446"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacegaussleg_1_1plgndr_1aa4c128cae0c10528f1233063c994bab0" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>real(dp) function, dimension(size(x))</type>
+        <definition>real(dp) function, dimension(size(x)) gaussleg::plgndr::plgndr_v</definition>
+        <argsstring>(l, m, x)</argsstring>
+        <name>plgndr_v</name>
+        <param>
+          <type>l</type>
+          <defname>l</defname>
+        </param>
+        <param>
+          <type>m</type>
+          <defname>m</defname>
+        </param>
+        <param>
+          <type>x</type>
+          <defname>x</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/gaussleg.f90" line="452" column="1" bodyfile="src/gaussleg.f90" bodystart="453" bodyend="490"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/gaussleg.f90" line="33" column="1" bodyfile="src/gaussleg.f90" bodystart="33" bodyend="35"/>
+    <listofallmembers>
+      <member refid="interfacegaussleg_1_1plgndr_1aaf3a3ca665dc1cc0211d651f3d19b2cc" prot="private" virt="non-virtual"><scope>gaussleg::plgndr</scope><name>plgndr_s</name></member>
+      <member refid="interfacegaussleg_1_1plgndr_1aa4c128cae0c10528f1233063c994bab0" prot="private" virt="non-virtual"><scope>gaussleg::plgndr</scope><name>plgndr_v</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

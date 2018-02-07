@@ -1,0 +1,183 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="bessel_8f" kind="file" language="Fortran">
+    <compoundname>bessel.f</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="bessel_8f_1a0d1c33daf1762e77796217cb53aef647" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine sbesjy</definition>
+        <argsstring>(X, LMAX, J, Y, JP, YP, IFAIL)</argsstring>
+        <name>sbesjy</name>
+        <param>
+          <type>X</type>
+          <defname>X</defname>
+        </param>
+        <param>
+          <type>LMAX</type>
+          <defname>LMAX</defname>
+        </param>
+        <param>
+          <type>J</type>
+          <defname>J</defname>
+        </param>
+        <param>
+          <type>Y</type>
+          <defname>Y</defname>
+        </param>
+        <param>
+          <type>JP</type>
+          <defname>JP</defname>
+        </param>
+        <param>
+          <type>YP</type>
+          <defname>YP</defname>
+        </param>
+        <param>
+          <type>IFAIL</type>
+          <defname>IFAIL</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/bessel.f" line="2" column="1" bodyfile="src/bessel.f" bodystart="3" bodyend="123"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">C---------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="keyword"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SUBROUTINE<sp/></highlight><highlight class="normal">sbesjy<sp/><sp/>(X,LMAX,<sp/>J,Y,JP,YP,<sp/>IFAIL<sp/>)</highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">C---------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/>REAL<sp/>SPHERICAL<sp/>BESSEL<sp/>FUNCTIONS<sp/>AND<sp/>X<sp/>DERIVATIVES</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>j<sp/>,<sp/>y<sp/>,<sp/>j&apos;,<sp/>y&apos;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FROM<sp/>L=0<sp/>TO<sp/>L=LMAX</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>FOR<sp/>REAL<sp/>X<sp/>&gt;<sp/>SQRT(ACCUR)<sp/>(E.G.<sp/>1D-7)<sp/><sp/><sp/><sp/>AND<sp/>INTEGER<sp/>LMAX</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">C<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/>J<sp/>(L)<sp/><sp/>=<sp/><sp/><sp/><sp/><sp/><sp/>j/L/(X)<sp/>STORES<sp/><sp/><sp/>REGULAR<sp/>SPHERICAL<sp/>BESSEL<sp/>FUNCTION:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/>JP(L)<sp/><sp/>=<sp/>D/DX<sp/>j/L/(X)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>j(0)<sp/>=<sp/><sp/>SIN(X)/X</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/>Y<sp/>(L)<sp/><sp/>=<sp/><sp/><sp/><sp/><sp/><sp/>y/L/(X)<sp/>STORES<sp/>IRREGULAR<sp/>SPHERICAL<sp/>BESSEL<sp/>FUNCTION:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/>YP(L)<sp/><sp/>=<sp/>D/DX<sp/>y/L/(X)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>y(0)<sp/>=<sp/>-COS(X)/X</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/><sp/>IFAIL<sp/>=<sp/>-1<sp/>FOR<sp/>ARGUMENTS<sp/>OUT<sp/>OF<sp/>RANGE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>=<sp/><sp/>0<sp/>FOR<sp/>ALL<sp/>RESULTS<sp/>SATISFACTORY</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">C<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/>USING<sp/>LENTZ-THOMPSON<sp/>EVALUATION<sp/>OF<sp/>CONTINUED<sp/>FRACTION<sp/>CF1,</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/>AND<sp/>TRIGONOMETRIC<sp/>FORMS<sp/>FOR<sp/>L<sp/>=<sp/>0<sp/>SOLUTIONS.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/>LMAX<sp/>IS<sp/>LARGEST<sp/>L<sp/>NEEDED<sp/>AND<sp/>MUST<sp/>BE<sp/>&lt;=<sp/>MAXL,<sp/>THE<sp/>ARRAY<sp/>INDEX.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/>MAXL<sp/>CAN<sp/>BE<sp/>DELETED<sp/>AND<sp/>ALL<sp/>THE<sp/>ARRAYS<sp/>DIMENSIONED<sp/>(0:*)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/>SMALL<sp/>IS<sp/>MACHINE<sp/>DEPENDENT,<sp/>ABOUT<sp/>SQRT(MINIMUM<sp/>REAL<sp/>NUMBER),</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SO<sp/>1D-150<sp/>FOR<sp/>DOUBLE<sp/>PRECISION<sp/>ON<sp/>VAX,<sp/>PCS<sp/>ETC.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/>PRECISION:<sp/><sp/>RESULTS<sp/>TO<sp/>WITHIN<sp/>2-3<sp/>DECIMALS<sp/>OF<sp/>&quot;MACHINE<sp/>ACCURACY&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/>IN<sp/>OSCILLATING<sp/>REGION<sp/>X<sp/>.GE.<sp/><sp/>[<sp/>SQRT{LMAX*(LMAX+1)}<sp/>]</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/>I.E.<sp/>THE<sp/>TARGET<sp/>ACCURACY<sp/>ACCUR<sp/>SHOULD<sp/>BE<sp/>100<sp/>*<sp/>ACC8<sp/>WHERE<sp/>ACC8</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/>IS<sp/>THE<sp/>SMALLEST<sp/>NUMBER<sp/>WITH<sp/>1+ACC8.NE.1<sp/>FOR<sp/>OUR<sp/>WORKING<sp/>PRECISION</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/>THIS<sp/>RANGES<sp/>BETWEEN<sp/>4E-15<sp/>AND<sp/>2D-17<sp/>ON<sp/>CRAY,<sp/>VAX,<sp/>SUN,<sp/>PC<sp/>FORTRANS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/>SO<sp/>CHOOSE<sp/>A<sp/>SENSIBLE<sp/><sp/>ACCUR<sp/>=<sp/>1.0D-14</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/>IF<sp/>X<sp/>IS<sp/>SMALLER<sp/>THAN<sp/>[<sp/>]<sp/>ABOVE<sp/>THE<sp/>ACCURACY<sp/>BECOMES<sp/>STEADILY<sp/>WORSE:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/>THE<sp/>VARIABLE<sp/>ERR<sp/>IN<sp/>COMMON<sp/>/STEED/<sp/>HAS<sp/>AN<sp/>ESTIMATE<sp/>OF<sp/>ACCURACY.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment">C</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/>NOTE:<sp/>FOR<sp/>X=1<sp/>AND<sp/>L=100<sp/><sp/>J<sp/>=<sp/>7.4<sp/>E-190<sp/><sp/><sp/><sp/><sp/>Y<sp/>=<sp/>-6.7+E186<sp/><sp/><sp/><sp/>1.4.94</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="comment">C---------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/>AUTHOR<sp/>:<sp/><sp/><sp/>A.R.BARNETT<sp/><sp/><sp/><sp/><sp/><sp/><sp/>MANCHESTER<sp/><sp/><sp/><sp/>12<sp/>MARCH<sp/>1990/95</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>AUCKLAND<sp/><sp/><sp/><sp/><sp/><sp/>12<sp/>MARCH<sp/>1991</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="comment">C---------------------------------------------------------------------<sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">IMPLICIT<sp/><sp/><sp/><sp/>NONE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">INTEGER</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>LIMIT,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MAXL,<sp/><sp/><sp/><sp/><sp/><sp/><sp/>LMAX,<sp/>IFAIL,<sp/>NFP,<sp/>L</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>parameter(<sp/>limit<sp/>=<sp/>20000,<sp/>maxl<sp/>=<sp/>1001<sp/>)</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">DOUBLE<sp/>PRECISION</highlight><highlight class="normal"><sp/><sp/>J(0:MAXL),<sp/>Y(0:MAXL),<sp/>JP(0:MAXL),<sp/>YP(0:MAXL)</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">DOUBLE<sp/>PRECISION</highlight><highlight class="normal"><sp/><sp/>ZERO,ONE,TWO,THREE,SMALL,<sp/>ACCUR,<sp/>TK,SL,<sp/>ERR</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">DOUBLE<sp/>PRECISION</highlight><highlight class="normal"><sp/><sp/>X,XINV,<sp/>CF1,DCF1,<sp/>DEN,<sp/>C,D,<sp/>OMEGA,<sp/>TWOXI</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>parameter(<sp/>zero<sp/><sp/>=<sp/>0.0d0<sp/><sp/>,<sp/>one<sp/><sp/><sp/>=<sp/>1.0d0<sp/>,<sp/>two<sp/>=<sp/>2.0d0<sp/>)</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>parameter(<sp/>small<sp/>=<sp/>1.d-150,<sp/>three<sp/>=<sp/>3.0d0<sp/>)</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">COMMON</highlight><highlight class="normal"><sp/>/stede/<sp/><sp/><sp/><sp/>err,nfp<sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>not<sp/>required<sp/>in<sp/>code<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="comment">C-------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>accur<sp/>=<sp/>1.d-14<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>suitable<sp/>for<sp/>double<sp/>precision</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ifail<sp/>=<sp/>-1<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>user<sp/>to<sp/>check<sp/>on<sp/>exit</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(x<sp/>.LT.<sp/>dsqrt(accur)<sp/>)<sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">GOTO</highlight><highlight class="normal"><sp/>50</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight><highlight class="comment">C-------TAKES<sp/>CARE<sp/>OF<sp/>NEGATIVE<sp/>X<sp/>...<sp/>USE<sp/>REFLECTION<sp/>FORMULA</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight><highlight class="comment">C-------BEGIN<sp/>CALCULATION<sp/>OF<sp/>CF1<sp/>UNLESS<sp/>LMAX<sp/>=<sp/>0,<sp/>WHEN<sp/>SOLUTIONS<sp/>BELOW</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>xinv<sp/><sp/>=<sp/>one<sp/>/<sp/>x</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(lmax<sp/>.GT.<sp/>0)<sp/></highlight><highlight class="keywordflow">THEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>twoxi<sp/>=<sp/><sp/><sp/><sp/><sp/>xinv<sp/>+<sp/>xinv</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sl<sp/><sp/>=<sp/><sp/></highlight><highlight class="keywordtype">REAL</highlight><highlight class="normal">(LMAX)*<sp/>XINV<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>used<sp/>also<sp/>in<sp/>do<sp/>loop<sp/>3</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tk<sp/><sp/>=<sp/><sp/>two<sp/>*<sp/>sl<sp/><sp/>+<sp/>xinv<sp/>*<sp/>three<sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cf1<sp/>=<sp/><sp/>sl<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>initial<sp/>value<sp/>of<sp/>CF1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>den<sp/>=<sp/><sp/>one<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>unnormalised<sp/>j(Lmax,x)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(<sp/>abs(cf1)<sp/>.LT.<sp/>small<sp/>)<sp/>cf1<sp/>=<sp/>small</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>c<sp/><sp/><sp/>=<sp/>cf1<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>inverse<sp/>ratio<sp/>of<sp/>A<sp/>convergents</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>d<sp/><sp/><sp/>=<sp/>zero<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>direct<sp/><sp/>ratio<sp/>of<sp/>B<sp/>convergents<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">DO</highlight><highlight class="normal"><sp/>10<sp/>l<sp/>=<sp/>1,limit</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>c<sp/><sp/><sp/>=<sp/>tk<sp/>-<sp/>one<sp/>/<sp/>c</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>d<sp/><sp/><sp/>=<sp/>tk<sp/>-<sp/>d</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(<sp/>abs(c)<sp/>.LT.<sp/>small<sp/>)<sp/>c<sp/>=<sp/>small</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(<sp/>abs(d)<sp/>.LT.<sp/>small<sp/>)<sp/>d<sp/>=<sp/>small</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>d<sp/><sp/><sp/>=<sp/>one<sp/>/<sp/>d</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>dcf1=<sp/>d<sp/><sp/><sp/>*<sp/>c</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>cf1<sp/>=<sp/>cf1<sp/>*<sp/>dcf1</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(<sp/>d<sp/>.LT.<sp/>zero<sp/>)<sp/>den<sp/>=<sp/>-<sp/>den</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(<sp/>abs(dcf1<sp/>-<sp/>one)<sp/>.LE.<sp/>accur<sp/>)<sp/></highlight><highlight class="keywordflow">GOTO</highlight><highlight class="normal"><sp/>20</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>tk<sp/><sp/><sp/>=<sp/>tk<sp/>+<sp/>twoxi</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nfp<sp/><sp/>=<sp/>l<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>ie<sp/>number<sp/>in<sp/>loop</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/>10<sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">CONTINUE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">GOTO</highlight><highlight class="normal"><sp/>50<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>error<sp/>exit,<sp/>no<sp/>convergence</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/>20<sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">CONTINUE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>err<sp/>=<sp/>accur<sp/>*<sp/>dsqrt(dble(nfp))<sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>error<sp/>estimate</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>j(lmax)<sp/>=<sp/>den<sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>lower-case<sp/>j&apos;s<sp/><sp/>really</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>jp(lmax)<sp/>=<sp/>cf1<sp/>*<sp/>den<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight><highlight class="comment">C------<sp/>DOWNWARD<sp/>RECURSION<sp/>TO<sp/>L=0<sp/><sp/>AS<sp/>SPHERICAL<sp/>BESSEL<sp/>FUNCTIONS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">DO</highlight><highlight class="normal"><sp/>30<sp/><sp/>l<sp/>=<sp/><sp/>lmax<sp/>,<sp/>1,<sp/>-1</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>j(l-1)<sp/><sp/>=<sp/>(sl<sp/>+<sp/>xinv)<sp/>*<sp/>j(l)<sp/><sp/><sp/>+<sp/>jp(l)</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sl<sp/><sp/>=<sp/><sp/>sl<sp/>-<sp/>xinv</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>jp(l-1)<sp/><sp/>=<sp/><sp/>sl<sp/>*<sp/>j(l-1)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>-<sp/>j(l)</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/>30<sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">CONTINUE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>den<sp/>=<sp/>j(0)</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ENDIF</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>end<sp/>loop<sp/>for<sp/>Lmax<sp/>GT<sp/>0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight><highlight class="comment">C------<sp/>CALCULATE<sp/>THE<sp/>L=0<sp/>SPHERICAL<sp/>BESSEL<sp/>FUNCTIONS<sp/>DIRECTLY</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>j(0)<sp/><sp/><sp/>=<sp/><sp/>xinv<sp/>*<sp/>dsin(x)</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>y(0)<sp/><sp/><sp/>=<sp/>-xinv<sp/>*<sp/>dcos(x)</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>jp(0)<sp/><sp/><sp/>=<sp/>-y(0)<sp/>-<sp/>xinv<sp/>*<sp/>j(0)</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>yp(0)<sp/><sp/><sp/>=<sp/><sp/>j(0)<sp/>-<sp/>xinv<sp/>*<sp/>y(0)</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(lmax<sp/>.GT.<sp/>0)<sp/></highlight><highlight class="keywordflow">THEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>omega<sp/><sp/>=<sp/><sp/>j(0)<sp/>/<sp/>den</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sl<sp/><sp/>=<sp/>zero</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">DO</highlight><highlight class="normal"><sp/>40<sp/>l<sp/>=<sp/>1<sp/>,<sp/>lmax</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>j(l)<sp/>=<sp/>omega<sp/>*<sp/>j(l)</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>jp(l)<sp/>=<sp/>omega<sp/>*<sp/>jp(l)</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>y(l)<sp/>=<sp/>sl<sp/>*<sp/>y(l-1)<sp/><sp/><sp/>-<sp/><sp/><sp/>yp(l-1)</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sl<sp/><sp/>=<sp/>sl<sp/>+<sp/>xinv</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>yp(l)<sp/>=<sp/>y(l-1)<sp/><sp/>-<sp/><sp/>(sl<sp/>+<sp/>xinv)<sp/>*<sp/>y(l)</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/>40<sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">CONTINUE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ENDIF</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ifail<sp/>=<sp/>0<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>calculations<sp/>successful</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">RETURN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight><highlight class="comment">C---------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/><sp/><sp/><sp/><sp/>ERROR<sp/>TRAPS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight><highlight class="comment">C---------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/>50<sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(x<sp/>.LT.<sp/>zero)<sp/></highlight><highlight class="keywordflow">THEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">WRITE</highlight><highlight class="normal">(6,1000)<sp/>x</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">ELSEIF</highlight><highlight class="normal"><sp/>(x<sp/>.EQ.<sp/>zero)<sp/></highlight><highlight class="keywordflow">THEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ifail<sp/>=<sp/>0</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>j(0)<sp/>=<sp/>one</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">DO</highlight><highlight class="normal"><sp/>60<sp/>l<sp/>=<sp/>1,<sp/>lmax</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>j(l)<sp/>=<sp/>zero<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>remaining<sp/>arrays<sp/>untouched</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/>60<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">CONTINUE</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">ELSE</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>x<sp/>.le.<sp/>sqrt(accur),<sp/>e.g.<sp/>1D-7</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">WRITE</highlight><highlight class="normal">(6,1001)<sp/>x</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ENDIF</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/>1000<sp/><sp/><sp/></highlight><highlight class="keyword">FORMAT</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&apos;<sp/>X<sp/>NEGATIVE<sp/>!&apos;</highlight><highlight class="normal">,1pe15.5,</highlight><highlight class="stringliteral">&apos;<sp/><sp/><sp/><sp/>USE<sp/>REFLECTION<sp/>FORMULA&apos;</highlight><highlight class="normal">/)</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/>1001<sp/><sp/><sp/></highlight><highlight class="keyword">FORMAT</highlight><highlight class="normal">(</highlight><highlight class="stringliteral">&apos;<sp/>WITH<sp/>X<sp/>=<sp/>&apos;</highlight><highlight class="normal">,1pe15.5,</highlight><highlight class="stringliteral">&apos;<sp/><sp/><sp/><sp/>TRY<sp/>SMALL-X<sp/>SOLUTIONS&apos;</highlight><highlight class="normal">,/,</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>x<sp/><sp/></highlight><highlight class="stringliteral">&apos;<sp/><sp/><sp/><sp/>j/L/(X)<sp/><sp/>-&gt;<sp/><sp/><sp/>X**L<sp/>/<sp/>(2L+1)!!<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>AND&apos;</highlight><highlight class="normal">,/,</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/>x<sp/><sp/></highlight><highlight class="stringliteral">&apos;<sp/><sp/><sp/><sp/>y/L/(X)<sp/><sp/>-&gt;<sp/><sp/>-(2L-1)!!<sp/>/<sp/>X**(L+1)&apos;</highlight><highlight class="normal">/)</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">RETURN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"></highlight><highlight class="keyword"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>END</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight><highlight class="comment">C---------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight><highlight class="comment">C<sp/><sp/><sp/><sp/><sp/><sp/><sp/>END<sp/>OF<sp/>SUBROUTINE<sp/>SBESJY<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight><highlight class="comment">C---------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="src/bessel.f"/>
+  </compounddef>
+</doxygen>

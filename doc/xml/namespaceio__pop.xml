@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespaceio__pop" kind="namespace" language="Fortran">
+    <compoundname>io_pop</compoundname>
+    <innerclass refid="interfaceio__pop_1_1write__wave" prot="private">io_pop::write_wave</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="io__pop_8_f90_1af3718e60609f8b1a0b7a31850d6eddd0" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine io_pop::write_wave_serial</definition>
+        <argsstring>(wave, rank, dims, filename, groupname, setname, series_desired)</argsstring>
+        <name>write_wave_serial</name>
+        <param>
+          <type>wave</type>
+          <defname>wave</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>groupname</type>
+          <defname>groupname</defname>
+        </param>
+        <param>
+          <type>setname</type>
+          <defname>setname</defname>
+        </param>
+        <param>
+          <type>series_desired</type>
+          <defname>series_desired</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/io_pop.F90" line="42" column="1" bodyfile="src/io_pop.F90" bodystart="44" bodyend="174"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/io_pop.F90" line="1" column="1"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfacescatt__interp_1_1destroy__scatt__interpolant" kind="interface" language="Fortran" prot="private">
+    <compoundname>scatt_interp::destroy_scatt_interpolant</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfacescatt__interp_1_1destroy__scatt__interpolant_1a21916ebe9f193630cf320867d76564de" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::destroy_scatt_interpolant::ddestroy_scatt_interpolant2d</definition>
+        <argsstring>(numpts, x1, x2, func)</argsstring>
+        <name>ddestroy_scatt_interpolant2d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="733" column="1" bodyfile="src/scatt_interp.f90" bodystart="734" bodyend="750"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacescatt__interp_1_1destroy__scatt__interpolant_1a039da7704f36b67353c56820ddf3d6f6" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::destroy_scatt_interpolant::zdestroy_scatt_interpolant2d</definition>
+        <argsstring>(numpts, x1, x2, func)</argsstring>
+        <name>zdestroy_scatt_interpolant2d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="755" column="1" bodyfile="src/scatt_interp.f90" bodystart="756" bodyend="782"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacescatt__interp_1_1destroy__scatt__interpolant_1a31a4fbaadab1cf7b8f154dd3ba22c045" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::destroy_scatt_interpolant::ddestroy_scatt_interpolant3d</definition>
+        <argsstring>(numpts, x1, x2, x3, func)</argsstring>
+        <name>ddestroy_scatt_interpolant3d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>x3</type>
+          <defname>x3</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="787" column="1" bodyfile="src/scatt_interp.f90" bodystart="788" bodyend="807"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacescatt__interp_1_1destroy__scatt__interpolant_1a3074b49db13c87ce273cd9f6d89909ec" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::destroy_scatt_interpolant::zdestroy_scatt_interpolant3d</definition>
+        <argsstring>(numpts, x1, x2, x3, func)</argsstring>
+        <name>zdestroy_scatt_interpolant3d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>x3</type>
+          <defname>x3</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="811" column="1" bodyfile="src/scatt_interp.f90" bodystart="812" bodyend="842"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/scatt_interp.f90" line="46" column="1" bodyfile="src/scatt_interp.f90" bodystart="46" bodyend="50"/>
+    <listofallmembers>
+      <member refid="interfacescatt__interp_1_1destroy__scatt__interpolant_1a21916ebe9f193630cf320867d76564de" prot="private" virt="non-virtual"><scope>scatt_interp::destroy_scatt_interpolant</scope><name>ddestroy_scatt_interpolant2d</name></member>
+      <member refid="interfacescatt__interp_1_1destroy__scatt__interpolant_1a31a4fbaadab1cf7b8f154dd3ba22c045" prot="private" virt="non-virtual"><scope>scatt_interp::destroy_scatt_interpolant</scope><name>ddestroy_scatt_interpolant3d</name></member>
+      <member refid="interfacescatt__interp_1_1destroy__scatt__interpolant_1a039da7704f36b67353c56820ddf3d6f6" prot="private" virt="non-virtual"><scope>scatt_interp::destroy_scatt_interpolant</scope><name>zdestroy_scatt_interpolant2d</name></member>
+      <member refid="interfacescatt__interp_1_1destroy__scatt__interpolant_1a3074b49db13c87ce273cd9f6d89909ec" prot="private" virt="non-virtual"><scope>scatt_interp::destroy_scatt_interpolant</scope><name>zdestroy_scatt_interpolant3d</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

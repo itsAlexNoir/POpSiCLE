@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfaceio__pop_1_1write__wave" kind="interface" language="Fortran" prot="private">
+    <compoundname>io_pop::write_wave</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfaceio__pop_1_1write__wave_1af18621be0307630b7e7afdbfdbce4625" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine io_pop::write_wave::write_wave_serial</definition>
+        <argsstring>(wave, rank, dims, filename, groupname, setname, series_desired)</argsstring>
+        <name>write_wave_serial</name>
+        <param>
+          <type>wave</type>
+          <defname>wave</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>groupname</type>
+          <defname>groupname</defname>
+        </param>
+        <param>
+          <type>setname</type>
+          <defname>setname</defname>
+        </param>
+        <param>
+          <type>series_desired</type>
+          <defname>series_desired</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/io_pop.F90" line="42" column="1" bodyfile="src/io_pop.F90" bodystart="44" bodyend="174"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/io_pop.F90" line="24" column="1" bodyfile="src/io_pop.F90" bodystart="24" bodyend="28"/>
+    <listofallmembers>
+      <member refid="interfaceio__pop_1_1write__wave_1af18621be0307630b7e7afdbfdbce4625" prot="private" virt="non-virtual"><scope>io_pop::write_wave</scope><name>write_wave_serial</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

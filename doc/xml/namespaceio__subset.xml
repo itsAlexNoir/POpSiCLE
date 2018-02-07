@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespaceio__subset" kind="namespace" language="Fortran">
+    <compoundname>io_subset</compoundname>
+    <innerclass refid="interfaceio__subset_1_1read__subset" prot="private">io_subset::read_subset</innerclass>
+    <innerclass refid="interfaceio__subset_1_1write__subset" prot="private">io_subset::write_subset</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="io__subset_8_f90_1ae18f05711a43455c2dfe7872f05d30e8" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine io_subset::dread_subset_serial</definition>
+        <argsstring>(filename_in, psi, rank, dims, offset)</argsstring>
+        <name>dread_subset_serial</name>
+        <param>
+          <type>filename_in</type>
+          <defname>filename_in</defname>
+        </param>
+        <param>
+          <type>psi</type>
+          <defname>psi</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>offset</type>
+          <defname>offset</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/io_subset.F90" line="419" column="1" bodyfile="src/io_subset.F90" bodystart="420" bodyend="521"/>
+      </memberdef>
+      <memberdef kind="function" id="io__subset_8_f90_1ad0df02680ed0d0dc1779c5bc91eb491e" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine io_subset::dread_subset_parallel</definition>
+        <argsstring>(filename_in, psi, rank, dims, dims_proc, offset, comm)</argsstring>
+        <name>dread_subset_parallel</name>
+        <param>
+          <type>filename_in</type>
+          <defname>filename_in</defname>
+        </param>
+        <param>
+          <type>psi</type>
+          <defname>psi</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>dims_proc</type>
+          <defname>dims_proc</defname>
+        </param>
+        <param>
+          <type>offset</type>
+          <defname>offset</defname>
+        </param>
+        <param>
+          <type>comm</type>
+          <defname>comm</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/io_subset.F90" line="528" column="1" bodyfile="src/io_subset.F90" bodystart="530" bodyend="658"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/io_subset.F90" line="1" column="1"/>
+  </compounddef>
+</doxygen>

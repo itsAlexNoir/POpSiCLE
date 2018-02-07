@@ -1,0 +1,333 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespaceobservables" kind="namespace" language="Fortran">
+    <compoundname>observables</compoundname>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceobservables_1a8a6bcfb58d52d4fe82720b4f70a9a055" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public observables::get_angular_resolution</definition>
+        <argsstring>(b_lm, dPomega, lmax, sph_harmonics)</argsstring>
+        <name>get_angular_resolution</name>
+        <param>
+          <type>b_lm</type>
+          <defname>b_lm</defname>
+        </param>
+        <param>
+          <type>dPomega</type>
+          <defname>dPomega</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>sph_harmonics</type>
+          <defname>sph_harmonics</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/observables.F90" line="45" column="1" bodyfile="src/observables.F90" bodystart="47" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceobservables_1a5d282836884dfc0914f77cd5fdf8bc70" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public observables::get_radial_amplitude</definition>
+        <argsstring>(bk, bk_rad)</argsstring>
+        <name>get_radial_amplitude</name>
+        <param>
+          <type>bk</type>
+          <defname>bk</defname>
+        </param>
+        <param>
+          <type>bk_rad</type>
+          <defname>bk_rad</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/observables.F90" line="90" column="1" bodyfile="src/observables.F90" bodystart="91" bodyend="117"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceobservables_1a415e076591f8d19abeeb7c1461c059c0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public observables::write_radial_amplitude</definition>
+        <argsstring>(bk, filename, groupname)</argsstring>
+        <name>write_radial_amplitude</name>
+        <param>
+          <type>bk</type>
+          <defname>bk</defname>
+        </param>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>groupname</type>
+          <defname>groupname</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/observables.F90" line="122" column="1" bodyfile="src/observables.F90" bodystart="123" bodyend="155"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceobservables_1a0b1a7af46f2ea07e735c4cb3a6abd1af" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public observables::get_pes</definition>
+        <argsstring>(bk, bk_pes)</argsstring>
+        <name>get_pes</name>
+        <param>
+          <type>bk</type>
+          <defname>bk</defname>
+        </param>
+        <param>
+          <type>bk_pes</type>
+          <defname>bk_pes</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/observables.F90" line="160" column="1" bodyfile="src/observables.F90" bodystart="161" bodyend="175"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceobservables_1a49cbb4d39bc897eba652c7bd0c7b6649" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public observables::write_pes</definition>
+        <argsstring>(bk, filename, groupname)</argsstring>
+        <name>write_pes</name>
+        <param>
+          <type>bk</type>
+          <defname>bk</defname>
+        </param>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>groupname</type>
+          <defname>groupname</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/observables.F90" line="180" column="1" bodyfile="src/observables.F90" bodystart="181" bodyend="213"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceobservables_1a9c5b6413cb5024bc9ec9ea111f3bba83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public observables::get_polar_amplitude</definition>
+        <argsstring>(bk, bk_polar)</argsstring>
+        <name>get_polar_amplitude</name>
+        <param>
+          <type>bk</type>
+          <defname>bk</defname>
+        </param>
+        <param>
+          <type>bk_polar</type>
+          <defname>bk_polar</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/observables.F90" line="218" column="1" bodyfile="src/observables.F90" bodystart="219" bodyend="241"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceobservables_1a7fe1bde01013c09aef479372c0943bb5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public observables::write_polar_amplitude</definition>
+        <argsstring>(bk, filename, silofile, groupname)</argsstring>
+        <name>write_polar_amplitude</name>
+        <param>
+          <type>bk</type>
+          <defname>bk</defname>
+        </param>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>silofile</type>
+          <defname>silofile</defname>
+        </param>
+        <param>
+          <type>groupname</type>
+          <defname>groupname</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/observables.F90" line="246" column="1" bodyfile="src/observables.F90" bodystart="247" bodyend="307"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceobservables_1a4898af9bd28d97f07c4bda50b9975368" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public observables::get_amplitude3d</definition>
+        <argsstring>(bk, bk_real)</argsstring>
+        <name>get_amplitude3d</name>
+        <param>
+          <type>bk</type>
+          <defname>bk</defname>
+        </param>
+        <param>
+          <type>bk_real</type>
+          <defname>bk_real</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/observables.F90" line="312" column="1" bodyfile="src/observables.F90" bodystart="313" bodyend="336"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceobservables_1a7cf9e4039abeb86fbdcdc0accdb0c5f8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public observables::write_amplitude3d</definition>
+        <argsstring>(bk, filename, silofile, groupname)</argsstring>
+        <name>write_amplitude3d</name>
+        <param>
+          <type>bk</type>
+          <defname>bk</defname>
+        </param>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>silofile</type>
+          <defname>silofile</defname>
+        </param>
+        <param>
+          <type>groupname</type>
+          <defname>groupname</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/observables.F90" line="341" column="1" bodyfile="src/observables.F90" bodystart="342" bodyend="386"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceobservables_1a618ee95c37379a52aa20abbabcc0b582" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public observables::get_momwave</definition>
+        <argsstring>(bk, cbk_rad)</argsstring>
+        <name>get_momwave</name>
+        <param>
+          <type>bk</type>
+          <defname>bk</defname>
+        </param>
+        <param>
+          <type>cbk_rad</type>
+          <defname>cbk_rad</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/observables.F90" line="391" column="1" bodyfile="src/observables.F90" bodystart="392" bodyend="417"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceobservables_1a85e7169aaa65a6e73ae6a1fe1ea80ba5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public observables::write_momwave</definition>
+        <argsstring>(bk, filename, groupname)</argsstring>
+        <name>write_momwave</name>
+        <param>
+          <type>bk</type>
+          <defname>bk</defname>
+        </param>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>groupname</type>
+          <defname>groupname</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/observables.F90" line="422" column="1" bodyfile="src/observables.F90" bodystart="423" bodyend="455"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceobservables_1ab8ee6f891db9f8aa59cb5aaf38330ce4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public observables::get_radial_amp_lm</definition>
+        <argsstring>(bk, b_lm, sph_harmonics)</argsstring>
+        <name>get_radial_amp_lm</name>
+        <param>
+          <type>bk</type>
+          <defname>bk</defname>
+        </param>
+        <param>
+          <type>b_lm</type>
+          <defname>b_lm</defname>
+        </param>
+        <param>
+          <type>sph_harmonics</type>
+          <defname>sph_harmonics</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/observables.F90" line="460" column="1" bodyfile="src/observables.F90" bodystart="461" bodyend="494"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceobservables_1a01cd97ee60ce8ef98b98e2d245cc3018" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public observables::write_radial_amp_lm</definition>
+        <argsstring>(bk, filename, sph_harmonics)</argsstring>
+        <name>write_radial_amp_lm</name>
+        <param>
+          <type>bk</type>
+          <defname>bk</defname>
+        </param>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>sph_harmonics</type>
+          <defname>sph_harmonics</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/observables.F90" line="499" column="1" bodyfile="src/observables.F90" bodystart="500" bodyend="538"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>observables module </para>    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para>Alejandro de la Calle. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="author"><para>Daniel Dundas. Queen&apos;s University Belfast. </para></simplesect>
+<simplesect kind="date"><para>05/02/2016</para></simplesect>
+This module contains routines to calculate various observables from the outcome of a photoionisation. </para>    </detaileddescription>
+    <location file="src/observables.F90" line="16" column="1"/>
+  </compounddef>
+</doxygen>

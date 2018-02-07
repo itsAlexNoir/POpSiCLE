@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfacewaveduplicate_1_1duplicate__cartesian__wave" kind="interface" language="Fortran" prot="private">
+    <compoundname>waveduplicate::duplicate_cartesian_wave</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfacewaveduplicate_1_1duplicate__cartesian__wave_1a24b528e84060533d82e33dc429923819" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine waveduplicate::duplicate_cartesian_wave::dduplicate_cartesian_wave3d</definition>
+        <argsstring>(psi_original, psi_duplicated, x1_ax, y1_ax, z1_ax, x2_ax, y2_ax, z2_ax, fdrule, psi_dup_dx, psi_dup_dy, psi_dup_dz, rank)</argsstring>
+        <name>dduplicate_cartesian_wave3d</name>
+        <param>
+          <type>psi_original</type>
+          <defname>psi_original</defname>
+        </param>
+        <param>
+          <type>psi_duplicated</type>
+          <defname>psi_duplicated</defname>
+        </param>
+        <param>
+          <type>x1_ax</type>
+          <defname>x1_ax</defname>
+        </param>
+        <param>
+          <type>y1_ax</type>
+          <defname>y1_ax</defname>
+        </param>
+        <param>
+          <type>z1_ax</type>
+          <defname>z1_ax</defname>
+        </param>
+        <param>
+          <type>x2_ax</type>
+          <defname>x2_ax</defname>
+        </param>
+        <param>
+          <type>y2_ax</type>
+          <defname>y2_ax</defname>
+        </param>
+        <param>
+          <type>z2_ax</type>
+          <defname>z2_ax</defname>
+        </param>
+        <param>
+          <type>fdrule</type>
+          <defname>fdrule</defname>
+        </param>
+        <param>
+          <type>psi_dup_dx</type>
+          <defname>psi_dup_dx</defname>
+        </param>
+        <param>
+          <type>psi_dup_dy</type>
+          <defname>psi_dup_dy</defname>
+        </param>
+        <param>
+          <type>psi_dup_dz</type>
+          <defname>psi_dup_dz</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/waveduplicate.f90" line="45" column="1" bodyfile="src/waveduplicate.f90" bodystart="48" bodyend="366"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacewaveduplicate_1_1duplicate__cartesian__wave_1af51f6d5938976cb6fa299ce33f4b7bd8" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine waveduplicate::duplicate_cartesian_wave::zduplicate_cartesian_wave3d</definition>
+        <argsstring>(psi_original, psi_duplicated, x1_ax, y1_ax, z1_ax, x2_ax, y2_ax, z2_ax, fdrule, psi_dup_dx, psi_dup_dy, psi_dup_dz, rank)</argsstring>
+        <name>zduplicate_cartesian_wave3d</name>
+        <param>
+          <type>psi_original</type>
+          <defname>psi_original</defname>
+        </param>
+        <param>
+          <type>psi_duplicated</type>
+          <defname>psi_duplicated</defname>
+        </param>
+        <param>
+          <type>x1_ax</type>
+          <defname>x1_ax</defname>
+        </param>
+        <param>
+          <type>y1_ax</type>
+          <defname>y1_ax</defname>
+        </param>
+        <param>
+          <type>z1_ax</type>
+          <defname>z1_ax</defname>
+        </param>
+        <param>
+          <type>x2_ax</type>
+          <defname>x2_ax</defname>
+        </param>
+        <param>
+          <type>y2_ax</type>
+          <defname>y2_ax</defname>
+        </param>
+        <param>
+          <type>z2_ax</type>
+          <defname>z2_ax</defname>
+        </param>
+        <param>
+          <type>fdrule</type>
+          <defname>fdrule</defname>
+        </param>
+        <param>
+          <type>psi_dup_dx</type>
+          <defname>psi_dup_dx</defname>
+        </param>
+        <param>
+          <type>psi_dup_dy</type>
+          <defname>psi_dup_dy</defname>
+        </param>
+        <param>
+          <type>psi_dup_dz</type>
+          <defname>psi_dup_dz</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/waveduplicate.f90" line="372" column="1" bodyfile="src/waveduplicate.f90" bodystart="375" bodyend="741"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/waveduplicate.f90" line="14" column="1" bodyfile="src/waveduplicate.f90" bodystart="14" bodyend="16"/>
+    <listofallmembers>
+      <member refid="interfacewaveduplicate_1_1duplicate__cartesian__wave_1a24b528e84060533d82e33dc429923819" prot="private" virt="non-virtual"><scope>waveduplicate::duplicate_cartesian_wave</scope><name>dduplicate_cartesian_wave3d</name></member>
+      <member refid="interfacewaveduplicate_1_1duplicate__cartesian__wave_1af51f6d5938976cb6fa299ce33f4b7bd8" prot="private" virt="non-virtual"><scope>waveduplicate::duplicate_cartesian_wave</scope><name>zduplicate_cartesian_wave3d</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

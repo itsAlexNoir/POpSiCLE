@@ -1,0 +1,457 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacescattboundcyl" kind="namespace" language="Fortran">
+    <compoundname>scattboundcyl</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1a96f93e0587a89dff8418477019f2098f" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable, public</type>
+        <definition>real(dp), dimension(:), allocatable, public scattboundcyl::rpts_boundary</definition>
+        <argsstring></argsstring>
+        <name>rpts_boundary</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="23" column="1" bodyfile="src/scattboundcyl.F90" bodystart="23" bodyend="23"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1ac6fdb2029e749648e5a148d44c2ca3df" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable, public</type>
+        <definition>real(dp), dimension(:), allocatable, public scattboundcyl::theta_boundary</definition>
+        <argsstring></argsstring>
+        <name>theta_boundary</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="24" column="1" bodyfile="src/scattboundcyl.F90" bodystart="24" bodyend="24"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1ad5a92533649eadcbf271c259ef0da45c" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable, public</type>
+        <definition>real(dp), dimension(:), allocatable, public scattboundcyl::costheta_boundary</definition>
+        <argsstring></argsstring>
+        <name>costheta_boundary</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="25" column="1" bodyfile="src/scattboundcyl.F90" bodystart="25" bodyend="25"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1aedd347ba45e7f6604214bb44729b828d" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable, public</type>
+        <definition>real(dp), dimension(:), allocatable, public scattboundcyl::theta_weights</definition>
+        <argsstring></argsstring>
+        <name>theta_weights</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="26" column="1" bodyfile="src/scattboundcyl.F90" bodystart="26" bodyend="26"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1a2869c56d07dd1fd77e37b06ce7566cf9" prot="public" static="no" mutable="no">
+        <type>integer, dimension(:), allocatable, public</type>
+        <definition>integer, dimension(:), allocatable, public scattboundcyl::i_am_surface_local</definition>
+        <argsstring></argsstring>
+        <name>i_am_surface_local</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="28" column="1" bodyfile="src/scattboundcyl.F90" bodystart="28" bodyend="28"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1ab5710f2d04d92318056ae863c0968de3" prot="public" static="no" mutable="no">
+        <type>integer, dimension(:), allocatable, public</type>
+        <definition>integer, dimension(:), allocatable, public scattboundcyl::i_am_surface</definition>
+        <argsstring></argsstring>
+        <name>i_am_surface</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="29" column="1" bodyfile="src/scattboundcyl.F90" bodystart="29" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1aef1bc0b3be8b52708696292f05d83820" prot="public" static="no" mutable="no">
+        <type>integer, dimension(:), allocatable, public</type>
+        <definition>integer, dimension(:), allocatable, public scattboundcyl::surface_members</definition>
+        <argsstring></argsstring>
+        <name>surface_members</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="30" column="1" bodyfile="src/scattboundcyl.F90" bodystart="30" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1ab644613827f9db7c1b613cd0e1d81787" prot="public" static="no" mutable="no">
+        <type>integer, dimension(:, :), allocatable, public</type>
+        <definition>integer, dimension(:, :), allocatable, public scattboundcyl::i_am_in_local2d</definition>
+        <argsstring></argsstring>
+        <name>i_am_in_local2d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="31" column="1" bodyfile="src/scattboundcyl.F90" bodystart="31" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1ab68148451c425ee174991f90678869f8" prot="public" static="no" mutable="no">
+        <type>integer, dimension(:, :), allocatable, public</type>
+        <definition>integer, dimension(:, :), allocatable, public scattboundcyl::i_am_in_global2d</definition>
+        <argsstring></argsstring>
+        <name>i_am_in_global2d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="32" column="1" bodyfile="src/scattboundcyl.F90" bodystart="32" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1a63da7dda4cc5ca7c4795afa9ec0830b2" prot="public" static="no" mutable="no">
+        <type>integer, public</type>
+        <definition>integer, public scattboundcyl::numrpts</definition>
+        <argsstring></argsstring>
+        <name>numrpts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="34" column="1" bodyfile="src/scattboundcyl.F90" bodystart="34" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1abfb972d237d94e9fcd4b7f59b0e1b14d" prot="public" static="no" mutable="no">
+        <type>integer, public</type>
+        <definition>integer, public scattboundcyl::numthetapts</definition>
+        <argsstring></argsstring>
+        <name>numthetapts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="35" column="1" bodyfile="src/scattboundcyl.F90" bodystart="35" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1a7bd29dda352e1510947fade25cfe963d" prot="public" static="no" mutable="no">
+        <type>integer, public</type>
+        <definition>integer, public scattboundcyl::numthetaptsperproc</definition>
+        <argsstring></argsstring>
+        <name>numthetaptsperproc</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="36" column="1" bodyfile="src/scattboundcyl.F90" bodystart="36" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1a72d06460542a2f3c856d6555b9bba18b" prot="public" static="no" mutable="no">
+        <type>integer, public</type>
+        <definition>integer, public scattboundcyl::numsurfaceprocs</definition>
+        <argsstring></argsstring>
+        <name>numsurfaceprocs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="37" column="1" bodyfile="src/scattboundcyl.F90" bodystart="37" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1abebd3272ca287714b0d72450140fa42d" prot="public" static="no" mutable="no">
+        <type>integer, public</type>
+        <definition>integer, public scattboundcyl::numioprocs</definition>
+        <argsstring></argsstring>
+        <name>numioprocs</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="38" column="1" bodyfile="src/scattboundcyl.F90" bodystart="38" bodyend="38"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1a7b172e3cf8236ad7cff397f8aba6bbc6" prot="public" static="no" mutable="no">
+        <type>integer, public</type>
+        <definition>integer, public scattboundcyl::surfacerank</definition>
+        <argsstring></argsstring>
+        <name>surfacerank</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="39" column="1" bodyfile="src/scattboundcyl.F90" bodystart="39" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1aa135857cff59af8bc1d8b8ccef5a58c7" prot="public" static="no" mutable="no">
+        <type>integer, public</type>
+        <definition>integer, public scattboundcyl::surfacecomm</definition>
+        <argsstring></argsstring>
+        <name>surfacecomm</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="40" column="1" bodyfile="src/scattboundcyl.F90" bodystart="40" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1a12a75e3ced5470d6ef5d82078472f6db" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer scattboundcyl::numpts</definition>
+        <argsstring></argsstring>
+        <name>numpts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="42" column="1" bodyfile="src/scattboundcyl.F90" bodystart="42" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1a2589a794c5c2f8b0c927e6fcb0403510" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable scattboundcyl::rhopts_scatt</definition>
+        <argsstring></argsstring>
+        <name>rhopts_scatt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="43" column="1" bodyfile="src/scattboundcyl.F90" bodystart="43" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1a67addfb8aa268bc9ff4228a8cf130f8d" prot="private" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable scattboundcyl::zpts_scatt</definition>
+        <argsstring></argsstring>
+        <name>zpts_scatt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="44" column="1" bodyfile="src/scattboundcyl.F90" bodystart="44" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1a5eb5956ce0f2cc31b234d5605e93af07" prot="private" static="no" mutable="no">
+        <type>complex(dp), dimension(:), allocatable</type>
+        <definition>complex(dp), dimension(:), allocatable scattboundcyl::psi_scatt</definition>
+        <argsstring></argsstring>
+        <name>psi_scatt</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="45" column="1" bodyfile="src/scattboundcyl.F90" bodystart="45" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1a937ebe536e27b80f1337a715141760d5" prot="private" static="no" mutable="no">
+        <type>integer, dimension(:), allocatable</type>
+        <definition>integer, dimension(:), allocatable scattboundcyl::index_x1</definition>
+        <argsstring></argsstring>
+        <name>index_x1</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="46" column="1" bodyfile="src/scattboundcyl.F90" bodystart="46" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="variable" id="scattboundcyl_8_f90_1af914f4f741324e54f89eb84514721749" prot="private" static="no" mutable="no">
+        <type>integer, dimension(:), allocatable</type>
+        <definition>integer, dimension(:), allocatable scattboundcyl::index_x2</definition>
+        <argsstring></argsstring>
+        <name>index_x2</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="47" column="1" bodyfile="src/scattboundcyl.F90" bodystart="47" bodyend="47"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="scattboundcyl_8_f90_1a3196b064a72953ccd85e80300c220ecc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattboundcyl::initialize_scatt_cylindrical_boundary2d</definition>
+        <argsstring>(rho_ax, z_ax, dims, Rs, radtol, fdpts, deltar, lmax, mpi_rank, mpi_size, comm)</argsstring>
+        <name>initialize_scatt_cylindrical_boundary2d</name>
+        <param>
+          <type>rho_ax</type>
+          <defname>rho_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>Rs</type>
+          <defname>Rs</defname>
+        </param>
+        <param>
+          <type>radtol</type>
+          <defname>radtol</defname>
+        </param>
+        <param>
+          <type>fdpts</type>
+          <defname>fdpts</defname>
+        </param>
+        <param>
+          <type>deltar</type>
+          <defname>deltar</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>mpi_rank</type>
+          <defname>mpi_rank</defname>
+        </param>
+        <param>
+          <type>mpi_size</type>
+          <defname>mpi_size</defname>
+        </param>
+        <param>
+          <type>comm</type>
+          <defname>comm</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="60" column="1" bodyfile="src/scattboundcyl.F90" bodystart="62" bodyend="358"/>
+      </memberdef>
+      <memberdef kind="function" id="scattboundcyl_8_f90_1aef09b77a9ce035ec46a460d63f97e4f9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattboundcyl::dget_scatt_cylindrical_boundary2d</definition>
+        <argsstring>(psi_cyl, psi2D_sph, psi2D_sph_dx, psi2D_sph_dy, method, rank)</argsstring>
+        <name>dget_scatt_cylindrical_boundary2d</name>
+        <param>
+          <type>psi_cyl</type>
+          <defname>psi_cyl</defname>
+        </param>
+        <param>
+          <type>psi2D_sph</type>
+          <defname>psi2D_sph</defname>
+        </param>
+        <param>
+          <type>psi2D_sph_dx</type>
+          <defname>psi2D_sph_dx</defname>
+        </param>
+        <param>
+          <type>psi2D_sph_dy</type>
+          <defname>psi2D_sph_dy</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="369" column="1" bodyfile="src/scattboundcyl.F90" bodystart="371" bodyend="435"/>
+      </memberdef>
+      <memberdef kind="function" id="scattboundcyl_8_f90_1ace9d3daaf08beea756a290bc5ebdca2d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattboundcyl::zget_scatt_cylindrical_boundary2d</definition>
+        <argsstring>(psi_cyl, psi2D_sph, psi2D_sph_dx, psi2D_sph_dy, method, rank)</argsstring>
+        <name>zget_scatt_cylindrical_boundary2d</name>
+        <param>
+          <type>psi_cyl</type>
+          <defname>psi_cyl</defname>
+        </param>
+        <param>
+          <type>psi2D_sph</type>
+          <defname>psi2D_sph</defname>
+        </param>
+        <param>
+          <type>psi2D_sph_dx</type>
+          <defname>psi2D_sph_dx</defname>
+        </param>
+        <param>
+          <type>psi2D_sph_dy</type>
+          <defname>psi2D_sph_dy</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="440" column="1" bodyfile="src/scattboundcyl.F90" bodystart="442" bodyend="504"/>
+      </memberdef>
+      <memberdef kind="function" id="scattboundcyl_8_f90_1a3ac58d45af34de57f53d90a146a575bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public scattboundcyl::delete_scatt_cylindrical_boundary2d</definition>
+        <argsstring>(rpts, theta, rank)</argsstring>
+        <name>delete_scatt_cylindrical_boundary2d</name>
+        <param>
+          <type>rpts</type>
+          <defname>rpts</defname>
+        </param>
+        <param>
+          <type>theta</type>
+          <defname>theta</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scattboundcyl.F90" line="512" column="1" bodyfile="src/scattboundcyl.F90" bodystart="513" bodyend="533"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/scattboundcyl.F90" line="1" column="1"/>
+  </compounddef>
+</doxygen>

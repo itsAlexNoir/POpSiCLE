@@ -1,0 +1,191 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfacescatt__interp_1_1create__scatt__interpolant" kind="interface" language="Fortran" prot="private">
+    <compoundname>scatt_interp::create_scatt_interpolant</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfacescatt__interp_1_1create__scatt__interpolant_1a8b20f3fbdeb67d132ce059d1c1ceac48" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::create_scatt_interpolant::dcreate_scatt_interpolant2d</definition>
+        <argsstring>(numpts, x1, x2, func, method, rank)</argsstring>
+        <name>dcreate_scatt_interpolant2d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+<para>Create the interpolant for scattered interpolantion. </para>        </briefdescription>
+        <detaileddescription>
+<para>Create and interpolant for scattered interpolation. The routine can choose between different orders. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">xx</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Array of tabulated values </para></parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">x</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Given value to be search </para></parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>locate Array index of xx in which x is centered. </para></simplesect>
+</para>        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="96" column="1" bodyfile="src/scatt_interp.f90" bodystart="97" bodyend="157"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacescatt__interp_1_1create__scatt__interpolant_1add614642a4fcb29f7ada2ca49b409c66" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::create_scatt_interpolant::zcreate_scatt_interpolant2d</definition>
+        <argsstring>(numpts, x1, x2, func, method, rank)</argsstring>
+        <name>zcreate_scatt_interpolant2d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="162" column="1" bodyfile="src/scatt_interp.f90" bodystart="163" bodyend="239"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacescatt__interp_1_1create__scatt__interpolant_1aa09151e8bf3c9cd8eddb0784206febb8" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::create_scatt_interpolant::dcreate_scatt_interpolant3d</definition>
+        <argsstring>(numpts, x1, x2, x3, func, method, rank)</argsstring>
+        <name>dcreate_scatt_interpolant3d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>x3</type>
+          <defname>x3</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="244" column="1" bodyfile="src/scatt_interp.f90" bodystart="245" bodyend="295"/>
+      </memberdef>
+      <memberdef kind="function" id="interfacescatt__interp_1_1create__scatt__interpolant_1a6d14b82482ec68c9c48f836c1d1a825b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine scatt_interp::create_scatt_interpolant::zcreate_scatt_interpolant3d</definition>
+        <argsstring>(numpts, x1, x2, x3, func, method, rank)</argsstring>
+        <name>zcreate_scatt_interpolant3d</name>
+        <param>
+          <type>numpts</type>
+          <defname>numpts</defname>
+        </param>
+        <param>
+          <type>x1</type>
+          <defname>x1</defname>
+        </param>
+        <param>
+          <type>x2</type>
+          <defname>x2</defname>
+        </param>
+        <param>
+          <type>x3</type>
+          <defname>x3</defname>
+        </param>
+        <param>
+          <type>func</type>
+          <defname>func</defname>
+        </param>
+        <param>
+          <type>method</type>
+          <defname>method</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/scatt_interp.f90" line="300" column="1" bodyfile="src/scatt_interp.f90" bodystart="301" bodyend="380"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/scatt_interp.f90" line="32" column="1" bodyfile="src/scatt_interp.f90" bodystart="32" bodyend="36"/>
+    <listofallmembers>
+      <member refid="interfacescatt__interp_1_1create__scatt__interpolant_1a8b20f3fbdeb67d132ce059d1c1ceac48" prot="private" virt="non-virtual"><scope>scatt_interp::create_scatt_interpolant</scope><name>dcreate_scatt_interpolant2d</name></member>
+      <member refid="interfacescatt__interp_1_1create__scatt__interpolant_1aa09151e8bf3c9cd8eddb0784206febb8" prot="private" virt="non-virtual"><scope>scatt_interp::create_scatt_interpolant</scope><name>dcreate_scatt_interpolant3d</name></member>
+      <member refid="interfacescatt__interp_1_1create__scatt__interpolant_1add614642a4fcb29f7ada2ca49b409c66" prot="private" virt="non-virtual"><scope>scatt_interp::create_scatt_interpolant</scope><name>zcreate_scatt_interpolant2d</name></member>
+      <member refid="interfacescatt__interp_1_1create__scatt__interpolant_1a6d14b82482ec68c9c48f836c1d1a825b" prot="private" virt="non-virtual"><scope>scatt_interp::create_scatt_interpolant</scope><name>zcreate_scatt_interpolant3d</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

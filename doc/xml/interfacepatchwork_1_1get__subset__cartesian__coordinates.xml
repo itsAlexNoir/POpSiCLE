@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="interfacepatchwork_1_1get__subset__cartesian__coordinates" kind="interface" language="Fortran" prot="private">
+    <compoundname>patchwork::get_subset_cartesian_coordinates</compoundname>
+      <sectiondef kind="private-func">
+      <memberdef kind="function" id="interfacepatchwork_1_1get__subset__cartesian__coordinates_1ae778e7bf191db1cf4e81db3600544304" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine patchwork::get_subset_cartesian_coordinates::get_subset_cartesian_coordinates_serial</definition>
+        <argsstring>(domain, offset, dims, xpts, ypts, zpts, rpts)</argsstring>
+        <name>get_subset_cartesian_coordinates_serial</name>
+        <param>
+          <type>domain</type>
+          <defname>domain</defname>
+        </param>
+        <param>
+          <type>offset</type>
+          <defname>offset</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>xpts</type>
+          <defname>xpts</defname>
+        </param>
+        <param>
+          <type>ypts</type>
+          <defname>ypts</defname>
+        </param>
+        <param>
+          <type>zpts</type>
+          <defname>zpts</defname>
+        </param>
+        <param>
+          <type>rpts</type>
+          <defname>rpts</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/patchwork.F90" line="37" column="1" bodyfile="src/patchwork.F90" bodystart="39" bodyend="106"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/patchwork.F90" line="24" column="1" bodyfile="src/patchwork.F90" bodystart="24" bodyend="25"/>
+    <listofallmembers>
+      <member refid="interfacepatchwork_1_1get__subset__cartesian__coordinates_1ae778e7bf191db1cf4e81db3600544304" prot="private" virt="non-virtual"><scope>patchwork::get_subset_cartesian_coordinates</scope><name>get_subset_cartesian_coordinates_serial</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,16 +1,15 @@
+"""
+Example file for using the popsicle viewer utility.
+
+1. Loads the input file (./input_popviewer.inp)
+2. Select options from input file.
+
+"""
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import constants as const
-import input_reader as inp
-import axes as axes
-import data as data
-import coords as coords
-import aux_funcs as aux_funcs
-import cross as cross
-import graph as graph
-
+popsicle_viewer import *
 
 ########################################
 #       popsicle viewer.py

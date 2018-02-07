@@ -1,0 +1,232 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacecubboundcart" kind="namespace" language="Fortran">
+    <compoundname>cubboundcart</compoundname>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="cubboundcart_8_f90_1a0c7b83c474118b5fbb9e3d3f1c2f4516" prot="public" static="no" mutable="no">
+        <type>integer, dimension(:,:,:, :), allocatable, public</type>
+        <definition>integer, dimension(: ,: ,:, :), allocatable, public cubboundcart::cellindex3d</definition>
+        <argsstring></argsstring>
+        <name>cellindex3d</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubboundcart.F90" line="24" column="1" bodyfile="src/cubboundcart.F90" bodystart="24" bodyend="24"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="cubboundcart_8_f90_1a0a754d8769de187dd0d931963d95cfa5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubboundcart::initialize_tricubic_cartesian_boundary3d</definition>
+        <argsstring>(x_ax, y_ax, z_ax, dims, Rb, fdpts, deltar, lmax, mpi_rank, mpi_size, comm)</argsstring>
+        <name>initialize_tricubic_cartesian_boundary3d</name>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>Rb</type>
+          <defname>Rb</defname>
+        </param>
+        <param>
+          <type>fdpts</type>
+          <defname>fdpts</defname>
+        </param>
+        <param>
+          <type>deltar</type>
+          <defname>deltar</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>mpi_rank</type>
+          <defname>mpi_rank</defname>
+        </param>
+        <param>
+          <type>mpi_size</type>
+          <defname>mpi_size</defname>
+        </param>
+        <param>
+          <type>comm</type>
+          <defname>comm</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubboundcart.F90" line="37" column="1" bodyfile="src/cubboundcart.F90" bodystart="39" bodyend="368"/>
+      </memberdef>
+      <memberdef kind="function" id="cubboundcart_8_f90_1ae6274e1a8c7037c1f95703b131a793d5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubboundcart::dget_tricubic_cartesian_boundary3d</definition>
+        <argsstring>(x_ax, y_ax, z_ax, dims, psi_cart, fdrule, psi3D_sph, psi3D_sph_dx, psi3D_sph_dy, psi3D_sph_dz, rank)</argsstring>
+        <name>dget_tricubic_cartesian_boundary3d</name>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>psi_cart</type>
+          <defname>psi_cart</defname>
+        </param>
+        <param>
+          <type>fdrule</type>
+          <defname>fdrule</defname>
+        </param>
+        <param>
+          <type>psi3D_sph</type>
+          <defname>psi3D_sph</defname>
+        </param>
+        <param>
+          <type>psi3D_sph_dx</type>
+          <defname>psi3D_sph_dx</defname>
+        </param>
+        <param>
+          <type>psi3D_sph_dy</type>
+          <defname>psi3D_sph_dy</defname>
+        </param>
+        <param>
+          <type>psi3D_sph_dz</type>
+          <defname>psi3D_sph_dz</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubboundcart.F90" line="378" column="1" bodyfile="src/cubboundcart.F90" bodystart="380" bodyend="626"/>
+      </memberdef>
+      <memberdef kind="function" id="cubboundcart_8_f90_1a9fe5ea4fc4eea3334e1b61d35d80e4f3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubboundcart::zget_tricubic_cartesian_boundary3d</definition>
+        <argsstring>(x_ax, y_ax, z_ax, dims, psi_cart, fdrule, psi3D_sph, psi3D_sph_dx, psi3D_sph_dy, psi3D_sph_dz, rank)</argsstring>
+        <name>zget_tricubic_cartesian_boundary3d</name>
+        <param>
+          <type>x_ax</type>
+          <defname>x_ax</defname>
+        </param>
+        <param>
+          <type>y_ax</type>
+          <defname>y_ax</defname>
+        </param>
+        <param>
+          <type>z_ax</type>
+          <defname>z_ax</defname>
+        </param>
+        <param>
+          <type>dims</type>
+          <defname>dims</defname>
+        </param>
+        <param>
+          <type>psi_cart</type>
+          <defname>psi_cart</defname>
+        </param>
+        <param>
+          <type>fdrule</type>
+          <defname>fdrule</defname>
+        </param>
+        <param>
+          <type>psi3D_sph</type>
+          <defname>psi3D_sph</defname>
+        </param>
+        <param>
+          <type>psi3D_sph_dx</type>
+          <defname>psi3D_sph_dx</defname>
+        </param>
+        <param>
+          <type>psi3D_sph_dy</type>
+          <defname>psi3D_sph_dy</defname>
+        </param>
+        <param>
+          <type>psi3D_sph_dz</type>
+          <defname>psi3D_sph_dz</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubboundcart.F90" line="631" column="1" bodyfile="src/cubboundcart.F90" bodystart="633" bodyend="931"/>
+      </memberdef>
+      <memberdef kind="function" id="cubboundcart_8_f90_1a6ba0ef77b3fa3f4ec16d1283a1d88a1c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public cubboundcart::delete_tricubic_cartesian_boundary3d</definition>
+        <argsstring>(x, y, z, w, rank)</argsstring>
+        <name>delete_tricubic_cartesian_boundary3d</name>
+        <param>
+          <type>x</type>
+          <defname>x</defname>
+        </param>
+        <param>
+          <type>y</type>
+          <defname>y</defname>
+        </param>
+        <param>
+          <type>z</type>
+          <defname>z</defname>
+        </param>
+        <param>
+          <type>w</type>
+          <defname>w</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/cubboundcart.F90" line="936" column="1" bodyfile="src/cubboundcart.F90" bodystart="938" bodyend="959"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/cubboundcart.F90" line="1" column="1"/>
+  </compounddef>
+</doxygen>

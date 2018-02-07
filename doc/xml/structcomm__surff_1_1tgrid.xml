@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="structcomm__surff_1_1tgrid" kind="type" language="Fortran" prot="public">
+    <compoundname>comm_surff::tgrid</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structcomm__surff_1_1tgrid_1a6d810425996b13b4f9ee00df211f81a8" prot="public" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer comm_surff::tgrid::numtimes</definition>
+        <argsstring></argsstring>
+        <name>numtimes</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="84" column="1" bodyfile="src/comm_surff.F90" bodystart="84" bodyend="84"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1tgrid_1aa29388224dae77a67a865f1b775e8333" prot="public" static="no" mutable="no">
+        <type>real(dp), dimension(:), allocatable</type>
+        <definition>real(dp), dimension(:), allocatable comm_surff::tgrid::timepts</definition>
+        <argsstring></argsstring>
+        <name>timepts</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="85" column="1" bodyfile="src/comm_surff.F90" bodystart="85" bodyend="85"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1tgrid_1ad943dfdbc8f52016c4f13f186a5ba1d4" prot="public" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) comm_surff::tgrid::deltat</definition>
+        <argsstring></argsstring>
+        <name>deltat</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="86" column="1" bodyfile="src/comm_surff.F90" bodystart="86" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1tgrid_1a2d38e5a0229188fb1c2a56afe1abcebd" prot="public" static="no" mutable="no">
+        <type>logical</type>
+        <definition>logical comm_surff::tgrid::truncate_time_integration</definition>
+        <argsstring></argsstring>
+        <name>truncate_time_integration</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="87" column="1" bodyfile="src/comm_surff.F90" bodystart="87" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1tgrid_1a469cd7acb23d0bcf32f8f870241e67af" prot="public" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer comm_surff::tgrid::maxtime_integrate</definition>
+        <argsstring></argsstring>
+        <name>maxtime_integrate</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="88" column="1" bodyfile="src/comm_surff.F90" bodystart="88" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1tgrid_1a177018456dc6b39f13de764a09ece1c9" prot="public" static="no" mutable="no">
+        <type>logical</type>
+        <definition>logical comm_surff::tgrid::timeaverageforrydberg</definition>
+        <argsstring></argsstring>
+        <name>timeaverageforrydberg</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="89" column="1" bodyfile="src/comm_surff.F90" bodystart="89" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="variable" id="structcomm__surff_1_1tgrid_1a31bee20d9f45037174c7f07efc57b186" prot="public" static="no" mutable="no">
+        <type>real(dp)</type>
+        <definition>real(dp) comm_surff::tgrid::timetoaverageover</definition>
+        <argsstring></argsstring>
+        <name>timetoaverageover</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="90" column="1" bodyfile="src/comm_surff.F90" bodystart="90" bodyend="90"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/comm_surff.F90" line="82" column="1" bodyfile="src/comm_surff.F90" bodystart="82" bodyend="92"/>
+    <listofallmembers>
+      <member refid="structcomm__surff_1_1tgrid_1ad943dfdbc8f52016c4f13f186a5ba1d4" prot="public" virt="non-virtual"><scope>comm_surff::tgrid</scope><name>deltat</name></member>
+      <member refid="structcomm__surff_1_1tgrid_1a469cd7acb23d0bcf32f8f870241e67af" prot="public" virt="non-virtual"><scope>comm_surff::tgrid</scope><name>maxtime_integrate</name></member>
+      <member refid="structcomm__surff_1_1tgrid_1a6d810425996b13b4f9ee00df211f81a8" prot="public" virt="non-virtual"><scope>comm_surff::tgrid</scope><name>numtimes</name></member>
+      <member refid="structcomm__surff_1_1tgrid_1a177018456dc6b39f13de764a09ece1c9" prot="public" virt="non-virtual"><scope>comm_surff::tgrid</scope><name>timeaverageforrydberg</name></member>
+      <member refid="structcomm__surff_1_1tgrid_1aa29388224dae77a67a865f1b775e8333" prot="public" virt="non-virtual"><scope>comm_surff::tgrid</scope><name>timepts</name></member>
+      <member refid="structcomm__surff_1_1tgrid_1a31bee20d9f45037174c7f07efc57b186" prot="public" virt="non-virtual"><scope>comm_surff::tgrid</scope><name>timetoaverageover</name></member>
+      <member refid="structcomm__surff_1_1tgrid_1a2d38e5a0229188fb1c2a56afe1abcebd" prot="public" virt="non-virtual"><scope>comm_surff::tgrid</scope><name>truncate_time_integration</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

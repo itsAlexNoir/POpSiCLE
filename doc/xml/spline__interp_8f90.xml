@@ -1,0 +1,241 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="spline__interp_8f90" kind="file" language="Fortran">
+    <compoundname>spline_interp.f90</compoundname>
+    <innerclass refid="interfacespline__interp_1_1tridag" prot="private">spline_interp::tridag</innerclass>
+    <innernamespace refid="namespacespline__interp">spline_interp</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">!-----------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">!<sp/>POpSiCLE<sp/>(PhOtoelectron<sp/>SpeCtrum<sp/>library<sp/>for<sp/>Laser-matter<sp/>intEractions)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">!-----------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">!<sp/>MODULE:<sp/>spline_interp</highlight></codeline>
+<codeline lineno="9"><highlight class="comment">!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="comment">!<sp/>DESCRIPTION:</highlight></codeline>
+<codeline lineno="14"><highlight class="comment">!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="comment">!------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16" refid="namespacespline__interp" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">MODULE</highlight><highlight class="normal"><sp/><ref refid="namespacespline__interp" kindref="compound">spline_interp</ref></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">USE<sp/></highlight><highlight class="normal"><ref refid="namespaceconstants__pop" kindref="compound">constants_pop</ref></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">USE<sp/></highlight><highlight class="normal">tools</highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">IMPLICIT<sp/>NONE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">PRIVATE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">PUBLIC</highlight><highlight class="normal"><sp/><sp/><sp/>::<sp/>get_scnd_derivatives_spline</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">PUBLIC</highlight><highlight class="normal"><sp/><sp/><sp/>::<sp/>spline_interpolation</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">PUBLIC</highlight><highlight class="normal"><sp/><sp/><sp/>::<sp/>tridag</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">!<sp/>Interface</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">INTERFACE</highlight><highlight class="normal"><sp/>tridag</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">MODULE<sp/>PROCEDURE</highlight><highlight class="normal"><sp/>tridag_par</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword"><sp/><sp/>END<sp/>INTERFACE<sp/></highlight><highlight class="normal">tridag</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="keyword">CONTAINS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">!**********************************************************************!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="keyword"><sp/><sp/>SUBROUTINE<sp/></highlight><highlight class="normal">get_scnd_derivatives_spline(x,y,yp1,ypn,y2)</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">IMPLICIT<sp/>NONE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">INTENT(IN)</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>x(:),y(:)</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">INTENT(IN)</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>yp1,ypn</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">INTENT(OUT)</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>y2(:)</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">INTEGER</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>n</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">DIMENSION(SIZE(x))</highlight><highlight class="normal"><sp/><sp/><sp/>::<sp/>a,b,c,r</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!---------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal">((</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(x).NE.</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(y))<sp/>.OR.<sp/>(</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(x).NE.</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(y2)))<sp/></highlight><highlight class="keywordflow">THEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">WRITE</highlight><highlight class="normal">(*,*)<sp/></highlight><highlight class="stringliteral">&apos;Input<sp/>arrays<sp/>do<sp/>not<sp/>have<sp/>the<sp/>same<sp/>size<sp/>in<sp/>get<sp/>second<sp/>derivatives.&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stop</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/>ENDIF</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>n<sp/>=<sp/></highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(x)</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!<sp/>Set<sp/>up<sp/>the<sp/>tridiagonal<sp/>equations</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/>c(1:n-1)<sp/>=<sp/>x(2:n)<sp/>-<sp/>x(1:n-1)</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>r(1:n-1)<sp/>=<sp/>6.0_dp<sp/>*<sp/>(<sp/>(y(2:n)<sp/>-<sp/>y(1:n-1))<sp/>/<sp/>c(1:n-1)<sp/>)</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/>r(2:n-1)<sp/>=<sp/>r(2:n-1)<sp/>-<sp/>r(1:n-2)</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/>a(2:n-1)<sp/>=<sp/>c(1:n-2)</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>b(2:n-1)<sp/>=<sp/>2.0_dp<sp/>*<sp/>(c(2:n-1)<sp/>+<sp/>a(2:n-1))</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/>b(1)<sp/><sp/><sp/><sp/><sp/>=<sp/>1.0_dp</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/>b(n)<sp/><sp/><sp/><sp/><sp/>=<sp/>1.0_dp</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(yp1<sp/>&gt;<sp/>0.99e30_dp)<sp/></highlight><highlight class="keywordflow">THEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>r(1)<sp/>=<sp/>0.0_dp</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>c(1)<sp/>=<sp/>0.0_dp</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">ELSE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>r(1)=(3.0_dp<sp/>/<sp/>(x(2)-x(1)))<sp/>*<sp/>((y(2)-y(1))<sp/>/<sp/>(x(2)-x(1))<sp/>-<sp/>yp1)</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>c(1)=0.5_dp</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/>ENDIF</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(ypn<sp/>&gt;<sp/>0.99e30_dp)<sp/></highlight><highlight class="keywordflow">THEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>r(n)=0.0_dp</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>a(n)=0.0_dp</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">ELSE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>r(n)<sp/>=<sp/>(<sp/>-3.0_dp<sp/>/<sp/>(x(n)-x(n-1)))<sp/>*<sp/>&amp;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>((y(n)-y(n-1))<sp/>/<sp/>(x(n)-x(n-1))<sp/>-<sp/>ypn)</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>a(n)<sp/>=<sp/>0.5_dp</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/>ENDIF</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">CALL<sp/></highlight><highlight class="normal">tridag_par(a(2:n),b(1:n),c(1:n-1),r(1:n),y2(1:n))</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight><highlight class="keyword"><sp/><sp/>END<sp/>SUBROUTINE<sp/></highlight><highlight class="normal">get_scnd_derivatives_spline</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">!*************************************************************!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight><highlight class="keyword"><sp/><sp/>SUBROUTINE<sp/></highlight><highlight class="normal">spline_interpolation(xa,ya,y2a,x,y)</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">IMPLICIT<sp/>NONE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">INTENT(IN)</highlight><highlight class="normal"><sp/><sp/><sp/>::<sp/>xa(:),<sp/>ya(:),<sp/>y2a(:)</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">INTENT(IN)</highlight><highlight class="normal"><sp/><sp/><sp/>::<sp/>x</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">INTENT(OUT)</highlight><highlight class="normal"><sp/><sp/>::<sp/>y</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">INTEGER</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>khi,<sp/>klo,<sp/>n</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">INTEGER</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>left,<sp/>mflag</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>a,b,h</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!----------------------------------------------------!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal">((</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(xa).NE.</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(ya))<sp/>.OR.<sp/>(</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(xa).NE.</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(y2a)))<sp/></highlight><highlight class="keywordflow">THEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">WRITE</highlight><highlight class="normal">(*,*)<sp/></highlight><highlight class="stringliteral">&apos;Input<sp/>arrays<sp/>do<sp/>not<sp/>have<sp/>the<sp/>same<sp/>size<sp/>.&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stop</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/>ENDIF</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/>n<sp/>=<sp/></highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(xa)</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">CALL<sp/></highlight><highlight class="normal">interv(xa,</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(xa),x,left,mflag)</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/>klo<sp/>=<sp/>max(min(left,n-1),1)</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/>khi<sp/>=<sp/>klo<sp/>+<sp/>1</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/>h<sp/><sp/><sp/>=<sp/>xa(khi)<sp/>-<sp/>xa(klo)</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(h<sp/>==<sp/>0.0_dp)<sp/></highlight><highlight class="keywordflow">THEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">WRITE</highlight><highlight class="normal">(*,*)<sp/></highlight><highlight class="stringliteral">&apos;Bad<sp/>xa<sp/>input<sp/>in<sp/>spline<sp/>interpolation.&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stop</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/>ENDIF</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/>a<sp/>=<sp/>(xa(khi)<sp/>-<sp/>x)<sp/>/<sp/>h</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/>b<sp/>=<sp/>(x<sp/>-<sp/>xa(klo))<sp/>/<sp/>h</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/>y<sp/>=<sp/>a<sp/>*<sp/>ya(klo)<sp/>+<sp/>b<sp/>*<sp/>ya(khi)<sp/>+<sp/>&amp;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(<sp/>(a**3<sp/>-<sp/>a)<sp/>*<sp/>y2a(klo)<sp/>+(b**3<sp/>-<sp/>b)<sp/>*<sp/>y2a(khi)<sp/>)<sp/>*<sp/>&amp;</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(h**2)<sp/>/<sp/>6.0_dp</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight><highlight class="keyword"><sp/><sp/>END<sp/>SUBROUTINE<sp/></highlight><highlight class="normal">spline_interpolation</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">!*************************************************!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight><highlight class="keyword"><sp/><sp/>SUBROUTINE<sp/></highlight><highlight class="normal">tridag_ser(a,b,c,r,u)</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">IMPLICIT<sp/>NONE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">INTENT(IN)</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>a(:),<sp/>b(:),<sp/>c(:),<sp/>r(:)</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">INTENT(OUT)</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>u(:)</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">DIMENSION(SIZE(b))</highlight><highlight class="normal"><sp/>::<sp/>gam</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">INTEGER</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>n,j</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>bet</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!-------------------------------------------------!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal">((</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(a)+1.NE.</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(b))<sp/>.OR.<sp/>(</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(a)+1.NE.</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(c)+1)<sp/>&amp;</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.OR.<sp/>(</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(a)+1.NE.</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(r))<sp/>.OR.<sp/>(</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(a)+1.NE.</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(u)))<sp/></highlight><highlight class="keywordflow">THEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">WRITE</highlight><highlight class="normal">(*,*)<sp/></highlight><highlight class="stringliteral">&apos;Input<sp/>arrays<sp/>do<sp/>not<sp/>have<sp/>the<sp/>same<sp/>size<sp/>in<sp/>tridag.&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stop</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/>ENDIF</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/>n<sp/>=<sp/></highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(b)</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/>bet=b(1)</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(bet<sp/>==<sp/>0.0_dp)<sp/></highlight><highlight class="keywordflow">THEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">WRITE</highlight><highlight class="normal">(*,*)<sp/></highlight><highlight class="stringliteral">&apos;Error<sp/>in<sp/>tridag_ser.<sp/>(I)&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stop</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/>ENDIF</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/><sp/><sp/>u(1)<sp/>=<sp/>r(1)/bet</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">DO</highlight><highlight class="normal"><sp/>j<sp/>=<sp/>2,<sp/>n</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>gam(j)<sp/>=<sp/>c(j-1)<sp/>/<sp/>bet</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>bet<sp/>=<sp/>b(j)<sp/>-<sp/>a(j-1)<sp/>*<sp/>gam(j)</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(bet<sp/>==<sp/>0.0_dp)<sp/></highlight><highlight class="keywordflow">THEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">WRITE</highlight><highlight class="normal">(*,*)<sp/></highlight><highlight class="stringliteral">&apos;Error<sp/>in<sp/>tridag.<sp/>(II)&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stop</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ENDIF</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>u(j)<sp/>=<sp/>(r(j)<sp/>-<sp/>a(j-1)<sp/>*<sp/>u(j-1))<sp/>/<sp/>bet</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/>ENDDO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">DO</highlight><highlight class="normal"><sp/><sp/>j<sp/>=<sp/>n-1,<sp/>1,<sp/>-1</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>u(j)<sp/>=<sp/>u(j)<sp/>-<sp/>gam(j+1)<sp/>*<sp/>u(j+1)</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/>ENDDO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight><highlight class="keyword"><sp/><sp/>END<sp/>SUBROUTINE<sp/></highlight><highlight class="normal">tridag_ser</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">!*************************************************!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="171"><highlight class="normal"></highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">RECURSIVE<sp/>SUBROUTINE<sp/></highlight><highlight class="normal">tridag_par(a,b,c,r,u)</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">IMPLICIT<sp/>NONE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">INTENT(IN)</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>a(:),<sp/>b(:),<sp/>c(:),<sp/>r(:)</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">INTENT(OUT)</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>u(:)</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">INTEGER</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">PARAMETER</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>NPAR_TRIDAG=4</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">DIMENSION(size(b)/2)</highlight><highlight class="normal"><sp/><sp/><sp/>::<sp/>y,q,piva</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">DIMENSION(size(b)/2-1)</highlight><highlight class="normal"><sp/>::<sp/>x,z</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">DIMENSION(size(a)/2)</highlight><highlight class="normal"><sp/><sp/><sp/>::<sp/>pivc</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">INTEGER</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>n,n2,nm,nx<sp/></highlight></codeline>
+<codeline lineno="183"><highlight class="normal"></highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!---------------------------------------------------!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="185"><highlight class="normal"></highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal">((</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(a)+1.NE.</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(b))<sp/>.OR.<sp/>(</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(a)+1.NE.</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(c)+1)<sp/>&amp;</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.OR.<sp/>(</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(a)+1.NE.</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(r))<sp/>.OR.<sp/>(</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(a)+1.NE.</highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(u)))<sp/></highlight><highlight class="keywordflow">THEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">WRITE</highlight><highlight class="normal">(*,*)<sp/></highlight><highlight class="stringliteral">&apos;Input<sp/>arrays<sp/>do<sp/>not<sp/>have<sp/>the<sp/>same<sp/>size<sp/>in<sp/>tridag.&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stop</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/>ENDIF</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/>n<sp/>=<sp/></highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(b)</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(n<sp/>&lt;<sp/>npar_tridag)<sp/></highlight><highlight class="keywordflow">THEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">CALL<sp/></highlight><highlight class="normal">tridag_ser(a,b,c,r,u)</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">ELSE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(maxval(abs(b(1:n)))<sp/>==<sp/>0.0_dp)<sp/></highlight><highlight class="keywordflow">THEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">WRITE</highlight><highlight class="normal">(*,*)<sp/></highlight><highlight class="stringliteral">&apos;Possible<sp/>singular<sp/>matrix<sp/>in<sp/>tridag.&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>stop</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ENDIF</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>n2<sp/>=<sp/></highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(y)</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nm<sp/>=<sp/></highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(pivc)</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>nx<sp/>=<sp/></highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(x)</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>piva<sp/>=<sp/>a(1:n-1:2)/b(1:n-1:2)</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pivc<sp/>=<sp/>c(2:n-1:2)/b(3:n:2)</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>y(1:nm)<sp/>=<sp/>b(2:n-1:2)<sp/>-<sp/>piva(1:nm)<sp/>*<sp/>c(1:n-2:2)<sp/>-<sp/>&amp;</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pivc<sp/>*<sp/>a(2:n-1:2)</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>q(1:nm)<sp/>=<sp/>r(2:n-1:2)<sp/>-<sp/>piva(1:nm)<sp/>*<sp/>r(1:n-2:2)<sp/>-<sp/>&amp;</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>pivc<sp/>*<sp/>r(3:n:2)</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(nm<sp/>&lt;<sp/>n2)<sp/></highlight><highlight class="keywordflow">THEN</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>y(n2)<sp/>=<sp/>b(n)<sp/>-<sp/>piva(n2)<sp/>*<sp/>c(n-1)</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>q(n2)<sp/>=<sp/>r(n)<sp/>-<sp/>piva(n2)<sp/>*<sp/>r(n-1)</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ENDIF</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>x<sp/>=<sp/>-piva(2:n2)<sp/>*<sp/>a(2:n-2:2)</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>z<sp/>=<sp/>-pivc(1:nx)<sp/>*<sp/>c(3:n-1:2)</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">CALL<sp/></highlight><highlight class="normal">tridag_par(x,y,z,q,u(2:n:2))</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>u(1)<sp/>=<sp/>(r(1)-c(1)*u(2))/b(1)</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>u(3:n-1:2)<sp/>=<sp/>(r(3:n-1:2)-a(2:n-2:2)*u(2:n-2:2)<sp/>&amp;</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>-c(3:n-1:2)*u(4:n:2))/b(3:n-1:2)</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">IF</highlight><highlight class="normal"><sp/>(nm<sp/>==<sp/>n2)<sp/>&amp;</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>u(n)<sp/>=<sp/>(r(n)<sp/>-<sp/>a(n-1)<sp/>*<sp/>u(n-1))<sp/>/<sp/>b(n)</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/>ENDIF</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="227"><highlight class="normal"></highlight><highlight class="keyword"><sp/><sp/>END<sp/>SUBROUTINE<sp/></highlight><highlight class="normal">tridag_par</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">!*************************************************!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">!*************************************************!<sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="232"><highlight class="normal"></highlight><highlight class="keyword">END<sp/>MODULE<sp/></highlight><highlight class="normal"><ref refid="namespacespline__interp" kindref="compound">spline_interp</ref></highlight></codeline>
+    </programlisting>
+    <location file="src/spline_interp.f90"/>
+  </compounddef>
+</doxygen>

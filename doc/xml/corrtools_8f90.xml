@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="corrtools_8f90" kind="file" language="Fortran">
+    <compoundname>corrtools.f90</compoundname>
+    <innernamespace refid="namespacecorrtools">corrtools</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">!-----------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">!<sp/>POpSiCLE<sp/>(PhOtoelectron<sp/>SpeCtrum<sp/>library<sp/>for<sp/>Laser-matter<sp/>intEractions)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">!-----------------------------------------------------------------------------------</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">!<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">!<sp/>Module<sp/>Correlated<sp/>tools<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">!</highlight></codeline>
+<codeline lineno="10"><highlight class="comment">!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="comment">!<sp/>DESCRIPTION:</highlight></codeline>
+<codeline lineno="15"><highlight class="comment">!<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="comment">!------------------------------------------------------------------------------!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17" refid="namespacecorrtools" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">MODULE</highlight><highlight class="normal"><sp/><ref refid="namespacecorrtools" kindref="compound">corrtools</ref></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">USE<sp/></highlight><highlight class="normal"><ref refid="namespaceconstants__pop" kindref="compound">constants_pop</ref></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">IMPLICIT<sp/>NONE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">PUBLIC</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>create_sine_basis</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">!------------------------------------------!<sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="keyword">CONTAINS</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="keyword"><sp/><sp/>SUBROUTINE<sp/><sp/></highlight><highlight class="normal">create_sine_basis(sineb,<sp/>order,<sp/>r_axis)</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">IMPLICIT<sp/>NONE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">INTENT(OUT)</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>sineb(:,<sp/>:)</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">INTEGER</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">INTENT(IN)</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>order</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">INTENT(IN)</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>r_axis(:)</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">REAL(dp)</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>maxr</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">INTEGER</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>numrpts</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">INTEGER</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>ir,<sp/>iorder</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">!-----------------------------------------------!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/>maxr<sp/>=<sp/>maxval(r_axis)</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/>numrpts<sp/>=<sp/></highlight><highlight class="keyword">SIZE</highlight><highlight class="normal">(r_axis)</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">DO</highlight><highlight class="normal"><sp/>iorder<sp/>=<sp/>1,<sp/>order</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">DO</highlight><highlight class="normal"><sp/>ir<sp/>=<sp/>1,<sp/>numrpts<sp/></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sineb(ir,iorder)<sp/>=<sp/>sin(</highlight><highlight class="keywordtype">REAL(iorder,dp)</highlight><highlight class="normal"><sp/>*<sp/>pi<sp/>*<sp/>&amp;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>r_axis(ir)<sp/>/<sp/>maxr)</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ENDDO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight><highlight class="keywordflow"><sp/><sp/><sp/><sp/>ENDDO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="keyword"><sp/><sp/>END<sp/>SUBROUTINE<sp/></highlight><highlight class="normal">create_sine_basis</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">!-------------------------------------!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/>SUBROUTINE<sp/>rungekutta4(sinecoeff,<sp/>sinecoeffdt,<sp/>energy_sineb,<sp/>elec_flux,<sp/>&amp;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/><sp/><sp/><sp/>elec_flux_h2,<sp/>elec_flux_h)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>IMPLICIT<sp/>NONE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>COMPLEX(dp),<sp/>INTENT(IN)<sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>sinecoeff(:,<sp/>:,<sp/>:,<sp/>:)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>COMPLEX(dp),<sp/>INTENT(OUT)<sp/><sp/><sp/><sp/><sp/>::<sp/>sinecoeffdt(:,<sp/>:,<sp/>:,<sp/>:)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>COMPLEX(dp),<sp/>INTENT(IN)<sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>energy_sineb(:,<sp/>:)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>COMPLEX(dp),<sp/>INTENT(IN)<sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>elec_flux(:,<sp/>:,<sp/>:,<sp/>:)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>COMPLEX(dp),<sp/>INTENT(IN)<sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>elec_flux_h2(:,<sp/>:,<sp/>:,<sp/>:)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>COMPLEX(dp),<sp/>INTENT(IN)<sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>elec_flux_h(:,<sp/>:,<sp/>:,<sp/>:)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>INTEGER<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>coeff_dims(4)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>COMPLEX(dp),<sp/>ALLOCATABLE<sp/><sp/><sp/><sp/><sp/>::<sp/>k1(:,<sp/>:,<sp/>:,<sp/>:)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>COMPLEX(dp),<sp/>ALLOCATABLE<sp/><sp/><sp/><sp/><sp/>::<sp/>k2(:,<sp/>:,<sp/>:,<sp/>:)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>COMPLEX(dp),<sp/>ALLOCATABLE<sp/><sp/><sp/><sp/><sp/>::<sp/>k3(:,<sp/>:,<sp/>:,<sp/>:)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>COMPLEX(dp),<sp/>ALLOCATABLE<sp/><sp/><sp/><sp/><sp/>::<sp/>k4(:,<sp/>:,<sp/>:,<sp/>:)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>INTEGER<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>numkpts,<sp/>numthetapts</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>INTEGER<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>::<sp/>numphipts,numorder</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>!--------------------------------------!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>coeffs_dims<sp/>=<sp/>SHAPE(sinecoeff)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"></highlight><highlight class="comment">!!$</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>numkpts<sp/><sp/><sp/><sp/><sp/>=<sp/>coeff_dims(1)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>numthetapts<sp/>=<sp/>coeff_dims(2)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>numphipts<sp/><sp/><sp/>=<sp/>coeff_dims(3)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>numorder<sp/><sp/><sp/><sp/>=<sp/>coeff_dims(4)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>!<sp/>Allocate<sp/>auxiliary<sp/>arrays<sp/>(RK4<sp/>k&apos;s)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>ALLOCATE(k1(1:numkepts,1:numthetapts,1:numphipts,1:numorder))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>ALLOCATE(k2(1:numkepts,1:numthetapts,1:numphipts,1:numorder))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>ALLOCATE(k3(1:numkepts,1:numthetapts,1:numphipts,1:numorder))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>ALLOCATE(k4(1:numkepts,1:numthetapts,1:numphipts,1:numorder))</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>k1<sp/>=<sp/>ZERO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>k2<sp/>=<sp/>ZERO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>k3<sp/>=<sp/>ZERO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>k4<sp/>=<sp/>ZERO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight><highlight class="comment">!!$</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>DO<sp/>im<sp/>=<sp/>1,<sp/>numorder</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/><sp/><sp/><sp/>DO<sp/>iphi<sp/>=<sp/>1,<sp/>numphipts</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DO<sp/>itheta<sp/>=<sp/>1,<sp/>numthetapts</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DO<sp/>ik<sp/>=<sp/>1,<sp/>numkpts</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>DO<sp/>imm<sp/>=<sp/>1,<sp/>numorder</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>k1(ik,itheta,iphi,im)<sp/>=<sp/>k1(ik,itheta,iphi,im)<sp/>+<sp/>&amp;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>energy_sineb(imm,im)<sp/>*<sp/>sinecoeff(ik,itheta,iphi,imm)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ENDDO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>k1(ik,itheta,iphi,im)<sp/>=<sp/>k1(ik,itheta,iphi,im)<sp/>-<sp/>&amp;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>elec_flux(ik,itheta,iphi,im)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ENDDO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>ENDDO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/><sp/><sp/><sp/>ENDDO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>ENDDO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>k1<sp/>=<sp/>k1<sp/>*<sp/>(-ZIMAGONE)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>!<sp/>Deallocate</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/>DEALLOCATE(k1,k2,k3,k4)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight><highlight class="comment">!!$<sp/><sp/>END<sp/>SUBROUTINE<sp/>rungekutta4</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight><highlight class="keyword">END<sp/>MODULE<sp/></highlight><highlight class="normal"><ref refid="namespacecorrtools" kindref="compound">corrtools</ref></highlight></codeline>
+    </programlisting>
+    <location file="src/corrtools.f90"/>
+  </compounddef>
+</doxygen>

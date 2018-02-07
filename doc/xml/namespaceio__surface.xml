@@ -1,0 +1,330 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespaceio__surface" kind="namespace" language="Fortran">
+    <compoundname>io_surface</compoundname>
+    <innerclass refid="interfaceio__surface_1_1write__surface__file" prot="private">io_surface::write_surface_file</innerclass>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="io__surface_8_f90_1abecf6f51f7d20cb85caf81e096b4a747" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public io_surface::create_surface_file</definition>
+        <argsstring>(filename, comm)</argsstring>
+        <name>create_surface_file</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>comm</type>
+          <defname>comm</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/io_surface.F90" line="34" column="1" bodyfile="src/io_surface.F90" bodystart="35" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="io__surface_8_f90_1a34f9a1f7600d06681a60dbbc34c135b1" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine io_surface::write_surface_file_2d</definition>
+        <argsstring>(filename, itime, wave, wavederiv, time, efield, afield, rank, comm)</argsstring>
+        <name>write_surface_file_2d</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>itime</type>
+          <defname>itime</defname>
+        </param>
+        <param>
+          <type>wave</type>
+          <defname>wave</defname>
+        </param>
+        <param>
+          <type>wavederiv</type>
+          <defname>wavederiv</defname>
+        </param>
+        <param>
+          <type>time</type>
+          <defname>time</defname>
+        </param>
+        <param>
+          <type>efield</type>
+          <defname>efield</defname>
+        </param>
+        <param>
+          <type>afield</type>
+          <defname>afield</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <param>
+          <type>comm</type>
+          <defname>comm</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/io_surface.F90" line="99" column="1" bodyfile="src/io_surface.F90" bodystart="101" bodyend="149"/>
+      </memberdef>
+      <memberdef kind="function" id="io__surface_8_f90_1a7feac34a804d81baa9fa952308ce95d3" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine io_surface::write_surface_file_3d</definition>
+        <argsstring>(filename, itime, wave, wavederiv, time, efield, afield, rank, comm)</argsstring>
+        <name>write_surface_file_3d</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>itime</type>
+          <defname>itime</defname>
+        </param>
+        <param>
+          <type>wave</type>
+          <defname>wave</defname>
+        </param>
+        <param>
+          <type>wavederiv</type>
+          <defname>wavederiv</defname>
+        </param>
+        <param>
+          <type>time</type>
+          <defname>time</defname>
+        </param>
+        <param>
+          <type>efield</type>
+          <defname>efield</defname>
+        </param>
+        <param>
+          <type>afield</type>
+          <defname>afield</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <param>
+          <type>comm</type>
+          <defname>comm</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/io_surface.F90" line="154" column="1" bodyfile="src/io_surface.F90" bodystart="156" bodyend="205"/>
+      </memberdef>
+      <memberdef kind="function" id="io__surface_8_f90_1a991c03479d3f08975e4fffca8d963d9d" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine io_surface::write_surface_file_ndim</definition>
+        <argsstring>(filename, itime, wave_rank, wave, wavederiv, time, efield, afield, rank, comm)</argsstring>
+        <name>write_surface_file_ndim</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>itime</type>
+          <defname>itime</defname>
+        </param>
+        <param>
+          <type>wave_rank</type>
+          <defname>wave_rank</defname>
+        </param>
+        <param>
+          <type>wave</type>
+          <defname>wave</defname>
+        </param>
+        <param>
+          <type>wavederiv</type>
+          <defname>wavederiv</defname>
+        </param>
+        <param>
+          <type>time</type>
+          <defname>time</defname>
+        </param>
+        <param>
+          <type>efield</type>
+          <defname>efield</defname>
+        </param>
+        <param>
+          <type>afield</type>
+          <defname>afield</defname>
+        </param>
+        <param>
+          <type>rank</type>
+          <defname>rank</defname>
+        </param>
+        <param>
+          <type>comm</type>
+          <defname>comm</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/io_surface.F90" line="210" column="1" bodyfile="src/io_surface.F90" bodystart="213" bodyend="629"/>
+      </memberdef>
+      <memberdef kind="function" id="io__surface_8_f90_1af9053232513175241ed46f1af2c7b648" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public io_surface::get_surface_dims</definition>
+        <argsstring>(filename, ntime, dt, numthetapts, numphipts, lmax)</argsstring>
+        <name>get_surface_dims</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>ntime</type>
+          <defname>ntime</defname>
+        </param>
+        <param>
+          <type>dt</type>
+          <defname>dt</defname>
+        </param>
+        <param>
+          <type>numthetapts</type>
+          <defname>numthetapts</defname>
+        </param>
+        <param>
+          <type>numphipts</type>
+          <defname>numphipts</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/io_surface.F90" line="637" column="1" bodyfile="src/io_surface.F90" bodystart="639" bodyend="788"/>
+      </memberdef>
+      <memberdef kind="function" id="io__surface_8_f90_1a1cb2439b35e29b4512b9d95c06e1e474" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public io_surface::read_surface</definition>
+        <argsstring>(filename, itime, numthetapts, numphipts, psi_sph, psip_sph, time, efield, afield)</argsstring>
+        <name>read_surface</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>itime</type>
+          <defname>itime</defname>
+        </param>
+        <param>
+          <type>numthetapts</type>
+          <defname>numthetapts</defname>
+        </param>
+        <param>
+          <type>numphipts</type>
+          <defname>numphipts</defname>
+        </param>
+        <param>
+          <type>psi_sph</type>
+          <defname>psi_sph</defname>
+        </param>
+        <param>
+          <type>psip_sph</type>
+          <defname>psip_sph</defname>
+        </param>
+        <param>
+          <type>time</type>
+          <defname>time</defname>
+        </param>
+        <param>
+          <type>efield</type>
+          <defname>efield</defname>
+        </param>
+        <param>
+          <type>afield</type>
+          <defname>afield</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/io_surface.F90" line="794" column="1" bodyfile="src/io_surface.F90" bodystart="796" bodyend="1012"/>
+      </memberdef>
+      <memberdef kind="function" id="io__surface_8_f90_1a84eff02f03964c28f0fafd0292d1edc5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public io_surface::read_wave_surface</definition>
+        <argsstring>(filename, itime, psi_sph, psip_sph)</argsstring>
+        <name>read_wave_surface</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>itime</type>
+          <defname>itime</defname>
+        </param>
+        <param>
+          <type>psi_sph</type>
+          <defname>psi_sph</defname>
+        </param>
+        <param>
+          <type>psip_sph</type>
+          <defname>psip_sph</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/io_surface.F90" line="1017" column="1" bodyfile="src/io_surface.F90" bodystart="1018" bodyend="1163"/>
+      </memberdef>
+      <memberdef kind="function" id="io__surface_8_f90_1a0e902359f1109397abb26c47f0022602" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public io_surface::read_field_surface</definition>
+        <argsstring>(filename, time, efield, afield)</argsstring>
+        <name>read_field_surface</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>time</type>
+          <defname>time</defname>
+        </param>
+        <param>
+          <type>efield</type>
+          <defname>efield</defname>
+        </param>
+        <param>
+          <type>afield</type>
+          <defname>afield</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/io_surface.F90" line="1168" column="1" bodyfile="src/io_surface.F90" bodystart="1169" bodyend="1297"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/io_surface.F90" line="1" column="1"/>
+  </compounddef>
+</doxygen>

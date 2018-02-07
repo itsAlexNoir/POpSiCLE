@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="coords_8f90" kind="file" language="Fortran">
+    <compoundname>coords.f90</compoundname>
+    <innerclass refid="interfacecoords_1_1cartesian2spherical" prot="public">coords::cartesian2spherical</innerclass>
+    <innerclass refid="interfacecoords_1_1cylindrical2spherical" prot="public">coords::cylindrical2spherical</innerclass>
+    <innernamespace refid="namespacecoords">coords</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight><highlight class="comment">!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="3"><highlight class="normal"></highlight><highlight class="comment">!<sp/><sp/><sp/><sp/><sp/>.o88b.<sp/><sp/>.d88b.<sp/><sp/><sp/>.d88b.<sp/><sp/>d8888b.<sp/>d8888b.<sp/>.d8888.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="4"><highlight class="normal"></highlight><highlight class="comment">!<sp/><sp/><sp/><sp/>d8P<sp/><sp/>Y8<sp/>.8P<sp/><sp/>Y8.<sp/>.8P<sp/><sp/>Y8.<sp/>88<sp/><sp/>`8D<sp/>88<sp/><sp/>`8D<sp/>88&apos;<sp/><sp/>YP</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="5"><highlight class="normal"></highlight><highlight class="comment">!<sp/><sp/><sp/><sp/>8P<sp/><sp/><sp/><sp/><sp/><sp/>88<sp/><sp/><sp/><sp/>88<sp/>88<sp/><sp/><sp/><sp/>88<sp/>88oobY&apos;<sp/>88<sp/><sp/><sp/>88<sp/>`8bo.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="6"><highlight class="normal"></highlight><highlight class="comment">!<sp/><sp/><sp/><sp/>8b<sp/><sp/><sp/><sp/><sp/><sp/>88<sp/><sp/><sp/><sp/>88<sp/>88<sp/><sp/><sp/><sp/>88<sp/>88`8b<sp/><sp/><sp/>88<sp/><sp/><sp/>88<sp/><sp/><sp/>`Y8b.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="7"><highlight class="normal"></highlight><highlight class="comment">!<sp/><sp/><sp/><sp/>Y8b<sp/><sp/>d8<sp/>`8b<sp/><sp/>d8&apos;<sp/>`8b<sp/><sp/>d8&apos;<sp/>88<sp/>`88.<sp/>88<sp/><sp/>.8D<sp/>db<sp/><sp/><sp/>8D</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="comment">!<sp/><sp/><sp/><sp/><sp/>`Y88P&apos;<sp/><sp/>`Y88P&apos;<sp/><sp/><sp/>`Y88P&apos;<sp/><sp/>88<sp/><sp/><sp/>YD<sp/>Y8888D&apos;<sp/>`8888Y&apos;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="comment">!</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="keyword">MODULE</highlight><highlight class="normal"><sp/>coords</highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">USE<sp/></highlight><highlight class="normal">scattcoords</highlight></codeline>
+<codeline lineno="13"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">USE<sp/></highlight><highlight class="normal">cubcoords</highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">IMPLICIT<sp/>NONE</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">PUBLIC</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="interfacecoords_1_1cartesian2spherical" kindref="compound">cartesian2spherical</ref></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">PUBLIC</highlight><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="interfacecoords_1_1cylindrical2spherical" kindref="compound">cylindrical2spherical</ref></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="22" refid="interfacecoords_1_1cartesian2spherical" refkind="compound"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">INTERFACE</highlight><highlight class="normal"><sp/><ref refid="interfacecoords_1_1cartesian2spherical" kindref="compound">cartesian2spherical</ref></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">MODULE<sp/>PROCEDURE</highlight><highlight class="normal"><sp/>dscatt_cartesian2spherical2d</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">MODULE<sp/>PROCEDURE</highlight><highlight class="normal"><sp/>zscatt_cartesian2spherical2d</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">MODULE<sp/>PROCEDURE</highlight><highlight class="normal"><sp/>dscatt_cartesian2spherical3d</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">MODULE<sp/>PROCEDURE</highlight><highlight class="normal"><sp/>zscatt_cartesian2spherical3d</highlight></codeline>
+<codeline lineno="27"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">MODULE<sp/>PROCEDURE</highlight><highlight class="normal"><sp/>dcubic_cartesian2spherical3d</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">MODULE<sp/>PROCEDURE</highlight><highlight class="normal"><sp/>zcubic_cartesian2spherical3d</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="keyword"><sp/><sp/>END<sp/>INTERFACE<sp/></highlight><highlight class="normal"><ref refid="interfacecoords_1_1cartesian2spherical" kindref="compound">cartesian2spherical</ref></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="31" refid="interfacecoords_1_1cylindrical2spherical" refkind="compound"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">INTERFACE</highlight><highlight class="normal"><sp/><ref refid="interfacecoords_1_1cylindrical2spherical" kindref="compound">cylindrical2spherical</ref></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">MODULE<sp/>PROCEDURE</highlight><highlight class="normal"><sp/>dscatt_cylindrical2spherical2d</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">MODULE<sp/>PROCEDURE</highlight><highlight class="normal"><sp/>zscatt_cylindrical2spherical2d</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">MODULE<sp/>PROCEDURE</highlight><highlight class="normal"><sp/>dcubic_cylindrical2spherical2d</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">MODULE<sp/>PROCEDURE</highlight><highlight class="normal"><sp/>zcubic_cylindrical2spherical2d</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="keyword"><sp/><sp/>END<sp/>INTERFACE<sp/></highlight><highlight class="normal"><ref refid="interfacecoords_1_1cylindrical2spherical" kindref="compound">cylindrical2spherical</ref></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="keyword">END<sp/>MODULE<sp/></highlight><highlight class="normal">coords</highlight></codeline>
+    </programlisting>
+    <location file="src/coords.f90"/>
+  </compounddef>
+</doxygen>

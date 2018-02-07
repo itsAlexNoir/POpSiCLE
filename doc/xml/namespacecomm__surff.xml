@@ -1,0 +1,254 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespacecomm__surff" kind="namespace" language="Fortran">
+    <compoundname>comm_surff</compoundname>
+    <innerclass refid="structcomm__surff_1_1commtype" prot="public">comm_surff::commtype</innerclass>
+    <innerclass refid="structcomm__surff_1_1kgrid" prot="public">comm_surff::kgrid</innerclass>
+    <innerclass refid="structcomm__surff_1_1rgrid" prot="public">comm_surff::rgrid</innerclass>
+    <innerclass refid="structcomm__surff_1_1tgrid" prot="public">comm_surff::tgrid</innerclass>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="comm__surff_8_f90_1a4c71dd5a3cf9310ea31e40f3c5c98968" prot="public" static="no" mutable="no">
+        <type>type(<ref refid="structcomm__surff_1_1commtype" kindref="compound">commtype</ref>), public</type>
+        <definition>type(commtype), public comm_surff::commsurff</definition>
+        <argsstring></argsstring>
+        <name>commsurff</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="100" column="1" bodyfile="src/comm_surff.F90" bodystart="100" bodyend="100"/>
+      </memberdef>
+      <memberdef kind="variable" id="comm__surff_8_f90_1a53b6b7b9588ad307c03bc03d51bd2d74" prot="public" static="no" mutable="no">
+        <type>type(<ref refid="structcomm__surff_1_1kgrid" kindref="compound">kgrid</ref>), public</type>
+        <definition>type(kgrid), public comm_surff::kmesh</definition>
+        <argsstring></argsstring>
+        <name>kmesh</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="101" column="1" bodyfile="src/comm_surff.F90" bodystart="101" bodyend="101"/>
+      </memberdef>
+      <memberdef kind="variable" id="comm__surff_8_f90_1acf1bd2505bc6f0101f2706ff26f27f1a" prot="public" static="no" mutable="no">
+        <type>type(<ref refid="structcomm__surff_1_1rgrid" kindref="compound">rgrid</ref>), public</type>
+        <definition>type(rgrid), public comm_surff::rmesh</definition>
+        <argsstring></argsstring>
+        <name>rmesh</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="102" column="1" bodyfile="src/comm_surff.F90" bodystart="102" bodyend="102"/>
+      </memberdef>
+      <memberdef kind="variable" id="comm__surff_8_f90_1a2e93f9b315cb82cda2fed0261cf72825" prot="public" static="no" mutable="no">
+        <type>type(<ref refid="structcomm__surff_1_1tgrid" kindref="compound">tgrid</ref>), public</type>
+        <definition>type(tgrid), public comm_surff::tmesh</definition>
+        <argsstring></argsstring>
+        <name>tmesh</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="103" column="1" bodyfile="src/comm_surff.F90" bodystart="103" bodyend="103"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="comm__surff_8_f90_1a5743afde610c7e0631d782cf364bf198" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public comm_surff::initialize_communications</definition>
+        <argsstring>(numprock, numproct, numprocp)</argsstring>
+        <name>initialize_communications</name>
+        <param>
+          <type>numprock</type>
+          <defname>numprock</defname>
+        </param>
+        <param>
+          <type>numproct</type>
+          <defname>numproct</defname>
+        </param>
+        <param>
+          <type>numprocp</type>
+          <defname>numprocp</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="143" column="1" bodyfile="src/comm_surff.F90" bodystart="144" bodyend="213"/>
+      </memberdef>
+      <memberdef kind="function" id="comm__surff_8_f90_1a7b66933f20e1055a31447aeae9875389" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public comm_surff::output_communications</definition>
+        <argsstring>()</argsstring>
+        <name>output_communications</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="227" column="1" bodyfile="src/comm_surff.F90" bodystart="228" bodyend="277"/>
+      </memberdef>
+      <memberdef kind="function" id="comm__surff_8_f90_1ab668dc95a6c01ded9428090cbc26a18a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public comm_surff::finalize_communications</definition>
+        <argsstring>()</argsstring>
+        <name>finalize_communications</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="287" column="1" bodyfile="src/comm_surff.F90" bodystart="288" bodyend="311"/>
+      </memberdef>
+      <memberdef kind="function" id="comm__surff_8_f90_1a072d9d6ec6d9e58d464e62cdd88a63d8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>real(dp) function, public</type>
+        <definition>real(dp) function, public comm_surff::timing</definition>
+        <argsstring>()</argsstring>
+        <name>timing</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="316" column="1" bodyfile="src/comm_surff.F90" bodystart="317" bodyend="337"/>
+      </memberdef>
+      <memberdef kind="function" id="comm__surff_8_f90_1adb357edbe58fbfb6a3bb648e76851296" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public comm_surff::check_processor_count</definition>
+        <argsstring>()</argsstring>
+        <name>check_processor_count</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="342" column="1" bodyfile="src/comm_surff.F90" bodystart="343" bodyend="370"/>
+      </memberdef>
+      <memberdef kind="function" id="comm__surff_8_f90_1a4533b3531a0ba47d03917313843ec14f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public comm_surff::initialize_ip_addresses</definition>
+        <argsstring>()</argsstring>
+        <name>initialize_ip_addresses</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="375" column="1" bodyfile="src/comm_surff.F90" bodystart="376" bodyend="419"/>
+      </memberdef>
+      <memberdef kind="function" id="comm__surff_8_f90_1aa35dd92a6f74feceb64b1b4cdcea9327" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public comm_surff::all_processor_barrier</definition>
+        <argsstring>()</argsstring>
+        <name>all_processor_barrier</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="438" column="1" bodyfile="src/comm_surff.F90" bodystart="439" bodyend="454"/>
+      </memberdef>
+      <memberdef kind="function" id="comm__surff_8_f90_1a9f859f9038d9fb8f56944c5f84fd4caf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public comm_surff::error</definition>
+        <argsstring>(message, routine, critical)</argsstring>
+        <name>error</name>
+        <param>
+          <type>message</type>
+          <defname>message</defname>
+        </param>
+        <param>
+          <type>routine</type>
+          <defname>routine</defname>
+        </param>
+        <param>
+          <type>critical</type>
+          <defname>critical</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="467" column="1" bodyfile="src/comm_surff.F90" bodystart="468" bodyend="535"/>
+      </memberdef>
+      <memberdef kind="function" id="comm__surff_8_f90_1acd9d3251a64d0de083acb5ecd6e1c806" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public comm_surff::stopping</definition>
+        <argsstring>(routine, message)</argsstring>
+        <name>stopping</name>
+        <param>
+          <type>routine</type>
+          <defname>routine</defname>
+        </param>
+        <param>
+          <type>message</type>
+          <defname>message</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="548" column="1" bodyfile="src/comm_surff.F90" bodystart="549" bodyend="592"/>
+      </memberdef>
+      <memberdef kind="function" id="comm__surff_8_f90_1a552cebeebd1e78f8e63af49f0f27ede1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public comm_surff::tsurff_stop</definition>
+        <argsstring>(message)</argsstring>
+        <name>tsurff_stop</name>
+        <param>
+          <type>message</type>
+          <defname>message</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="597" column="1" bodyfile="src/comm_surff.F90" bodystart="598" bodyend="612"/>
+      </memberdef>
+      <memberdef kind="function" id="comm__surff_8_f90_1ae7dca795bbdc2c8ed9cfc19b539c668e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine, public</type>
+        <definition>subroutine, public comm_surff::print_debug</definition>
+        <argsstring>(message)</argsstring>
+        <name>print_debug</name>
+        <param>
+          <type>message</type>
+          <defname>message</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/comm_surff.F90" line="617" column="1" bodyfile="src/comm_surff.F90" bodystart="618" bodyend="629"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/comm_surff.F90" line="1" column="1"/>
+  </compounddef>
+</doxygen>

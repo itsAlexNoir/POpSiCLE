@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.14">
+  <compounddef id="namespaceio__corrsurface" kind="namespace" language="Fortran">
+    <compoundname>io_corrsurface</compoundname>
+    <innerclass refid="interfaceio__corrsurface_1_1write__correlated__surface__file" prot="private">io_corrsurface::write_correlated_surface_file</innerclass>
+      <sectiondef kind="var">
+      <memberdef kind="variable" id="io__corrsurface_8_f90_1acb1cef71089624934c4a2f4051a622c0" prot="private" static="no" mutable="no">
+        <type>integer</type>
+        <definition>integer io_corrsurface::dataset_count</definition>
+        <argsstring></argsstring>
+        <name>dataset_count</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/io_corrsurface.F90" line="33" column="1" bodyfile="src/io_corrsurface.F90" bodystart="33" bodyend="33"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="func">
+      <memberdef kind="function" id="io__corrsurface_8_f90_1a8f6673ffbfe8c2aa2ca69e8084666ed1" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>subroutine</type>
+        <definition>subroutine io_corrsurface::write_correlated_surface_file2d_serial</definition>
+        <argsstring>(filename, wave, wavederiv, time, efield, afield, lmax, basis_order)</argsstring>
+        <name>write_correlated_surface_file2d_serial</name>
+        <param>
+          <type>filename</type>
+          <defname>filename</defname>
+        </param>
+        <param>
+          <type>wave</type>
+          <defname>wave</defname>
+        </param>
+        <param>
+          <type>wavederiv</type>
+          <defname>wavederiv</defname>
+        </param>
+        <param>
+          <type>time</type>
+          <defname>time</defname>
+        </param>
+        <param>
+          <type>efield</type>
+          <defname>efield</defname>
+        </param>
+        <param>
+          <type>afield</type>
+          <defname>afield</defname>
+        </param>
+        <param>
+          <type>lmax</type>
+          <defname>lmax</defname>
+        </param>
+        <param>
+          <type>basis_order</type>
+          <defname>basis_order</defname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="src/io_corrsurface.F90" line="44" column="1" bodyfile="src/io_corrsurface.F90" bodystart="46" bodyend="190"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="src/io_corrsurface.F90" line="1" column="1"/>
+  </compounddef>
+</doxygen>

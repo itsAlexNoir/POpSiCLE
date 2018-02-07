@@ -1,0 +1,168 @@
+\hypertarget{namespacegaussleg}{}\section{gaussleg Module Reference}
+\label{namespacegaussleg}\index{gaussleg@{gaussleg}}
+
+
+Gauss legendre related routines.  
+
+
+\subsection*{Functions/\+Subroutines}
+\begin{DoxyCompactItemize}
+\item 
+subroutine, public \mbox{\hyperlink{namespacegaussleg_a03137cc32f867e636184d46d71c1a6e5}{make\+\_\+gauss\+\_\+legendre}} (lower\+\_\+bound, upper\+\_\+bound, axis, weights)
+\begin{DoxyCompactList}\small\item\em This subroutine returns the Gauss nodes of a particular range of values, and the correspondent Gauss weights. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacegaussleg_ae13f295f37c8f2b482df2dabe29d7efa}{make\+\_\+gauss\+\_\+lobatto}} (lb, ub, x, w)
+\begin{DoxyCompactList}\small\item\em This subroutine returns the axis and weights for. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacegaussleg_abe9f1fb10770b5231c05a8ea76f208b5}{make\+\_\+rnormal}} (rnormal, factlog, M\+A\+XL, N\+U\+M\+P\+TS)
+\begin{DoxyCompactList}\small\item\em This subroutine calculates the normalization co-\/efficients of the Legendre polynomials for all the \{il, im\} combinations which are required. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacegaussleg_adf5fcb0267401d6480e597f82a096c93}{make\+\_\+legendre}} (legenpl, costheta, M\+A\+XL, M\+A\+X\+T\+H\+E\+T\+A\+P\+TS)
+\begin{DoxyCompactList}\small\item\em This subroutine calculates the Legendre polynomials for all permissible \{il,im\} combinations which are given by il=\{0,M\+A\+XL\} =$>$ im=\{0,il\}. This routine is based on that given in Numerical Recipies in F\+O\+R\+T\+R\+AN, 2nd Edition, page 246-\/248, in which the Legendre polynomial was calculated as a function value using a recurrence relation. This routine improves this relation by storing the intermediate Legendre polynomials which the recurrrence relation discarded. \end{DoxyCompactList}\item 
+subroutine, public \mbox{\hyperlink{namespacegaussleg_a684bbdd1b82f3ce27ad23bf5935c36b0}{make\+\_\+factlog}} (factlog, N\+U\+M\+P\+TS)
+\begin{DoxyCompactList}\small\item\em This subroutine calculates the log of factorials. The log of the factorials is chosen since we can then use addition/subtraction instead of multiplication/division when calculating quantities involving factorials. This gives more stability. \end{DoxyCompactList}\item 
+real(dp) function, public \mbox{\hyperlink{namespacegaussleg_a26bbda9b75b77851866018371f404ead}{clebsch}} (j1, j2, ibigj, m1, m2, ibigm, factlog, N\+U\+M\+P\+TS)
+\begin{DoxyCompactList}\small\item\em This function calculates the Clebsch-\/\+Gordon co-\/efficient for given angular momentum and magnetic quantum numbers using an expression due to Racah---See Rose, M.\+E., `Elementary Theory of Angular Momentum', \mbox{[}1963\mbox{]}, Wiley, pp 40. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Gauss legendre related routines. 
+
+\begin{DoxyAuthor}{Author}
+Alejandro de la Calle. Queen\textquotesingle{}s University Belfast. 
+
+Daniel Dundas. Queen\textquotesingle{}s University Belfast. 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+24/09/2015
+\end{DoxyDate}
+This module contains routines to prepare and perform Gauss-\/\+Legendre quadratures. Also, it calculates Legendre polynomials, Clebsch-\/\+Gordon coeffcients and spherical harmonics transforms. 
+
+\subsection{Function/\+Subroutine Documentation}
+\mbox{\Hypertarget{namespacegaussleg_a26bbda9b75b77851866018371f404ead}\label{namespacegaussleg_a26bbda9b75b77851866018371f404ead}} 
+\index{gaussleg@{gaussleg}!clebsch@{clebsch}}
+\index{clebsch@{clebsch}!gaussleg@{gaussleg}}
+\subsubsection{\texorpdfstring{clebsch()}{clebsch()}}
+{\footnotesize\ttfamily real(dp) function, public gaussleg\+::clebsch (\begin{DoxyParamCaption}\item[{integer, intent(in)}]{j1,  }\item[{integer, intent(in)}]{j2,  }\item[{integer, intent(in)}]{ibigj,  }\item[{integer, intent(in)}]{m1,  }\item[{integer, intent(in)}]{m2,  }\item[{integer, intent(in)}]{ibigm,  }\item[{real(dp), dimension(0\+:numpts), intent(in)}]{factlog,  }\item[{integer, intent(in)}]{N\+U\+M\+P\+TS }\end{DoxyParamCaption})}
+
+
+
+This function calculates the Clebsch-\/\+Gordon co-\/efficient for given angular momentum and magnetic quantum numbers using an expression due to Racah---See Rose, M.\+E., `Elementary Theory of Angular Momentum', \mbox{[}1963\mbox{]}, Wiley, pp 40. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em factlog} & The log of factorials. \\
+\hline
+\mbox{\tt in}  & {\em N\+U\+M\+P\+TS} & The number of points at which the factorials are calculated at. \\
+\hline
+\mbox{\tt in}  & {\em j1} & Single electron angular momentum quantum number for electron 1. \\
+\hline
+\mbox{\tt in}  & {\em j2} & Single electron angular momentum quantum number for electron 2. \\
+\hline
+\mbox{\tt in}  & {\em ibigj} & Total angular momentum quantum number. \\
+\hline
+\mbox{\tt in}  & {\em m1} & Magnetic momentum quantum number for electron 1. \\
+\hline
+\mbox{\tt in}  & {\em m2} & Magnetic quantum number for electron 2. \\
+\hline
+\mbox{\tt in}  & {\em ibigm} & Total magnetic quantum number. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespacegaussleg_a684bbdd1b82f3ce27ad23bf5935c36b0}\label{namespacegaussleg_a684bbdd1b82f3ce27ad23bf5935c36b0}} 
+\index{gaussleg@{gaussleg}!make\+\_\+factlog@{make\+\_\+factlog}}
+\index{make\+\_\+factlog@{make\+\_\+factlog}!gaussleg@{gaussleg}}
+\subsubsection{\texorpdfstring{make\+\_\+factlog()}{make\_factlog()}}
+{\footnotesize\ttfamily subroutine, public gaussleg\+::make\+\_\+factlog (\begin{DoxyParamCaption}\item[{real(dp), dimension(0\+:numpts)}]{factlog,  }\item[{integer}]{N\+U\+M\+P\+TS }\end{DoxyParamCaption})}
+
+
+
+This subroutine calculates the log of factorials. The log of the factorials is chosen since we can then use addition/subtraction instead of multiplication/division when calculating quantities involving factorials. This gives more stability. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em factlog} & The array storing the log of the factorials. \\
+\hline
+\mbox{\tt in}  & {\em N\+U\+M\+P\+TS} & The number of factorials we wish to calculate. The log of the factorials for all integers in the range \{0,N\+U\+M\+P\+TS\} are calculated. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespacegaussleg_a03137cc32f867e636184d46d71c1a6e5}\label{namespacegaussleg_a03137cc32f867e636184d46d71c1a6e5}} 
+\index{gaussleg@{gaussleg}!make\+\_\+gauss\+\_\+legendre@{make\+\_\+gauss\+\_\+legendre}}
+\index{make\+\_\+gauss\+\_\+legendre@{make\+\_\+gauss\+\_\+legendre}!gaussleg@{gaussleg}}
+\subsubsection{\texorpdfstring{make\+\_\+gauss\+\_\+legendre()}{make\_gauss\_legendre()}}
+{\footnotesize\ttfamily subroutine, public gaussleg\+::make\+\_\+gauss\+\_\+legendre (\begin{DoxyParamCaption}\item[{real(dp), intent(in)}]{lower\+\_\+bound,  }\item[{real(dp), intent(in)}]{upper\+\_\+bound,  }\item[{real(dp), dimension(\+:), intent(out)}]{axis,  }\item[{real(dp), dimension(\+:), intent(out)}]{weights }\end{DoxyParamCaption})}
+
+
+
+This subroutine returns the Gauss nodes of a particular range of values, and the correspondent Gauss weights. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em lower\+\_\+bound} & Minimum value of the passed array \\
+\hline
+\mbox{\tt in}  & {\em upper\+\_\+bound} & Maximum value of the passed array \\
+\hline
+\mbox{\tt out}  & {\em axis} & Returned axis with gaussian nodes. \\
+\hline
+\mbox{\tt out}  & {\em weights} & Returned weights array. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespacegaussleg_ae13f295f37c8f2b482df2dabe29d7efa}\label{namespacegaussleg_ae13f295f37c8f2b482df2dabe29d7efa}} 
+\index{gaussleg@{gaussleg}!make\+\_\+gauss\+\_\+lobatto@{make\+\_\+gauss\+\_\+lobatto}}
+\index{make\+\_\+gauss\+\_\+lobatto@{make\+\_\+gauss\+\_\+lobatto}!gaussleg@{gaussleg}}
+\subsubsection{\texorpdfstring{make\+\_\+gauss\+\_\+lobatto()}{make\_gauss\_lobatto()}}
+{\footnotesize\ttfamily subroutine, public gaussleg\+::make\+\_\+gauss\+\_\+lobatto (\begin{DoxyParamCaption}\item[{real(dp), intent(in)}]{lb,  }\item[{real(dp), intent(in)}]{ub,  }\item[{real(dp), dimension(\+:), intent(out)}]{x,  }\item[{real(dp), dimension(\+:), intent(out)}]{w }\end{DoxyParamCaption})}
+
+
+
+This subroutine returns the axis and weights for. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em lb} & Minimum value of the passed array \\
+\hline
+\mbox{\tt in}  & {\em ub} & Maximum value of the passed array \\
+\hline
+\mbox{\tt out}  & {\em x} & Returned axis with gaussian nodes. \\
+\hline
+\mbox{\tt out}  & {\em w} & Returned weights array. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespacegaussleg_adf5fcb0267401d6480e597f82a096c93}\label{namespacegaussleg_adf5fcb0267401d6480e597f82a096c93}} 
+\index{gaussleg@{gaussleg}!make\+\_\+legendre@{make\+\_\+legendre}}
+\index{make\+\_\+legendre@{make\+\_\+legendre}!gaussleg@{gaussleg}}
+\subsubsection{\texorpdfstring{make\+\_\+legendre()}{make\_legendre()}}
+{\footnotesize\ttfamily subroutine, public gaussleg\+::make\+\_\+legendre (\begin{DoxyParamCaption}\item[{real(dp), dimension(0\+:maxthetapts, 0\+:maxl, 0\+:maxl)}]{legenpl,  }\item[{real(dp), dimension(0\+:maxthetapts)}]{costheta,  }\item[{integer}]{M\+A\+XL,  }\item[{integer}]{M\+A\+X\+T\+H\+E\+T\+A\+P\+TS }\end{DoxyParamCaption})}
+
+
+
+This subroutine calculates the Legendre polynomials for all permissible \{il,im\} combinations which are given by il=\{0,M\+A\+XL\} =$>$ im=\{0,il\}. This routine is based on that given in Numerical Recipies in F\+O\+R\+T\+R\+AN, 2nd Edition, page 246-\/248, in which the Legendre polynomial was calculated as a function value using a recurrence relation. This routine improves this relation by storing the intermediate Legendre polynomials which the recurrrence relation discarded. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em legenpl} & The array storing the Legendre polynomials given by\+: legenpl(x, im, il) \\
+\hline
+\mbox{\tt in}  & {\em costheta} & The array storing the cosine of the angle at which the Legendre polynomial is calculated at, i.\+e. x=\{-\/1,1\} \\
+\hline
+\mbox{\tt in}  & {\em M\+A\+XL} & The maximum value of the single electron angular momentum quantum number. \\
+\hline
+\mbox{\tt in}  & {\em M\+A\+X\+T\+H\+E\+T\+A\+P\+TS} & The maximum theta point. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespacegaussleg_abe9f1fb10770b5231c05a8ea76f208b5}\label{namespacegaussleg_abe9f1fb10770b5231c05a8ea76f208b5}} 
+\index{gaussleg@{gaussleg}!make\+\_\+rnormal@{make\+\_\+rnormal}}
+\index{make\+\_\+rnormal@{make\+\_\+rnormal}!gaussleg@{gaussleg}}
+\subsubsection{\texorpdfstring{make\+\_\+rnormal()}{make\_rnormal()}}
+{\footnotesize\ttfamily subroutine, public gaussleg\+::make\+\_\+rnormal (\begin{DoxyParamCaption}\item[{real(dp), dimension(0\+:maxl, 0\+:maxl)}]{rnormal,  }\item[{real(dp), dimension(0\+:numpts)}]{factlog,  }\item[{integer}]{M\+A\+XL,  }\item[{integer}]{N\+U\+M\+P\+TS }\end{DoxyParamCaption})}
+
+
+
+This subroutine calculates the normalization co-\/efficients of the Legendre polynomials for all the \{il, im\} combinations which are required. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt out}  & {\em rnormal} & The array which holds the normalization co-\/efficients as norm(im, il). \\
+\hline
+\mbox{\tt in}  & {\em factlog} & The log of factorials. \\
+\hline
+\mbox{\tt in}  & {\em M\+A\+XL} & The maximum value of the angular momentum quantum number. \\
+\hline
+\mbox{\tt in}  & {\em N\+U\+M\+P\+TS} & The number of points at which the factorials are calculated at. \\
+\hline
+\end{DoxyParams}
