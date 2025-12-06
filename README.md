@@ -71,5 +71,15 @@ For surface-based methods (t-SURFF, Sampling Point), the wavefunction is interpo
 *   **Funding:** This work was performed as a job within the **eCSE program** funded by **ARCHER** (the UK National Supercomputing Service).
 *   **Development:** Co-designed and developed as a library to allow the calculation of photoelectron spectra for various grid-based solutions.
 
+## ✍️ Authors
+
+*   **Dr. Alex de la Calle** — Researcher
+	*Email:* [alejandrodelacallenegro@gmail.com](mailto:alejandrodelacallenegro@gmail.com)
+
+*   **Dr. Daniel Dundas** — Principal Researcher
+	*Email:* [d.dundas@qub.ac.uk](mailto:d.dundas@qub.ac.uk)
+
+> **Special acknowledgement:** Dr. Daniel Dundas for his excellent scientific contribution and continual support — he is also a kind and generous human being.
+
 ---
 *Happy coding!* ⚛️
